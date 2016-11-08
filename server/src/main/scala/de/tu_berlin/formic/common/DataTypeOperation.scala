@@ -6,4 +6,5 @@ package de.tu_berlin.formic.common
 trait DataTypeOperation {
   val id: OperationId
   val operationContext: OperationContext
+  val clientId : ClientId
 }
