@@ -1,0 +1,7 @@
+language: java, scala
+jdk:
+  - oraclejdk8
+scala:
+  - 2.11.4
+before_install:
+  cd server
