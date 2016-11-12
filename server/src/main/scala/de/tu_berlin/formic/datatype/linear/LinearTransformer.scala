@@ -13,6 +13,7 @@ case class LinearDeleteOperation(index: Int, id: OperationId, operationContext: 
 case class LinearNoOperation(index: Int, id: OperationId, operationContext: OperationContext, clientId: ClientId) extends LinearStructureOperation
 
 /**
+  * Transforms two operations according to the IT rules in a TP1 valid way.
   * @author Ronny Bräunlich
   */
 object LinearTransformer extends OperationTransformer {
@@ -40,7 +41,8 @@ object LinearTransformer extends OperationTransformer {
   }
 
   private def transform(o1: LinearDeleteOperation, o2: LinearInsertOperation): LinearStructureOperation = {
-    null
+    if (o1.index <= o2.index) o1
+    else LinearDeleteOperation(o1.index + 1, o1.id, o1.operationContext, o1.clientId)
   }
 
   private def transform(o1: LinearInsertOperation, o2: LinearInsertOperation): LinearStructureOperation = {
@@ -52,7 +54,8 @@ object LinearTransformer extends OperationTransformer {
   }
 
   private def transform(o1: LinearInsertOperation, o2: LinearDeleteOperation): LinearStructureOperation = {
-    null
+    if (o1.index < o2.index) o1
+    else LinearInsertOperation(o1.index - 1, o1.o, o1.id, o1.operationContext, o1.clientId)
   }
 
 }
