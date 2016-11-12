@@ -14,13 +14,21 @@ val commonDependencies = Seq(
 
 libraryDependencies ++= commonDependencies
 
+lazy val common = (project in file("common")).
+  settings(commonSettings: _*).
+  settings(
+    name := "formic-common",
+    libraryDependencies ++= commonDependencies
+  )
+
 lazy val server = (project in file("server")).
   settings(commonSettings: _*).
   settings(
     name := "formic-server",
     libraryDependencies ++= commonDependencies
-  )
+  ).
+  dependsOn(common)
 
 lazy val root = (project in file(".")).
   settings(commonSettings: _*).
-  aggregate(server)
+  aggregate(common, server)
