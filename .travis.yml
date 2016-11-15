@@ -1,3 +1,3 @@
-language: scala
+language: scala, nodejs
 scala:
   - 2.11.8
