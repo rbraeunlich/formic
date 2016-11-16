@@ -15,12 +15,12 @@ lazy val common = crossProject.in(file("common")).
   settings(
     name := "formic-common",
     libraryDependencies ++= Seq(
+      "com.lihaoyi" %%% "upickle" % "0.4.3",
       "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
     )
   ).
   jvmSettings(
     libraryDependencies ++= Seq(
-      "io.spray" %%  "spray-json" % "1.3.2",
       "com.typesafe.akka" %%% "akka-actor" % "2.4.11"
     )
   ).

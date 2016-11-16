@@ -1,7 +1,7 @@
-package de.tu_berlin.formic.common.datatype.linear
+package de.tu_berlin.formic.datatype.linear
 
 import de.tu_berlin.formic.common._
-import de.tu_berlin.formic.datatype.common.{DataTypeOperation, OperationContext, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataTypeOperation, OperationContext, OperationTransformer}
 
 trait LinearStructureOperation extends DataTypeOperation {
   val index: Int

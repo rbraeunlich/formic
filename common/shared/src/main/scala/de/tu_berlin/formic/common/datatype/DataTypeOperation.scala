@@ -1,4 +1,4 @@
-package de.tu_berlin.formic.datatype.common
+package de.tu_berlin.formic.common.datatype
 
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 
@@ -8,5 +8,5 @@ import de.tu_berlin.formic.common.{ClientId, OperationId}
 trait DataTypeOperation {
   val id: OperationId
   val operationContext: OperationContext
-  val clientId : ClientId
+  val clientId: ClientId
 }

@@ -1,10 +1,15 @@
 package de.tu_berlin.formic.common.json
 
-import de.tu_berlin.formic.datatype.common.DataTypeName
+import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation}
 
 /**
   * @author Ronny Bräunlich
   */
-trait FormicJsonDataTypeProtocol{
-  val name:DataTypeName
+trait FormicJsonDataTypeProtocol {
+
+  def deserializeOperation(json: String): DataTypeOperation
+
+  val name: DataTypeName
+
+  def serializeOperation(op: DataTypeOperation): String
 }
