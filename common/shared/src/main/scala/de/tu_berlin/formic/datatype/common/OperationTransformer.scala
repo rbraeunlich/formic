@@ -1,4 +1,4 @@
-package de.tu_berlin.formic.common
+package de.tu_berlin.formic.datatype.common
 
 /**
   * Common interface for classes that apply operational transformation to two operations.

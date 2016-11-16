@@ -1,4 +1,4 @@
-package de.tu_berlin.formic.common
+package de.tu_berlin.formic.datatype.common
 
 /**
   * @author Ronny Bräunlich

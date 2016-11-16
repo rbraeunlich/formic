@@ -13,17 +13,19 @@ lazy val commonSettings = Seq(
 lazy val common = crossProject.in(file("common")).
   settings(commonSettings: _*).
   settings(
-    name := "formic-common"
+    name := "formic-common",
+    libraryDependencies ++= Seq(
+      "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
+    )
   ).
   jvmSettings(
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % "3.0.0" % "test",
+      "io.spray" %%  "spray-json" % "1.3.2",
       "com.typesafe.akka" %%% "akka-actor" % "2.4.11"
     )
   ).
   jsSettings(
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % "3.0.0" % "test",
       "eu.unicredit" %%% "akkajsactor" % "0.2.4.11"
     )
   )

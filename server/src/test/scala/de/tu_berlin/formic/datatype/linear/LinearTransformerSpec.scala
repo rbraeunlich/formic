@@ -1,6 +1,8 @@
 package de.tu_berlin.formic.datatype.linear
 
-import de.tu_berlin.formic.common.{ClientId, OperationContext, OperationId}
+import de.tu_berlin.formic.common.datatype.linear._
+import de.tu_berlin.formic.common.{ClientId, OperationId}
+import de.tu_berlin.formic.datatype.common.OperationContext
 import org.scalatest._
 
 /**

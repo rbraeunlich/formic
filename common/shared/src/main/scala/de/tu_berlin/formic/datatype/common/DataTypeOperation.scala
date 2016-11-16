@@ -1,4 +1,6 @@
-package de.tu_berlin.formic.common
+package de.tu_berlin.formic.datatype.common
+
+import de.tu_berlin.formic.common.{ClientId, OperationId}
 
 /**
   * @author Ronny Bräunlich
