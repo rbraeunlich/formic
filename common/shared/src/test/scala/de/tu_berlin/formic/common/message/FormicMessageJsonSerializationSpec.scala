@@ -42,31 +42,31 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
     serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.CreateResponse\",\"dataTypeInstanceId\":{\"id\":\"123\"}}")
   }
 
-  "JSON library" should "serialize a CreateRequest to JSON" in {
+  it should "serialize a CreateRequest to JSON" in {
     val serialized = write(CreateRequest(ClientId.valueOf("678"), DataTypeInstanceId.valueOf("91011"), DataTypeName("test")))
 
     serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.CreateRequest\",\"clientId\":{\"id\":\"678\"},\"dataTypeInstanceId\":{\"id\":\"91011\"},\"dataType\":{\"$type\":\"de.tu_berlin.formic.common.datatype.DataTypeName\",\"name\":\"test\"}}")
   }
 
-  "JSON library" should "serialize a HistoricOperationRequest to JSON" in {
+  it should "serialize a HistoricOperationRequest to JSON" in {
     val serialized = write(HistoricOperationRequest(ClientId.valueOf("123"), DataTypeInstanceId.valueOf("456"), OperationId.valueOf("1")))
 
     serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.HistoricOperationRequest\",\"clientId\":{\"id\":\"123\"},\"dataTypeInstanceId\":{\"id\":\"456\"},\"sinceId\":{\"id\":\"1\"}}")
   }
 
-  "JSON library" should "serialize an UpdateResponse to JSON" in {
+  it should "serialize an UpdateResponse to JSON" in {
     val serialized = write(UpdateResponse(DataTypeInstanceId.valueOf("1"), DataTypeName("test"), "{data}"))
 
     serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.UpdateResponse\",\"dataTypeInstanceId\":{\"id\":\"1\"},\"dataType\":{\"$type\":\"de.tu_berlin.formic.common.datatype.DataTypeName\",\"name\":\"test\"},\"data\":\"{data}\"}")
   }
 
-  "JSON library" should "serialize an UpdateRequest to JSON" in {
+  it should "serialize an UpdateRequest to JSON" in {
     val serialized = write(UpdateRequest(ClientId.valueOf("1"), DataTypeInstanceId.valueOf("1")))
 
     serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.UpdateRequest\",\"clientId\":{\"id\":\"1\"},\"dataTypeInstanceId\":{\"id\":\"1\"}}")
   }
 
-  "JSON library" should "serialize a OperationMessage to JSON" in {
+  it should "serialize a OperationMessage to JSON" in {
     FormicJsonProtocol.registerProtocol(testProtocol)
 
     val serialized = write(OperationMessage(ClientId.valueOf("1"), DataTypeInstanceId.valueOf("1"), DataTypeName("test"), List(TestOperation(OperationId("2"), OperationContext(List(OperationId("1"))), ClientId("1")))))
@@ -76,14 +76,14 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
     FormicJsonProtocol.clear()
   }
 
-  "JSON library" should "deserialize a CreateResponse" in {
+  it should "deserialize a CreateResponse" in {
     val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.CreateResponse\",\"dataTypeInstanceId\":{\"id\":\"123\"}}")
 
     deserialized shouldBe a[CreateResponse]
     deserialized.asInstanceOf[CreateResponse].dataTypeInstanceId should be(DataTypeInstanceId("123"))
   }
 
-  "JSON library" should "deserialize an UpdateRequest" in {
+  it should "deserialize an UpdateRequest" in {
     val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.UpdateRequest\",\"clientId\":{\"id\":\"1\"},\"dataTypeInstanceId\":{\"id\":\"1\"}}")
 
     deserialized shouldBe a[UpdateRequest]
@@ -91,7 +91,7 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
     deserialized.asInstanceOf[UpdateRequest].clientId should be(ClientId("1"))
   }
 
-  "JSON library" should "deserialize a CreateRequest" in {
+  it should "deserialize a CreateRequest" in {
     val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.CreateRequest\",\"clientId\":{\"id\":\"678\"},\"dataTypeInstanceId\":{\"id\":\"91011\"},\"dataType\":{\"$type\":\"de.tu_berlin.formic.datatype.common.datatype.DataTypeName\",\"name\":\"test\"}}")
 
     deserialized shouldBe a[CreateRequest]
@@ -100,7 +100,7 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
     deserialized.asInstanceOf[CreateRequest].dataType should be(DataTypeName("test"))
   }
 
-  "JSON library" should "deserialize a HistoricOperationRequest" in {
+  it should "deserialize a HistoricOperationRequest" in {
     val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.HistoricOperationRequest\",\"clientId\":{\"id\":\"123\"},\"dataTypeInstanceId\":{\"id\":\"456\"},\"sinceId\":{\"id\":\"1\"}}")
 
     deserialized shouldBe a[HistoricOperationRequest]
@@ -109,7 +109,7 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
     deserialized.asInstanceOf[HistoricOperationRequest].sinceId should be(OperationId("1"))
   }
 
-  "JSON library" should "deserialize an UpdateResponse" in {
+  it should "deserialize an UpdateResponse" in {
     val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.UpdateResponse\",\"dataTypeInstanceId\":{\"id\":\"1\"},\"dataType\":{\"$type\":\"de.tu_berlin.formic.datatype.common.datatype.DataTypeName\",\"name\":\"test\"},\"data\":\"{data}\"}")
 
     deserialized shouldBe a[UpdateResponse]
@@ -118,7 +118,7 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
     deserialized.asInstanceOf[UpdateResponse].data should be("{data}")
   }
 
-  "JSON library" should "deserialize an OperationMessage" in {
+  it should "deserialize an OperationMessage" in {
     FormicJsonProtocol.registerProtocol(testProtocol)
 
     val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.OperationMessage\",\"clientId\":\"1\",\"dataTypeInstanceId\":\"1\",\"dataTypeName\":\"test\",\"operations\":[{\"operationId\":\"2\",\"operationContext\":[\"1\"],\"clientId\":\"1\"}]}")
