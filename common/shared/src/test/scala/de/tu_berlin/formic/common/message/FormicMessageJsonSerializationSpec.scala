@@ -2,7 +2,7 @@ package de.tu_berlin.formic.common.message
 
 import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, OperationContext}
 import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
-import de.tu_berlin.formic.common.message.OperationMessage._
+import de.tu_berlin.formic.common.message.FormicJsonProtocol._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest._
 import upickle.Js
@@ -67,13 +67,13 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
   }
 
   "JSON library" should "serialize a OperationMessage to JSON" in {
-    OperationMessage.registerProtocol(testProtocol)
+    FormicJsonProtocol.registerProtocol(testProtocol)
 
     val serialized = write(OperationMessage(ClientId.valueOf("1"), DataTypeInstanceId.valueOf("1"), DataTypeName("test"), List(TestOperation(OperationId("2"), OperationContext(List(OperationId("1"))), ClientId("1")))))
 
     serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.OperationMessage$\",\"clientId\":\"1\",\"dataTypeInstanceId\":\"1\",\"dataTypeName\":\"test\",\"operations\":[{\"operationId\":\"2\",\"operationContext\":[\"1\"],\"clientId\":\"1\"}]}")
 
-    OperationMessage.clear()
+    FormicJsonProtocol.clear()
   }
 
   "JSON library" should "deserialize a CreateResponse" in {
@@ -119,7 +119,7 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
   }
 
   "JSON library" should "deserialize an OperationMessage" in {
-    OperationMessage.registerProtocol(testProtocol)
+    FormicJsonProtocol.registerProtocol(testProtocol)
 
     val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.OperationMessage\",\"clientId\":\"1\",\"dataTypeInstanceId\":\"1\",\"dataTypeName\":\"test\",\"operations\":[{\"operationId\":\"2\",\"operationContext\":[\"1\"],\"clientId\":\"1\"}]}")
 
@@ -129,6 +129,6 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
     deserialized.asInstanceOf[OperationMessage].dataType should be(DataTypeName("test"))
     deserialized.asInstanceOf[OperationMessage].operations should contain(TestOperation(OperationId("2"), OperationContext(List(OperationId("1"))), ClientId("1")))
 
-    OperationMessage.clear()
+    FormicJsonProtocol.clear()
   }
 }
