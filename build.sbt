@@ -21,7 +21,8 @@ lazy val common = crossProject.in(file("common")).
   ).
   jvmSettings(
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %%% "akka-actor" % "2.4.11"
+      "com.typesafe.akka" %%% "akka-actor" % "2.4.11",
+      "com.typesafe.akka" %%% "akka-testkit" % "2.4.11"
     )
   ).
   jsSettings(
@@ -42,7 +43,8 @@ lazy val server = (project in file("server")).
       "org.scalatest" %%% "scalatest" % "3.0.0" % "test",
       "com.typesafe.akka" %%% "akka-actor" % "2.4.11",
       "com.typesafe.akka" %%% "akka-http-core" % "2.4.11",
-      "com.typesafe.akka" %%% "akka-http-experimental" % "2.4.11"
+      "com.typesafe.akka" %%% "akka-http-experimental" % "2.4.11",
+      "com.typesafe.akka" %%% "akka-testkit" % "2.4.11"
     )
   ).
   dependsOn(commonJVM)
