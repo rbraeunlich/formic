@@ -1,7 +1,7 @@
-package de.tu_berlin.formic.common.message
+package de.tu_berlin.formic.common.json
 
 import de.tu_berlin.formic.common.datatype.DataTypeName
-import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
+import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import upickle.Js
 
@@ -24,10 +24,10 @@ object FormicJsonProtocol {
 
   implicit val writer = upickle.default.Writer[OperationMessage] {
     case message =>
-      val protocol = dataTypeOperationJsonProtocols.find(t => t._1.equals(message.dataType)).get
+      val protocol = dataTypeOperationJsonProtocols.find(t => t._1 == message.dataType).get
       val jsonOperations = message.operations.map(o => protocol._2.serializeOperation(o)).map(json => upickle.json.read(json))
       Js.Obj(
-        ("$type", Js.Str(OperationMessage.getClass.getName)),
+        ("$type", Js.Str(classOf[OperationMessage].getName)),
         ("clientId", Js.Str(message.clientId.id)),
         ("dataTypeInstanceId", Js.Str(message.dataTypeInstanceId.id)),
         ("dataTypeName", Js.Str(message.dataType.name)),
@@ -68,7 +68,7 @@ object FormicJsonProtocol {
             DataTypeInstanceId(map("dataTypeInstanceId").obj("id").str)
           )
         case "de.tu_berlin.formic.common.message.OperationMessage" =>
-          val protocol = dataTypeOperationJsonProtocols.find(t => t._1.equals(DataTypeName(map("dataTypeName").str))).get
+          val protocol = dataTypeOperationJsonProtocols.find(t => t._1 == DataTypeName(map("dataTypeName").str)).get
           val operations = map("operations").arr.map(v => v.toString()).map(json => protocol._2.deserializeOperation(json)).toList
           OperationMessage(
             ClientId(map("clientId").str),

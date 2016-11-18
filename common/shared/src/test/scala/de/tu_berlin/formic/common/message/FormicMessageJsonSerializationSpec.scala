@@ -1,8 +1,8 @@
 package de.tu_berlin.formic.common.message
 
 import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, OperationContext}
-import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
-import de.tu_berlin.formic.common.message.FormicJsonProtocol._
+import de.tu_berlin.formic.common.json.{FormicJsonDataTypeProtocol, FormicJsonProtocol}
+import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest._
 import upickle.Js
@@ -24,7 +24,8 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
       Js.Obj(
         ("operationId", Js.Str(op.id.id)),
         ("operationContext", Js.Arr(op.operationContext.operations.map(o => Js.Str(o.id)): _*)),
-        ("clientId", Js.Str(op.clientId.id))).toString()
+        ("clientId", Js.Str(op.clientId.id))
+      ).toString()
     }
 
     override def deserializeOperation(json: String): DataTypeOperation = {
@@ -71,7 +72,7 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
 
     val serialized = write(OperationMessage(ClientId.valueOf("1"), DataTypeInstanceId.valueOf("1"), DataTypeName("test"), List(TestOperation(OperationId("2"), OperationContext(List(OperationId("1"))), ClientId("1")))))
 
-    serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.OperationMessage$\",\"clientId\":\"1\",\"dataTypeInstanceId\":\"1\",\"dataTypeName\":\"test\",\"operations\":[{\"operationId\":\"2\",\"operationContext\":[\"1\"],\"clientId\":\"1\"}]}")
+    serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.OperationMessage\",\"clientId\":\"1\",\"dataTypeInstanceId\":\"1\",\"dataTypeName\":\"test\",\"operations\":[{\"operationId\":\"2\",\"operationContext\":[\"1\"],\"clientId\":\"1\"}]}")
 
     FormicJsonProtocol.clear()
   }
