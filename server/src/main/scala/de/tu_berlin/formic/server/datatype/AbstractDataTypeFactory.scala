@@ -1,8 +1,9 @@
 package de.tu_berlin.formic.server.datatype
 
 import akka.actor.{Actor, Props}
+import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.datatype.{AbstractDataType, DataTypeName}
-import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse}
+import de.tu_berlin.formic.common.message.CreateRequest
 
 import scala.reflect.ClassTag
 
@@ -13,12 +14,12 @@ import scala.reflect.ClassTag
 abstract class AbstractDataTypeFactory[T <: AbstractDataType : ClassTag] extends Actor {
 
   override def receive: Receive = {
-    case req: CreateRequest =>
-      val newDataType = context.actorOf(Props(create()))
-      sender ! NewDataTypeCreated(req.dataTypeInstanceId, newDataType)
+    case CreateRequest(_, dataTypeInstanceId, _) =>
+      val newDataType = context.actorOf(Props(create(dataTypeInstanceId)), dataTypeInstanceId.id)
+      sender ! NewDataTypeCreated(dataTypeInstanceId, newDataType)
   }
 
-  def create(): T
+  def create(dataTypeInstanceId: DataTypeInstanceId): T
 
   val name: DataTypeName
 }

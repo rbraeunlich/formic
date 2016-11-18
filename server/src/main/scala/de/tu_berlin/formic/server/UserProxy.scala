@@ -3,16 +3,18 @@ package de.tu_berlin.formic.server
 import akka.actor.{Actor, ActorRef}
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
-import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse, FormicMessage, OperationMessage}
+import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.server.datatype.NewDataTypeCreated
 import upickle.default._
 
+import scala.concurrent.duration._
+import scala.util.{Failure, Success}
 /**
   * @author Ronny Bräunlich
   */
 class UserProxy(val factories: Map[DataTypeName, ActorRef]) extends Actor {
-
+  import context._
   val id = ClientId()
 
   var watchlist: Map[DataTypeInstanceId, ActorRef] = Map.empty
@@ -49,6 +51,21 @@ class UserProxy(val factories: Map[DataTypeName, ActorRef]) extends Actor {
         case Some(_) => outgoing ! OutgoingMessage(write(op))
         case None => //Client is not interested in the data type that changed
       }
+
+    case hist: HistoricOperationRequest =>
+      val dataTypeInstance = watchlist.find(t => t._1 == hist.dataTypeInstanceId)
+      dataTypeInstance match {
+        case Some((_, ref)) => ref ! hist
+        case None => //TODO Error
+      }
+
+    case req: UpdateRequest =>
+      context.actorSelection(s"../*/${req.dataTypeInstanceId.id}").resolveOne(3 seconds).onComplete {
+        case Success(ref) =>  ref ! req
+        case Failure(ex) => //TODO error
+      }
+
+    case rep: UpdateResponse => outgoing ! OutgoingMessage(write(rep))
   }
 
   /**

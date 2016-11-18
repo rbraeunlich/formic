@@ -2,7 +2,7 @@ package de.tu_berlin.formic.server.datatype
 
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
-import de.tu_berlin.formic.common.{ClientId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest.Assertions._
 import upickle.Js
 
@@ -11,12 +11,12 @@ import upickle.Js
   */
 
 class TestDataTypeFactory extends AbstractDataTypeFactory[TestDataType] {
-  override def create(): TestDataType = new TestDataType(new HistoryBuffer)
+  override def create(dataTypeInstanceId: DataTypeInstanceId): TestDataType = new TestDataType(new HistoryBuffer, dataTypeInstanceId)
 
   override val name: DataTypeName = TestClasses.dataTypeName
 }
 
-class TestDataType(override val historyBuffer: HistoryBuffer) extends AbstractDataType {
+class TestDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataTypeInstanceId) extends AbstractDataType(dataTypeInstanceId) {
 
   var data = "{data}"
 

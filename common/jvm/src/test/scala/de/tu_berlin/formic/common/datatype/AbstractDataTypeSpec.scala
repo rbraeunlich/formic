@@ -1,13 +1,13 @@
 package de.tu_berlin.formic.common.datatype
 
 import akka.actor.{ActorSystem, Props}
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest.Assertions._
 import org.scalatest.{Matchers, WordSpecLike}
 
-class AbstractDataTypeSpecTestDataType(override val historyBuffer: HistoryBuffer) extends AbstractDataType {
+class AbstractDataTypeSpecTestDataType(override val historyBuffer: HistoryBuffer, id: DataTypeInstanceId) extends AbstractDataType(id) {
 
   var data = "{data}"
 
@@ -40,7 +40,7 @@ class AbstractDataTypeSpec extends TestKit(ActorSystem("testsystem"))
       val probe = TestProbe()
       system.eventStream.subscribe(probe.ref, classOf[UpdateResponse])
 
-      system.actorOf(Props(new AbstractDataTypeSpecTestDataType(new HistoryBuffer)))
+      system.actorOf(Props(new AbstractDataTypeSpecTestDataType(new HistoryBuffer, DataTypeInstanceId())))
 
       val msg = probe.expectMsgClass(classOf[UpdateResponse])
       msg.dataType should be(AbstractDataTypeSpec.dataTypeName)
@@ -50,7 +50,7 @@ class AbstractDataTypeSpec extends TestKit(ActorSystem("testsystem"))
     "apply received operations from an operation message and publish the same message again" in {
       val probe = TestProbe()
       system.eventStream.subscribe(probe.ref, classOf[OperationMessage])
-      val dataType = system.actorOf(Props(new AbstractDataTypeSpecTestDataType(new HistoryBuffer)))
+      val dataType = system.actorOf(Props(new AbstractDataTypeSpecTestDataType(new HistoryBuffer, DataTypeInstanceId())))
       val message = OperationMessage(
         ClientId(),
         DataTypeInstanceId(),
@@ -60,6 +60,20 @@ class AbstractDataTypeSpec extends TestKit(ActorSystem("testsystem"))
       dataType ! message
 
       probe.expectMsg(message)
+    }
+
+    "adds applied operations to the history buffer" in {
+      val dataType: TestActorRef[AbstractDataType] = TestActorRef(Props(new AbstractDataTypeSpecTestDataType(new HistoryBuffer, DataTypeInstanceId())))
+      val operation = AbstractDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId())
+      val message = OperationMessage(
+        ClientId(),
+        DataTypeInstanceId(),
+        AbstractDataTypeSpec.dataTypeName,
+        List(operation)
+      )
+      dataType ! message
+
+      dataType.underlyingActor.historyBuffer.history should contain(operation)
     }
 
     "return the requested historic operations when receiving HistoricOperationsRequest" in {
@@ -72,7 +86,7 @@ class AbstractDataTypeSpec extends TestKit(ActorSystem("testsystem"))
       historyBuffer.addOperation(op1)
       historyBuffer.addOperation(op2)
       val clientId = ClientId()
-      val dataType = system.actorOf(Props(new AbstractDataTypeSpecTestDataType(historyBuffer)))
+      val dataType = system.actorOf(Props(new AbstractDataTypeSpecTestDataType(historyBuffer, DataTypeInstanceId())))
       val msg = probe.expectMsgClass(classOf[UpdateResponse])
       val dataTypeInstanceId = msg.dataTypeInstanceId
 
@@ -85,7 +99,7 @@ class AbstractDataTypeSpec extends TestKit(ActorSystem("testsystem"))
       val probe = TestProbe()
       system.eventStream.subscribe(probe.ref, classOf[UpdateResponse])
       val clientId = ClientId()
-      val dataType = system.actorOf(Props(new AbstractDataTypeSpecTestDataType(new HistoryBuffer)))
+      val dataType = system.actorOf(Props(new AbstractDataTypeSpecTestDataType(new HistoryBuffer, DataTypeInstanceId())))
       val msg = probe.expectMsgClass(classOf[UpdateResponse])
       val dataTypeInstanceId = msg.dataTypeInstanceId
 
