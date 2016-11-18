@@ -49,7 +49,7 @@ object LinearTransformer extends OperationTransformer {
   private def transform(o1: LinearInsertOperation, o2: LinearInsertOperation): LinearStructureOperation = {
     if (o1.index < o2.index) o1
     else if (o1.index > o2.index) LinearInsertOperation(o1.index + 1, o1.o, o1.id, o1.operationContext, o1.clientId)
-    else if (o1.o equals o2.o) LinearNoOperation(-1, o1.id, o1.operationContext, o1.clientId)
+    else if (o1.o == o2.o) LinearNoOperation(-1, o1.id, o1.operationContext, o1.clientId)
     else if (o1.clientId > o2.clientId) o1
     else LinearInsertOperation(o1.index + 1, o1.o, o1.id, o1.operationContext, o1.clientId)
   }

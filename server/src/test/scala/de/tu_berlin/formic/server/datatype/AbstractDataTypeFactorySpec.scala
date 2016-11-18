@@ -3,28 +3,10 @@ package de.tu_berlin.formic.server.datatype
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import de.tu_berlin.formic.StopSystemAfterAll
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
-import de.tu_berlin.formic.common.datatype.{AbstractDataType, DataTypeName, DataTypeOperation}
+import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.message.CreateRequest
+import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import org.scalatest.{Matchers, WordSpecLike}
-
-
-
-class TestDataTypeFactory extends AbstractDataTypeFactory[TestDataType] {
-  override def create(): TestDataType = {
-    new TestDataType()
-  }
-
-  override val name: DataTypeName = DataTypeName("Test")
-}
-
-class TestDataType extends AbstractDataType {
-  override val dataTypeName: DataTypeName = DataTypeName("Test")
-
-  override def apply(op: DataTypeOperation): Unit = {}
-
-  override def getDataAsJson: String = ""
-}
 
 /**
   * @author Ronny Bräunlich

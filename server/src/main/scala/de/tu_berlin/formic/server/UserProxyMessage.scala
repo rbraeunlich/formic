@@ -9,4 +9,6 @@ sealed trait UserProxyMessage
 
 case class IncomingMessage(text: String) extends UserProxyMessage
 
+case class OutgoingMessage(text: String) extends UserProxyMessage
+
 case class Connected(outgoing: ActorRef) extends UserProxyMessage

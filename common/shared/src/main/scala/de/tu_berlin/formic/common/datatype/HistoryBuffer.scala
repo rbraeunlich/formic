@@ -21,7 +21,7 @@ class HistoryBuffer {
     * @return
     */
   def findOperation(id: OperationId): Option[DataTypeOperation] = {
-    history.find(op => op.id.eq(id))
+    history.find(op => op.id == id)
   }
 
   /**
