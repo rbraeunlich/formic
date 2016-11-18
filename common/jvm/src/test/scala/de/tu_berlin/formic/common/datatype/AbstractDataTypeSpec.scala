@@ -47,18 +47,20 @@ class AbstractDataTypeSpec extends TestKit(ActorSystem("testsystem"))
       msg.data should be("{data}")
     }
 
-    "apply received operations from an operation message" in {
+    "apply received operations from an operation message and publish the same message again" in {
+      val probe = TestProbe()
+      system.eventStream.subscribe(probe.ref, classOf[OperationMessage])
       val dataType = system.actorOf(Props(new TestDataType(new HistoryBuffer)))
-      dataType ! OperationMessage(
+      val message = OperationMessage(
         ClientId(),
         DataTypeInstanceId(),
         DataTypeName("Test"),
         List(TestOperation(OperationId(), OperationContext(List.empty), ClientId()))
       )
+      dataType ! message
 
-      val msg = expectMsgClass(classOf[UpdateResponse])
-      msg.dataType should be(DataTypeName("Test"))
-      msg.data should be("{received}")
+      val msg = probe.expectMsgClass(classOf[UpdateResponse])
+      msg.dataType should be(message)
     }
 
     "return the requested historic operations when receiving HistoricOperationsRequest" in {

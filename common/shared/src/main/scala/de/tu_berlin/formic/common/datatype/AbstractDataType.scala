@@ -20,9 +20,9 @@ abstract class AbstractDataType extends Actor {
   }
 
   override def receive: Receive = {
-    case OperationMessage(_, _, _, operations) =>
-      operations.foreach(op => apply(op)) //TODO Control Algorithm einbauen
-      sender ! UpdateResponse(id, dataTypeName, getDataAsJson)
+    case opMsg:OperationMessage =>
+      opMsg.operations.foreach(op => apply(op)) //TODO Control Algorithm einbauen
+      context.system.eventStream.publish(opMsg)
 
     case HistoricOperationRequest(clientId, _, since) => sender ! OperationMessage(clientId, id, dataTypeName, historyBuffer.findAllOperationsAfter(since))
 
