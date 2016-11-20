@@ -22,4 +22,6 @@ object UniqueUsernameAuthenticator {
       }
     )
   }
+
+  def clear() = usernames = Set.empty
 }

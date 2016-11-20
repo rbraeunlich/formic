@@ -2,19 +2,23 @@ package de.tu_berlin.formic.server
 
 import akka.http.scaladsl.model.headers.BasicHttpCredentials
 import akka.http.scaladsl.server.directives.Credentials
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 
 /**
   * @author Ronny Bräunlich
   */
-class UniqueUsernameAuthenticatorSpec extends FlatSpec with Matchers {
+class UniqueUsernameAuthenticatorSpec extends FlatSpec with Matchers with BeforeAndAfterAll{
+
+  override def afterAll(): Unit = {
+    UniqueUsernameAuthenticator.clear()
+  }
 
   "UniqueUserNameAuthenticator" should "accept new usernames" in {
-    val username = "foo"
+    val username = "UniqueUserNameAuthenticator"
     val auth = UniqueUsernameAuthenticator.authenticate(Credentials(Option(BasicHttpCredentials(username, ""))))
-    val username2 = "foo1"
+    val username2 = "UniqueUserNameAuthenticator1"
     val auth2 = UniqueUsernameAuthenticator.authenticate(Credentials(Option(BasicHttpCredentials(username2, ""))))
-    val username3 = "foo2"
+    val username3 = "UniqueUserNameAuthenticator2"
     val auth3 = UniqueUsernameAuthenticator.authenticate(Credentials(Option(BasicHttpCredentials(username3, ""))))
 
     auth should equal(Option(username))
@@ -22,14 +26,12 @@ class UniqueUsernameAuthenticatorSpec extends FlatSpec with Matchers {
     auth3 should equal(Option(username3))
   }
 
-  "UniqueUserNameAuthenticator" should "reject missing credentials" in {
-    val username = "foo"
+  it should "reject missing credentials" in {
     val auth = UniqueUsernameAuthenticator.authenticate(Credentials(Option.empty))
 
     auth should equal(None)
   }
-
-  "UniqueUserNameAuthenticator" should "reject duplicate usernames" in {
+  it should "reject duplicate usernames" in {
     val username = "duplicate"
     UniqueUsernameAuthenticator.authenticate(Credentials(Option(BasicHttpCredentials(username, ""))))
     val auth = UniqueUsernameAuthenticator.authenticate(Credentials(Option(BasicHttpCredentials(username, ""))))

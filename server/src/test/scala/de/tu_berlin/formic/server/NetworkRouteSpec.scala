@@ -6,14 +6,20 @@ import akka.http.scaladsl.server.AuthenticationFailedRejection
 import akka.http.scaladsl.testkit.{ScalatestRouteTest, WSProbe}
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Sink, Source}
-import org.scalatest.{Matchers, WordSpecLike}
+import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 /**
   * @author Ronny Bräunlich
   */
 class NetworkRouteSpec extends WordSpecLike
   with ScalatestRouteTest
-  with Matchers {
+  with Matchers
+  with BeforeAndAfterAll{
+
+  override def afterAll(): Unit = {
+    super.afterAll()
+    UniqueUsernameAuthenticator.clear()
+  }
 
   "Network route" must {
     "reject users without authentification" in {
@@ -31,7 +37,7 @@ class NetworkRouteSpec extends WordSpecLike
       val probe = WSProbe()
       val route = NetworkRoute.route((_) => Flow.fromSinkAndSource(Sink.ignore, Source.empty))
 
-      WS("/formic", probe.flow).addCredentials(BasicHttpCredentials("foo", "")) ~> route ~> check {
+      WS("/formic", probe.flow).addCredentials(BasicHttpCredentials("NetworkRoute", "")) ~> route ~> check {
         isWebSocketUpgrade should be(true)
         status should be(StatusCodes.SwitchingProtocols)
       }
@@ -43,12 +49,12 @@ class NetworkRouteSpec extends WordSpecLike
       val probe2 = WSProbe()
       val route = NetworkRoute.route((_) => Flow.fromSinkAndSource(Sink.ignore, Source.empty))
 
-      WS("/formic", probe.flow).addCredentials(BasicHttpCredentials("bar", "")) ~> route ~> check {
+      WS("/formic", probe.flow).addCredentials(BasicHttpCredentials("NetworkRoute2", "")) ~> route ~> check {
         isWebSocketUpgrade should be(true)
         status should be(StatusCodes.SwitchingProtocols)
       }
 
-      WS("/formic", probe2.flow).addCredentials(BasicHttpCredentials("bar", "")) ~> route ~> check {
+      WS("/formic", probe2.flow).addCredentials(BasicHttpCredentials("NetworkRoute2", "")) ~> route ~> check {
         rejection shouldBe a[AuthenticationFailedRejection]
       }
     }
