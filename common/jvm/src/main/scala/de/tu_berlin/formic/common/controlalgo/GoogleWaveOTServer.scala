@@ -27,7 +27,6 @@ class GoogleWaveOTServer extends ControlAlgorithm {
           case Some(_) => true
         }
     }
-
   }
 
   /**

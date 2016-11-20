@@ -1,5 +1,6 @@
 package de.tu_berlin.formic.server.datatype
 
+import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
@@ -11,12 +12,15 @@ import upickle.Js
   */
 
 class TestDataTypeFactory extends AbstractDataTypeFactory[TestDataType] {
-  override def create(dataTypeInstanceId: DataTypeInstanceId): TestDataType = new TestDataType(new HistoryBuffer, dataTypeInstanceId)
+
+  override def create(dataTypeInstanceId: DataTypeInstanceId): TestDataType = new TestDataType(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm)
 
   override val name: DataTypeName = TestClasses.dataTypeName
 }
 
-class TestDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataTypeInstanceId) extends AbstractDataType(dataTypeInstanceId) {
+class TestDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataTypeInstanceId, val controlAlgorithm: ControlAlgorithm) extends AbstractDataType(dataTypeInstanceId, controlAlgorithm) {
+
+
 
   var data = "{data}"
 
@@ -30,6 +34,8 @@ class TestDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstan
   override val dataTypeName: DataTypeName = TestClasses.dataTypeName
 
   override def getDataAsJson: String = data
+
+  override val transformer: OperationTransformer = TestTransformer
 }
 
 case class TestOperation(id: OperationId, operationContext: OperationContext, clientId: ClientId) extends DataTypeOperation
@@ -53,6 +59,18 @@ class TestFormicJsonDataTypeProtocol extends FormicJsonDataTypeProtocol {
       ("clientId", Js.Str(op.clientId.id))
     ).toString()
   }
+}
+
+object TestControlAlgorithm extends ControlAlgorithm {
+
+  override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = true
+
+  override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = op
+}
+
+object TestTransformer extends OperationTransformer {
+
+  override def transform(pair: (DataTypeOperation, DataTypeOperation)): DataTypeOperation = pair._1
 }
 
 object TestClasses {
