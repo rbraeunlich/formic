@@ -9,13 +9,13 @@ import de.tu_berlin.formic.server.datatype.NewDataTypeCreated
 import upickle.default._
 
 import scala.concurrent.duration._
+import scala.language.postfixOps
 import scala.util.{Failure, Success}
 /**
   * @author Ronny Bräunlich
   */
-class UserProxy(val factories: Map[DataTypeName, ActorRef]) extends Actor {
+class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = ClientId()) extends Actor {
   import context._
-  val id = ClientId()
 
   var watchlist: Map[DataTypeInstanceId, ActorRef] = Map.empty
 
@@ -38,7 +38,7 @@ class UserProxy(val factories: Map[DataTypeName, ActorRef]) extends Actor {
       val factory = factories.find(t => t._1 == req.dataType)
       factory match {
         case Some(f) => f._2 ! req
-        case None => //TODO ErrorMessage to client
+        case None => throw new IllegalArgumentException("Unknown data type")
       }
 
     case NewDataTypeCreated(dataTypeInstanceId, ref) =>
