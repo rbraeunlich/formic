@@ -56,13 +56,13 @@ class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = C
       val dataTypeInstance = watchlist.find(t => t._1 == hist.dataTypeInstanceId)
       dataTypeInstance match {
         case Some((_, ref)) => ref ! hist
-        case None => //TODO Error
+        case None => throw new IllegalArgumentException(s"Data type instance with id $dataTypeInstance unkown")
       }
 
     case req: UpdateRequest =>
       context.actorSelection(s"../*/${req.dataTypeInstanceId.id}").resolveOne(3 seconds).onComplete {
         case Success(ref) =>  ref ! req
-        case Failure(ex) => //TODO error
+        case Failure(ex) => throw new IllegalArgumentException(s"Data type instance with id ${req.dataTypeInstanceId.id} unkown")
       }
 
     case rep: UpdateResponse => outgoing ! OutgoingMessage(write(rep))
@@ -77,7 +77,7 @@ class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = C
     val dataTypeInstance = watchlist.find(t => t._1 == op.dataTypeInstanceId)
     dataTypeInstance match {
       case Some((_, ref)) => ref ! op
-      case None => //TODO ErrorMessage to client
+      case None => throw new IllegalArgumentException(s"Data type instance with id ${op.dataTypeInstanceId.id} unkown")
     }
   }
 }

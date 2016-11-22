@@ -7,7 +7,6 @@ import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message._
-import de.tu_berlin.formic.common.server.datatype
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import de.tu_berlin.formic.server.datatype._
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}

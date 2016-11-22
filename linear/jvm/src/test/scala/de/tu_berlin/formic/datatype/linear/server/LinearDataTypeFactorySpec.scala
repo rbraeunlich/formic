@@ -6,6 +6,7 @@ import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.datatype.linear.LinearDataType
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
+import de.tu_berlin.formic.datatype.linear.server.LinearDataTypeFactory
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
