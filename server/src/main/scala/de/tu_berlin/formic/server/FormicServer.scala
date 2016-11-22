@@ -33,13 +33,18 @@ object FormicServer {
     implicit val system = ActorSystem("formic-server")
     implicit val materializer = ActorMaterializer(ActorMaterializerSettings(system).withSupervisionStrategy(decider))
 
-    implicit def myExceptionHandler: ExceptionHandler = ExceptionHandler {
+    val myExceptionHandler: ExceptionHandler = ExceptionHandler {
       case iae:IllegalArgumentException => complete(HttpResponse(NotFound, entity = iae.getMessage))
     }
 
     val serverAddress = system.settings.config.getString("formic.server.address")
     val serverPort = system.settings.config.getInt("formic.server.port")
-    val binding = Await.result(Http().bindAndHandle(NetworkRoute.route((username) => newUserProxy(username)), serverAddress, serverPort), 3.seconds)
+    val binding = Await.result(
+      Http().bindAndHandle(
+        handleExceptions(myExceptionHandler){ NetworkRoute.route((username) => newUserProxy(username))},
+        serverAddress,
+        serverPort),
+      3.seconds)
 
     // the rest of the sample code will go here
     println("Started server at 127.0.0.1:8080, press enter to kill server")

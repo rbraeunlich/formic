@@ -11,16 +11,14 @@ object UniqueUsernameAuthenticator {
   private var usernames: Set[String] = Set.empty
 
   def authenticate(creds: Credentials): Option[String] = {
-    synchronized(
-      creds match {
-        case Provided(identifier) => if (usernames.contains(identifier)) Option.empty
-        else {
-          usernames = usernames + identifier
-          Option(identifier)
-        }
-        case Missing => Option.empty
+    creds match {
+      case Provided(identifier) => if (usernames.contains(identifier)) Option.empty
+      else {
+        usernames = usernames + identifier
+        Option(identifier)
       }
-    )
+      case Missing => Option.empty
+    }
   }
 
   def clear() = usernames = Set.empty
