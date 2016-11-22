@@ -12,6 +12,8 @@ import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings, OverflowStrategy, Supervision}
 import de.tu_berlin.formic.common.ClientId
 import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.json.FormicJsonProtocol
+import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataTypeProtocol
 import de.tu_berlin.formic.datatype.linear.server.LinearDataTypeFactory
 
 import scala.concurrent.Await
@@ -28,6 +30,7 @@ object FormicServer {
 
   def initFactories()(implicit actorSystem: ActorSystem) = {
     val linearFactoryActor = actorSystem.actorOf(Props[LinearDataTypeFactory], "linearFactory")
+    FormicJsonProtocol.registerProtocol(LinearFormicJsonDataTypeProtocol)
     factories += (LinearDataTypeFactory.dataTypeName -> linearFactoryActor)
   }
 

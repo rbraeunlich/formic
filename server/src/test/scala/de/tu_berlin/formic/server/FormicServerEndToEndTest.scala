@@ -9,16 +9,18 @@ import akka.http.scaladsl.model.{StatusCodes, Uri}
 import akka.stream.scaladsl.{Flow, Keep, Sink, SinkQueueWithCancel, Source, SourceQueueWithComplete}
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.testkit.TestKit
-import de.tu_berlin.formic.common.datatype.DataTypeName
-import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse, FormicMessage}
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.datatype.{DataTypeName, OperationContext}
+import de.tu_berlin.formic.common.json.FormicJsonProtocol._
+import de.tu_berlin.formic.common.message._
+import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.datatype.linear.{LinearDataType, LinearInsertOperation}
 import org.scalatest.{Matchers, WordSpecLike}
 import upickle.default._
-import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 
-import scala.concurrent.{Await, ExecutionContext}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext}
 import scala.util.{Failure, Success}
+import scala.languageFeature.postfixOps
 
 /**
   * @author Ronny Bräunlich
@@ -38,26 +40,50 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("testsystem"))
       implicit val materializer = ActorMaterializer()
       import system.dispatcher
 
-      val sinkAndSource = connectUser("foo")
+      val user1Id = ClientId("foo")
+      val user2Id = ClientId("bar")
+      val (user1Incoming, user1Outgoing) = connectUser(user1Id.id)
+      val (user2Incoming, user2Outgoing) = connectUser(user2Id.id)
 
-      val incoming = sinkAndSource._1
 
-      val outgoing = sinkAndSource._2
-      val dataTypeInstanceId = DataTypeInstanceId()
-      outgoing.offer(TextMessage(write(CreateRequest(ClientId(), dataTypeInstanceId, DataTypeName("linear")))))
+      val dataTypeInstanceId: DataTypeInstanceId = createLinearDataTypeInstance(user1Id, user2Id, user1Incoming, user1Outgoing, user2Incoming, user2Outgoing)
 
-      incoming.pull().onComplete {
-        case Success(m) =>
-          val text = m.get.asTextMessage.getStrictText
-          read[FormicMessage](text) should equal(CreateResponse(dataTypeInstanceId))
-          println("created")
-        case Failure(ex) => fail(ex)
-      }
+
+      val op1 = LinearInsertOperation(0, "a", OperationId(), OperationContext(List.empty), user2Id)
+      user2Outgoing.offer(TextMessage(write(OperationMessage(user2Id, dataTypeInstanceId, LinearDataType.dataTypeName, List(op1)))))
+
 
       Thread.sleep(5000)
 
       server.stop()
     }
+  }
+
+  def createLinearDataTypeInstance(user1Id: ClientId, user2Id: ClientId, user1Incoming: SinkQueueWithCancel[Message], user1Outgoing: SourceQueueWithComplete[Message], user2Incoming: SinkQueueWithCancel[Message], user2Outgoing: SourceQueueWithComplete[Message])(implicit executionContext: ExecutionContext): DataTypeInstanceId = {
+    val dataTypeInstanceId = DataTypeInstanceId()
+    user1Outgoing.offer(TextMessage(write(CreateRequest(user1Id, dataTypeInstanceId, DataTypeName("linear")))))
+
+    val incomingCreateResponse = user1Incoming.pull()
+    incomingCreateResponse.onComplete {
+      case Success(m) =>
+        val text = m.get.asTextMessage.getStrictText
+        read[FormicMessage](text) should equal(CreateResponse(dataTypeInstanceId))
+        println("created")
+      case Failure(ex) => fail(ex)
+    }
+    Await.result(incomingCreateResponse, 3 seconds)
+
+    user2Outgoing.offer(TextMessage(write(UpdateRequest(user2Id, dataTypeInstanceId))))
+
+    val incomingUpdateResponse = user2Incoming.pull()
+    incomingUpdateResponse.onComplete {
+      case Success(m) =>
+        val text = m.get.asTextMessage.getStrictText
+        read[FormicMessage](text) should equal(UpdateResponse(dataTypeInstanceId, LinearDataType.dataTypeName, "[]"))
+      case Failure(ex) => fail(ex)
+    }
+
+    dataTypeInstanceId
   }
 
   def connectUser(username: String)(implicit materializer: ActorMaterializer, executionContext: ExecutionContext): (SinkQueueWithCancel[Message], SourceQueueWithComplete[Message]) = {
@@ -82,7 +108,9 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("testsystem"))
         throw new RuntimeException(s"Connection failed: ${upgrade.response.status}")
       }
     }
+
     val result = Await.ready(connected, 3 seconds)
+
     result.value.get match {
       case Success(_) => sinkAndSource
       case Failure(ex) => fail(ex)

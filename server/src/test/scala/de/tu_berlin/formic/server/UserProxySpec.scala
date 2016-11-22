@@ -8,6 +8,7 @@ import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.server.datatype.{TestClasses, TestDataTypeFactory}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 import upickle.default._
 
@@ -157,16 +158,41 @@ class UserProxySpec extends TestKit(ActorSystem("testsystem"))
 
     "forward an UpdateRequest to the correct data type and save the data type instance id" in {
       val dataTypeInstanceId = DataTypeInstanceId()
-      val factory = system.actorOf(Props[datatype.TestDataTypeFactory])
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, datatype.TestClasses.dataTypeName)
+      val factory = system.actorOf(Props[TestDataTypeFactory])
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName)
       val userProxy: TestActorRef[UserProxy] = TestActorRef(Props(new UserProxy(Map.empty)))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
 
       userProxy ! IncomingMessage(write(UpdateRequest(ClientId(), dataTypeInstanceId)))
 
-      outgoingProbe.expectMsg(OutgoingMessage(write(UpdateResponse(dataTypeInstanceId, datatype.TestClasses.dataTypeName, "{data}"))))
+      outgoingProbe.expectMsg(OutgoingMessage(write(UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "{data}"))))
       userProxy.underlyingActor.watchlist should contain key dataTypeInstanceId
+    }
+
+    "must add the data type instance of the UpdateResponse before handling OperationMessages" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val factory = system.actorOf(Props[TestDataTypeFactory])
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName)
+      receiveN(1)
+      val userProxy = system.actorOf(Props(new UserProxy(Map.empty)))
+      val outgoingProbe = TestProbe()
+      userProxy ! Connected(outgoingProbe.ref)
+      val operationMessage = OperationMessage(
+        ClientId(),
+        dataTypeInstanceId,
+        datatype.TestClasses.dataTypeName,
+        List(datatype.TestOperation(OperationId(), OperationContext(List.empty), ClientId()))
+      )
+
+      val msg1 = IncomingMessage(write(UpdateRequest(ClientId(), dataTypeInstanceId)))
+      val msg2 = IncomingMessage(write(operationMessage))
+      userProxy ! msg1
+      //if the UserProxy does not wait for the UpdateResponse it handles the OperationMessage first
+      //that will result in an exception because it does not know the data type instance yet
+      userProxy ! msg2
+
+      outgoingProbe.expectMsg(OutgoingMessage(write(UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "{data}"))))
     }
   }
 }
