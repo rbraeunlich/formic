@@ -24,7 +24,10 @@ object FormicJsonProtocol {
 
   implicit val writer = upickle.default.Writer[OperationMessage] {
     case message =>
-      val protocol = dataTypeOperationJsonProtocols.find(t => t._1 == message.dataType).get
+      val protocol = dataTypeOperationJsonProtocols.find(t => t._1 == message.dataType) match {
+        case Some(prot) => prot
+        case None => throw new IllegalArgumentException(s"No JSON Protocol for ${message.dataType} registered")
+      }
       val jsonOperations = message.operations.map(o => protocol._2.serializeOperation(o)).map(json => upickle.json.read(json))
       Js.Obj(
         ("$type", Js.Str(classOf[OperationMessage].getName)),
