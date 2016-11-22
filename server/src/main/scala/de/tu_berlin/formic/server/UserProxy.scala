@@ -65,7 +65,9 @@ class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = C
         case Failure(ex) => throw new IllegalArgumentException(s"Data type instance with id ${req.dataTypeInstanceId.id} unkown")
       }
 
-    case rep: UpdateResponse => outgoing ! OutgoingMessage(write(rep))
+    case rep: UpdateResponse =>
+      watchlist += (rep.dataTypeInstanceId -> sender)
+      outgoing ! OutgoingMessage(write(rep))
   }
 
   /**

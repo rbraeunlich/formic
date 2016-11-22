@@ -8,11 +8,11 @@ import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
-import de.tu_berlin.formic.server.datatype._
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 import upickle.default._
 
 import scala.concurrent.duration._
+import scala.languageFeature.postfixOps
 
 /**
   * @author Ronny Bräunlich
@@ -155,17 +155,18 @@ class UserProxySpec extends TestKit(ActorSystem("testsystem"))
       ))))
     }
 
-    "forward an UpdateRequest to the correct data type" in {
+    "forward an UpdateRequest to the correct data type and save the data type instance id" in {
       val dataTypeInstanceId = DataTypeInstanceId()
       val factory = system.actorOf(Props[datatype.TestDataTypeFactory])
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, datatype.TestClasses.dataTypeName)
-      val userProxy = system.actorOf(Props(new UserProxy(Map.empty)))
+      val userProxy: TestActorRef[UserProxy] = TestActorRef(Props(new UserProxy(Map.empty)))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
 
       userProxy ! IncomingMessage(write(UpdateRequest(ClientId(), dataTypeInstanceId)))
 
       outgoingProbe.expectMsg(OutgoingMessage(write(UpdateResponse(dataTypeInstanceId, datatype.TestClasses.dataTypeName, "{data}"))))
+      userProxy.underlyingActor.watchlist should contain key dataTypeInstanceId
     }
   }
 }
