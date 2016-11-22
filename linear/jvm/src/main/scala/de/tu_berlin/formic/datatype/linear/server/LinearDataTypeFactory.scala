@@ -1,11 +1,11 @@
 package de.tu_berlin.formic.datatype.linear.server
 
 import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.controlalgo.GoogleWaveOTServer
 import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.server.datatype.AbstractDataTypeFactory
 import de.tu_berlin.formic.datatype.linear.LinearDataType
 import upickle.default._
-import de.tu_berlin.formic.common.controlalgo.GoogleWaveOTServer
-import de.tu_berlin.formic.common.server.datatype.AbstractDataTypeFactory
 
 /**
   * @author Ronny Bräunlich
@@ -17,5 +17,9 @@ class LinearDataTypeFactory extends AbstractDataTypeFactory[LinearDataType[Strin
     LinearDataType(dataTypeInstanceId, new GoogleWaveOTServer())
   }
 
-  override val name: DataTypeName = LinearDataType.dataTypeName
+  override val name: DataTypeName = LinearDataTypeFactory.dataTypeName
+}
+
+object LinearDataTypeFactory {
+  val dataTypeName = LinearDataType.dataTypeName
 }

@@ -4,19 +4,21 @@ import akka.Done
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.headers.{Authorization, BasicHttpCredentials}
-import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage, WebSocketRequest}
+import akka.http.scaladsl.model.ws.{Message, TextMessage, WebSocketRequest}
 import akka.http.scaladsl.model.{StatusCodes, Uri}
-import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
+import akka.stream.scaladsl.{Flow, Keep, Sink, SinkQueueWithCancel, Source, SourceQueueWithComplete}
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.testkit.TestKit
-import akka.util.ByteString
 import de.tu_berlin.formic.common.datatype.DataTypeName
-import de.tu_berlin.formic.common.message.CreateRequest
+import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse, FormicMessage}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import org.scalatest.{Matchers, WordSpecLike}
 import upickle.default._
+import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, ExecutionContext}
+import scala.concurrent.duration._
+import scala.util.{Failure, Success}
 
 /**
   * @author Ronny Bräunlich
@@ -36,54 +38,54 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("testsystem"))
       implicit val materializer = ActorMaterializer()
       import system.dispatcher
 
-      // print each incoming strict text message
-      val printSink: Sink[Message, Future[Done]] =
-      Sink.foreach {
-        case message: TextMessage.Strict =>
-          println(message.text)
+      val sinkAndSource = connectUser("foo")
+
+      val incoming = sinkAndSource._1
+
+      val outgoing = sinkAndSource._2
+      val dataTypeInstanceId = DataTypeInstanceId()
+      outgoing.offer(TextMessage(write(CreateRequest(ClientId(), dataTypeInstanceId, DataTypeName("linear")))))
+
+      incoming.pull().onComplete {
+        case Success(m) =>
+          val text = m.get.asTextMessage.getStrictText
+          read[FormicMessage](text) should equal(CreateResponse(dataTypeInstanceId))
+          println("created")
+        case Failure(ex) => fail(ex)
       }
 
-      val source = Source.queue[Message](10, OverflowStrategy.fail)
-
-
-      // the Future[Done] is the materialized value of Sink.foreach
-      // and it is completed when the stream completes
-      val flow = Flow.fromSinkAndSourceMat(printSink, source)(Keep.both)
-
-      // upgradeResponse is a Future[WebSocketUpgradeResponse] that
-      // completes or fails when the connection succeeds or fails
-      // and closed is a Future[Done] representing the stream completion from above
-      val (upgradeResponse, closed) =
-      Http().singleWebSocketRequest(
-        WebSocketRequest(
-          Uri("ws://127.0.0.1:8080/formic"),
-          List(Authorization(BasicHttpCredentials("foo", "")))
-        ),
-        flow
-      )
-
-      val connected = upgradeResponse.map { upgrade =>
-        // just like a regular http request we can access response status which is available via upgrade.response.status
-        // status code 101 (Switching Protocols) indicates that server support WebSockets
-        if (upgrade.response.status == StatusCodes.SwitchingProtocols) {
-          Done
-        } else {
-          throw new RuntimeException(s"Connection failed: ${upgrade.response.status}")
-        }
-      }
-
-      // in a real application you would not side effect here
-      // and handle errors more carefully
-      connected.onComplete(println)
-      closed._1.foreach(_ => println("closed"))
-
-      //TODO got to register the factory on the server
-      val queue = closed._2
-      queue.offer(BinaryMessage(ByteString("abc")))
-      //queue.offer(TextMessage(write(CreateRequest(ClientId(), DataTypeInstanceId(), DataTypeName("linear")))))
       Thread.sleep(5000)
 
       server.stop()
+    }
+  }
+
+  def connectUser(username: String)(implicit materializer: ActorMaterializer, executionContext: ExecutionContext): (SinkQueueWithCancel[Message], SourceQueueWithComplete[Message]) = {
+    val sink: Sink[Message, SinkQueueWithCancel[Message]] = Sink.queue()
+    val source = Source.queue[Message](10, OverflowStrategy.fail)
+    val flow = Flow.fromSinkAndSourceMat(sink, source)(Keep.both)
+
+    // upgradeResponse is a Future[WebSocketUpgradeResponse] that
+    // completes or fails when the connection succeeds or fails
+    val (upgradeResponse, sinkAndSource) =
+    Http().singleWebSocketRequest(
+      WebSocketRequest(
+        Uri("ws://127.0.0.1:8080/formic"),
+        List(Authorization(BasicHttpCredentials(username, "")))
+      ),
+      flow
+    )
+    val connected = upgradeResponse.map { upgrade =>
+      if (upgrade.response.status == StatusCodes.SwitchingProtocols) {
+        Done
+      } else {
+        throw new RuntimeException(s"Connection failed: ${upgrade.response.status}")
+      }
+    }
+    val result = Await.ready(connected, 3 seconds)
+    result.value.get match {
+      case Success(_) => sinkAndSource
+      case Failure(ex) => fail(ex)
     }
   }
 }

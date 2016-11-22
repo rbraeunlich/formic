@@ -4,26 +4,32 @@ import akka.NotUsed
 import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpResponse
+import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model.ws.{Message, TextMessage}
+import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.ExceptionHandler
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings, OverflowStrategy, Supervision}
+import de.tu_berlin.formic.common.ClientId
 import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.datatype.linear.server.LinearDataTypeFactory
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.io.StdIn
 import scala.language.postfixOps
-import akka.http.scaladsl.model.StatusCodes._
-import akka.http.scaladsl.server.Directives._
-import de.tu_berlin.formic.common.ClientId
 
 /**
   * @author Ronny Bräunlich
   */
 object FormicServer {
 
-  val factories: Map[DataTypeName, ActorRef] = Map.empty
+  var factories: Map[DataTypeName, ActorRef] = Map.empty
+
+  def initFactories()(implicit actorSystem: ActorSystem) = {
+    val linearFactoryActor = actorSystem.actorOf(Props[LinearDataTypeFactory], "linearFactory")
+    factories += (LinearDataTypeFactory.dataTypeName -> linearFactoryActor)
+  }
 
   def main(args: Array[String]): Unit = {
     val decider: Supervision.Decider = {
@@ -34,14 +40,16 @@ object FormicServer {
     implicit val materializer = ActorMaterializer(ActorMaterializerSettings(system).withSupervisionStrategy(decider))
 
     val myExceptionHandler: ExceptionHandler = ExceptionHandler {
-      case iae:IllegalArgumentException => complete(HttpResponse(NotFound, entity = iae.getMessage))
+      case iae: IllegalArgumentException => complete(HttpResponse(NotFound, entity = iae.getMessage))
     }
-
+    initFactories()
     val serverAddress = system.settings.config.getString("formic.server.address")
     val serverPort = system.settings.config.getInt("formic.server.port")
     val binding = Await.result(
       Http().bindAndHandle(
-        handleExceptions(myExceptionHandler){ NetworkRoute.route((username) => newUserProxy(username))},
+        handleExceptions(myExceptionHandler) {
+          NetworkRoute.route((username) => newUserProxy(username))
+        },
         serverAddress,
         serverPort),
       3.seconds)
