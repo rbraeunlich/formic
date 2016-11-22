@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.linear
 
 import de.tu_berlin.formic.common.datatype.OperationContext
 import de.tu_berlin.formic.common.{ClientId, OperationId}
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest._
 
 /**
   * @author Ronny Bräunlich

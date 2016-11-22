@@ -3,11 +3,13 @@ package de.tu_berlin.formic.server
 import akka.Done
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.model.ws.{Message, TextMessage, WebSocketRequest}
+import akka.http.scaladsl.model.headers.{Authorization, BasicHttpCredentials}
+import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage, WebSocketRequest}
+import akka.http.scaladsl.model.{StatusCodes, Uri}
 import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.testkit.TestKit
+import akka.util.ByteString
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
@@ -52,7 +54,13 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("testsystem"))
       // completes or fails when the connection succeeds or fails
       // and closed is a Future[Done] representing the stream completion from above
       val (upgradeResponse, closed) =
-      Http().singleWebSocketRequest(WebSocketRequest("ws://test@127.0.0.1:8080/formic"), flow)
+      Http().singleWebSocketRequest(
+        WebSocketRequest(
+          Uri("ws://127.0.0.1:8080/formic"),
+          List(Authorization(BasicHttpCredentials("foo", "")))
+        ),
+        flow
+      )
 
       val connected = upgradeResponse.map { upgrade =>
         // just like a regular http request we can access response status which is available via upgrade.response.status
@@ -71,7 +79,8 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("testsystem"))
 
       //TODO got to register the factory on the server
       val queue = closed._2
-      queue.offer(TextMessage(write(CreateRequest(ClientId(), DataTypeInstanceId(), DataTypeName("linear")))))
+      queue.offer(BinaryMessage(ByteString("abc")))
+      //queue.offer(TextMessage(write(CreateRequest(ClientId(), DataTypeInstanceId(), DataTypeName("linear")))))
       Thread.sleep(5000)
 
       server.stop()

@@ -4,8 +4,8 @@ import akka.actor.{Actor, ActorRef}
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message._
+import de.tu_berlin.formic.common.server.datatype.NewDataTypeCreated
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
-import de.tu_berlin.formic.server.datatype.NewDataTypeCreated
 import upickle.default._
 
 import scala.concurrent.duration._

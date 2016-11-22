@@ -1,4 +1,4 @@
-package de.tu_berlin.formic.server.datatype
+package de.tu_berlin.formic.common.server.datatype
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}

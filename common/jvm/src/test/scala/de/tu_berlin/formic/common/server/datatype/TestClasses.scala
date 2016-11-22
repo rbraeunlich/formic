@@ -1,4 +1,4 @@
-package de.tu_berlin.formic.server.datatype
+package de.tu_berlin.formic.common.server.datatype
 
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype._

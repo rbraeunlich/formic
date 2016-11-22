@@ -22,7 +22,7 @@ lazy val common = crossProject.in(file("common")).
   jvmSettings(
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %%% "akka-actor" % "2.4.11",
-      "com.typesafe.akka" %%% "akka-testkit" % "2.4.11"
+      "com.typesafe.akka" %%% "akka-testkit" % "2.4.11"% "test"
     )
   ).
   jsSettings(
@@ -44,14 +44,15 @@ lazy val linear = crossProject.in(file("linear")).
     )
   ).
   jvmSettings(
-  libraryDependencies ++= Seq(
-    "com.typesafe.akka" %%% "akka-testkit" % "2.4.11"
-  )
-).
-  dependsOn(common)
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %%% "akka-testkit" % "2.4.11" % "test"
 
-lazy val linearJVM = linear.jvm
-lazy val linearJS = linear.js
+    )
+  )
+  .dependsOn(common)
+
+lazy val linearJVM = linear.jvm.dependsOn(commonJVM)
+lazy val linearJS = linear.js.dependsOn(commonJS)
 
 lazy val server = (project in file("server")).
   settings(commonSettings: _*).
@@ -62,8 +63,8 @@ lazy val server = (project in file("server")).
       "com.typesafe.akka" %%% "akka-actor" % "2.4.11",
       "com.typesafe.akka" %%% "akka-http-core" % "2.4.11",
       "com.typesafe.akka" %%% "akka-http-experimental" % "2.4.11",
-      "com.typesafe.akka" %%% "akka-testkit" % "2.4.11",
-      "com.typesafe.akka" %%% "akka-http-testkit" % "2.4.11"
+      "com.typesafe.akka" %%% "akka-testkit" % "2.4.11" % "test",
+      "com.typesafe.akka" %%% "akka-http-testkit" % "2.4.11" % "test"
     )
   ).
   dependsOn(commonJVM, linearJVM)
