@@ -2,7 +2,7 @@ lazy val root = project
                 .enablePlugins(ScalaJSPlugin)
                 .in(file(".")).
                   settings(commonSettings: _*).
-                  aggregate(commonJS, commonJVM, server)
+                  aggregate(commonJS, commonJVM, linearJS, linearJVM, server)
 
 lazy val commonSettings = Seq(
   organization := "de.tu-berlin.formic",
@@ -34,6 +34,24 @@ lazy val common = crossProject.in(file("common")).
 lazy val commonJVM = common.jvm
 lazy val commonJS = common.js
 
+lazy val linear = crossProject.in(file("linear")).
+  settings(commonSettings: _*).
+  settings(
+    name := "formic-linear",
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %%% "upickle" % "0.4.3",
+      "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
+    )
+  ).
+  jvmSettings(
+  libraryDependencies ++= Seq(
+    "com.typesafe.akka" %%% "akka-testkit" % "2.4.11"
+  )
+).
+  dependsOn(common)
+
+lazy val linearJVM = linear.jvm
+lazy val linearJS = linear.js
 
 lazy val server = (project in file("server")).
   settings(commonSettings: _*).
@@ -48,4 +66,4 @@ lazy val server = (project in file("server")).
       "com.typesafe.akka" %%% "akka-http-testkit" % "2.4.11"
     )
   ).
-  dependsOn(commonJVM)
+  dependsOn(commonJVM, linearJVM)

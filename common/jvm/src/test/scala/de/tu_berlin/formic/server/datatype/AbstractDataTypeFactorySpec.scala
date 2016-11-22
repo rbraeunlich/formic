@@ -10,6 +10,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{Matchers, WordSpecLike}
 
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
 /**
   * @author Ronny Bräunlich

@@ -4,11 +4,11 @@ import akka.actor.Actor
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
-
+import upickle.default.Writer
 /**
   * @author Ronny Bräunlich
   */
-abstract class AbstractDataType(val id: DataTypeInstanceId, controlAlgorithm: ControlAlgorithm) extends Actor {
+abstract class AbstractDataType(val id: DataTypeInstanceId,val controlAlgorithm: ControlAlgorithm) extends Actor {
 
   val historyBuffer: HistoryBuffer = new HistoryBuffer()
 
