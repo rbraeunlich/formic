@@ -9,7 +9,7 @@ import akka.http.scaladsl.model.{StatusCodes, Uri}
 import akka.stream.scaladsl.{Flow, Keep, Sink, SinkQueueWithCancel, Source, SourceQueueWithComplete}
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.testkit.TestKit
-import de.tu_berlin.formic.common.datatype.{DataTypeName, OperationContext}
+import de.tu_berlin.formic.common.datatype.OperationContext
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
@@ -18,9 +18,9 @@ import org.scalatest.{Matchers, WordSpecLike}
 import upickle.default._
 
 import scala.concurrent.duration._
-import scala.concurrent.{Await, ExecutionContext}
+import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.languageFeature.postfixOps._
 import scala.util.{Failure, Success}
-import scala.languageFeature.postfixOps
 
 /**
   * @author Ronny Bräunlich
@@ -49,14 +49,74 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("testsystem"))
       val dataTypeInstanceId: DataTypeInstanceId = createLinearDataTypeInstance(user1Id, user2Id, user1Incoming, user1Outgoing, user2Incoming, user2Outgoing)
 
 
-      val op1 = LinearInsertOperation(0, "a", OperationId(), OperationContext(List.empty), user2Id)
-      user2Outgoing.offer(TextMessage(write(OperationMessage(user2Id, dataTypeInstanceId, LinearDataType.dataTypeName, List(op1)))))
+      applyOperations(user1Id, user2Id, user1Incoming, user1Outgoing, user2Incoming, user2Outgoing, dataTypeInstanceId)
 
+      user2Outgoing.offer(TextMessage(write(UpdateRequest(user2Id, dataTypeInstanceId))))
+      val finalResponse = user2Incoming.pull()
+      Await.ready(finalResponse, 3 seconds)
+      finalResponse.value.get match {
+        case Success(m) =>
+          val text = m.get.asTextMessage.getStrictText
+          read[FormicMessage](text) should equal(UpdateResponse(dataTypeInstanceId, LinearDataType.dataTypeName, "[\"3\",\"2\",\"1\",\"c\",\"b\",\"a\"]"))
+        case Failure(ex) => fail(ex)
+      }
 
-      Thread.sleep(5000)
-
+      //Thread.sleep(5000)
       server.stop()
     }
+  }
+
+  def verifyEqual(message: Future[Option[Message]], formicMessage: FormicMessage)(implicit ec: ExecutionContext) = {
+    val ready = Await.ready(message, 3 seconds)
+    ready.value.get match {
+      case Success(m) =>
+        val text = m.get.asTextMessage.getStrictText
+        read[FormicMessage](text) should equal(formicMessage)
+      case Failure(ex) => fail(ex)
+    }
+  }
+
+  def applyOperations(user1Id: ClientId, user2Id: ClientId, user1Incoming: SinkQueueWithCancel[Message], user1Outgoing: SourceQueueWithComplete[Message], user2Incoming: SinkQueueWithCancel[Message], user2Outgoing: SourceQueueWithComplete[Message], dataTypeInstanceId: DataTypeInstanceId)(implicit ec: ExecutionContext) = {
+    //let both users send operations in parallel
+    //because the id of u1 is greater than u2 (f > b), it should have precedence
+    //user 2
+    val u2op1 = LinearInsertOperation(0, "a", OperationId(), OperationContext(List.empty), user2Id)
+    val u2Msg1 = OperationMessage(user2Id, dataTypeInstanceId, LinearDataType.dataTypeName, List(u2op1))
+    val u2op2 = LinearInsertOperation(0, "b", OperationId(), OperationContext(List(u2op1.id)), user2Id)
+    val u2Msg2 = OperationMessage(user2Id, dataTypeInstanceId, LinearDataType.dataTypeName, List(u2op2))
+    val u2op3 = LinearInsertOperation(0, "c", OperationId(), OperationContext(List(u2op2.id)), user2Id)
+    val u2Msg3 = OperationMessage(user2Id, dataTypeInstanceId, LinearDataType.dataTypeName, List(u2op3))
+    //user 1
+    val u1op1 = LinearInsertOperation(0, "1", OperationId(), OperationContext(List.empty), user1Id)
+    val u1Msg1 = OperationMessage(user1Id, dataTypeInstanceId, LinearDataType.dataTypeName, List(u1op1))
+    val u1op2 = LinearInsertOperation(0, "2", OperationId(), OperationContext(List(u1op1.id)), user1Id)
+    val u1Msg2 = OperationMessage(user1Id, dataTypeInstanceId, LinearDataType.dataTypeName, List(u1op2))
+    val u1op3 = LinearInsertOperation(0, "3", OperationId(), OperationContext(List(u1op2.id)), user1Id)
+    val u1Msg3 = OperationMessage(user1Id, dataTypeInstanceId, LinearDataType.dataTypeName, List(u1op3))
+    user2Outgoing.offer(TextMessage(write(u2Msg1)))
+    user2Outgoing.offer(TextMessage(write(u2Msg2)))
+    user2Outgoing.offer(TextMessage(write(u2Msg3)))
+    // 3 acks for u2
+    verifyEqual(user2Incoming.pull(), u2Msg1)
+    verifyEqual(user2Incoming.pull(), u2Msg2)
+    verifyEqual(user2Incoming.pull(), u2Msg3)
+    //3 incoming for u1
+    verifyEqual(user1Incoming.pull(), u2Msg1)
+    verifyEqual(user1Incoming.pull(), u2Msg2)
+    verifyEqual(user1Incoming.pull(), u2Msg3)
+
+
+    user1Outgoing.offer(TextMessage(write(u1Msg1)))
+    user1Outgoing.offer(TextMessage(write(u1Msg2)))
+    user1Outgoing.offer(TextMessage(write(u1Msg3)))
+    // 3 acks for u1
+    verifyEqual(user1Incoming.pull(), u1Msg1)
+    verifyEqual(user1Incoming.pull(), u1Msg2)
+    verifyEqual(user1Incoming.pull(), u1Msg3)
+    //3 incoming for u2
+    verifyEqual(user2Incoming.pull(), u1Msg1)
+    verifyEqual(user2Incoming.pull(), u1Msg2)
+    verifyEqual(user2Incoming.pull(), u1Msg3)
   }
 
   def createLinearDataTypeInstance(user1Id: ClientId, user2Id: ClientId, user1Incoming: SinkQueueWithCancel[Message], user1Outgoing: SourceQueueWithComplete[Message], user2Incoming: SinkQueueWithCancel[Message], user2Outgoing: SourceQueueWithComplete[Message])(implicit executionContext: ExecutionContext): DataTypeInstanceId = {
@@ -64,26 +124,26 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("testsystem"))
     user1Outgoing.offer(TextMessage(write(CreateRequest(user1Id, dataTypeInstanceId, LinearDataType.dataTypeName))))
 
     val incomingCreateResponse = user1Incoming.pull()
-    incomingCreateResponse.onComplete {
+    Await.ready(incomingCreateResponse, 3 seconds)
+    incomingCreateResponse.value.get match {
       case Success(m) =>
         val text = m.get.asTextMessage.getStrictText
         read[FormicMessage](text) should equal(CreateResponse(dataTypeInstanceId))
         println("created")
       case Failure(ex) => fail(ex)
     }
-    Await.result(incomingCreateResponse, 3 seconds)
 
     user2Outgoing.offer(TextMessage(write(UpdateRequest(user2Id, dataTypeInstanceId))))
 
     val incomingUpdateResponse = user2Incoming.pull()
-    incomingUpdateResponse.onComplete {
+    //can't start sending operation messages before the client is subscribed to the data type instance
+    Await.ready(incomingUpdateResponse, 3 seconds)
+    incomingUpdateResponse.value.get match {
       case Success(m) =>
         val text = m.get.asTextMessage.getStrictText
         read[FormicMessage](text) should equal(UpdateResponse(dataTypeInstanceId, LinearDataType.dataTypeName, "[]"))
       case Failure(ex) => fail(ex)
     }
-    //can't start sending operation messages before the client is subscribed to the data type instance
-    Await.result(incomingUpdateResponse, 3 seconds)
     dataTypeInstanceId
   }
 
