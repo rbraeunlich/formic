@@ -61,7 +61,7 @@ object FormicServer {
       3.seconds)
 
     // the rest of the sample code will go here
-    println("Started server at 127.0.0.1:8080, press enter to kill server")
+    println(s"Started server at $serverAddress:$serverPort, press enter to kill server")
     StdIn.readLine()
     system.terminate()
   }

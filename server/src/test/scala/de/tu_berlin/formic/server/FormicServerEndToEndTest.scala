@@ -36,6 +36,7 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("FormicServerEndToEnd
         }
       }
       server.start()
+      Thread.sleep(500)
 
       implicit val materializer = ActorMaterializer()
       import system.dispatcher
