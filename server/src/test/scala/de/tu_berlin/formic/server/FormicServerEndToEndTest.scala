@@ -175,7 +175,7 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("FormicServerEndToEnd
 
     result.value.get match {
       case Success(_) => sinkAndSource
-      case Failure(ex) => fail(ex)
+      case Failure(ex) => throw ex
     }
   }
 }
