@@ -2,6 +2,7 @@ package de.tu_berlin.formic.server
 
 import akka.NotUsed
 import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props}
+import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpResponse
 import akka.http.scaladsl.model.StatusCodes._
@@ -21,7 +22,6 @@ import upickle.default._
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.io.StdIn
 import scala.language.postfixOps
 
 /**
@@ -44,6 +44,7 @@ object FormicServer {
     }
     implicit val system = ActorSystem("formic-server")
     implicit val materializer = ActorMaterializer(ActorMaterializerSettings(system).withSupervisionStrategy(decider))
+    implicit val ec = system.dispatcher
 
     val myExceptionHandler: ExceptionHandler = ExceptionHandler {
       case iae: IllegalArgumentException => complete(HttpResponse(NotFound, entity = iae.getMessage))
@@ -51,19 +52,22 @@ object FormicServer {
     initFactories()
     val serverAddress = system.settings.config.getString("formic.server.address")
     val serverPort = system.settings.config.getInt("formic.server.port")
-    val binding = Await.result(
-      Http().bindAndHandle(
-        handleExceptions(myExceptionHandler) {
-          NetworkRoute.route((username) => newUserProxy(username))
-        },
-        serverAddress,
-        serverPort),
-      3.seconds)
+    val binding = Http().bindAndHandle(
+      handleExceptions(myExceptionHandler) {
+        NetworkRoute.route((username) => newUserProxy(username))
+      },
+      serverAddress,
+      serverPort)
 
     // the rest of the sample code will go here
-    println(s"Started server at $serverAddress:$serverPort, press enter to kill server")
-    StdIn.readLine()
-    system.terminate()
+    val log = Logging(system.eventStream, "formic-server")
+    binding.map { serverBinding =>
+      log.info(s"FormicServer bound to ${serverBinding.localAddress} ")
+    }.onFailure {
+      case ex: Exception =>
+        log.error(ex, "Failed to bind to {}:{}!", serverAddress, serverPort)
+        system.terminate()
+    }
   }
 
   def newUserProxy(username: String)(implicit actorSystem: ActorSystem, materializer: ActorMaterializer): Flow[Message, Message, NotUsed] = {

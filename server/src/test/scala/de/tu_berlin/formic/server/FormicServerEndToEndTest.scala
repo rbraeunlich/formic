@@ -64,6 +64,8 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("FormicServerEndToEnd
           read[FormicMessage](text) should equal(UpdateResponse(dataTypeInstanceId, LinearDataType.dataTypeName, "[\"3\",\"2\",\"1\",\"c\",\"b\",\"a\"]"))
         case Failure(ex) => fail(ex)
       }
+
+      println("Stopping server")
       server.stop()
     }
   }
@@ -131,7 +133,6 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("FormicServerEndToEnd
       case Success(m) =>
         val text = m.get.asTextMessage.getStrictText
         read[FormicMessage](text) should equal(CreateResponse(dataTypeInstanceId))
-        println("created")
       case Failure(ex) => fail(ex)
     }
 

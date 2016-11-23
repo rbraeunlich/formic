@@ -1,5 +1,3 @@
-parallelExecution in Test := false
-
 lazy val root = project
                 .enablePlugins(ScalaJSPlugin)
                 .in(file(".")).
