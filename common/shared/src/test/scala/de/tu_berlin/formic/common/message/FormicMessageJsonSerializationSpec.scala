@@ -74,7 +74,7 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
 
     serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.OperationMessage\",\"clientId\":\"1\",\"dataTypeInstanceId\":\"1\",\"dataTypeName\":\"test\",\"operations\":[{\"operationId\":\"2\",\"operationContext\":[\"1\"],\"clientId\":\"1\"}]}")
 
-    FormicJsonProtocol.clear()
+    FormicJsonProtocol.remove(testProtocol.name)
   }
 
   it should "deserialize a CreateResponse" in {
@@ -130,6 +130,6 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
     deserialized.asInstanceOf[OperationMessage].dataType should be(DataTypeName("test"))
     deserialized.asInstanceOf[OperationMessage].operations should contain(TestOperation(OperationId("2"), OperationContext(List(OperationId("1"))), ClientId("1")))
 
-    FormicJsonProtocol.clear()
+    FormicJsonProtocol.remove(testProtocol.name)
   }
 }

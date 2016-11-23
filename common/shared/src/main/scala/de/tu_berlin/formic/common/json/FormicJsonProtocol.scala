@@ -20,7 +20,7 @@ object FormicJsonProtocol {
     dataTypeOperationJsonProtocols += (protocol.name -> protocol)
   }
 
-  def clear() = dataTypeOperationJsonProtocols = Map.empty
+  def remove(dataTypeName: DataTypeName) = dataTypeOperationJsonProtocols -= dataTypeName
 
   implicit val writer = upickle.default.Writer[OperationMessage] {
     case message =>

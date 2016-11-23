@@ -8,7 +8,7 @@ import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
-import de.tu_berlin.formic.server.datatype.{TestClasses, TestDataTypeFactory}
+import de.tu_berlin.formic.server.datatype.{TestClasses, TestDataTypeFactory, TestFormicJsonDataTypeProtocol}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 import upickle.default._
 
@@ -26,11 +26,11 @@ class UserProxySpec extends TestKit(ActorSystem("testsystem"))
   with BeforeAndAfterAll {
 
   override def beforeAll(): Unit = {
-    FormicJsonProtocol.registerProtocol(new datatype.TestFormicJsonDataTypeProtocol())
+    FormicJsonProtocol.registerProtocol(new TestFormicJsonDataTypeProtocol())
   }
 
   override def afterAll(): Unit = {
-    FormicJsonProtocol.clear()
+    FormicJsonProtocol.remove(TestClasses.dataTypeName)
   }
 
   "User proxy" must {
