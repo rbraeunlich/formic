@@ -12,11 +12,12 @@ import upickle.default._
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.language.postfixOps
+import scala.util.{Failure, Success}
 /**
   * @author Ronny Bräunlich
   */
 class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = ClientId()) extends Actor {
-
+  import context._
   var watchlist: Map[DataTypeInstanceId, ActorRef] = Map.empty
 
   def receive = {
@@ -60,12 +61,13 @@ class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = C
       }
 
     case req: UpdateRequest =>
-      val search = context.actorSelection(s"../*/${req.dataTypeInstanceId.id}").resolveOne(3 seconds)
-      val lookupResult = Await.result(search, 3 seconds)
-      watchlist += (req.dataTypeInstanceId -> lookupResult)
-      lookupResult ! req
+      context.actorSelection(s"../*/${req.dataTypeInstanceId.id}").resolveOne(3 seconds).onComplete {
+        case Success(ref) =>  ref ! req
+        case Failure(ex) => throw new IllegalArgumentException(s"Data type instance with id ${req.dataTypeInstanceId.id} unkown")
+      }
 
     case rep: UpdateResponse =>
+      watchlist += (rep.dataTypeInstanceId -> sender)
       outgoing ! OutgoingMessage(write(rep))
 
     case OwnOperationMessage(operationMessage) =>
@@ -81,11 +83,7 @@ object UserProxy {
 
   /**
     * In order to distinguish OperationMessages the Client sent and the ones incoming from the subscription
-    * to the EventBus, this message is needed to distinguish them. It is wrapped in another message
-    * to ensure the ordering. The other messages are translated and then sent to the UserProxy itself.
-    * This means between the translation and the sending to itself, other messages might arrive. If an
-    * OperationMessage arrives before an UpdateRequest is sent to itself, it could bypass the UpdateRequest
-    * when being handled by a method.
+    * to the EventBus, this message is needed to distinguish them. It wrapps the original operation message.
     *
     * @param operationMessage The OperationMessage to wrap
     */

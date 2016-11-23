@@ -61,7 +61,7 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("testsystem"))
 
   def createLinearDataTypeInstance(user1Id: ClientId, user2Id: ClientId, user1Incoming: SinkQueueWithCancel[Message], user1Outgoing: SourceQueueWithComplete[Message], user2Incoming: SinkQueueWithCancel[Message], user2Outgoing: SourceQueueWithComplete[Message])(implicit executionContext: ExecutionContext): DataTypeInstanceId = {
     val dataTypeInstanceId = DataTypeInstanceId()
-    user1Outgoing.offer(TextMessage(write(CreateRequest(user1Id, dataTypeInstanceId, DataTypeName("linear")))))
+    user1Outgoing.offer(TextMessage(write(CreateRequest(user1Id, dataTypeInstanceId, LinearDataType.dataTypeName))))
 
     val incomingCreateResponse = user1Incoming.pull()
     incomingCreateResponse.onComplete {
@@ -82,7 +82,8 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("testsystem"))
         read[FormicMessage](text) should equal(UpdateResponse(dataTypeInstanceId, LinearDataType.dataTypeName, "[]"))
       case Failure(ex) => fail(ex)
     }
-
+    //can't start sending operation messages before the client is subscribed to the data type instance
+    Await.result(incomingUpdateResponse, 3 seconds)
     dataTypeInstanceId
   }
 

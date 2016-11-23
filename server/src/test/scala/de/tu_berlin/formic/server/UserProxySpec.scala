@@ -170,29 +170,5 @@ class UserProxySpec extends TestKit(ActorSystem("testsystem"))
       userProxy.underlyingActor.watchlist should contain key dataTypeInstanceId
     }
 
-    "must add the data type instance of the UpdateResponse before handling OperationMessages" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
-      val factory = system.actorOf(Props[TestDataTypeFactory])
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName)
-      receiveN(1)
-      val userProxy = system.actorOf(Props(new UserProxy(Map.empty)))
-      val outgoingProbe = TestProbe()
-      userProxy ! Connected(outgoingProbe.ref)
-      val operationMessage = OperationMessage(
-        ClientId(),
-        dataTypeInstanceId,
-        datatype.TestClasses.dataTypeName,
-        List(datatype.TestOperation(OperationId(), OperationContext(List.empty), ClientId()))
-      )
-
-      val msg1 = IncomingMessage(write(UpdateRequest(ClientId(), dataTypeInstanceId)))
-      val msg2 = IncomingMessage(write(operationMessage))
-      userProxy ! msg1
-      //if the UserProxy does not wait for the UpdateResponse it handles the OperationMessage first
-      //that will result in an exception because it does not know the data type instance yet
-      userProxy ! msg2
-
-      outgoingProbe.expectMsg(OutgoingMessage(write(UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "{data}"))))
-    }
   }
 }
