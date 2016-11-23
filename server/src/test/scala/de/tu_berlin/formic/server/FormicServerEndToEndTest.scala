@@ -31,7 +31,7 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("FormicServerEndToEnd
 
   "Formic server" must {
     "allow two users to work on a linear structure together" in {
-      SystemProperties.noTraceSupression.enable()
+      SystemProperties.noTraceSupression.toggle()
 
       val server = new Thread {
         override def run() {
@@ -39,7 +39,7 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("FormicServerEndToEnd
         }
       }
       server.start()
-      Thread.sleep(500)
+      Thread.sleep(3000)
 
       implicit val materializer = ActorMaterializer()
       import system.dispatcher
