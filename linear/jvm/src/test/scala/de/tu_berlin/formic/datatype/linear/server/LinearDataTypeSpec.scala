@@ -14,7 +14,7 @@ import scala.collection.mutable.ArrayBuffer
 /**
   * @author Ronny Bräunlich
   */
-class LinearDataTypeSpec extends TestKit(ActorSystem("testsystem"))
+class LinearDataTypeSpec extends TestKit(ActorSystem("LinearDataTypeSpec"))
   with WordSpecLike
   with ImplicitSender
   with Matchers

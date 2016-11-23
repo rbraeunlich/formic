@@ -15,7 +15,7 @@ import scala.util.{Failure, Success}
 /**
   * @author Ronny Bräunlich
   */
-class LinearDataTypeFactorySpec extends TestKit(ActorSystem("testsystem"))
+class LinearDataTypeFactorySpec extends TestKit(ActorSystem("LinearDataTypeFactorySpec"))
   with WordSpecLike
   with ImplicitSender
   with Matchers

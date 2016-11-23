@@ -16,7 +16,7 @@ import scala.language.postfixOps
 /**
   * @author Ronny Bräunlich
   */
-class UserProxySpec extends TestKit(ActorSystem("testsystem"))
+class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
   with WordSpecLike
   with ImplicitSender
   with StopSystemAfterAll
