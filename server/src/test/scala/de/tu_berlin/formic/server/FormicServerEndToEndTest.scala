@@ -152,10 +152,12 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("FormicServerEndToEnd
 
     // upgradeResponse is a Future[WebSocketUpgradeResponse] that
     // completes or fails when the connection succeeds or fails
+    val serverAddress = system.settings.config.getString("formic.server.address")
+    val serverPort = system.settings.config.getInt("formic.server.port")
     val (upgradeResponse, sinkAndSource) =
     Http().singleWebSocketRequest(
       WebSocketRequest(
-        Uri("ws://127.0.0.1:8080/formic"),
+        Uri(s"ws://$serverAddress:$serverPort/formic"),
         List(Authorization(BasicHttpCredentials(username, "")))
       ),
       flow
