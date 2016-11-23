@@ -1,39 +1,33 @@
 package de.tu_berlin.formic.server
 
-import akka.actor.{Actor, ActorRef}
+import akka.actor.{Actor, ActorRef, Props}
 import de.tu_berlin.formic.common.datatype.DataTypeName
-import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.server.datatype.NewDataTypeCreated
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
-import de.tu_berlin.formic.server.UserProxy.OwnOperationMessage
-import upickle.default._
+import de.tu_berlin.formic.server.UserProxy.NewDataTypeSubscription
 
-import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.{Failure, Success}
+
 /**
   * @author Ronny Bräunlich
   */
 class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = ClientId()) extends Actor {
-  import context._
+
   var watchlist: Map[DataTypeInstanceId, ActorRef] = Map.empty
+
+  import context._
 
   def receive = {
     case Connected(outgoing) =>
-      context.system.eventStream.subscribe(self, classOf[OperationMessage])
-      context.become(connected(outgoing))
+      val subscriber = context.actorOf(Props(new OperationMessageSubscriber(outgoing)))
+      context.system.eventStream.subscribe(subscriber, classOf[OperationMessage])
+      context.become(connected(outgoing, subscriber))
   }
 
-  def connected(outgoing: ActorRef): Receive = {
-
-    case IncomingMessage(text) =>
-      val message = read[FormicMessage](text)
-      message match {
-        case op: OperationMessage => self ! OwnOperationMessage(op)
-        case _ => self ! message
-      }
+  def connected(outgoing: ActorRef, subscriber: ActorRef): Receive = {
 
     case req: CreateRequest =>
       val factory = factories.find(t => t._1 == req.dataType)
@@ -44,14 +38,8 @@ class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = C
 
     case NewDataTypeCreated(dataTypeInstanceId, ref) =>
       watchlist += (dataTypeInstanceId -> ref)
-      outgoing ! OutgoingMessage(write(CreateResponse(dataTypeInstanceId)))
-
-    case op: OperationMessage =>
-      val dataTypeInstance = watchlist.find(t => t._1 == op.dataTypeInstanceId)
-      dataTypeInstance match {
-        case Some(_) => outgoing ! OutgoingMessage(write(op))
-        case None => //Client is not interested in the data type that changed
-      }
+      subscriber ! NewDataTypeSubscription(dataTypeInstanceId, ref)
+      outgoing ! CreateResponse(dataTypeInstanceId)
 
     case hist: HistoricOperationRequest =>
       val dataTypeInstance = watchlist.find(t => t._1 == hist.dataTypeInstanceId)
@@ -62,15 +50,16 @@ class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = C
 
     case req: UpdateRequest =>
       context.actorSelection(s"../*/${req.dataTypeInstanceId.id}").resolveOne(3 seconds).onComplete {
-        case Success(ref) =>  ref ! req
+        case Success(ref) => ref ! req
         case Failure(ex) => throw new IllegalArgumentException(s"Data type instance with id ${req.dataTypeInstanceId.id} unkown")
       }
 
     case rep: UpdateResponse =>
       watchlist += (rep.dataTypeInstanceId -> sender)
-      outgoing ! OutgoingMessage(write(rep))
+      subscriber ! NewDataTypeSubscription(rep.dataTypeInstanceId, sender)
+      outgoing ! rep
 
-    case OwnOperationMessage(operationMessage) =>
+    case operationMessage: OperationMessage =>
       val dataTypeInstance = watchlist.find(t => t._1 == operationMessage.dataTypeInstanceId)
       dataTypeInstance match {
         case Some((_, ref)) => ref ! operationMessage
@@ -79,14 +68,25 @@ class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = C
   }
 }
 
+class OperationMessageSubscriber(val outgoingConnection: ActorRef) extends Actor {
+
+  var watchlist: Map[DataTypeInstanceId, ActorRef] = Map.empty
+
+  def receive = {
+    case op: OperationMessage =>
+      val dataTypeInstance = watchlist.find(t => t._1 == op.dataTypeInstanceId)
+      dataTypeInstance match {
+        case Some(_) => outgoingConnection ! op
+        case None => //Client is not interested in the data type that changed
+      }
+
+    case NewDataTypeSubscription(dataTypeInstanceId, actorRef) =>
+      watchlist += (dataTypeInstanceId -> actorRef)
+  }
+}
+
 object UserProxy {
 
-  /**
-    * In order to distinguish OperationMessages the Client sent and the ones incoming from the subscription
-    * to the EventBus, this message is needed to distinguish them. It wrapps the original operation message.
-    *
-    * @param operationMessage The OperationMessage to wrap
-    */
-  case class OwnOperationMessage(operationMessage: OperationMessage)
+  case class NewDataTypeSubscription(dataTypeInstanceId: DataTypeInstanceId, actorRef: ActorRef)
 
 }

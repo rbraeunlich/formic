@@ -13,8 +13,11 @@ import akka.stream.{ActorMaterializer, ActorMaterializerSettings, OverflowStrate
 import de.tu_berlin.formic.common.ClientId
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
+import de.tu_berlin.formic.common.json.FormicJsonProtocol._
+import de.tu_berlin.formic.common.message.FormicMessage
 import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataTypeProtocol
 import de.tu_berlin.formic.datatype.linear.server.LinearDataTypeFactory
+import upickle.default._
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -70,26 +73,26 @@ object FormicServer {
     val incomingMessages: Sink[Message, NotUsed] =
       Flow[Message].map {
         // transform websocket message to domain message
-        case TextMessage.Strict(text) => IncomingMessage(text)
+        case TextMessage.Strict(text) => text
         case TextMessage.Streamed(textStream) =>
           val bar = textStream
             .limit(100)
             .completionTimeout(5 seconds)
             .runFold("")(_ + _)
           val result = Await.result(bar, 5 seconds)
-          IncomingMessage(result)
+          result
         case _ => throw new IllegalArgumentException("Illegal message received")
-      }.to(Sink.actorRef[IncomingMessage](UserProxy, PoisonPill))
+      }.map(text => read[FormicMessage](text)).to(Sink.actorRef[FormicMessage](UserProxy, PoisonPill))
 
     val outgoingMessages: Source[Message, NotUsed] =
-      Source.actorRef[OutgoingMessage](10, OverflowStrategy.fail)
+      Source.actorRef[FormicMessage](10, OverflowStrategy.fail)
         .mapMaterializedValue { outActor =>
           // give the UserProxy actor a way to send messages out
           UserProxy ! Connected(outActor)
           NotUsed
         }.map(
         // transform domain message to web socket message
-        (outMsg: OutgoingMessage) => TextMessage(outMsg.text))
+        (outMsg: FormicMessage) => TextMessage(write(outMsg)))
 
     // then combine both to a flow
     Flow.fromSinkAndSource(incomingMessages, outgoingMessages)

@@ -78,7 +78,6 @@ object FormicJsonProtocol {
             DataTypeInstanceId(map("dataTypeInstanceId").str),
             DataTypeName(map("dataTypeName").str),
             operations)
-
       }
   }
 }

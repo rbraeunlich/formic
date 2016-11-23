@@ -5,12 +5,10 @@ import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import de.tu_berlin.formic.StopSystemAfterAll
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
-import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import de.tu_berlin.formic.server.datatype.{TestClasses, TestDataTypeFactory, TestFormicJsonDataTypeProtocol}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
-import upickle.default._
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -49,9 +47,9 @@ class UserProxySpec extends TestKit(ActorSystem("testsystem"))
       userProxy ! Connected(outgoingProbe.ref)
       val dataTypeInstanceId = DataTypeInstanceId()
 
-      userProxy ! IncomingMessage(write(CreateRequest(ClientId(), dataTypeInstanceId, datatype.TestClasses.dataTypeName)))
+      userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, datatype.TestClasses.dataTypeName)
 
-      outgoingProbe.expectMsg(OutgoingMessage(write(CreateResponse(dataTypeInstanceId))))
+      outgoingProbe.expectMsg(CreateResponse(dataTypeInstanceId))
       userProxy.underlyingActor.watchlist should (have size 1)
     }
 
@@ -63,7 +61,7 @@ class UserProxySpec extends TestKit(ActorSystem("testsystem"))
       system.eventStream.subscribe(publisherProbe.ref, classOf[OperationMessage])
       userProxy ! Connected(outgoingProbe.ref)
       val dataTypeInstanceId = DataTypeInstanceId()
-      userProxy ! IncomingMessage(write(CreateRequest(ClientId(), dataTypeInstanceId, datatype.TestClasses.dataTypeName)))
+      userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, datatype.TestClasses.dataTypeName)
       outgoingProbe.receiveOne(3 seconds)
       val operationMessage = OperationMessage(
         ClientId(),
@@ -72,11 +70,11 @@ class UserProxySpec extends TestKit(ActorSystem("testsystem"))
         List(datatype.TestOperation(OperationId(), OperationContext(List.empty), ClientId()))
       )
 
-      userProxy ! IncomingMessage(write(operationMessage))
+      userProxy ! operationMessage
 
       //to make sure that the data type receive the message
       publisherProbe.expectMsg(operationMessage)
-      outgoingProbe.expectMsg(OutgoingMessage(write(operationMessage)))
+      outgoingProbe.expectMsg(operationMessage)
     }
 
     "forward OperationMessages that were applied from other users" in {
@@ -85,7 +83,7 @@ class UserProxySpec extends TestKit(ActorSystem("testsystem"))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
       val dataTypeInstanceId = DataTypeInstanceId()
-      userProxy ! IncomingMessage(write(CreateRequest(ClientId(), dataTypeInstanceId, datatype.TestClasses.dataTypeName)))
+      userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, datatype.TestClasses.dataTypeName)
       outgoingProbe.receiveOne(3 seconds)
       val operationMessage = OperationMessage(
         ClientId(),
@@ -96,7 +94,7 @@ class UserProxySpec extends TestKit(ActorSystem("testsystem"))
 
       system.eventStream.publish(operationMessage)
 
-      outgoingProbe.expectMsg(OutgoingMessage(write(operationMessage)))
+      outgoingProbe.expectMsg(operationMessage)
     }
 
     "ignore OperationMessages for data types it is not interested in" in {
@@ -104,7 +102,7 @@ class UserProxySpec extends TestKit(ActorSystem("testsystem"))
       val userProxy = system.actorOf(Props(new UserProxy(Map(datatype.TestClasses.dataTypeName -> factory))))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
-      userProxy ! IncomingMessage(write(CreateRequest(ClientId(), DataTypeInstanceId(), datatype.TestClasses.dataTypeName)))
+      userProxy ! CreateRequest(ClientId(), DataTypeInstanceId(), datatype.TestClasses.dataTypeName)
       outgoingProbe.receiveOne(3 seconds)
       val operationMessage = OperationMessage(
         ClientId(),
@@ -124,7 +122,7 @@ class UserProxySpec extends TestKit(ActorSystem("testsystem"))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
       val dataTypeInstanceId = DataTypeInstanceId()
-      userProxy ! IncomingMessage(write(CreateRequest(ClientId(), dataTypeInstanceId, datatype.TestClasses.dataTypeName)))
+      userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, datatype.TestClasses.dataTypeName)
       outgoingProbe.receiveOne(3 seconds)
       val operationId = OperationId()
       val operationMessage = OperationMessage(
@@ -141,19 +139,19 @@ class UserProxySpec extends TestKit(ActorSystem("testsystem"))
         datatype.TestClasses.dataTypeName,
         List(datatype.TestOperation(operationId2, OperationContext(List(operationId)), clientId2))
       )
-      userProxy ! IncomingMessage(write(operationMessage))
-      userProxy ! IncomingMessage(write(operationMessage2))
+      userProxy ! operationMessage
+      userProxy ! operationMessage2
       outgoingProbe.receiveN(2)
 
       val requesterClientId = ClientId()
-      userProxy ! IncomingMessage(write(HistoricOperationRequest(requesterClientId, dataTypeInstanceId, operationId)))
+      userProxy ! HistoricOperationRequest(requesterClientId, dataTypeInstanceId, operationId)
 
-      outgoingProbe.expectMsg(OutgoingMessage(write(OperationMessage(
+      outgoingProbe.expectMsg(OperationMessage(
         requesterClientId,
         dataTypeInstanceId,
         datatype.TestClasses.dataTypeName,
         List(datatype.TestOperation(operationId2, OperationContext(List(operationId)), clientId2))
-      ))))
+      ))
     }
 
     "forward an UpdateRequest to the correct data type and save the data type instance id" in {
@@ -164,9 +162,9 @@ class UserProxySpec extends TestKit(ActorSystem("testsystem"))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
 
-      userProxy ! IncomingMessage(write(UpdateRequest(ClientId(), dataTypeInstanceId)))
+      userProxy ! UpdateRequest(ClientId(), dataTypeInstanceId)
 
-      outgoingProbe.expectMsg(OutgoingMessage(write(UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "{data}"))))
+      outgoingProbe.expectMsg(UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "{data}"))
       userProxy.underlyingActor.watchlist should contain key dataTypeInstanceId
     }
 
