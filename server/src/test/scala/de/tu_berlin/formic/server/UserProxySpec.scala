@@ -13,7 +13,7 @@ import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 import upickle.default._
 
 import scala.concurrent.duration._
-import scala.languageFeature.postfixOps
+import scala.language.postfixOps
 
 /**
   * @author Ronny Bräunlich

@@ -19,7 +19,7 @@ import upickle.default._
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
-import scala.languageFeature.postfixOps._
+import scala.language.postfixOps
 import scala.util.{Failure, Success}
 
 /**
@@ -60,8 +60,6 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("testsystem"))
           read[FormicMessage](text) should equal(UpdateResponse(dataTypeInstanceId, LinearDataType.dataTypeName, "[\"3\",\"2\",\"1\",\"c\",\"b\",\"a\"]"))
         case Failure(ex) => fail(ex)
       }
-
-      //Thread.sleep(5000)
       server.stop()
     }
   }
