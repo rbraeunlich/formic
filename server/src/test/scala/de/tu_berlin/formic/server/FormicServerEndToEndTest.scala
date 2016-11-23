@@ -20,6 +20,7 @@ import upickle.default._
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.language.postfixOps
+import scala.sys.SystemProperties
 import scala.util.{Failure, Success}
 
 /**
@@ -30,6 +31,8 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("FormicServerEndToEnd
 
   "Formic server" must {
     "allow two users to work on a linear structure together" in {
+      SystemProperties.noTraceSupression.enable()
+
       val server = new Thread {
         override def run() {
           FormicServer.main(Array.empty)
