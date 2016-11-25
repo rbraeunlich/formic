@@ -26,7 +26,7 @@ import scala.util.{Failure, Success}
 /**
   * @author Ronny Bräunlich
   */
-class FormicServerEndToEndTest extends TestKit(ActorSystem("FormicServerEndToEndTest"))
+class OperationsIntergrationTest extends TestKit(ActorSystem("FormicServerEndToEndTest"))
   with WordSpecLike with Matchers {
 
   "Formic server" must {
@@ -65,7 +65,6 @@ class FormicServerEndToEndTest extends TestKit(ActorSystem("FormicServerEndToEnd
         case Failure(ex) => fail(ex)
       }
 
-      println("Stopping server")
       server.stop()
     }
   }
