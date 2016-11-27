@@ -26,7 +26,7 @@ import scala.util.{Failure, Success}
 /**
   * @author Ronny Bräunlich
   */
-class OperationsIntergrationTest extends TestKit(ActorSystem("FormicServerEndToEndTest"))
+class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergrationTest"))
   with WordSpecLike with Matchers {
 
   "Formic server" must {

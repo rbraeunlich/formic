@@ -2,7 +2,7 @@ lazy val root = project
                 .enablePlugins(ScalaJSPlugin)
                 .in(file(".")).
                   settings(commonSettings: _*).
-                  aggregate(commonJS, commonJVM, linearJS, linearJVM, server)
+                  aggregate(commonJS, commonJVM, linearJS, linearJVM, clientJS, clientJVM, server)
 
 lazy val commonSettings = Seq(
   organization := "de.tu-berlin.formic",
@@ -54,6 +54,27 @@ lazy val linear = crossProject.in(file("linear")).
 lazy val linearJVM = linear.jvm.dependsOn(commonJVM)
 lazy val linearJS = linear.js.dependsOn(commonJS)
 
+lazy val client = crossProject.in(file("client")).
+  settings(commonSettings: _*).
+  settings(
+    name := "formic-client",
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %%% "upickle" % "0.4.3",
+      "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
+    )
+  ).
+  jsSettings(
+    libraryDependencies ++= Seq(
+      "eu.unicredit" %%% "akkajsactor" % "0.2.4.11",
+      "org.scala-js" %%% "scalajs-dom" % "0.9.0"
+    ),
+    jsDependencies += ("org.webjars.bower" % "mock-socket" % "0.5.4" / "dist/mock-socket.js" minified "mock-socket.min.js") % "test"
+  )
+  .dependsOn(common)
+
+lazy val clientJS = client.js.dependsOn(commonJS)
+lazy val clientJVM = client.jvm.dependsOn(commonJVM)
+
 lazy val server = (project in file("server")).
   settings(commonSettings: _*).
   settings(
@@ -68,3 +89,4 @@ lazy val server = (project in file("server")).
     )
   ).
   dependsOn(commonJVM, linearJVM)
+  .enablePlugins(GatlingPlugin)
