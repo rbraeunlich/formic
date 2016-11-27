@@ -67,8 +67,7 @@ lazy val client = crossProject.in(file("client")).
     libraryDependencies ++= Seq(
       "eu.unicredit" %%% "akkajsactor" % "0.2.4.11",
       "org.scala-js" %%% "scalajs-dom" % "0.9.0"
-    ),
-    jsDependencies += ("org.webjars.bower" % "mock-socket" % "0.5.4" / "dist/mock-socket.js" minified "mock-socket.min.js") % "test"
+    )
   )
   .dependsOn(common)
 
