@@ -88,4 +88,3 @@ lazy val server = (project in file("server")).
     )
   ).
   dependsOn(commonJVM, linearJVM)
-  .enablePlugins(GatlingPlugin)
