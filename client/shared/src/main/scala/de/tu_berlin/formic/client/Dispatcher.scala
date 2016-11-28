@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.client
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import de.tu_berlin.formic.client.Dispatcher.{ConnectionEstablished, ErrorMessage}
+import de.tu_berlin.formic.client.Dispatcher.ErrorMessage
 import de.tu_berlin.formic.client.datatype.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateResponse}
@@ -9,7 +9,7 @@ import de.tu_berlin.formic.common.message.{OperationMessage, UpdateResponse}
 /**
   * @author Ronny Bräunlich
   */
-class Dispatcher(val outgoingConnection: OutgoingConnection, val newInstanceCallback: ActorRef, val instantiator: ActorRef) extends Actor with ActorLogging {
+class Dispatcher(val outgoingConnection: ActorRef, val newInstanceCallback: ActorRef, val instantiator: ActorRef) extends Actor with ActorLogging {
 
   var instances: Map[DataTypeInstanceId, ActorRef] = Map.empty
 
@@ -23,8 +23,8 @@ class Dispatcher(val outgoingConnection: OutgoingConnection, val newInstanceCall
       instantiator ! rep
     case created: NewDataTypeCreated =>
       instances += (created.dataTypeInstanceId -> created.dataTypeActor)
+      //TODO how to send the OperationMessages to the outside?
       newInstanceCallback ! created
-    case ConnectionEstablished => //TODO
     case ErrorMessage(errorText) => log.error("Error from WebSocket connection: " + errorText)
     //TODO more?
   }
@@ -32,8 +32,8 @@ class Dispatcher(val outgoingConnection: OutgoingConnection, val newInstanceCall
 
 object Dispatcher {
 
-  case object ConnectionEstablished
-
   case class ErrorMessage(errorText: String)
+
+  case class ConnectToOutgoing(outgoingConnection: ActorRef)
 
 }

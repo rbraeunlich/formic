@@ -7,6 +7,4 @@ import de.tu_berlin.formic.common.message.FormicMessage
   */
 trait OutgoingConnection {
 
-  def send(formicMessage: FormicMessage)
-
 }

@@ -1,15 +1,17 @@
 package de.tu_berlin.formic.client
 
-import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+import de.tu_berlin.formic.client.Dispatcher._
+import de.tu_berlin.formic.client.WebSocketConnection.{OnConnect, OnError, OnMessage}
+import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message.FormicMessage
 import org.scalajs.dom._
-import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import upickle.default._
-import de.tu_berlin.formic.client.Dispatcher._
+
 /**
   * @author Ronny Bräunlich
   */
-class WebSocketConnection(val newInstanceCallback: ActorRef, val instantiator: ActorRef)(implicit val actorSystem: ActorSystem) extends Connection with OutgoingConnection{
+class WebSocketConnection(val newInstanceCallback: ActorRef, val instantiator: ActorRef)(implicit val actorSystem: ActorSystem) extends Actor with Connection with OutgoingConnection {
 
   //TODO read from config
   val url = "0.0.0.0:8080"
@@ -17,24 +19,24 @@ class WebSocketConnection(val newInstanceCallback: ActorRef, val instantiator: A
   private var dispatcher: ActorRef = _
 
   val webSocketConnection = new WebSocket(url)
-  webSocketConnection.onopen = {event: Event => onConnect()}
-  webSocketConnection.onerror = {event: ErrorEvent => onError(event.message)}
-  webSocketConnection.onmessage = {event: MessageEvent => onMessage(read[FormicMessage](event.data.toString))}
+  webSocketConnection.onopen = { event: Event => self ! OnConnect }
+  webSocketConnection.onerror = { event: ErrorEvent => self ! OnError(event.message) }
+  webSocketConnection.onmessage = { event: MessageEvent => self ! OnMessage(event.data.toString) }
 
-  override def onConnect(): Unit = {
-    dispatcher = actorSystem.actorOf(Props(new Dispatcher(this, newInstanceCallback, instantiator)))
-    dispatcher ! ConnectionEstablished
+  def receive = {
+    case OnConnect => dispatcher = actorSystem.actorOf(Props(new Dispatcher(self, newInstanceCallback, instantiator)))
+    case OnError(errorMessage) => dispatcher ! ErrorMessage(errorMessage)
+    case OnMessage(msg) => dispatcher ! read[FormicMessage](msg)
+    case formicMessage: FormicMessage => webSocketConnection.send(write(formicMessage))
   }
+}
 
-  override def onError(errorMessage: String): Unit = {
-    dispatcher ! ErrorMessage(errorMessage)
-  }
+object WebSocketConnection {
 
-  override def onMessage(formicMessage: FormicMessage): Unit = {
-    dispatcher ! formicMessage
-  }
+  case object OnConnect
 
-  override def send(formicMessage: FormicMessage): Unit = {
-    webSocketConnection.send(write(formicMessage))
-  }
+  case class OnError(message: String)
+
+  case class OnMessage(message: String)
+
 }

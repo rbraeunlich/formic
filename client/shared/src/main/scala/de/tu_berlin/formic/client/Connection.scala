@@ -7,9 +7,4 @@ import de.tu_berlin.formic.common.message.FormicMessage
   */
 trait Connection {
 
-  def onConnect()
-
-  def onError(errorMessage: String)
-
-  def onMessage(formicMessage: FormicMessage)
 }

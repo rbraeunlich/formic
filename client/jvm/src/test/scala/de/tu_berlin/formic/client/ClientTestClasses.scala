@@ -5,7 +5,6 @@ import de.tu_berlin.formic.client.datatype.AbstractClientDataTypeFactory
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
-import de.tu_berlin.formic.common.server.datatype.AbstractDataTypeFactory
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest.Assertions._
 import upickle.Js
@@ -41,7 +40,9 @@ class TestDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstan
   override val transformer: OperationTransformer = TestTransformer
 }
 
-class TestFormicDataType extends FormicDataType
+class TestFormicDataType extends FormicDataType {
+  override val dataTypeName: DataTypeName = TestClasses.dataTypeName
+}
 
 case class TestOperation(id: OperationId, operationContext: OperationContext, clientId: ClientId) extends DataTypeOperation
 
