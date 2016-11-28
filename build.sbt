@@ -1,3 +1,9 @@
+val akkaVersion = "2.4.11"
+
+val uPickleVersion = "0.4.3"
+
+val scalatestVersion = "3.0.0"
+
 lazy val root = project
                 .enablePlugins(ScalaJSPlugin)
                 .in(file(".")).
@@ -15,19 +21,19 @@ lazy val common = crossProject.in(file("common")).
   settings(
     name := "formic-common",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "upickle" % "0.4.3",
-      "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
+      "com.lihaoyi" %%% "upickle" % uPickleVersion,
+      "org.scalatest" %%% "scalatest" % scalatestVersion % "test"
     )
   ).
   jvmSettings(
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %%% "akka-actor" % "2.4.11",
-      "com.typesafe.akka" %%% "akka-testkit" % "2.4.11"% "test"
+      "com.typesafe.akka" %%% "akka-actor" % akkaVersion,
+      "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test"
     )
   ).
   jsSettings(
     libraryDependencies ++= Seq(
-      "eu.unicredit" %%% "akkajsactor" % "0.2.4.11"
+      "eu.unicredit" %%% "akkajsactor" % ("0." + akkaVersion)
     )
   )
 
@@ -39,13 +45,13 @@ lazy val linear = crossProject.in(file("linear")).
   settings(
     name := "formic-linear",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "upickle" % "0.4.3",
-      "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
+      "com.lihaoyi" %%% "upickle" % uPickleVersion,
+      "org.scalatest" %%% "scalatest" % scalatestVersion % "test"
     )
   ).
   jvmSettings(
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %%% "akka-testkit" % "2.4.11" % "test"
+      "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test"
 
     )
   )
@@ -59,14 +65,19 @@ lazy val client = crossProject.in(file("client")).
   settings(
     name := "formic-client",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "upickle" % "0.4.3",
-      "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
+      "com.lihaoyi" %%% "upickle" % uPickleVersion,
+      "org.scalatest" %%% "scalatest" % scalatestVersion % "test"
     )
   ).
   jsSettings(
     libraryDependencies ++= Seq(
-      "eu.unicredit" %%% "akkajsactor" % "0.2.4.11",
+      "eu.unicredit" %%% "akkajsactor" % ("0." + akkaVersion),
       "org.scala-js" %%% "scalajs-dom" % "0.9.0"
+    )
+  ).
+  jvmSettings(
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test"
     )
   )
   .dependsOn(common)
@@ -79,12 +90,12 @@ lazy val server = (project in file("server")).
   settings(
     name := "formic-server",
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % "3.0.0" % "test",
-      "com.typesafe.akka" %%% "akka-actor" % "2.4.11",
-      "com.typesafe.akka" %%% "akka-http-core" % "2.4.11",
-      "com.typesafe.akka" %%% "akka-http-experimental" % "2.4.11",
-      "com.typesafe.akka" %%% "akka-testkit" % "2.4.11" % "test",
-      "com.typesafe.akka" %%% "akka-http-testkit" % "2.4.11" % "test"
+      "org.scalatest" %%% "scalatest" % scalatestVersion % "test",
+      "com.typesafe.akka" %%% "akka-actor" % akkaVersion,
+      "com.typesafe.akka" %%% "akka-http-core" % akkaVersion,
+      "com.typesafe.akka" %%% "akka-http-experimental" % akkaVersion,
+      "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test",
+      "com.typesafe.akka" %%% "akka-http-testkit" % akkaVersion % "test"
     )
   ).
   dependsOn(commonJVM, linearJVM)
