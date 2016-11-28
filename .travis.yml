@@ -6,4 +6,4 @@ jdk:
 install:
   - git clone https://github.com/unicredit/akka.js.git
   - cd "akka.js"
-  - sbt "++ 2.11.8" "publishLocal"
+  - sbt "++ 2.11.8" "akkaTestkitJS/publishLocal"
