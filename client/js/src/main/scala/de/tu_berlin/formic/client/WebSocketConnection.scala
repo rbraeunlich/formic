@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.client
 
-import akka.actor.ActorRef
+import akka.actor.{ActorRef, ActorSystem, Props}
 import de.tu_berlin.formic.common.message.FormicMessage
 import org.scalajs.dom._
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
@@ -9,10 +9,12 @@ import de.tu_berlin.formic.client.Dispatcher._
 /**
   * @author Ronny Bräunlich
   */
-class WebSocketConnection(dispatcher: ActorRef) extends Connection with OutgoingConnection{
+class WebSocketConnection(val newInstanceCallback: ActorRef, val instantiator: ActorRef)(implicit val actorSystem: ActorSystem) extends Connection with OutgoingConnection{
 
   //TODO read from config
   val url = "0.0.0.0:8080"
+
+  private var dispatcher: ActorRef = _
 
   val webSocketConnection = new WebSocket(url)
   webSocketConnection.onopen = {event: Event => onConnect()}
@@ -20,6 +22,7 @@ class WebSocketConnection(dispatcher: ActorRef) extends Connection with Outgoing
   webSocketConnection.onmessage = {event: MessageEvent => onMessage(read[FormicMessage](event.data.toString))}
 
   override def onConnect(): Unit = {
+    dispatcher = actorSystem.actorOf(Props(new Dispatcher(this, newInstanceCallback, instantiator)))
     dispatcher ! ConnectionEstablished
   }
 

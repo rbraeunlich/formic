@@ -80,10 +80,10 @@ lazy val client = crossProject.in(file("client")).
       "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test"
     )
   )
-  .dependsOn(common)
+  .dependsOn(common, linear)
 
-lazy val clientJS = client.js.dependsOn(commonJS)
-lazy val clientJVM = client.jvm.dependsOn(commonJVM)
+lazy val clientJS = client.js.dependsOn(commonJS, linearJS)
+lazy val clientJVM = client.jvm.dependsOn(commonJVM, linearJVM)
 
 lazy val server = (project in file("server")).
   settings(commonSettings: _*).

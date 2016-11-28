@@ -25,9 +25,11 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
 
   override def beforeAll(): Unit = {
     FormicJsonProtocol.registerProtocol(new TestFormicJsonDataTypeProtocol())
+    super.beforeAll()
   }
 
   override def afterAll(): Unit = {
+    super.afterAll()
     FormicJsonProtocol.remove(TestClasses.dataTypeName)
   }
 
