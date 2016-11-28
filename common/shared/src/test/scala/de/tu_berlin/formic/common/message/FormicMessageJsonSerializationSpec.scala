@@ -15,7 +15,7 @@ import upickle.default._
   */
 class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
 
-  case class TestOperation(id: OperationId, operationContext: OperationContext, clientId: ClientId) extends DataTypeOperation
+  case class TestOperation(id: OperationId, operationContext: OperationContext,var clientId: ClientId) extends DataTypeOperation
 
   val testProtocol = new FormicJsonDataTypeProtocol {
     override val name: DataTypeName = DataTypeName("test")

@@ -3,6 +3,7 @@ package de.tu_berlin.formic.common.datatype
 import akka.actor.Actor
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
+import de.tu_berlin.formic.common.datatype.AbstractDataType.GetHistory
 import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
 import upickle.default.Writer
 /**
@@ -41,6 +42,8 @@ abstract class AbstractDataType(val id: DataTypeInstanceId,val controlAlgorithm:
     case HistoricOperationRequest(clientId, _, since) => sender ! OperationMessage(clientId, id, dataTypeName, historyBuffer.findAllOperationsAfter(since))
 
     case UpdateRequest(clientId, _) => sender ! UpdateResponse(id, dataTypeName, getDataAsJson)
+
+    case GetHistory => sender ! new HistoryBuffer(historyBuffer.history)
   }
 
   /**
@@ -69,4 +72,8 @@ abstract class AbstractDataType(val id: DataTypeInstanceId,val controlAlgorithm:
   def getDataAsJson: String
 
   def causallyNotReadyOperations = privateCausallyNotReadyOperations
+}
+
+object AbstractDataType {
+  case object GetHistory
 }

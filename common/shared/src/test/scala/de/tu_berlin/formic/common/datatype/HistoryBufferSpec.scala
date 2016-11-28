@@ -8,7 +8,7 @@ import org.scalatest.{FlatSpec, Matchers}
   */
 class HistoryBufferSpec extends FlatSpec with Matchers {
 
-  case class TestDataTypeOperation(id: OperationId, operationContext: OperationContext, clientId: ClientId) extends DataTypeOperation
+  case class TestDataTypeOperation(id: OperationId, operationContext: OperationContext,var clientId: ClientId) extends DataTypeOperation
 
   "The History buffer" should "place the newest operations in front of the history" in {
     val buffer = new HistoryBuffer()

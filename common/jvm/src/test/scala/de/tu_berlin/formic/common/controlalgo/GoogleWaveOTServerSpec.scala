@@ -96,7 +96,7 @@ class GoogleWaveOTServerSpec extends FlatSpec with Matchers {
   }
 }
 
-case class GoogleWaveOTTestOperation(id: OperationId, operationContext: OperationContext, clientId: ClientId, transformations: Int = 0) extends DataTypeOperation
+case class GoogleWaveOTTestOperation(id: OperationId, operationContext: OperationContext,var clientId: ClientId, transformations: Int = 0) extends DataTypeOperation
 
 object GoogleWaveOTTestTransformer extends OperationTransformer {
 

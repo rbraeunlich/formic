@@ -8,5 +8,5 @@ import de.tu_berlin.formic.common.{ClientId, OperationId}
 trait DataTypeOperation {
   val id: OperationId
   val operationContext: OperationContext
-  val clientId: ClientId
+  var clientId: ClientId
 }

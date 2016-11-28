@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.client
 
 import akka.actor.Actor
-import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
 
 /**
   * @author Ronny Bräunlich

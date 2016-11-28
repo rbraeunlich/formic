@@ -28,7 +28,7 @@ class AbstractDataTypeSpecTestDataType(override val historyBuffer: HistoryBuffer
   override def getDataAsJson: String = data
 }
 
-case class AbstractDataTypeSpecTestOperation(id: OperationId, operationContext: OperationContext, clientId: ClientId) extends DataTypeOperation
+case class AbstractDataTypeSpecTestOperation(id: OperationId, operationContext: OperationContext,var clientId: ClientId) extends DataTypeOperation
 
 class AbstractDataTypeSpecTestControlAlgorithm(applied: Boolean = true) extends ControlAlgorithm {
 

@@ -39,7 +39,7 @@ class TestDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstan
   override val transformer: OperationTransformer = TestTransformer
 }
 
-case class TestOperation(id: OperationId, operationContext: OperationContext, clientId: ClientId) extends DataTypeOperation
+case class TestOperation(id: OperationId, operationContext: OperationContext,var clientId: ClientId) extends DataTypeOperation
 
 class TestFormicJsonDataTypeProtocol extends FormicJsonDataTypeProtocol {
 

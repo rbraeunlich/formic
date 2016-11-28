@@ -1,10 +1,9 @@
 package de.tu_berlin.formic.client.datatype
 
 import akka.actor.{Actor, ActorRef, Props}
-import de.tu_berlin.formic.client.FormicDataType
 import de.tu_berlin.formic.client.datatype.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.DataTypeInstanceId
-import de.tu_berlin.formic.common.datatype.{AbstractDataType, DataTypeName}
+import de.tu_berlin.formic.common.datatype.{AbstractDataType, DataTypeName, FormicDataType}
 import de.tu_berlin.formic.common.message.CreateRequest
 
 import scala.reflect.ClassTag

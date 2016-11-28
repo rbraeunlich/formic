@@ -7,9 +7,7 @@ import de.tu_berlin.formic.common.OperationId
   *
   * @author Ronny Bräunlich
   */
-class HistoryBuffer {
-
-  private var privateHistory: List[DataTypeOperation] = List.empty
+class HistoryBuffer(private var privateHistory: List[DataTypeOperation] = List.empty) {
 
   def history = privateHistory
 
