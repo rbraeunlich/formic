@@ -14,7 +14,7 @@ import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.linear.{LinearDataType, LinearInsertOperation}
-import org.scalatest.{Matchers, WordSpecLike}
+import org.scalatest.{Matchers, OneInstancePerTest, WordSpecLike}
 import upickle.default._
 
 import scala.concurrent.duration._
@@ -27,7 +27,9 @@ import scala.util.{Failure, Success}
   * @author Ronny Bräunlich
   */
 class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergrationTest"))
-  with WordSpecLike with Matchers {
+  with WordSpecLike
+  with Matchers
+  with OneInstancePerTest {
 
   "Formic server" must {
     "allow two users to work on a linear structure together" in {
