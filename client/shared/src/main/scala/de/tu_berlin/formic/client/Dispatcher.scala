@@ -2,9 +2,9 @@ package de.tu_berlin.formic.client
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import de.tu_berlin.formic.client.Dispatcher.{ConnectionEstablished, ErrorMessage}
+import de.tu_berlin.formic.client.datatype.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateResponse}
-import de.tu_berlin.formic.common.server.datatype.NewDataTypeCreated
 
 /**
   * @author Ronny Bräunlich
@@ -22,7 +22,8 @@ class Dispatcher(val outgoingConnection: OutgoingConnection, val newInstanceCall
     case rep: UpdateResponse =>
       instantiator ! rep
     case created: NewDataTypeCreated =>
-      instances += (created.dataTypeInstanceId -> created.ref)
+      instances += (created.dataTypeInstanceId -> created.dataTypeActor)
+      newInstanceCallback ! created
     case ConnectionEstablished => //TODO
     case ErrorMessage(errorText) => log.error("Error from WebSocket connection: " + errorText)
     //TODO more?

@@ -3,13 +3,11 @@ package de.tu_berlin.formic.client
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{EventFilter, ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
-import de.tu_berlin.formic.StopSystemAfterAll
 import de.tu_berlin.formic.client.Dispatcher.ErrorMessage
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.client.datatype.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.message.{CreateRequest, OperationMessage, UpdateResponse}
-import de.tu_berlin.formic.common.server.datatype.{NewDataTypeCreated, TestClasses, TestDataTypeFactory}
-import de.tu_berlin.formic.datatype.linear.LinearDataType
+import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import org.scalatest.{Matchers, OneInstancePerTest, WordSpecLike}
 
 /**
@@ -39,13 +37,15 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       val testFactory = TestActorRef(Props(new TestDataTypeFactory))
       val testFactories: Map[DataTypeName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
       val instantiator = TestActorRef(Props(new DataTypeInstantiator(testFactories)))
+      val newInstanceCallback = TestProbe()
 
-      val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(null, TestProbe().ref, instantiator)))
+      val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(null, newInstanceCallback.ref, instantiator)))
       val dataTypeInstanceId = DataTypeInstanceId()
 
       dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a")
 
       dispatcher.underlyingActor.instances should contain key dataTypeInstanceId
+      newInstanceCallback.expectMsgClass(classOf[NewDataTypeCreated])
     }
 
     "forward an operation message to the correct data type instance" in {
@@ -60,10 +60,10 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       //create two data types
       dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a")
       testFactory.expectMsg(CreateRequest(null, dataTypeInstanceId, TestClasses.dataTypeName))
-      testFactory.reply(NewDataTypeCreated(dataTypeInstanceId, testDataType.ref))
+      testFactory.reply(NewDataTypeCreated(dataTypeInstanceId, testDataType.ref, new TestFormicDataType))
       dispatcher ! UpdateResponse(dataTypeInstanceId2, TestClasses.dataTypeName, "a")
       testFactory.expectMsg(CreateRequest(null, dataTypeInstanceId2, TestClasses.dataTypeName))
-      testFactory.reply(NewDataTypeCreated(dataTypeInstanceId2, testDataType2.ref))
+      testFactory.reply(NewDataTypeCreated(dataTypeInstanceId2, testDataType2.ref, new TestFormicDataType))
 
       val opMessage = OperationMessage(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName, List.empty)
       dispatcher ! opMessage

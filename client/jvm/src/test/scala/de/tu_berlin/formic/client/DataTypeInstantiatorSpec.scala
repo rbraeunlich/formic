@@ -3,11 +3,10 @@ package de.tu_berlin.formic.client
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{EventFilter, ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.ConfigFactory
-import de.tu_berlin.formic.StopSystemAfterAll
+import de.tu_berlin.formic.client.datatype.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.message.UpdateResponse
-import de.tu_berlin.formic.common.server.datatype._
 import org.scalatest.{Matchers, WordSpecLike}
 
 /**
@@ -33,7 +32,7 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
 
       val msg = expectMsgClass(classOf[NewDataTypeCreated])
       msg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      msg.ref shouldNot be(null)
+      msg.dataTypeActor shouldNot be(null)
     }
 
     "throw an exception when receiving an UpdateResponse with unknown data type name" in {
