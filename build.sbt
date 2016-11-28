@@ -1,8 +1,10 @@
-val akkaVersion = "2.4.11"
+val akkaVersion = "2.4.14"
 
 val uPickleVersion = "0.4.3"
 
 val scalatestVersion = "3.0.0"
+
+val akkaHttpVersion = "10.0.0"
 
 lazy val root = project
                 .enablePlugins(ScalaJSPlugin)
@@ -72,6 +74,7 @@ lazy val client = crossProject.in(file("client")).
   jsSettings(
     libraryDependencies ++= Seq(
       "eu.unicredit" %%% "akkajsactor" % ("0." + akkaVersion),
+      "eu.unicredit" %%% "akkatestkit" % ("0." + akkaVersion),
       "org.scala-js" %%% "scalajs-dom" % "0.9.0"
     )
   ).
@@ -92,10 +95,9 @@ lazy val server = (project in file("server")).
     libraryDependencies ++= Seq(
       "org.scalatest" %%% "scalatest" % scalatestVersion % "test",
       "com.typesafe.akka" %%% "akka-actor" % akkaVersion,
-      "com.typesafe.akka" %%% "akka-http-core" % akkaVersion,
-      "com.typesafe.akka" %%% "akka-http-experimental" % akkaVersion,
       "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test",
-      "com.typesafe.akka" %%% "akka-http-testkit" % akkaVersion % "test"
+      "com.typesafe.akka" %%% "akka-http" % akkaHttpVersion,
+      "com.typesafe.akka" %%% "akka-http-testkit" % akkaHttpVersion % "test"
     )
   ).
   dependsOn(commonJVM, linearJVM)

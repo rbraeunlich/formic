@@ -3,3 +3,6 @@ scala:
   - 2.11.8
 jdk:
   - oraclejdk8
+install:
+  - git clone https://github.com/unicredit/akka.js.git
+  - sbt "++ 2.11.8; publishLocal"
