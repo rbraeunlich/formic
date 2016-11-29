@@ -16,7 +16,9 @@ object NetworkRoute {
     authenticateBasic[String]("FormicRealm", (creds) => UniqueUsernameAuthenticator.authenticate(creds)) {
       identifier =>
         path("formic") {
-          handleWebSocketMessages(newUserMethod(identifier))
+          get {
+            handleWebSocketMessages(newUserMethod(identifier))
+          }
         }
     }
   }
