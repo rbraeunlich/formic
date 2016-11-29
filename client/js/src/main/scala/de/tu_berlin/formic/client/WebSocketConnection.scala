@@ -1,41 +1,43 @@
 package de.tu_berlin.formic.client
 
-import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props, _}
 import de.tu_berlin.formic.client.Dispatcher._
 import de.tu_berlin.formic.client.WebSocketConnection.{OnConnect, OnError, OnMessage}
 import de.tu_berlin.formic.common.ClientId
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message._
-import org.scalajs.dom._
+import org.scalajs.dom
 import upickle.default._
+import org.scalajs.dom._
 
 /**
   * @author Ronny Bräunlich
   */
-class WebSocketConnection(val newInstanceCallback: ActorRef, val instantiator: ActorRef, val clientId: ClientId)(implicit val actorSystem: ActorSystem) extends Actor
-  with Connection
-  with OutgoingConnection
-  with ActorLogging {
+class WebSocketConnection(val newInstanceCallback: ActorRef,
+                          val instantiator: ActorRef,
+                          val clientId: ClientId,
+                          val webSocketConnectionFactory: WebSocketFactory)
+  extends Actor
+    with Connection
+    with OutgoingConnection
+    with ActorLogging {
 
   //TODO read from config
   val url = "ws://0.0.0.0:8080/formic"
 
   var dispatcher: ActorRef = _
-
-  var webSocketConnection: WebSocket = _
-
-  /*
-  webSocketConnection = new org.scalajs.dom.WebSocket(url)
+  var webSocketConnection: dom.WebSocket = webSocketConnectionFactory.createConnection(url)
   webSocketConnection.onopen = { event: Event => self ! OnConnect }
-  webSocketConnection.onerror = { event: ErrorEvent => self ! OnError(event.message) }
-  webSocketConnection.onmessage = { event: MessageEvent => self ! OnMessage(event.data.toString) }
-  */
 
   def receive = {
     case OnConnect =>
       log.debug(s"Received OnConnect message")
-      dispatcher = actorSystem.actorOf(Props(new Dispatcher(self, newInstanceCallback, instantiator)), "dispatcher")
-    case OnError(errorMessage) => dispatcher ! ErrorMessage(errorMessage)
+      dispatcher = context.actorOf(Props(new Dispatcher(self, newInstanceCallback, instantiator)), "dispatcher")
+      webSocketConnection.onerror = { event: ErrorEvent => self ! OnError(event.message) }
+      webSocketConnection.onmessage = { event: MessageEvent => self ! OnMessage(event.data.toString) }
+    case OnError(errorMessage) =>
+      log.debug(s"Received OnError message")
+      dispatcher ! ErrorMessage(errorMessage)
     case OnMessage(msg) => dispatcher ! read[FormicMessage](msg)
     //TODO Buffer messages when being offline
     //gotta add the client id

@@ -5,7 +5,6 @@ import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype.AbstractDataType.GetHistory
 import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
-import upickle.default.Writer
 /**
   * @author Ronny Bräunlich
   */

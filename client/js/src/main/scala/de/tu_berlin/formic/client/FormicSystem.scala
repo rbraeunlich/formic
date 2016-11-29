@@ -38,7 +38,7 @@ class FormicSystem {
     implicit val system = ActorSystem("FormicSystem")
     val instantiator = system.actorOf(Props(new DataTypeInstantiator(factories)))
     val wrappedCallback = system.actorOf(Props(new NewInstanceCallbackActorWrapper(callback)))
-    connection = system.actorOf(Props(new WebSocketConnection(wrappedCallback, instantiator, id)))
+    connection = system.actorOf(Props(new WebSocketConnection(wrappedCallback, instantiator, id, WebSocketFactory)))
   }
 
   @JSExport
@@ -64,5 +64,6 @@ class FormicSystem {
   }
 
   def initFactories()(implicit actorSystem: ActorSystem): Unit = {
+    //TODO JSON serializer for operations
   }
 }
