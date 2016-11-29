@@ -12,7 +12,7 @@ import scala.reflect.ClassTag
   * @author Ronny Bräunlich
   */
 //Why the ClassTag? See http://stackoverflow.com/questions/18692265/no-classtag-available-for-t-not-for-array
-abstract class AbstractClientDataTypeFactory[T <: AbstractDataType : ClassTag, S <: FormicDataType : ClassTag] extends Actor {
+abstract class AbstractClientDataTypeFactory[T <: AbstractDataType : ClassTag, S <: FormicDataType : ClassTag](val initiator: DataTypeInitiator) extends Actor {
 
   override def receive: Receive = {
     case CreateRequest(_, dataTypeInstanceId, _) =>

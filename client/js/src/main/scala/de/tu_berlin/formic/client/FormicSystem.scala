@@ -3,9 +3,13 @@ package de.tu_berlin.formic.client
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.ask
 import de.tu_berlin.formic.client.datatype.AbstractClientDataTypeFactory.NewDataTypeCreated
+import de.tu_berlin.formic.client.datatype.DataTypeInitiator
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
+import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message.{CreateRequest, UpdateRequest}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataTypeProtocol
+import de.tu_berlin.formic.datatype.linear.client.FormicListFactory
 
 import scala.concurrent.duration._
 import scala.scalajs.js.annotation.JSExport
@@ -14,7 +18,7 @@ import scala.scalajs.js.annotation.JSExport
   * @author Ronny Bräunlich
   */
 @JSExport
-class FormicSystem {
+class FormicSystem extends DataTypeInitiator{
 
   //TODO Read from Properties as default
   @JSExport
@@ -36,6 +40,7 @@ class FormicSystem {
   @JSExport
   def init(callback: NewInstanceCallback, username: ClientId = ClientId()) = {
     implicit val system = ActorSystem("FormicSystem")
+    initFactories()
     val instantiator = system.actorOf(Props(new DataTypeInstantiator(factories)))
     val wrappedCallback = system.actorOf(Props(new NewInstanceCallbackActorWrapper(callback)))
     connection = system.actorOf(Props(new WebSocketConnection(wrappedCallback, instantiator, id, WebSocketFactory)))
@@ -46,7 +51,7 @@ class FormicSystem {
     connection ! UpdateRequest(id, dataTypeInstanceId)
   }
 
-  def initDataType(dataType: FormicDataType): Unit = {
+  override def initDataType(dataType: FormicDataType): Unit = {
     val name = dataType.dataTypeName
     factories.find(t => t._1 == name) match {
       case Some((k, v)) =>
@@ -64,6 +69,8 @@ class FormicSystem {
   }
 
   def initFactories()(implicit actorSystem: ActorSystem): Unit = {
-    //TODO JSON serializer for operations
+    val formicListFactoryActor = actorSystem.actorOf(Props(new FormicListFactory(this)), "linearFactory")
+    FormicJsonProtocol.registerProtocol(LinearFormicJsonDataTypeProtocol)
+    factories += (FormicListFactory.name -> formicListFactoryActor)
   }
 }

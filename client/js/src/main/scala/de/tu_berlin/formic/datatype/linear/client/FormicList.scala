@@ -3,6 +3,7 @@ package de.tu_berlin.formic.datatype.linear.client
 import akka.pattern._
 import akka.util.Timeout
 import de.tu_berlin.formic.client.FormicSystem
+import de.tu_berlin.formic.client.datatype.DataTypeInitiator
 import de.tu_berlin.formic.common.datatype.AbstractDataType.GetHistory
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType, HistoryBuffer, OperationContext}
 import de.tu_berlin.formic.common.message.{CreateRequest, OperationMessage, UpdateRequest, UpdateResponse}
@@ -20,7 +21,7 @@ import scala.concurrent.Future
   * @author Ronny Bräunlich
   */
 @JSExport
-class FormicList[T](var callback: () => Unit, formicSystem: FormicSystem)(implicit val writer: Writer[T], val reader: Reader[T]) extends FormicDataType {
+class FormicList[T](var callback: () => Unit, initiator: DataTypeInitiator)(implicit val writer: Writer[T], val reader: Reader[T]) extends FormicDataType {
 
   val dataTypeInstanceId = DataTypeInstanceId()
 
@@ -28,7 +29,7 @@ class FormicList[T](var callback: () => Unit, formicSystem: FormicSystem)(implic
 
   implicit val timeout: Timeout = 1.seconds
 
-  formicSystem.initDataType(this)
+  initiator.initDataType(this)
   connection ! CreateRequest(null, dataTypeInstanceId, dataTypeName)
 
   @JSExport

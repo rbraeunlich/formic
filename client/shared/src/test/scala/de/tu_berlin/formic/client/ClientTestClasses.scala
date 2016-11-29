@@ -13,7 +13,7 @@ import upickle.Js
   * @author Ronny Bräunlich
   */
 
-class TestDataTypeFactory extends AbstractClientDataTypeFactory[TestDataType, TestFormicDataType] {
+class TestDataTypeFactory extends AbstractClientDataTypeFactory[TestDataType, TestFormicDataType](null) {
 
   override val name: DataTypeName = TestClasses.dataTypeName
 
