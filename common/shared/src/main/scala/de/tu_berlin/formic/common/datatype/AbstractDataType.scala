@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.datatype
 
-import akka.actor.Actor
+import akka.actor.{Actor, ActorLogging}
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype.AbstractDataType.GetHistory
@@ -8,7 +8,7 @@ import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMe
 /**
   * @author Ronny Bräunlich
   */
-abstract class AbstractDataType(val id: DataTypeInstanceId,val controlAlgorithm: ControlAlgorithm) extends Actor {
+abstract class AbstractDataType(val id: DataTypeInstanceId,val controlAlgorithm: ControlAlgorithm) extends Actor with ActorLogging {
 
   val historyBuffer: HistoryBuffer = new HistoryBuffer()
 
@@ -24,6 +24,7 @@ abstract class AbstractDataType(val id: DataTypeInstanceId,val controlAlgorithm:
 
   def receive = {
     case opMsg:OperationMessage =>
+      log.debug(s"DataType $id received OperationMessage: $opMsg")
       //if a client sent several operations, the oldest one will be at the end, therefore we reverse the list here
       opMsg.operations.
         reverse.
@@ -38,9 +39,13 @@ abstract class AbstractDataType(val id: DataTypeInstanceId,val controlAlgorithm:
       context.system.eventStream.publish(opMsg)
       applyOperationsThatBecameCausallyReady()
 
-    case HistoricOperationRequest(clientId, _, since) => sender ! OperationMessage(clientId, id, dataTypeName, historyBuffer.findAllOperationsAfter(since))
+    case hist:HistoricOperationRequest =>
+      log.debug(s"DataType $id received HistoricOperationRequest: $hist")
+      sender ! OperationMessage(hist.clientId, id, dataTypeName, historyBuffer.findAllOperationsAfter(hist.sinceId))
 
-    case UpdateRequest(clientId, _) => sender ! UpdateResponse(id, dataTypeName, getDataAsJson)
+    case upd:UpdateRequest =>
+      log.debug(s"DataType $id received UpdateRequest: $upd")
+      sender ! UpdateResponse(id, dataTypeName, getDataAsJson)
 
     case GetHistory => sender ! new HistoryBuffer(historyBuffer.history)
   }
