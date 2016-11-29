@@ -1,17 +1,21 @@
 package de.tu_berlin.formic.client
 
 import org.scalajs.dom.raw.WebSocket
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 
 /**
   * @author Ronny Bräunlich
   */
-class WebSocketFactorySpec extends FlatSpec with Matchers{
+class WebSocketFactorySpec extends FlatSpec with Matchers with BeforeAndAfterAll {
 
-  "WebSocketFactory" should "open a WebSocket connection" in {
-    val connection = WebSocketFactory.createConnection("ws://echo.websocket.org")
+  var connection: WebSocket = _
 
-    connection.readyState should equal(WebSocket.OPEN)
+  override def afterAll(): Unit = {
+   if(connection != null) connection.close()
   }
 
+  "WebSocketFactory" should "open a WebSocket connection" in {
+    connection = WebSocketFactory.createConnection("ws://test:1234@localhost:8080/formic")
+    connection.send("data")
+  }
 }
