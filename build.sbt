@@ -82,7 +82,7 @@ lazy val client = crossProject.in(file("client")).
   jsSettings(
     libraryDependencies ++= Seq(
       "eu.unicredit" %%% "akkajsactor" % ("0." + akkaVersion),
-      "eu.unicredit" %%% "akkatestkit" % ("0." + akkaVersion),
+      "eu.unicredit" %%% "akkatestkit" % ("0." + akkaVersion + "-SNAPSHOT"),
       "org.scala-js" %%% "scalajs-dom" % "0.9.0"
     ),
     jsDependencies += RuntimeDOM
