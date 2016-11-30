@@ -40,6 +40,7 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
           FormicServer.main(Array.empty)
         }
       }
+      server.setDaemon(true)
       server.start()
       Thread.sleep(3000)
 
@@ -66,6 +67,9 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
           read[FormicMessage](text) should equal(UpdateResponse(dataTypeInstanceId, LinearDataType.dataTypeName, "[\"3\",\"2\",\"1\",\"c\",\"b\",\"a\"]"))
         case Failure(ex) => fail(ex)
       }
+
+      user1Outgoing.complete()
+      user2Outgoing.complete()
 
       server.stop()
     }
