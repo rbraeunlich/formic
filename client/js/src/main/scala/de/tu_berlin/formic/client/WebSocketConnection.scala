@@ -27,14 +27,14 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
 
   var dispatcher: ActorRef = _
   var webSocketConnection: dom.WebSocket = webSocketConnectionFactory.createConnection(url)
-  webSocketConnection.onopen = { event: Event => self ! OnConnect }
+  //webSocketConnection.onopen = { event: Event => self ! OnConnect }
 
   def receive = {
     case OnConnect =>
       log.debug(s"Received OnConnect message")
       dispatcher = context.actorOf(Props(new Dispatcher(self, newInstanceCallback, instantiator)), "dispatcher")
-      webSocketConnection.onerror = { event: ErrorEvent => self ! OnError(event.message) }
-      webSocketConnection.onmessage = { event: MessageEvent => self ! OnMessage(event.data.toString) }
+      //webSocketConnection.onerror = { event: ErrorEvent => self ! OnError(event.message) }
+      //webSocketConnection.onmessage = { event: MessageEvent => self ! OnMessage(event.data.toString) }
     case OnError(errorMessage) =>
       log.debug(s"Received OnError message")
       dispatcher ! ErrorMessage(errorMessage)
