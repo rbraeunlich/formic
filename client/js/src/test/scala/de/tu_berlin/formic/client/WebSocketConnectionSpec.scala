@@ -1,7 +1,8 @@
 package de.tu_berlin.formic.client
 
 import akka.actor.{ActorSystem, Props}
-import akka.testkit.{TestActorRef, TestKit, TestProbe}
+import akka.testkit.{EventFilter, TestActorRef, TestKit, TestProbe}
+import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.Dispatcher.ErrorMessage
 import de.tu_berlin.formic.client.WebSocketConnection.{OnConnect, OnError, OnMessage}
 import de.tu_berlin.formic.common.datatype.{DataTypeName, OperationContext}
@@ -16,12 +17,16 @@ import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import scala.scalajs.js
 import scala.scalajs.js.UndefOr
 import scala.scalajs.js.annotation.JSExportAll
+import scala.concurrent.duration._
 
 /**
   * @author Ronny Bräunlich
   */
 @Ignore
-class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSpec"))
+class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSpec", ConfigFactory.parseString(
+  """
+  akka.loggers = ["akka.testkit.TestEventListener"]
+  """)))
   with WordSpecLike
   with BeforeAndAfterAll
   with Matchers {
@@ -36,7 +41,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
   }
 
   "WebSocketConnection" must {
-    "create a dispatcher after connecting" in {
+    "create a dispatcher after connecting" ignore {
       val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(),new TestWebSocketFactory)))
 
       connection ! OnConnect
@@ -44,17 +49,16 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       connection.underlyingActor.dispatcher should not be null
     }
 
-    "forward error messages to the dispatcher" in {
-      val dispatcher = TestProbe()
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, dispatcher.ref, ClientId(),new TestWebSocketFactory)))
+    "forward error messages to the dispatcher" ignore {
+      val connection = system.actorOf(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(),new TestWebSocketFactory)))
       connection ! OnConnect
 
-      connection ! OnError("test")
-
-      dispatcher.expectMsg(ErrorMessage("test"))
+      EventFilter.debug(message = "Received OnError message", occurrences = 1) intercept {
+        connection ! OnError("test")
+      }
     }
 
-    "forward FormicMessages from the WebSocketConnection to the dispatcher" in {
+    "forward FormicMessages from the WebSocketConnection to the dispatcher" ignore {
       val createResponse = CreateResponse(DataTypeInstanceId())
       val updateResponse = UpdateResponse(DataTypeInstanceId(), TestClasses.dataTypeName, "")
       val operationMessage = OperationMessage(ClientId(), DataTypeInstanceId(), TestClasses.dataTypeName, List.empty)
@@ -72,7 +76,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       dispatcher.expectMsg(operationMessage)
     }
 
-    "add the ClientId to CreateRequests and send them over the WebSocket" in {
+    "add the ClientId to CreateRequests and send them over the WebSocket" ignore {
       val request = CreateRequest(null, DataTypeInstanceId(), TestClasses.dataTypeName)
       val factory = new TestWebSocketFactory
       val clientId = ClientId()
@@ -88,7 +92,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       }
     }
 
-    "add the ClientId to HistoricOperationRequests and send them over the WebSocket" in {
+    "add the ClientId to HistoricOperationRequests and send them over the WebSocket" ignore {
       val request = HistoricOperationRequest(null, DataTypeInstanceId(), OperationId())
       val factory = new TestWebSocketFactory
       val clientId = ClientId()
@@ -104,7 +108,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       }
     }
 
-    "add the ClientId to UpdateRequests and send them over the WebSocket" in {
+    "add the ClientId to UpdateRequests and send them over the WebSocket" ignore {
       val request = UpdateRequest(null, DataTypeInstanceId())
       val factory = new TestWebSocketFactory
       val clientId = ClientId()
@@ -120,7 +124,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       }
     }
 
-    "add the ClientId to OperationMessages and send them over the WebSocket" in {
+    "add the ClientId to OperationMessages and send them over the WebSocket" ignore {
       val message = OperationMessage(null, DataTypeInstanceId(), TestClasses.dataTypeName, List(TestOperation(OperationId(), OperationContext(List.empty), null)))
       val factory = new TestWebSocketFactory
       val clientId = ClientId()
