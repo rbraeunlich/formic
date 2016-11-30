@@ -1,11 +1,10 @@
 package de.tu_berlin.formic.client
 
-import de.tu_berlin.formic.client.WebSocketConnection.{OnError, OnMessage}
+import scala.scalajs.js.timers._
 import org.scalajs.dom._
 import org.scalajs.dom.raw.WebSocket
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 
-import scala.scalajs.js.timers._
 /**
   * @author Ronny Bräunlich
   */
