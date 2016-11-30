@@ -21,7 +21,7 @@ class GoogleWaveOTServerSpec extends FlatSpec with Matchers {
     canBeApplied should be(true)
   }
 
-  "Google Wave OT" should "state that an operation is ready when the operation has an empty operation context" in {
+  it should "state that an operation is ready when the operation has an empty operation context" in {
     val controlAlgo = new GoogleWaveOTServer()
     val operation = GoogleWaveOTTestOperation(OperationId(), OperationContext(List.empty), ClientId(), 0)
     val otherOperation = GoogleWaveOTTestOperation(OperationId(), OperationContext(List.empty), ClientId())
