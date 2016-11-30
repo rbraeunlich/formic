@@ -51,9 +51,6 @@ class TestWebSocketFactory extends WebSocketFactory {
   JS function, that returns the mock. Because the function mocks the WebSocket constructor we cast it to WebSocket, too.
    */
   val mock = new WebSocketMock
-  val mockedConstructor: js.Function = { (url: String, options: js.UndefOr[js.Dynamic]) =>
-    mock.asInstanceOf[WebSocket]
-  }
 
   override def createConnection(url: String): WebSocket = {
     mock.asInstanceOf[WebSocket]
