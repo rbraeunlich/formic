@@ -14,7 +14,7 @@ import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.linear.{LinearDataType, LinearInsertOperation}
-import org.scalatest.{Matchers, OneInstancePerTest, WordSpecLike}
+import org.scalatest.{BeforeAndAfterAll, Matchers, OneInstancePerTest, WordSpecLike}
 import upickle.default._
 
 import scala.concurrent.duration._
@@ -29,7 +29,13 @@ import scala.util.{Failure, Success}
 class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergrationTest"))
   with WordSpecLike
   with Matchers
-  with OneInstancePerTest {
+  with OneInstancePerTest
+  with BeforeAndAfterAll{
+
+  override def afterAll(): Unit = {
+    super.afterAll()
+    system.terminate()
+  }
 
   "Formic server" must {
     "allow two users to work on a linear structure together" in {
@@ -38,6 +44,11 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
       val server = new Thread {
         override def run() {
           FormicServer.main(Array.empty)
+          println("Main returned")
+        }
+
+        def terminate(): Unit ={
+          FormicServer.terminate()
         }
       }
       server.setDaemon(true)
@@ -71,7 +82,7 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
       user1Outgoing.complete()
       user2Outgoing.complete()
 
-      server.stop()
+      server.terminate()
     }
   }
 
