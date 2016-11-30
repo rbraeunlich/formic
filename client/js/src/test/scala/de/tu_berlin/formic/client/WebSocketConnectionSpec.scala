@@ -6,7 +6,7 @@ import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.WebSocketConnection.OnConnect
 import de.tu_berlin.formic.common.ClientId
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
-import org.scalajs.dom.{CloseEvent, MessageEvent, WebSocket}
+import org.scalajs.dom.{CloseEvent, Event, MessageEvent, WebSocket}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 import scala.scalajs.js
@@ -56,7 +56,7 @@ class TestWebSocketFactory extends WebSocketFactory {
   }
 
   override def createConnection(url: String): WebSocket = {
-    mockedConstructor.asInstanceOf[WebSocket]
+    mock.asInstanceOf[WebSocket]
   }
 }
 
@@ -73,5 +73,5 @@ class WebSocketMock {
 
   def onclose(callback: js.Function1[CloseEvent, Unit]): Unit = {}
 
-  def onopen(callback: js.Function1[js.Dynamic, Unit]): Unit = {}
+  def onopen(callback: js.Function1[Event, Unit]): Unit = {}
 }
