@@ -44,7 +44,6 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
       val server = new Thread {
         override def run() {
           FormicServer.main(Array.empty)
-          println("Main returned")
         }
 
         def terminate(): Unit ={
@@ -191,7 +190,7 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
       }
     }
 
-    val result = Await.ready(connected, 3 seconds)
+    val result = Await.ready(connected, 6 seconds)
 
     result.value.get match {
       case Success(_) => sinkAndSource
