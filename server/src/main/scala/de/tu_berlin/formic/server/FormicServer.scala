@@ -31,6 +31,8 @@ object FormicServer {
 
   var factories: Map[DataTypeName, ActorRef] = Map.empty
 
+  implicit val system = ActorSystem("formic-server")
+
   def initFactories()(implicit actorSystem: ActorSystem) = {
     val linearFactoryActor = actorSystem.actorOf(Props[LinearDataTypeFactory], "linearFactory")
     FormicJsonProtocol.registerProtocol(LinearFormicJsonDataTypeProtocol)
@@ -42,7 +44,6 @@ object FormicServer {
       case _: IllegalArgumentException => Supervision.Resume
       case _ => Supervision.Stop
     }
-    implicit val system = ActorSystem("formic-server")
     implicit val materializer = ActorMaterializer(ActorMaterializerSettings(system).withSupervisionStrategy(decider))
     implicit val ec = system.dispatcher
 
@@ -102,4 +103,7 @@ object FormicServer {
     Flow.fromSinkAndSource(incomingMessages, outgoingMessages)
   }
 
+  def terminate(): Unit = {
+    system.terminate()
+  }
 }
