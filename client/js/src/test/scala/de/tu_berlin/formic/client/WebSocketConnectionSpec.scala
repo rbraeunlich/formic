@@ -167,9 +167,8 @@ class WebSocketMock {
   var sent:List[js.Any] = List.empty
   val isInitialized = true
   def send[T](data: js.Any) ={
-    println("bananarama")
     sent = sent :+ data}
-  def onMessage(callback: js.Function1[MessageEvent, Unit], options: UndefOr[js.Dynamic] = js.undefined): Unit = {}
+  def onMessage(callback: js.Function1[MessageEvent, Unit]): Unit = {}
   def onClose(callback: js.Function1[CloseEvent, Unit]): Unit = {}
   def onOpen(callback: js.Function1[js.Dynamic, Unit]): Unit = {}
 }
