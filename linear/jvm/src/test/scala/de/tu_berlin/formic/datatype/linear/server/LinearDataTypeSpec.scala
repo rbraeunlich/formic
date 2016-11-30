@@ -20,6 +20,10 @@ class LinearDataTypeSpec extends TestKit(ActorSystem("LinearDataTypeSpec"))
   with Matchers
   with BeforeAndAfterAll {
 
+  override def afterAll(): Unit = {
+    system.terminate()
+  }
+
   "LinearDataType" must {
 
     "insert data" in {

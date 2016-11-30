@@ -20,8 +20,7 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
   with WordSpecLike
   with ImplicitSender
   with StopSystemAfterAll
-  with Matchers
-  with OneInstancePerTest{
+  with Matchers {
 
   "Dispatcher" must {
     "log errors from the WebSocket connection" in {
