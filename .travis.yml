@@ -4,7 +4,7 @@ scala:
 jdk:
   - oraclejdk8
 node_js:
-  - 6.9.1
+  - 6.1
 install:
   - git clone https://github.com/unicredit/akka.js.git
   - cd "akka.js"
