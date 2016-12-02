@@ -17,7 +17,7 @@ class TestDataTypeFactory extends AbstractClientDataTypeFactory[TestDataType, Te
 
   override val name: DataTypeName = TestClasses.dataTypeName
 
-  override def createDataType(dataTypeInstanceId: DataTypeInstanceId): TestDataType = new TestDataType(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm)
+  override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef): TestDataType = new TestDataType(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm)
 
   override def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef): TestFormicDataType = new TestFormicDataType
 }

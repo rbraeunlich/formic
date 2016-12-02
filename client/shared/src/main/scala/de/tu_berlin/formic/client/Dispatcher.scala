@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.client
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import de.tu_berlin.formic.client.Dispatcher.ErrorMessage
+import de.tu_berlin.formic.client.Dispatcher.{ErrorMessage, WrappedUpdateResponse}
 import de.tu_berlin.formic.client.datatype.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.message.{CreateResponse, OperationMessage, UpdateResponse}
@@ -20,7 +20,7 @@ class Dispatcher(val outgoingConnection: ActorRef, val newInstanceCallback: Acto
         case None => log.warning(s"Did not find data type instance with id ${op.dataTypeInstanceId}, dropping message $op")
       }
     case rep: UpdateResponse =>
-      instantiator ! rep
+      instantiator ! WrappedUpdateResponse(outgoingConnection, rep)
     case created: NewDataTypeCreated =>
       instances += (created.dataTypeInstanceId -> created.dataTypeActor)
       newInstanceCallback ! created
@@ -35,6 +35,6 @@ object Dispatcher {
 
   case class ErrorMessage(errorText: String)
 
-  case class ConnectToOutgoing(outgoingConnection: ActorRef)
+  case class WrappedUpdateResponse(outgoingConnection: ActorRef, updateResponse: UpdateResponse)
 
 }

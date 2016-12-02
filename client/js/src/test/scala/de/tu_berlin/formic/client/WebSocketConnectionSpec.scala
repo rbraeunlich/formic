@@ -1,8 +1,9 @@
 package de.tu_berlin.formic.client
 
 import akka.actor.{ActorSystem, Props}
-import akka.testkit.{EventFilter, TestActorRef, TestKit, TestKitExtension, TestProbe}
+import akka.testkit.{EventFilter, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
+import de.tu_berlin.formic.client.Dispatcher.WrappedUpdateResponse
 import de.tu_berlin.formic.client.WebSocketConnection.{OnConnect, OnError, OnMessage}
 import de.tu_berlin.formic.client.datatype.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.datatype.OperationContext
@@ -99,7 +100,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
         connection ! OnConnect
 
         connection ! OnMessage(write(updateResponse))
-        instantiator.expectMsg(timeout, updateResponse)
+        instantiator.expectMsg(timeout, WrappedUpdateResponse(connection, updateResponse))
       }
     }
 

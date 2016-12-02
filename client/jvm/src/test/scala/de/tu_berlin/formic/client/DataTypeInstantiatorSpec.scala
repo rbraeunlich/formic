@@ -1,8 +1,9 @@
 package de.tu_berlin.formic.client
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import akka.testkit.{EventFilter, ImplicitSender, TestActorRef, TestKit}
+import akka.testkit.{EventFilter, ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
+import de.tu_berlin.formic.client.Dispatcher.WrappedUpdateResponse
 import de.tu_berlin.formic.client.datatype.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.datatype.DataTypeName
@@ -26,9 +27,11 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
       val testFactory = TestActorRef(Props(new TestDataTypeFactory))
       val testFactories: Map[DataTypeName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
       val instantiator = system.actorOf(Props(new DataTypeInstantiator(testFactories)))
+      val outgoingConnection = TestProbe()
       val dataTypeInstanceId = DataTypeInstanceId()
+      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "")
 
-      instantiator ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "")
+      instantiator ! WrappedUpdateResponse(outgoingConnection.ref, updateResponse)
 
       val msg = expectMsgClass(classOf[NewDataTypeCreated])
       msg.dataTypeInstanceId should equal(dataTypeInstanceId)
@@ -38,9 +41,11 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
     "throw an exception when receiving an UpdateResponse with unknown data type name" in {
       val instantiator: TestActorRef[DataTypeInstantiator] = TestActorRef(Props(new DataTypeInstantiator(Map.empty)))
       val dataTypeInstanceId = DataTypeInstanceId()
+      val outgoingConnection = TestProbe()
+      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "")
 
       EventFilter[IllegalArgumentException](occurrences = 1) intercept {
-        instantiator ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "")
+        instantiator ! WrappedUpdateResponse(outgoingConnection.ref, updateResponse)
       }
     }
   }

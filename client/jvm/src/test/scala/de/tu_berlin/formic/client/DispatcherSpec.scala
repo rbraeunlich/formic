@@ -3,6 +3,7 @@ package de.tu_berlin.formic.client
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{EventFilter, ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
+import de.tu_berlin.formic.client.DataTypeInstantiator.WrappedCreateRequest
 import de.tu_berlin.formic.client.Dispatcher.ErrorMessage
 import de.tu_berlin.formic.client.datatype.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.datatype.DataTypeName
@@ -58,10 +59,10 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       val dataTypeInstanceId2 = DataTypeInstanceId()
       //create two data types
       dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a")
-      testFactory.expectMsg(CreateRequest(null, dataTypeInstanceId, TestClasses.dataTypeName))
+      testFactory.expectMsg(WrappedCreateRequest(null, CreateRequest(null, dataTypeInstanceId, TestClasses.dataTypeName)))
       testFactory.reply(NewDataTypeCreated(dataTypeInstanceId, testDataType.ref, new TestFormicDataType))
       dispatcher ! UpdateResponse(dataTypeInstanceId2, TestClasses.dataTypeName, "a")
-      testFactory.expectMsg(CreateRequest(null, dataTypeInstanceId2, TestClasses.dataTypeName))
+      testFactory.expectMsg(WrappedCreateRequest(null, CreateRequest(null, dataTypeInstanceId2, TestClasses.dataTypeName)))
       testFactory.reply(NewDataTypeCreated(dataTypeInstanceId2, testDataType2.ref, new TestFormicDataType))
 
       val opMessage = OperationMessage(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName, List.empty)
