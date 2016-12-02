@@ -3,9 +3,9 @@ scala:
   - 2.11.8
 jdk:
   - oraclejdk8
-node_js:
-  - 6.1
+sudo: required
 install:
+  - nvm install 6.9.1
   - git clone https://github.com/unicredit/akka.js.git
   - cd "akka.js"
   - sbt "++ 2.11.8" "set test in Test := {}" "akkaTestkitJS/publishLocal"
