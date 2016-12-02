@@ -27,14 +27,14 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
 
   var dispatcher: ActorRef = _
   var webSocketConnection: dom.WebSocket = webSocketConnectionFactory.createConnection(url)
-  //webSocketConnection.onopen = { event: Event => self ! OnConnect }
+  webSocketConnection.onopen = { event: Event => self ! OnConnect }
 
   def receive = {
     case OnConnect =>
       log.debug(s"Received OnConnect message")
       dispatcher = context.actorOf(Props(new Dispatcher(self, newInstanceCallback, instantiator)), "dispatcher")
-      //webSocketConnection.onerror = { event: ErrorEvent => self ! OnError(event.message) }
-      //webSocketConnection.onmessage = { event: MessageEvent => self ! OnMessage(event.data.toString) }
+      webSocketConnection.onerror = { event: ErrorEvent => self ! OnError(event.message) }
+      webSocketConnection.onmessage = { event: MessageEvent => self ! OnMessage(event.data.toString) }
     case OnError(errorMessage) =>
       log.debug(s"Received OnError message")
       dispatcher ! ErrorMessage(errorMessage)
@@ -42,6 +42,7 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
     //TODO Buffer messages when being offline
     //gotta add the client id
     case req: CreateRequest =>
+      log.debug(s"Received CreateRequest: $req")
       webSocketConnection.send(write(CreateRequest(clientId, req.dataTypeInstanceId, req.dataType)))
     case hist: HistoricOperationRequest =>
       webSocketConnection.send(write(HistoricOperationRequest(clientId, hist.dataTypeInstanceId, hist.sinceId)))

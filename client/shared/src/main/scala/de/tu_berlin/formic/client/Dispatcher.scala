@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
 import de.tu_berlin.formic.client.Dispatcher.ErrorMessage
 import de.tu_berlin.formic.client.datatype.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.DataTypeInstanceId
-import de.tu_berlin.formic.common.message.{OperationMessage, UpdateResponse}
+import de.tu_berlin.formic.common.message.{CreateResponse, OperationMessage, UpdateResponse}
 
 /**
   * @author Ronny Bräunlich
@@ -23,9 +23,10 @@ class Dispatcher(val outgoingConnection: ActorRef, val newInstanceCallback: Acto
       instantiator ! rep
     case created: NewDataTypeCreated =>
       instances += (created.dataTypeInstanceId -> created.dataTypeActor)
-      //TODO how to send the OperationMessages to the outside?
       newInstanceCallback ! created
     case ErrorMessage(errorText) => log.error("Error from WebSocket connection: " + errorText)
+    case rep: CreateResponse =>
+      //TODO the data type may now send its operations to the server
     //TODO more?
   }
 }
