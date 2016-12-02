@@ -50,6 +50,10 @@ class GoogleWaveOTClient(sendToServerFunction: (DataTypeOperation) => Unit) exte
     var transformed = op
     if (inFlightOperation != null) {
       transformed = (inFlightOperation +: buffer).foldLeft(transformed)((o1, o2) => transformer.transform((o1, o2)))
+      //now we have to transform the whole bridge
+      // I expect here, that op has not been changed in-place but rather that the transformer returned a new operation
+      inFlightOperation = transformer.transform((inFlightOperation, op))
+      buffer = buffer.map(opInBuffer => transformer.transform(opInBuffer, op))
     }
     transformed
   }
@@ -58,10 +62,9 @@ class GoogleWaveOTClient(sendToServerFunction: (DataTypeOperation) => Unit) exte
     * Decides if an operation that has be generated on the client is causally ready to be applied.
     *
     * @param op      the operation that shall be applied
-    * @param history the history of already applied operations of the data type instance
-    * @return true if the operation can be applied
+    * @return true if the operation can be applieds
     */
-  override def canLocalOperationBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = {
+  override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = {
     if (inFlightOperation == null) {
       inFlightOperation = op
       sendToServerFunction(inFlightOperation)

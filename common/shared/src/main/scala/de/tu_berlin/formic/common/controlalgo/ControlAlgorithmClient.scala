@@ -13,8 +13,7 @@ trait ControlAlgorithmClient extends ControlAlgorithm {
     * Decides if an operation that has be generated on the client is causally ready to be applied.
     *
     * @param op      the operation that shall be applied
-    * @param history the history of already applied operations of the data type instance
     * @return true if the operation can be applied
     */
-  def canLocalOperationBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean
+  def canLocalOperationBeApplied(op: DataTypeOperation): Boolean
 }

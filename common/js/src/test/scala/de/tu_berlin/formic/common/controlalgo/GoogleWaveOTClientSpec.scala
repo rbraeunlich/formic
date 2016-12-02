@@ -13,7 +13,7 @@ class GoogleWaveOTClientSpec extends WordSpec with Matchers {
     "make first local operation in-flight operation and send it to the server" in {
       val operation = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List.empty), ClientId())
       val controlAlgo = new GoogleWaveOTClient((op) => op should equal(operation))
-      val canBeApplied = controlAlgo.canLocalOperationBeApplied(operation, new HistoryBuffer())
+      val canBeApplied = controlAlgo.canLocalOperationBeApplied(operation)
 
       controlAlgo.inFlightOperation should equal(operation)
       canBeApplied should equal(true)
@@ -24,9 +24,9 @@ class GoogleWaveOTClientSpec extends WordSpec with Matchers {
       val operation = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List.empty), ClientId())
       val operation2 = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List.empty), ClientId())
       val operation3 = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List.empty), ClientId())
-      controlAlgo.canLocalOperationBeApplied(operation, new HistoryBuffer())
-      controlAlgo.canLocalOperationBeApplied(operation2, new HistoryBuffer())
-      val canBeApplied = controlAlgo.canLocalOperationBeApplied(operation3, new HistoryBuffer())
+      controlAlgo.canLocalOperationBeApplied(operation)
+      controlAlgo.canLocalOperationBeApplied(operation2)
+      val canBeApplied = controlAlgo.canLocalOperationBeApplied(operation3)
 
       controlAlgo.buffer should contain inOrder(operation2, operation3)
       canBeApplied should equal(true)
@@ -35,7 +35,7 @@ class GoogleWaveOTClientSpec extends WordSpec with Matchers {
     "remove the in-flight operation if remote operation is an acknowledgement and return false" in {
       val controlAlgo = new GoogleWaveOTClient((op) => ())
       val operation = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List.empty), ClientId())
-      controlAlgo.canLocalOperationBeApplied(operation, new HistoryBuffer())
+      controlAlgo.canLocalOperationBeApplied(operation)
       val canBeApplied = controlAlgo.canBeApplied(operation, new HistoryBuffer())
 
       controlAlgo.inFlightOperation should be(null)
@@ -44,17 +44,17 @@ class GoogleWaveOTClientSpec extends WordSpec with Matchers {
 
     "make next operation from the buffer the new in-flight operation if remote operation is an acknowledgement, return false and send new in-flight to the server" in {
       val operation = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List.empty), ClientId())
-      val operation2 = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List.empty), ClientId())
-      val operation3 = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List.empty), ClientId())
+      val operation2 = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List(operation.id)), ClientId())
+      val operation3 = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List(operation2.id)), ClientId())
       var first = true
       val controlAlgo = new GoogleWaveOTClient((op) =>
         if (first) op should equal(operation)
         else op should equal(operation2)
       )
-      controlAlgo.canLocalOperationBeApplied(operation, new HistoryBuffer())
+      controlAlgo.canLocalOperationBeApplied(operation)
       first = false
-      controlAlgo.canLocalOperationBeApplied(operation2, new HistoryBuffer())
-      controlAlgo.canLocalOperationBeApplied(operation3, new HistoryBuffer())
+      controlAlgo.canLocalOperationBeApplied(operation2)
+      controlAlgo.canLocalOperationBeApplied(operation3)
       val canBeApplied = controlAlgo.canBeApplied(operation, new HistoryBuffer())
 
       controlAlgo.inFlightOperation should be(operation2)
@@ -83,8 +83,8 @@ class GoogleWaveOTClientSpec extends WordSpec with Matchers {
       val clientId = ClientId()
       val controlAlgo = new GoogleWaveOTClient((op) => ())
       val operation = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List.empty), ClientId())
-      val operation2 = GoogleWaveOTClientTestOperation(operationId, OperationContext(List.empty), clientId)
-      controlAlgo.canLocalOperationBeApplied(operation, new HistoryBuffer())
+      val operation2 = GoogleWaveOTClientTestOperation(operationId, OperationContext(List(operation.id)), clientId)
+      controlAlgo.canLocalOperationBeApplied(operation)
       val transformed = controlAlgo.transform(operation2, new HistoryBuffer(), GoogleWaveOTClientTestTransformer)
 
       transformed should equal(GoogleWaveOTClientTestOperation(operationId, OperationContext(List(operation.id)), clientId, 1))
@@ -95,15 +95,35 @@ class GoogleWaveOTClientSpec extends WordSpec with Matchers {
       val clientId = ClientId()
       val controlAlgo = new GoogleWaveOTClient((op) => ())
       val operation = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List.empty), ClientId())
-      val operation2 = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List.empty), ClientId())
-      val operation3 = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List.empty), ClientId())
+      val operation2 = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List(operation.id)), ClientId())
+      val operation3 = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List(operation2.id)), ClientId())
       val operation4 = GoogleWaveOTClientTestOperation(operationId, OperationContext(List.empty), clientId)
-      controlAlgo.canLocalOperationBeApplied(operation, new HistoryBuffer())
-      controlAlgo.canLocalOperationBeApplied(operation2, new HistoryBuffer())
-      controlAlgo.canLocalOperationBeApplied(operation3, new HistoryBuffer())
+      controlAlgo.canLocalOperationBeApplied(operation)
+      controlAlgo.canLocalOperationBeApplied(operation2)
+      controlAlgo.canLocalOperationBeApplied(operation3)
       val transformed = controlAlgo.transform(operation4, new HistoryBuffer(), GoogleWaveOTClientTestTransformer)
 
       transformed should equal(GoogleWaveOTClientTestOperation(operationId, OperationContext(List(operation3.id)), clientId, 3))
+    }
+
+    "replace the whole translation bridge (in-flight + buffer) with their transformation with the remote operation" in {
+      val operationId = OperationId()
+      val clientId = ClientId()
+      val controlAlgo = new GoogleWaveOTClient((op) => ())
+      val operation = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List.empty), ClientId())
+      val operation2 = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List(operation.id)), ClientId())
+      val operation3 = GoogleWaveOTClientTestOperation(OperationId(), OperationContext(List(operation2.id)), ClientId())
+      val operation4 = GoogleWaveOTClientTestOperation(operationId, OperationContext(List.empty), clientId)
+      controlAlgo.canLocalOperationBeApplied(operation)
+      controlAlgo.canLocalOperationBeApplied(operation2)
+      controlAlgo.canLocalOperationBeApplied(operation3)
+
+      controlAlgo.transform(operation4, new HistoryBuffer(), GoogleWaveOTClientTestTransformer)
+      controlAlgo.inFlightOperation should equal(GoogleWaveOTClientTestOperation(operation.id, OperationContext(List(operation4.id)), operation.clientId, 1))
+      controlAlgo.buffer should contain inOrder(
+        GoogleWaveOTClientTestOperation(operation2.id, OperationContext(List(operation4.id)), operation2.clientId, 1),
+        GoogleWaveOTClientTestOperation(operation3.id, OperationContext(List(operation4.id)), operation3.clientId, 1)
+        )
     }
   }
 }
