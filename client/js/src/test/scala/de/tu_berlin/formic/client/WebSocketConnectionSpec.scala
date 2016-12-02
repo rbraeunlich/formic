@@ -111,7 +111,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       val instantiator = new TestProbe(system) {
         def answerUpdateResponse() = {
           expectMsgPF(timeout) {
-            case rep:UpdateResponse => rep should equal(updateResponse)
+            case rep:WrappedUpdateResponse => rep.updateResponse should equal(updateResponse)
           }
           sender ! NewDataTypeCreated(dataTypeInstanceId, dataTypeInstance.ref, null)
         }
