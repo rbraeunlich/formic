@@ -41,12 +41,14 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
     system.terminate()
   }
 
+  val timeout: FiniteDuration = 10.seconds
+
   "WebSocketConnection" must {
 
     "register for onopen events" in {
       val factory = new TestWebSocketFactory
       val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), factory)))
-      awaitAssert(factory.mock.onopen should not be null, 6.seconds)
+      awaitAssert(factory.mock.onopen should not be null, timeout)
     }
 
     "create a dispatcher after connecting" in {
@@ -54,7 +56,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       system.scheduler.scheduleOnce(0.millis) {
         connection ! OnConnect
       }
-      awaitAssert(connection.underlyingActor.dispatcher should not be null, 6.seconds)
+      awaitAssert(connection.underlyingActor.dispatcher should not be null, timeout)
     }
 
     "register for onerror and onmessage events" in {
@@ -63,7 +65,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       system.scheduler.scheduleOnce(0.millis) {
         connection ! OnConnect
       }
-      awaitAssert(factory.mock.asInstanceOf[WebSocket].onmessage should not be null, 6.seconds)
+      awaitAssert(factory.mock.asInstanceOf[WebSocket].onmessage should not be null, timeout)
     }
 
     "forward error messages to the dispatcher" ignore {
@@ -97,7 +99,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
         connection ! OnConnect
 
         connection ! OnMessage(write(updateResponse))
-        instantiator.expectMsg(6.seconds, updateResponse)
+        instantiator.expectMsg(timeout, updateResponse)
       }
     }
 
@@ -107,7 +109,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "")
       val instantiator = new TestProbe(system) {
         def answerUpdateResponse() = {
-          expectMsgPF(6.seconds) {
+          expectMsgPF(timeout) {
             case rep:UpdateResponse => rep should equal(updateResponse)
           }
           sender ! NewDataTypeCreated(dataTypeInstanceId, dataTypeInstance.ref, null)
@@ -136,7 +138,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
 
         connection ! request
       }
-      awaitCond(factory.mock.sent.nonEmpty, 6.seconds)
+      awaitCond(factory.mock.sent.nonEmpty, timeout)
       val sentMessages = factory.mock.sent
       sentMessages.headOption match {
         case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(CreateRequest(clientId, request.dataTypeInstanceId, request.dataType))
@@ -153,7 +155,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
 
         connection ! request
       }
-      awaitCond(factory.mock.sent.nonEmpty, 6.seconds)
+      awaitCond(factory.mock.sent.nonEmpty, timeout)
       val sentMessages = factory.mock.sent
       sentMessages.headOption match {
         case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(HistoricOperationRequest(clientId, request.dataTypeInstanceId, request.sinceId))
@@ -172,7 +174,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
         connection ! request
       }
 
-      awaitCond(factory.mock.sent.nonEmpty, 6.seconds)
+      awaitCond(factory.mock.sent.nonEmpty, timeout)
       val sentMessages = factory.mock.sent
       sentMessages.headOption match {
         case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(UpdateRequest(clientId, request.dataTypeInstanceId))
@@ -191,7 +193,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
         connection ! message
       }
 
-      awaitCond(factory.mock.sent.nonEmpty, 6.seconds)
+      awaitCond(factory.mock.sent.nonEmpty, timeout)
       val sentMessages = factory.mock.sent
       sentMessages.headOption match {
         case Some(msg) =>
