@@ -23,6 +23,7 @@ class LinearDataType[T](id: DataTypeInstanceId, controlAlgorithm: ControlAlgorit
   def data = privateData
 
   override def apply(op: DataTypeOperation): Unit = {
+    log.debug(s"Applying operation: $op")
     op match {
       case LinearInsertOperation(index, o, _, _, _) => privateData.insert(index, o.asInstanceOf[T])
       case LinearDeleteOperation(index, _, _, _) => privateData.remove(index)

@@ -38,17 +38,22 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
     case OnError(errorMessage) =>
       log.debug(s"Received OnError message")
       dispatcher ! ErrorMessage(errorMessage)
-    case OnMessage(msg) => dispatcher ! read[FormicMessage](msg)
+    case OnMessage(msg) =>
+      log.debug(s"Received WebSocket message: $msg")
+      dispatcher ! read[FormicMessage](msg)
     //TODO Buffer messages when being offline
     //gotta add the client id
     case req: CreateRequest =>
       log.debug(s"Received CreateRequest: $req")
       webSocketConnection.send(write(CreateRequest(clientId, req.dataTypeInstanceId, req.dataType)))
     case hist: HistoricOperationRequest =>
+      log.debug(s"Sending $hist")
       webSocketConnection.send(write(HistoricOperationRequest(clientId, hist.dataTypeInstanceId, hist.sinceId)))
     case upd: UpdateRequest =>
+      log.debug(s"Sending $upd")
       webSocketConnection.send(write(UpdateRequest(clientId, upd.dataTypeInstanceId)))
     case op: OperationMessage =>
+      log.debug(s"Sending $op")
       val operations = op.operations
       operations.foreach(operation => operation.clientId = clientId)
       webSocketConnection.send(write(OperationMessage(clientId, op.dataTypeInstanceId, op.dataType, operations)))

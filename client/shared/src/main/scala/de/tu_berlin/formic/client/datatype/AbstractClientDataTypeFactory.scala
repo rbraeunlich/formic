@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.client.datatype
 
-import akka.actor.{Actor, ActorRef, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import de.tu_berlin.formic.client.datatype.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.datatype.{AbstractDataType, DataTypeName, FormicDataType}
@@ -12,13 +12,14 @@ import scala.reflect.ClassTag
   * @author Ronny Bräunlich
   */
 //Why the ClassTag? See http://stackoverflow.com/questions/18692265/no-classtag-available-for-t-not-for-array
-abstract class AbstractClientDataTypeFactory[T <: AbstractDataType : ClassTag, S <: FormicDataType : ClassTag](val initiator: DataTypeInitiator) extends Actor {
+abstract class AbstractClientDataTypeFactory[T <: AbstractDataType : ClassTag, S <: FormicDataType : ClassTag](val initiator: DataTypeInitiator) extends Actor with ActorLogging {
 
   override def receive: Receive = {
-    case CreateRequest(_, dataTypeInstanceId, _) =>
-      val actor = context.actorOf(Props(createDataType(dataTypeInstanceId)), dataTypeInstanceId.id)
-      val wrapper = createWrapperType(dataTypeInstanceId, actor)
-      sender ! NewDataTypeCreated(dataTypeInstanceId, actor, wrapper)
+    case req:CreateRequest =>
+      log.debug(s"Factory for $name received CreateRequest: $req")
+      val actor = context.actorOf(Props(createDataType(req.dataTypeInstanceId)), req.dataTypeInstanceId.id)
+      val wrapper = createWrapperType(req.dataTypeInstanceId, actor)
+      sender ! NewDataTypeCreated(req.dataTypeInstanceId, actor, wrapper)
   }
 
   def createDataType(dataTypeInstanceId: DataTypeInstanceId): T
