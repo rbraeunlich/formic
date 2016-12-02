@@ -4,11 +4,11 @@ import akka.pattern._
 import akka.util.Timeout
 import de.tu_berlin.formic.client.FormicSystem
 import de.tu_berlin.formic.client.datatype.DataTypeInitiator
-import de.tu_berlin.formic.common.datatype.AbstractDataType.GetHistory
+import de.tu_berlin.formic.common.datatype.AbstractServerDataType.GetHistory
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType, HistoryBuffer, OperationContext}
 import de.tu_berlin.formic.common.message.{CreateRequest, OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
-import de.tu_berlin.formic.datatype.linear.{LinearDataType, LinearDeleteOperation, LinearInsertOperation}
+import de.tu_berlin.formic.datatype.linear.{LinearServerDataType, LinearDeleteOperation, LinearInsertOperation}
 
 import scala.concurrent.duration._
 import scala.scalajs.js.annotation.JSExport
@@ -25,7 +25,7 @@ class FormicList[T](var callback: () => Unit, initiator: DataTypeInitiator)(impl
 
   val dataTypeInstanceId = DataTypeInstanceId()
 
-  override val dataTypeName: DataTypeName = LinearDataType.dataTypeName
+  override val dataTypeName: DataTypeName = LinearServerDataType.dataTypeName
 
   implicit val timeout: Timeout = 1.seconds
 

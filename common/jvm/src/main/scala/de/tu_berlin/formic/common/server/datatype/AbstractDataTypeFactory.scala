@@ -2,7 +2,7 @@ package de.tu_berlin.formic.common.server.datatype
 
 import akka.actor.{Actor, ActorLogging, Props}
 import de.tu_berlin.formic.common.DataTypeInstanceId
-import de.tu_berlin.formic.common.datatype.{AbstractDataType, DataTypeName}
+import de.tu_berlin.formic.common.datatype.{AbstractServerDataType, DataTypeName}
 import de.tu_berlin.formic.common.message.CreateRequest
 
 import scala.reflect.ClassTag
@@ -11,7 +11,7 @@ import scala.reflect.ClassTag
   * @author Ronny Bräunlich
   */
 //Why the ClassTag? See http://stackoverflow.com/questions/18692265/no-classtag-available-for-t-not-for-array
-abstract class AbstractDataTypeFactory[T <: AbstractDataType : ClassTag] extends Actor with ActorLogging{
+abstract class AbstractDataTypeFactory[T <: AbstractServerDataType : ClassTag] extends Actor with ActorLogging{
 
   override def receive: Receive = {
     case req:CreateRequest =>

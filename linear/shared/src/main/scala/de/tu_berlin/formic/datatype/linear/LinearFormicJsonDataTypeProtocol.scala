@@ -11,7 +11,7 @@ import upickle.default._
   */
 object LinearFormicJsonDataTypeProtocol extends FormicJsonDataTypeProtocol {
 
-  override val name: DataTypeName = LinearDataType.dataTypeName
+  override val name: DataTypeName = LinearServerDataType.dataTypeName
 
   override def deserializeOperation(json: String): DataTypeOperation = {
     val valueMap = upickle.json.read(json).obj

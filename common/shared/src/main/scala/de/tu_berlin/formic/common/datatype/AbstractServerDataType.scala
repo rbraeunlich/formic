@@ -3,12 +3,12 @@ package de.tu_berlin.formic.common.datatype
 import akka.actor.{Actor, ActorLogging}
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
-import de.tu_berlin.formic.common.datatype.AbstractDataType.GetHistory
+import de.tu_berlin.formic.common.datatype.AbstractServerDataType.GetHistory
 import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
 /**
   * @author Ronny Bräunlich
   */
-abstract class AbstractDataType(val id: DataTypeInstanceId,val controlAlgorithm: ControlAlgorithm) extends Actor with ActorLogging {
+abstract class AbstractServerDataType(val id: DataTypeInstanceId, val controlAlgorithm: ControlAlgorithm) extends Actor with ActorLogging {
 
   val historyBuffer: HistoryBuffer = new HistoryBuffer()
 
@@ -78,6 +78,6 @@ abstract class AbstractDataType(val id: DataTypeInstanceId,val controlAlgorithm:
   def causallyNotReadyOperations = privateCausallyNotReadyOperations
 }
 
-object AbstractDataType {
+object AbstractServerDataType {
   case object GetHistory
 }

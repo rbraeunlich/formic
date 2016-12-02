@@ -11,14 +11,14 @@ import upickle.Js
   * @author Ronny Bräunlich
   */
 
-class TestDataTypeFactory extends AbstractDataTypeFactory[TestDataType] {
+class TestDataTypeFactory extends AbstractDataTypeFactory[TestServerDataType] {
 
-  override def create(dataTypeInstanceId: DataTypeInstanceId): TestDataType = new TestDataType(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm)
+  override def create(dataTypeInstanceId: DataTypeInstanceId): TestServerDataType = new TestServerDataType(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm)
 
   override val name: DataTypeName = TestClasses.dataTypeName
 }
 
-class TestDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataTypeInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractDataType(dataTypeInstanceId, controlAlgorithm) {
+class TestServerDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataTypeInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataType(dataTypeInstanceId, controlAlgorithm) {
 
 
 

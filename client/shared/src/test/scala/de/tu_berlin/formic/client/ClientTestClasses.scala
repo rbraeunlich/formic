@@ -13,16 +13,16 @@ import upickle.Js
   * @author Ronny Bräunlich
   */
 
-class TestDataTypeFactory extends AbstractClientDataTypeFactory[TestDataType, TestFormicDataType](null) {
+class TestDataTypeFactory extends AbstractClientDataTypeFactory[TestServerDataType, TestFormicDataType](null) {
 
   override val name: DataTypeName = TestClasses.dataTypeName
 
-  override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef): TestDataType = new TestDataType(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm)
+  override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef): TestServerDataType = new TestServerDataType(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm)
 
   override def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef): TestFormicDataType = new TestFormicDataType
 }
 
-class TestDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataTypeInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractDataType(dataTypeInstanceId, controlAlgorithm) {
+class TestServerDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataTypeInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataType(dataTypeInstanceId, controlAlgorithm) {
 
   var data = "{data}"
 

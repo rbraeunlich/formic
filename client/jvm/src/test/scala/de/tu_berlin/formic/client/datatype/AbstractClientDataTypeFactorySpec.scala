@@ -38,7 +38,7 @@ class AbstractClientDataTypeFactorySpec extends TestKit(ActorSystem("AbstractCli
 
 }
 
-class AbstractClientDataTypeFactorySpecDataType extends AbstractDataType(DataTypeInstanceId(), TestControlAlgorithm) {
+class AbstractClientDataTypeFactorySpecServerDataType extends AbstractServerDataType(DataTypeInstanceId(), TestControlAlgorithm) {
   override val dataTypeName: DataTypeName = DataTypeName("AbstractClientDataTypeFactorySpec")
 
   override val transformer: OperationTransformer = null
@@ -53,12 +53,12 @@ class AbstractClientDataTypeFactorySpecFormicDataType extends FormicDataType {
   override var callback: () => Unit = _
 }
 
-class AbstractClientDataTypeFactorySpecFactory extends AbstractClientDataTypeFactory[AbstractClientDataTypeFactorySpecDataType, AbstractClientDataTypeFactorySpecFormicDataType](null) {
+class AbstractClientDataTypeFactorySpecFactory extends AbstractClientDataTypeFactory[AbstractClientDataTypeFactorySpecServerDataType, AbstractClientDataTypeFactorySpecFormicDataType](null) {
 
   override val name: DataTypeName = DataTypeName("AbstractClientDataTypeFactorySpec")
 
-  override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef): AbstractClientDataTypeFactorySpecDataType = {
-    new AbstractClientDataTypeFactorySpecDataType
+  override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef): AbstractClientDataTypeFactorySpecServerDataType = {
+    new AbstractClientDataTypeFactorySpecServerDataType
   }
 
   override def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef): AbstractClientDataTypeFactorySpecFormicDataType = {

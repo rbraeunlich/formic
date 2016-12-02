@@ -13,7 +13,7 @@ import de.tu_berlin.formic.common.datatype.OperationContext
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
-import de.tu_berlin.formic.datatype.linear.{LinearDataType, LinearInsertOperation}
+import de.tu_berlin.formic.datatype.linear.{LinearServerDataType, LinearInsertOperation}
 import org.scalatest.{BeforeAndAfterAll, Matchers, OneInstancePerTest, WordSpecLike}
 import upickle.default._
 
@@ -74,7 +74,7 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
       finalResponse.value.get match {
         case Success(m) =>
           val text = m.get.asTextMessage.getStrictText
-          read[FormicMessage](text) should equal(UpdateResponse(dataTypeInstanceId, LinearDataType.dataTypeName, "[\"3\",\"2\",\"1\",\"c\",\"b\",\"a\"]"))
+          read[FormicMessage](text) should equal(UpdateResponse(dataTypeInstanceId, LinearServerDataType.dataTypeName, "[\"3\",\"2\",\"1\",\"c\",\"b\",\"a\"]"))
         case Failure(ex) => fail(ex)
       }
 
@@ -100,18 +100,18 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
     //because the id of u1 is greater than u2 (f > b), it should have precedence
     //user 2
     val u2op1 = LinearInsertOperation(0, "a", OperationId(), OperationContext(List.empty), user2Id)
-    val u2Msg1 = OperationMessage(user2Id, dataTypeInstanceId, LinearDataType.dataTypeName, List(u2op1))
+    val u2Msg1 = OperationMessage(user2Id, dataTypeInstanceId, LinearServerDataType.dataTypeName, List(u2op1))
     val u2op2 = LinearInsertOperation(0, "b", OperationId(), OperationContext(List(u2op1.id)), user2Id)
-    val u2Msg2 = OperationMessage(user2Id, dataTypeInstanceId, LinearDataType.dataTypeName, List(u2op2))
+    val u2Msg2 = OperationMessage(user2Id, dataTypeInstanceId, LinearServerDataType.dataTypeName, List(u2op2))
     val u2op3 = LinearInsertOperation(0, "c", OperationId(), OperationContext(List(u2op2.id)), user2Id)
-    val u2Msg3 = OperationMessage(user2Id, dataTypeInstanceId, LinearDataType.dataTypeName, List(u2op3))
+    val u2Msg3 = OperationMessage(user2Id, dataTypeInstanceId, LinearServerDataType.dataTypeName, List(u2op3))
     //user 1
     val u1op1 = LinearInsertOperation(0, "1", OperationId(), OperationContext(List.empty), user1Id)
-    val u1Msg1 = OperationMessage(user1Id, dataTypeInstanceId, LinearDataType.dataTypeName, List(u1op1))
+    val u1Msg1 = OperationMessage(user1Id, dataTypeInstanceId, LinearServerDataType.dataTypeName, List(u1op1))
     val u1op2 = LinearInsertOperation(0, "2", OperationId(), OperationContext(List(u1op1.id)), user1Id)
-    val u1Msg2 = OperationMessage(user1Id, dataTypeInstanceId, LinearDataType.dataTypeName, List(u1op2))
+    val u1Msg2 = OperationMessage(user1Id, dataTypeInstanceId, LinearServerDataType.dataTypeName, List(u1op2))
     val u1op3 = LinearInsertOperation(0, "3", OperationId(), OperationContext(List(u1op2.id)), user1Id)
-    val u1Msg3 = OperationMessage(user1Id, dataTypeInstanceId, LinearDataType.dataTypeName, List(u1op3))
+    val u1Msg3 = OperationMessage(user1Id, dataTypeInstanceId, LinearServerDataType.dataTypeName, List(u1op3))
     user2Outgoing.offer(TextMessage(write(u2Msg1)))
     user2Outgoing.offer(TextMessage(write(u2Msg2)))
     user2Outgoing.offer(TextMessage(write(u2Msg3)))
@@ -140,7 +140,7 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
 
   def createLinearDataTypeInstance(user1Id: ClientId, user2Id: ClientId, user1Incoming: SinkQueueWithCancel[Message], user1Outgoing: SourceQueueWithComplete[Message], user2Incoming: SinkQueueWithCancel[Message], user2Outgoing: SourceQueueWithComplete[Message])(implicit executionContext: ExecutionContext): DataTypeInstanceId = {
     val dataTypeInstanceId = DataTypeInstanceId()
-    user1Outgoing.offer(TextMessage(write(CreateRequest(user1Id, dataTypeInstanceId, LinearDataType.dataTypeName))))
+    user1Outgoing.offer(TextMessage(write(CreateRequest(user1Id, dataTypeInstanceId, LinearServerDataType.dataTypeName))))
 
     val incomingCreateResponse = user1Incoming.pull()
     Await.ready(incomingCreateResponse, 3 seconds)
@@ -159,7 +159,7 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
     incomingUpdateResponse.value.get match {
       case Success(m) =>
         val text = m.get.asTextMessage.getStrictText
-        read[FormicMessage](text) should equal(UpdateResponse(dataTypeInstanceId, LinearDataType.dataTypeName, "[]"))
+        read[FormicMessage](text) should equal(UpdateResponse(dataTypeInstanceId, LinearServerDataType.dataTypeName, "[]"))
       case Failure(ex) => fail(ex)
     }
     dataTypeInstanceId

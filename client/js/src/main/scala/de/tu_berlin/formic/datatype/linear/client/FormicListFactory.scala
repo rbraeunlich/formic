@@ -6,15 +6,15 @@ import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.controlalgo.GoogleWaveOTClient
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.message.OperationMessage
-import de.tu_berlin.formic.datatype.linear.LinearDataType
+import de.tu_berlin.formic.datatype.linear.LinearServerDataType
 
 /**
   * @author Ronny Bräunlich
   */
-class FormicListFactory(initiator: DataTypeInitiator) extends AbstractClientDataTypeFactory[LinearDataType[String], FormicList[_]](initiator){
+class FormicListFactory(initiator: DataTypeInitiator) extends AbstractClientDataTypeFactory[LinearServerDataType[String], FormicList[_]](initiator){
 
-  override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef): LinearDataType[String] = {
-    LinearDataType(dataTypeInstanceId, new GoogleWaveOTClient((op) => outgoingConnection ! OperationMessage(null, dataTypeInstanceId, name, List(op))))
+  override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef): LinearServerDataType[String] = {
+    LinearServerDataType(dataTypeInstanceId, new GoogleWaveOTClient((op) => outgoingConnection ! OperationMessage(null, dataTypeInstanceId, name, List(op))))
   }
 
   override def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef): FormicList[_] = {

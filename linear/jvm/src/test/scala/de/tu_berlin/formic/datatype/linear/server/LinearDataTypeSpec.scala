@@ -6,7 +6,7 @@ import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.message.OperationMessage
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
-import de.tu_berlin.formic.datatype.linear.{LinearDataType, LinearDeleteOperation, LinearInsertOperation}
+import de.tu_berlin.formic.datatype.linear.{LinearServerDataType, LinearDeleteOperation, LinearInsertOperation}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 import scala.collection.mutable.ArrayBuffer
@@ -27,44 +27,44 @@ class LinearDataTypeSpec extends TestKit(ActorSystem("LinearDataTypeSpec"))
   "LinearDataType" must {
 
     "insert data" in {
-      val dataType = TestActorRef[LinearDataType[Int]](Props(LinearDataType[Int](DataTypeInstanceId(), LinearDataTypeSpecControlAlgorithm)))
+      val dataType = TestActorRef[LinearServerDataType[Int]](Props(LinearServerDataType[Int](DataTypeInstanceId(), LinearDataTypeSpecControlAlgorithm)))
       val op = LinearInsertOperation(0, Integer.valueOf(1), OperationId(), OperationContext(List.empty), ClientId())
       val op2 = LinearInsertOperation(1, Integer.valueOf(3), OperationId(), OperationContext(List.empty), ClientId())
       val op3 = LinearInsertOperation(0, Integer.valueOf(0), OperationId(), OperationContext(List.empty), ClientId())
 
-      dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), LinearDataType.dataTypeName, List(op))
-      dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), LinearDataType.dataTypeName, List(op2))
-      dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), LinearDataType.dataTypeName, List(op3))
+      dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), LinearServerDataType.dataTypeName, List(op))
+      dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), LinearServerDataType.dataTypeName, List(op2))
+      dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), LinearServerDataType.dataTypeName, List(op3))
 
       dataType.underlyingActor.data should be(ArrayBuffer(0, 1, 3))
     }
 
     "delete data" in {
-      val dataType = TestActorRef[LinearDataType[Int]](Props(LinearDataType[Int](DataTypeInstanceId(), LinearDataTypeSpecControlAlgorithm)))
+      val dataType = TestActorRef[LinearServerDataType[Int]](Props(LinearServerDataType[Int](DataTypeInstanceId(), LinearDataTypeSpecControlAlgorithm)))
       val op = LinearInsertOperation(0, Integer.valueOf(1), OperationId(), OperationContext(List.empty), ClientId())
       val op2 = LinearInsertOperation(1, Integer.valueOf(3), OperationId(), OperationContext(List.empty), ClientId())
       val op3 = LinearInsertOperation(0, Integer.valueOf(0), OperationId(), OperationContext(List.empty), ClientId())
 
       //operations have to be reversed!
-      dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), LinearDataType.dataTypeName, List(op3, op2, op))
+      dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), LinearServerDataType.dataTypeName, List(op3, op2, op))
 
       val delete = LinearDeleteOperation(1, OperationId(), OperationContext(List.empty), ClientId())
 
-      dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), LinearDataType.dataTypeName, List(delete))
+      dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), LinearServerDataType.dataTypeName, List(delete))
 
       dataType.underlyingActor.data should be(ArrayBuffer(0, 3))
     }
 
     "result in a valid JSON representation" in {
-      val dataType = TestActorRef[LinearDataType[Int]](Props(LinearDataType[Int](DataTypeInstanceId(), LinearDataTypeSpecControlAlgorithm)))
+      val dataType = TestActorRef[LinearServerDataType[Int]](Props(LinearServerDataType[Int](DataTypeInstanceId(), LinearDataTypeSpecControlAlgorithm)))
       val op = LinearInsertOperation(0, Integer.valueOf(1), OperationId(), OperationContext(List.empty), ClientId())
       val op2 = LinearInsertOperation(1, Integer.valueOf(3), OperationId(), OperationContext(List.empty), ClientId())
       val op3 = LinearInsertOperation(0, Integer.valueOf(0), OperationId(), OperationContext(List.empty), ClientId())
 
       //operations have to be reversed!
-      dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), LinearDataType.dataTypeName, List(op3, op2, op))
+      dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), LinearServerDataType.dataTypeName, List(op3, op2, op))
 
-      dataType.underlyingActor.getDataAsJson() should equal("[0,1,3]")
+      dataType.underlyingActor.getDataAsJson should equal("[0,1,3]")
     }
 
   }
