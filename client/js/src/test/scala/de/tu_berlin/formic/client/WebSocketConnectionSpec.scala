@@ -153,7 +153,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
 
         connection ! request
       }
-      awaitCond(factory.mock.sent.nonEmpty)
+      awaitCond(factory.mock.sent.nonEmpty, 6.seconds)
       val sentMessages = factory.mock.sent
       sentMessages.headOption match {
         case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(HistoricOperationRequest(clientId, request.dataTypeInstanceId, request.sinceId))
@@ -172,7 +172,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
         connection ! request
       }
 
-      awaitCond(factory.mock.sent.nonEmpty)
+      awaitCond(factory.mock.sent.nonEmpty, 6.seconds)
       val sentMessages = factory.mock.sent
       sentMessages.headOption match {
         case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(UpdateRequest(clientId, request.dataTypeInstanceId))
@@ -191,7 +191,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
         connection ! message
       }
 
-      awaitCond(factory.mock.sent.nonEmpty)
+      awaitCond(factory.mock.sent.nonEmpty, 6.seconds)
       val sentMessages = factory.mock.sent
       sentMessages.headOption match {
         case Some(msg) =>
