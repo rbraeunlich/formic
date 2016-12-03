@@ -6,8 +6,6 @@ val scalatestVersion = "3.0.0"
 
 val akkaHttpVersion = "10.0.0"
 
-resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
-
 lazy val root = project
                 .enablePlugins(ScalaJSPlugin)
                 .in(file(".")).
@@ -67,6 +65,7 @@ lazy val linearJS = linear.js.dependsOn(commonJS)
 lazy val client = crossProject.in(file("client")).
   settings(commonSettings: _*).
   settings(
+    resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
     name := "formic-client",
     libraryDependencies ++= Seq(
       "com.lihaoyi" %%% "upickle" % uPickleVersion,
