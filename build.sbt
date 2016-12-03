@@ -1,5 +1,3 @@
-import sbt.Tests.Group
-
 val akkaVersion = "2.4.14"
 
 val uPickleVersion = "0.4.3"
@@ -7,6 +5,8 @@ val uPickleVersion = "0.4.3"
 val scalatestVersion = "3.0.0"
 
 val akkaHttpVersion = "10.0.0"
+
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 lazy val root = project
                 .enablePlugins(ScalaJSPlugin)
