@@ -48,7 +48,9 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
 
     "register for onopen events" in {
       val factory = new TestWebSocketFactory
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), factory)))
+      system.scheduler.scheduleOnce(0.millis) {
+        val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), factory)))
+      }
       awaitAssert(factory.mock.onopen should not be null, timeout)
     }
 
@@ -203,6 +205,13 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
             OperationMessage(clientId, message.dataTypeInstanceId, message.dataType, List(TestOperation(sentOperation.id, sentOperation.operationContext, clientId)))
           )
         case None => fail("No message sent via WebSocket")
+      }
+    }
+    "prepend the client id to the url" in {
+      val clientId = ClientId()
+      system.scheduler.scheduleOnce(0.millis) {
+        val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, clientId, new TestWebSocketFactory)))
+        awaitAssert(connection.underlyingActor.url should startWith(s"ws://${clientId.id}"))
       }
     }
   }
