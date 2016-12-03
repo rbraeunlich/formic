@@ -6,3 +6,4 @@ jdk:
 sudo: required
 install:
   - nvm install 6.9.1
+  - npm install jsdom
