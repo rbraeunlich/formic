@@ -7,15 +7,26 @@ val scalatestVersion = "3.0.0"
 val akkaHttpVersion = "10.0.0"
 
 lazy val root = project
-                .enablePlugins(ScalaJSPlugin)
-                .in(file(".")).
-                  settings(commonSettings: _*).
-                  aggregate(commonJS, commonJVM, linearJS, linearJVM, clientJS, clientJVM, websockettestsJS, websockettestsJVM, server)
+  .enablePlugins(ScalaJSPlugin)
+  .in(file(".")).
+  settings(commonSettings: _*).
+  aggregate(commonJS,
+    commonJVM,
+    linearJS,
+    linearJVM,
+    clientJS,
+    clientJVM,
+    websockettestsJS,
+    websockettestsJVM,
+    server,
+    example
+  )
 
 lazy val commonSettings = Seq(
   organization := "de.tu-berlin.formic",
   version := "0.1.0",
-  scalaVersion := "2.11.8"
+  scalaVersion := "2.11.8",
+  resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 )
 
 lazy val common = crossProject.in(file("common")).
@@ -65,7 +76,6 @@ lazy val linearJS = linear.js.dependsOn(commonJS)
 lazy val client = crossProject.in(file("client")).
   settings(commonSettings: _*).
   settings(
-    resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
     name := "formic-client",
     libraryDependencies ++= Seq(
       "com.lihaoyi" %%% "upickle" % uPickleVersion,
@@ -122,3 +132,13 @@ lazy val server = (project in file("server")).
     )
   ).
   dependsOn(commonJVM, linearJVM)
+
+lazy val example = project.in(file("example")).
+  settings(commonSettings: _*).
+  settings(
+    name := "formic-example-app",
+    persistLauncher in Compile := true,
+    skip in packageJSDependencies := false,
+    mainClass in Compile := Some("de.tu_berlin.formic.example.Main")).
+  dependsOn(commonJS, linearJS, clientJS).
+  enablePlugins(ScalaJSPlugin)
