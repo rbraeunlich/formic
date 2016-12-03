@@ -55,11 +55,11 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
     }
 
     "create a dispatcher after connecting" in {
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), new TestWebSocketFactory)))
       system.scheduler.scheduleOnce(0.millis) {
+        val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), new TestWebSocketFactory)))
         connection ! OnConnect
+        awaitAssert(connection.underlyingActor.dispatcher should not be null, 2 * timeout)
       }
-      awaitAssert(connection.underlyingActor.dispatcher should not be null, 2 * timeout)
     }
 
     "register for onerror and onmessage events" in {
