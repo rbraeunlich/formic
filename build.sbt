@@ -137,8 +137,10 @@ lazy val example = project.in(file("example")).
   settings(commonSettings: _*).
   settings(
     name := "formic-example-app",
-    persistLauncher in Compile := true,
+    persistLauncher := true,
     skip in packageJSDependencies := false,
-    mainClass in Compile := Some("de.tu_berlin.formic.example.Main")).
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.1",
+    jsDependencies += RuntimeDOM
+  ).
   dependsOn(commonJS, linearJS, clientJS).
   enablePlugins(ScalaJSPlugin)

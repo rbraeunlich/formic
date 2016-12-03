@@ -73,7 +73,7 @@ object FormicServer {
 
   def newUserProxy(username: String)(implicit actorSystem: ActorSystem, materializer: ActorMaterializer): Flow[Message, Message, NotUsed] = {
     // new connection - new UserProxy actor
-    val UserProxy = actorSystem.actorOf(Props(new UserProxy(factories, ClientId(username))))
+    val UserProxy = actorSystem.actorOf(Props(new UserProxy(factories, ClientId(username))), username)
 
     val incomingMessages: Sink[Message, NotUsed] =
       Flow[Message].map {

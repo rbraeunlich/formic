@@ -23,7 +23,7 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
     with ActorLogging {
 
   //TODO read from config
-  val url = "ws://0.0.0.0:8080/formic"
+  val url = s"ws://${clientId.id}@0.0.0.0:8080/formic"
 
   var dispatcher: ActorRef = _
   var webSocketConnection: dom.WebSocket = webSocketConnectionFactory.createConnection(url)
