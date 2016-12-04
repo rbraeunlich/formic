@@ -13,7 +13,7 @@ import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalajs.dom.raw.ErrorEvent
 import org.scalajs.dom.{CloseEvent, Event, MessageEvent, WebSocket}
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
+import org.scalatest._
 import upickle.default._
 
 import scala.concurrent.Future
@@ -29,10 +29,13 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
   akka.loggers = ["akka.testkit.TestEventListener"]
   """)))
   with WordSpecLike
+  with OneInstancePerTest
   with BeforeAndAfterAll
   with Matchers {
 
   import system.dispatcher
+
+  override def newInstance: Suite with OneInstancePerTest = new WebSocketConnectionSpec
 
   override def beforeAll(): Unit = {
     FormicJsonProtocol.registerProtocol(new TestFormicJsonDataTypeProtocol)
@@ -50,28 +53,24 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
     "register for onopen events" in {
       val factory = new TestWebSocketFactory
       val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), factory)))
+
       awaitAssert(factory.mock.asInstanceOf[WebSocket].onopen should not be null, timeout)
     }
 
     "create a dispatcher after connecting" ignore {
-      val f = Future[TestActorRef[WebSocketConnection]] {
-        val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), new TestWebSocketFactory)))
-        connection ! OnConnect
-        connection
-      }
-      system.scheduler.scheduleOnce(0.millis) {
-        f
-      }
-      awaitCond(f.isCompleted, timeout)
-      f.value.get.get.underlyingActor.dispatcher should not be null
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), new TestWebSocketFactory)))
+
+      connection ! OnConnect
+
+      awaitAssert(connection.underlyingActor.dispatcher should not be null, timeout)
     }
 
     "register for onerror and onmessage events" in {
       val factory = new TestWebSocketFactory
       val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), factory)))
-      system.scheduler.scheduleOnce(0.millis) {
-        connection ! OnConnect
-      }
+
+      connection ! OnConnect
+
       awaitAssert(factory.mock.asInstanceOf[WebSocket].onmessage should not be null, timeout)
     }
 
@@ -203,7 +202,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       }
     }
 
-    "prepend the client id to the url" ignore {
+    "prepend the client id to the url" in {
       val clientId = ClientId()
       val f = Future[TestActorRef[WebSocketConnection]] {
         TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, clientId, new TestWebSocketFactory)))
