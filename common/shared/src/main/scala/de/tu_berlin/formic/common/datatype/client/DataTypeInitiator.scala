@@ -1,4 +1,4 @@
-package de.tu_berlin.formic.client.datatype
+package de.tu_berlin.formic.common.datatype.client
 
 import de.tu_berlin.formic.common.datatype.FormicDataType
 

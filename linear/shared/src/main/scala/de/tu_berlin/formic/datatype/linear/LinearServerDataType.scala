@@ -26,7 +26,6 @@ class LinearServerDataType[T](id: DataTypeInstanceId, controlAlgorithm: ControlA
       case LinearInsertOperation(index, o, _, _, _) => privateData.insert(index, o.asInstanceOf[T])
       case LinearDeleteOperation(index, _, _, _) => privateData.remove(index)
     }
-
   }
 
   override def getDataAsJson: String = {

@@ -1,10 +1,10 @@
 package de.tu_berlin.formic.client
 
 import akka.actor.{Actor, ActorRef}
-import de.tu_berlin.formic.client.DataTypeInstantiator.WrappedCreateRequest
 import de.tu_berlin.formic.client.Dispatcher.WrappedUpdateResponse
 import de.tu_berlin.formic.common.datatype.DataTypeName
-import de.tu_berlin.formic.common.message.{CreateRequest, UpdateResponse}
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.WrappedCreateRequest
+import de.tu_berlin.formic.common.message.CreateRequest
 
 /**
   * @author Ronny Bräunlich
@@ -23,5 +23,5 @@ class DataTypeInstantiator(val factories: Map[DataTypeName, ActorRef]) extends A
 }
 
 object DataTypeInstantiator {
-  case class WrappedCreateRequest(outgoingConnection: ActorRef, createRequest: CreateRequest)
+
 }

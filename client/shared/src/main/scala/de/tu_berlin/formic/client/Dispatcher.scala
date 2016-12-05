@@ -2,7 +2,7 @@ package de.tu_berlin.formic.client
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import de.tu_berlin.formic.client.Dispatcher.{ErrorMessage, WrappedUpdateResponse}
-import de.tu_berlin.formic.client.datatype.AbstractClientDataTypeFactory.NewDataTypeCreated
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.message.{CreateResponse, OperationMessage, UpdateResponse}
 

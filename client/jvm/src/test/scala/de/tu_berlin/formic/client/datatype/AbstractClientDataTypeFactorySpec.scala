@@ -2,12 +2,12 @@ package de.tu_berlin.formic.client.datatype
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import de.tu_berlin.formic.client.DataTypeInstantiator.WrappedCreateRequest
-import de.tu_berlin.formic.client.datatype.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.client.{StopSystemAfterAll, TestControlAlgorithm}
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.common.datatype._
+import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataType, AbstractClientDataTypeFactory}
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message.CreateRequest
+import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import org.scalatest.{Matchers, WordSpecLike}
 
 /**
@@ -38,7 +38,7 @@ class AbstractClientDataTypeFactorySpec extends TestKit(ActorSystem("AbstractCli
 
 }
 
-class AbstractClientDataTypeFactorySpecServerDataType extends AbstractServerDataType(DataTypeInstanceId(), TestControlAlgorithm) {
+class AbstractClientDataTypeFactorySpecServerDataType extends AbstractClientDataType(DataTypeInstanceId(), TestControlAlgorithm) {
   override val dataTypeName: DataTypeName = DataTypeName("AbstractClientDataTypeFactorySpec")
 
   override val transformer: OperationTransformer = null
@@ -51,9 +51,10 @@ class AbstractClientDataTypeFactorySpecServerDataType extends AbstractServerData
 class AbstractClientDataTypeFactorySpecFormicDataType extends FormicDataType {
   override val dataTypeName: DataTypeName = DataTypeName("AbstractClientDataTypeFactorySpec")
   override var callback: () => Unit = _
+  override val dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId()
 }
 
-class AbstractClientDataTypeFactorySpecFactory extends AbstractClientDataTypeFactory[AbstractClientDataTypeFactorySpecServerDataType, AbstractClientDataTypeFactorySpecFormicDataType](null) {
+class AbstractClientDataTypeFactorySpecFactory extends AbstractClientDataTypeFactory[AbstractClientDataTypeFactorySpecServerDataType, AbstractClientDataTypeFactorySpecFormicDataType] {
 
   override val name: DataTypeName = DataTypeName("AbstractClientDataTypeFactorySpec")
 

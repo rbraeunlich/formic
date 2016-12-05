@@ -2,14 +2,14 @@ package de.tu_berlin.formic.client
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.ask
-import de.tu_berlin.formic.client.datatype.AbstractClientDataTypeFactory.NewDataTypeCreated
-import de.tu_berlin.formic.client.datatype.DataTypeInitiator
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.NewDataTypeCreated
+import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message.{CreateRequest, UpdateRequest}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataTypeProtocol
-import de.tu_berlin.formic.datatype.linear.client.FormicListFactory
+import de.tu_berlin.formic.datatype.linear.client._
 
 import scala.concurrent.duration._
 import scala.scalajs.js.annotation.JSExport
@@ -18,7 +18,7 @@ import scala.scalajs.js.annotation.JSExport
   * @author Ronny Bräunlich
   */
 @JSExport
-class FormicSystem extends DataTypeInitiator{
+class FormicSystem extends DataTypeInitiator {
 
   //TODO Read from Properties as default
   @JSExport
@@ -69,8 +69,19 @@ class FormicSystem extends DataTypeInitiator{
   }
 
   def initFactories()(implicit actorSystem: ActorSystem): Unit = {
-    //val formicListFactoryActor = actorSystem.actorOf(Props(new FormicListFactory(this)), "linearFactory")
-    //FormicJsonProtocol.registerProtocol(LinearFormicJsonDataTypeProtocol)
-    //factories += (FormicListFactory.name -> formicListFactoryActor)
+    val formicBooleanListFactory = actorSystem.actorOf(Props(new FormicBooleanListDataTypeFactory(this)), FormicBooleanListDataTypeFactory.dataTypeName.name)
+    val formicDoubleListFactroy = actorSystem.actorOf(Props(new FormicDoubleListDataTypeFactory(this)), FormicDoubleListDataTypeFactory.dataTypeName.name)
+    val formicIntegerListFactory = actorSystem.actorOf(Props(new FormicIntegerListDataTypeFactory(this)), FormicDoubleListDataTypeFactory.dataTypeName.name)
+    val formicStringFactory = actorSystem.actorOf(Props(new FormicStringDataTypeFactory(this)), FormicStringDataTypeFactory.dataTypeName.name)
+
+    FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Boolean](FormicBooleanListDataTypeFactory.dataTypeName))
+    FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Double](FormicDoubleListDataTypeFactory.dataTypeName))
+    FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Int](FormicDoubleListDataTypeFactory.dataTypeName))
+    FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Char](FormicStringDataTypeFactory.dataTypeName))
+
+    factories += (FormicBooleanListDataTypeFactory.dataTypeName -> formicBooleanListFactory)
+    factories += (FormicDoubleListDataTypeFactory.dataTypeName -> formicDoubleListFactroy)
+    factories += (FormicIntegerListDataTypeFactory.dataTypeName -> formicIntegerListFactory)
+    factories += (FormicStringDataTypeFactory.dataTypeName -> formicStringFactory)
   }
 }

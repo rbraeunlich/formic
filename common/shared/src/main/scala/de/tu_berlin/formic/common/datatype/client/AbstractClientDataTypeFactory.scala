@@ -1,10 +1,9 @@
-package de.tu_berlin.formic.client.datatype
+package de.tu_berlin.formic.common.datatype.client
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import de.tu_berlin.formic.client.DataTypeInstantiator.WrappedCreateRequest
-import de.tu_berlin.formic.client.datatype.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.DataTypeInstanceId
-import de.tu_berlin.formic.common.datatype.{AbstractServerDataType, DataTypeName, FormicDataType}
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{NewDataTypeCreated, WrappedCreateRequest}
+import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
 import de.tu_berlin.formic.common.message.CreateRequest
 
 import scala.reflect.ClassTag
@@ -13,7 +12,7 @@ import scala.reflect.ClassTag
   * @author Ronny Bräunlich
   */
 //Why the ClassTag? See http://stackoverflow.com/questions/18692265/no-classtag-available-for-t-not-for-array
-abstract class AbstractClientDataTypeFactory[T <: AbstractServerDataType : ClassTag, S <: FormicDataType : ClassTag](val initiator: DataTypeInitiator) extends Actor with ActorLogging {
+abstract class AbstractClientDataTypeFactory[T <: AbstractClientDataType: ClassTag, S <: FormicDataType : ClassTag] extends Actor with ActorLogging {
 
   override def receive: Receive = {
     case WrappedCreateRequest(outgoingConnection, req) =>
@@ -34,6 +33,7 @@ object AbstractClientDataTypeFactory {
 
   case class NewDataTypeCreated(dataTypeInstanceId: DataTypeInstanceId, dataTypeActor: ActorRef, wrapper: FormicDataType)
 
+  case class WrappedCreateRequest(outgoingConnection: ActorRef, createRequest: CreateRequest)
 }
 
 

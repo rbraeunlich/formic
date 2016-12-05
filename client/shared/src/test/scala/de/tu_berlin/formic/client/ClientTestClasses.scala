@@ -1,9 +1,9 @@
 package de.tu_berlin.formic.client
 
 import akka.actor.ActorRef
-import de.tu_berlin.formic.client.datatype.AbstractClientDataTypeFactory
-import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
+import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype._
+import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataType, AbstractClientDataTypeFactory}
 import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest.Assertions._
@@ -13,7 +13,7 @@ import upickle.Js
   * @author Ronny Bräunlich
   */
 
-class TestDataTypeFactory extends AbstractClientDataTypeFactory[TestServerDataType, TestFormicDataType](null) {
+class TestDataTypeFactory extends AbstractClientDataTypeFactory[TestServerDataType, TestFormicDataType] {
 
   override val name: DataTypeName = TestClasses.dataTypeName
 
@@ -22,7 +22,7 @@ class TestDataTypeFactory extends AbstractClientDataTypeFactory[TestServerDataTy
   override def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef): TestFormicDataType = new TestFormicDataType
 }
 
-class TestServerDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataTypeInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataType(dataTypeInstanceId, controlAlgorithm) {
+class TestServerDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataTypeInstanceId, controlAlgorithm: ControlAlgorithmClient) extends AbstractClientDataType(dataTypeInstanceId, controlAlgorithm) {
 
   var data = "{data}"
 
@@ -43,6 +43,7 @@ class TestServerDataType(override val historyBuffer: HistoryBuffer, val dataType
 class TestFormicDataType extends FormicDataType {
   override var callback: () => Unit = () => {}
   override val dataTypeName: DataTypeName = TestClasses.dataTypeName
+  override val dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId()
 }
 
 case class TestOperation(id: OperationId, operationContext: OperationContext,var clientId: ClientId) extends DataTypeOperation
@@ -68,11 +69,13 @@ class TestFormicJsonDataTypeProtocol extends FormicJsonDataTypeProtocol {
   }
 }
 
-object TestControlAlgorithm extends ControlAlgorithm {
+object TestControlAlgorithm extends ControlAlgorithmClient {
 
   override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = true
 
   override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = op
+
+  override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = true
 }
 
 object TestTransformer extends OperationTransformer {

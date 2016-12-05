@@ -1,9 +1,10 @@
-package de.tu_berlin.formic.common.datatype
+package de.tu_berlin.formic.common.datatype.client
 
 import akka.actor.{Actor, ActorLogging}
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
+import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, HistoryBuffer, OperationTransformer}
 import de.tu_berlin.formic.common.message.OperationMessage
 
 /**

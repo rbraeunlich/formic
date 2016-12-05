@@ -1,6 +1,7 @@
 package de.tu_berlin.formic.common.datatype
 
 import akka.actor.ActorRef
+import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.message.OperationMessage
 
 /**
@@ -17,6 +18,8 @@ trait FormicDataType {
   var callback: () => Unit
 
   var actor: ActorRef = _
+
+  val dataTypeInstanceId: DataTypeInstanceId
 }
 
 object FormicDataType {
