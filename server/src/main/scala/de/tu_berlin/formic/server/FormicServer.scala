@@ -17,7 +17,7 @@ import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message.FormicMessage
 import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataTypeProtocol
-import de.tu_berlin.formic.datatype.linear.server.LinearDataTypeFactory
+import de.tu_berlin.formic.datatype.linear.server._
 import upickle.default._
 
 import scala.concurrent.Await
@@ -34,9 +34,20 @@ object FormicServer {
   implicit val system = ActorSystem("formic-server")
 
   def initFactories()(implicit actorSystem: ActorSystem) = {
-    val linearFactoryActor = actorSystem.actorOf(Props[LinearDataTypeFactory], "linearFactory")
-    FormicJsonProtocol.registerProtocol(LinearFormicJsonDataTypeProtocol)
-    factories += (LinearDataTypeFactory.dataTypeName -> linearFactoryActor)
+    val booleanListFactory = actorSystem.actorOf(Props[BooleanListDataTypeFactory], BooleanListDataTypeFactory.name.name)
+    val doubleListFactory = actorSystem.actorOf(Props[DoubleListDataTypeFactory], DoubleListDataTypeFactory.name.name)
+    val integerListFactory = actorSystem.actorOf(Props[IntegerListDataTypeFactory], IntegerListDataTypeFactory.name.name)
+    val stringFactory = actorSystem.actorOf(Props[StringDataTypeFactory], StringDataTypeFactory.name.name)
+
+    FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Boolean](BooleanListDataTypeFactory.name))
+    FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Double](DoubleListDataTypeFactory.name))
+    FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Int](IntegerListDataTypeFactory.name))
+    FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Char](StringDataTypeFactory.name))
+
+    factories += (BooleanListDataTypeFactory.name -> booleanListFactory)
+    factories += (DoubleListDataTypeFactory.name -> doubleListFactory)
+    factories += (IntegerListDataTypeFactory.name -> integerListFactory)
+    factories += (StringDataTypeFactory.name -> stringFactory)
   }
 
   def main(args: Array[String]): Unit = {

@@ -1,16 +1,18 @@
 package de.tu_berlin.formic.datatype.linear
 
-import de.tu_berlin.formic.common.datatype.OperationContext
+import de.tu_berlin.formic.common.datatype.{DataTypeName, OperationContext}
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import org.scalatest._
+import upickle.default._
 
+import scala.runtime.RichChar
 /**
   * @author Ronny Bräunlich
   */
 class LinearFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
 
   "Linear JSON protocol" should "serialize a linear insert operation" in {
-    val protocol = LinearFormicJsonDataTypeProtocol
+    val protocol = new LinearFormicJsonDataTypeProtocol[Char](DataTypeName("string"))
     val index = 0
     val value = Integer.valueOf(1)
     val operationId = OperationId()
@@ -24,7 +26,7 @@ class LinearFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   }
 
   it should "serialize a linear delete operation" in {
-    val protocol = LinearFormicJsonDataTypeProtocol
+    val protocol = new LinearFormicJsonDataTypeProtocol[Char](DataTypeName("string"))
     val index = 0
     val operationId = OperationId()
     val context = OperationContext(List.empty)
@@ -37,16 +39,16 @@ class LinearFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   }
 
   it should "deserialize a linear insert operation" in {
-    val protocol = LinearFormicJsonDataTypeProtocol
-    val json = "{\"index\":0,\"object\":\"abc\",\"operationId\":\"1\",\"operationContext\":[],\"clientId\":\"123\"}"
+    val protocol = new LinearFormicJsonDataTypeProtocol[Char](DataTypeName("string"))
+    val json = "{\"index\":0,\"object\":\"a\",\"operationId\":\"1\",\"operationContext\":[],\"clientId\":\"123\"}"
 
     val op = protocol.deserializeOperation(json)
 
-    op should be(LinearInsertOperation(0, "abc", OperationId("1"), OperationContext(List.empty), ClientId("123")))
+    op should be(LinearInsertOperation(0, 'a', OperationId("1"), OperationContext(List.empty), ClientId("123")))
   }
 
   it should "deserialize a linear delete operation" in {
-    val protocol = LinearFormicJsonDataTypeProtocol
+    val protocol = new LinearFormicJsonDataTypeProtocol[Char](DataTypeName("string"))
     val json = "{\"index\":0,\"operationId\":\"1\",\"operationContext\":[],\"clientId\":\"123\"}"
 
     val op = protocol.deserializeOperation(json)

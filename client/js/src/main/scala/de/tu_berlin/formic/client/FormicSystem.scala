@@ -69,8 +69,8 @@ class FormicSystem extends DataTypeInitiator{
   }
 
   def initFactories()(implicit actorSystem: ActorSystem): Unit = {
-    val formicListFactoryActor = actorSystem.actorOf(Props(new FormicListFactory(this)), "linearFactory")
-    FormicJsonProtocol.registerProtocol(LinearFormicJsonDataTypeProtocol)
-    factories += (FormicListFactory.name -> formicListFactoryActor)
+    //val formicListFactoryActor = actorSystem.actorOf(Props(new FormicListFactory(this)), "linearFactory")
+    //FormicJsonProtocol.registerProtocol(LinearFormicJsonDataTypeProtocol)
+    //factories += (FormicListFactory.name -> formicListFactoryActor)
   }
 }

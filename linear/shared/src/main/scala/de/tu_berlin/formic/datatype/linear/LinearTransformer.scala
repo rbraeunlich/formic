@@ -7,7 +7,7 @@ trait LinearStructureOperation extends DataTypeOperation {
   val index: Int
 }
 
-case class LinearInsertOperation(index: Int, o: Object, id: OperationId, operationContext: OperationContext,var clientId: ClientId) extends LinearStructureOperation
+case class LinearInsertOperation(index: Int, o: Any, id: OperationId, operationContext: OperationContext,var clientId: ClientId) extends LinearStructureOperation
 
 case class LinearDeleteOperation(index: Int, id: OperationId, operationContext: OperationContext,var clientId: ClientId) extends LinearStructureOperation
 

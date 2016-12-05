@@ -9,9 +9,7 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-object LinearFormicJsonDataTypeProtocol extends FormicJsonDataTypeProtocol {
-
-  override val name: DataTypeName = LinearServerDataType.dataTypeName
+class LinearFormicJsonDataTypeProtocol[T](val name: DataTypeName)(implicit val reader: Reader[T], val writer: Writer[T]) extends FormicJsonDataTypeProtocol {
 
   override def deserializeOperation(json: String): DataTypeOperation = {
     val valueMap = upickle.json.read(json).obj
@@ -20,8 +18,7 @@ object LinearFormicJsonDataTypeProtocol extends FormicJsonDataTypeProtocol {
     val clientId = ClientId(valueMap("clientId").str)
     val index = valueMap("index").num.toInt
     if (valueMap.contains("object")) {
-      //FIXME
-      LinearInsertOperation(index, valueMap("object").str, operationId, OperationContext(operationContext), clientId)
+      LinearInsertOperation(index, readJs[T](valueMap("object")).asInstanceOf[Object], operationId, OperationContext(operationContext), clientId)
     } else {
       LinearDeleteOperation(index, operationId, OperationContext(operationContext), clientId)
     }
@@ -32,7 +29,7 @@ object LinearFormicJsonDataTypeProtocol extends FormicJsonDataTypeProtocol {
       case insert: LinearInsertOperation =>
         Js.Obj(
           ("index", Js.Num(insert.index)),
-          ("object", Js.Str(insert.o.toString)), //FIXME
+          ("object", writeJs(insert.o.asInstanceOf[T])),
           ("operationId", Js.Str(op.id.id)),
           ("operationContext", Js.Arr(op.operationContext.operations.map(o => Js.Str(o.id)): _*)),
           ("clientId", Js.Str(op.clientId.id))

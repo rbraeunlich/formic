@@ -26,13 +26,54 @@ class LinearDataTypeFactorySpec extends TestKit(ActorSystem("LinearDataTypeFacto
     system.terminate()
   }
 
-  "LinearDataTypeFactory" must {
+  "BooleanListDataTypeFactory" must {
     "create linear data types" in {
-      import scala.concurrent.ExecutionContext.Implicits.global
 
-      val factory = system.actorOf(Props(new LinearDataTypeFactory()), "testfactory")
+      val factory = system.actorOf(Props(new BooleanListDataTypeFactory()), "bool")
       val dataTypeInstanceId = DataTypeInstanceId()
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, LinearServerDataType.dataTypeName)
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, BooleanListDataTypeFactory.name)
+
+      val response = expectMsgClass(classOf[NewDataTypeCreated])
+
+      response.dataTypeInstanceId should be(dataTypeInstanceId)
+      response.ref.path should equal(factory.path.child(dataTypeInstanceId.id))
+    }
+  }
+
+  "DoubleListDataTypeFactory" must {
+    "create linear data types" in {
+
+      val factory = system.actorOf(Props(new DoubleListDataTypeFactory()), "double")
+      val dataTypeInstanceId = DataTypeInstanceId()
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, DoubleListDataTypeFactory.name)
+
+      val response = expectMsgClass(classOf[NewDataTypeCreated])
+
+      response.dataTypeInstanceId should be(dataTypeInstanceId)
+      response.ref.path should equal(factory.path.child(dataTypeInstanceId.id))
+    }
+  }
+
+  "IntegerListDataTypeFactory" must {
+    "create linear data types" in {
+
+      val factory = system.actorOf(Props(new IntegerListDataTypeFactory()), "int")
+      val dataTypeInstanceId = DataTypeInstanceId()
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, IntegerListDataTypeFactory.name)
+
+      val response = expectMsgClass(classOf[NewDataTypeCreated])
+
+      response.dataTypeInstanceId should be(dataTypeInstanceId)
+      response.ref.path should equal(factory.path.child(dataTypeInstanceId.id))
+    }
+  }
+
+  "StringDataTypeFactory" must {
+    "create linear data types" in {
+
+      val factory = system.actorOf(Props(new BooleanListDataTypeFactory()), "string")
+      val dataTypeInstanceId = DataTypeInstanceId()
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, StringDataTypeFactory.name)
 
       val response = expectMsgClass(classOf[NewDataTypeCreated])
 

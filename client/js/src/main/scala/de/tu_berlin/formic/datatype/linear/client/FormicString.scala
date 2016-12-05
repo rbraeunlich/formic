@@ -20,7 +20,7 @@ class FormicString(var callback: () => Unit, formicSystem: FormicSystem) extends
 
   val dataTypeInstanceId = DataTypeInstanceId()
 
-  override val dataTypeName: DataTypeName = LinearServerDataType.dataTypeName
+  override val dataTypeName: DataTypeName = FormicListFactory.name
 
   implicit val timeout: Timeout = 1.seconds
 

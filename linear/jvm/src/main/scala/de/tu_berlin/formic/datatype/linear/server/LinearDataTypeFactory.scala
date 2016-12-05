@@ -10,16 +10,10 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-//FIXME for some reason ScalaJS won't compile a LinearDataTypeFactory[S], therefore its String for now
-class LinearDataTypeFactory extends AbstractDataTypeFactory[LinearServerDataType[String]] {
+abstract class LinearDataTypeFactory[S](implicit writer: Writer[S]) extends AbstractDataTypeFactory[LinearServerDataType[S]] {
 
-  override def create(dataTypeInstanceId: DataTypeInstanceId): LinearServerDataType[String] = {
-    LinearServerDataType(dataTypeInstanceId, new GoogleWaveOTServer())
+  override def create(dataTypeInstanceId: DataTypeInstanceId): LinearServerDataType[S] = {
+    LinearServerDataType(dataTypeInstanceId, new GoogleWaveOTServer(), name)
   }
 
-  override val name: DataTypeName = LinearDataTypeFactory.dataTypeName
-}
-
-object LinearDataTypeFactory {
-  val dataTypeName = LinearServerDataType.dataTypeName
 }

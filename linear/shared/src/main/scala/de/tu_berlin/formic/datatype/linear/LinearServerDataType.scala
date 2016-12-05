@@ -12,9 +12,7 @@ import scala.collection.mutable.ArrayBuffer
   *
   * @author Ronny Bräunlich
   */
-class LinearServerDataType[T](id: DataTypeInstanceId, controlAlgorithm: ControlAlgorithm, implicit val writer: Writer[T]) extends AbstractServerDataType(id, controlAlgorithm) {
-
-  override val dataTypeName: DataTypeName = LinearServerDataType.dataTypeName
+class LinearServerDataType[T](id: DataTypeInstanceId, controlAlgorithm: ControlAlgorithm,val dataTypeName: DataTypeName, implicit val writer: Writer[T]) extends AbstractServerDataType(id, controlAlgorithm) {
 
   override val transformer: OperationTransformer = LinearTransformer
 
@@ -38,7 +36,5 @@ class LinearServerDataType[T](id: DataTypeInstanceId, controlAlgorithm: ControlA
 
 object LinearServerDataType {
 
-  val dataTypeName = DataTypeName("linear")
-
-  def apply[T](id: DataTypeInstanceId, controlAlgorithm: ControlAlgorithm)(implicit writer: Writer[T]): LinearServerDataType[T] = new LinearServerDataType(id, controlAlgorithm, writer)
+  def apply[T](id: DataTypeInstanceId, controlAlgorithm: ControlAlgorithm, dataTypeName: DataTypeName)(implicit writer: Writer[T]): LinearServerDataType[T] = new LinearServerDataType(id, controlAlgorithm, dataTypeName, writer)
 }
