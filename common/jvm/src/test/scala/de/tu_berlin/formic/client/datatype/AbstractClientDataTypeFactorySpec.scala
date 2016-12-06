@@ -2,10 +2,10 @@ package de.tu_berlin.formic.client.datatype
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import de.tu_berlin.formic.client.{StopSystemAfterAll, TestControlAlgorithm}
+import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype._
-import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataType, AbstractClientDataTypeFactory}
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
+import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataType, AbstractClientDataTypeFactory}
 import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import org.scalatest.{Matchers, WordSpecLike}
@@ -51,7 +51,16 @@ class AbstractClientDataTypeFactorySpec extends TestKit(ActorSystem("AbstractCli
 
 }
 
-class AbstractClientDataTypeFactorySpecServerDataType extends AbstractClientDataType(DataTypeInstanceId(), TestControlAlgorithm) {
+object AbstractClientDataTypeSpecControlAlgorithm extends ControlAlgorithmClient {
+
+  override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = true
+
+  override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = true
+
+  override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = op
+}
+
+class AbstractClientDataTypeFactorySpecServerDataType extends AbstractClientDataType(DataTypeInstanceId(), AbstractClientDataTypeSpecControlAlgorithm) {
   override val dataTypeName: DataTypeName = DataTypeName("AbstractClientDataTypeFactorySpec")
 
   override val transformer: OperationTransformer = null
