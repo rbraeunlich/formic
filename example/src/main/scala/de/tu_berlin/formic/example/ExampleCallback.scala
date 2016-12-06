@@ -3,13 +3,9 @@ package de.tu_berlin.formic.example
 import de.tu_berlin.formic.client.NewInstanceCallback
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
 import de.tu_berlin.formic.datatype.linear.client.FormicString
-import org.scalajs.dom._
-import org.scalajs.dom.raw.HTMLInputElement
-import org.scalajs.jquery.{JQueryEventObject, _}
+import org.scalajs.jquery._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
-import de.tu_berlin.formic.example.ExampleCallback.BACKSPACE_CODE
 
 /**
   * @author Ronny Bräunlich
@@ -30,8 +26,4 @@ class ExampleCallback extends NewInstanceCallback {
       buff => jQuery("#" + inputId).value(buff.mkString)
     }
   }
-}
-
-object ExampleCallback {
-  val BACKSPACE_CODE = 8
 }

@@ -3,9 +3,9 @@ package de.tu_berlin.formic.datatype.linear.client
 import akka.pattern._
 import akka.util.Timeout
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.{GetHistory, ReceiveCallback}
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
 import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
-import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType, HistoryBuffer, OperationContext}
+import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation}
@@ -26,7 +26,7 @@ abstract class FormicList[T](private var _callback: () => Unit, initiator: DataT
 
   override def callback: () => Unit = _callback
 
-  override def callback_= (newCallback: () => Unit){
+  override def callback_=(newCallback: () => Unit) {
     _callback = newCallback
     actor ! ReceiveCallback(newCallback)
   }
@@ -37,28 +37,18 @@ abstract class FormicList[T](private var _callback: () => Unit, initiator: DataT
 
   @JSExport
   def add(index: Int, o: T) = {
-    import scala.concurrent.ExecutionContext.Implicits.global
-        LocalOperationMessage(
-          OperationMessage(null, dataTypeInstanceId, dataTypeName, List(LinearInsertOperation(index, o, OperationId(), OperationContext(List.empty), null)))
-        )
+    val op = LocalOperationMessage(
+      OperationMessage(null, dataTypeInstanceId, dataTypeName, List(LinearInsertOperation(index, o, OperationId(), OperationContext(List.empty), null)))
+    )
+    actor ! op
   }
 
   @JSExport
   def remove(index: Int) = {
-    import scala.concurrent.ExecutionContext.Implicits.global
-    val operation = ask(actor, GetHistory).
-      mapTo[HistoryBuffer].
-      map(buffer => buffer.history.headOption).
-      map {
-        case Some(entry) => List(entry.id)
-        case None => List.empty
-      }.
-      map(operations =>
-        LocalOperationMessage(
-          OperationMessage(null, dataTypeInstanceId, dataTypeName, List(LinearDeleteOperation(index, OperationId(), OperationContext(operations), null)))
-        )
-      )
-    pipe(operation) to actor
+    val op = LocalOperationMessage(
+      OperationMessage(null, dataTypeInstanceId, dataTypeName, List(LinearDeleteOperation(index, OperationId(), OperationContext(List.empty), null)))
+    )
+    actor ! op
   }
 
   @JSExport

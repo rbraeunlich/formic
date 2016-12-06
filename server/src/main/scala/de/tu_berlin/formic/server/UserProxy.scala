@@ -74,7 +74,7 @@ class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = C
   }
 }
 
-class OperationMessageSubscriber(val outgoingConnection: ActorRef) extends Actor {
+class OperationMessageSubscriber(val outgoingConnection: ActorRef) extends Actor with ActorLogging{
 
   var watchlist: Map[DataTypeInstanceId, ActorRef] = Map.empty
 
@@ -82,7 +82,9 @@ class OperationMessageSubscriber(val outgoingConnection: ActorRef) extends Actor
     case op: OperationMessage =>
       val dataTypeInstance = watchlist.find(t => t._1 == op.dataTypeInstanceId)
       dataTypeInstance match {
-        case Some(_) => outgoingConnection ! op
+        case Some(_) =>
+          log.debug(s"Sending operation message $op")
+          outgoingConnection ! op
         case None => //Client is not interested in the data type that changed
       }
 

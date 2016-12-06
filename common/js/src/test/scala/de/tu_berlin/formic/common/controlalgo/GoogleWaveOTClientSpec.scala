@@ -58,7 +58,7 @@ class GoogleWaveOTClientSpec extends WordSpec with Matchers {
       val canBeApplied = controlAlgo.canBeApplied(operation, new HistoryBuffer())
 
       controlAlgo.inFlightOperation should be(operation2)
-      controlAlgo.buffer should contain(operation3)
+      controlAlgo.buffer should contain only operation3
       canBeApplied should equal(false)
     }
 

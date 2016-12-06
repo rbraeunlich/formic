@@ -27,7 +27,7 @@ class GoogleWaveOTClient(sendToServerFunction: (DataTypeOperation) => Unit) exte
     if (isAcknowledgement(op)) {
       if (buffer.nonEmpty) {
         inFlightOperation = buffer.head
-        buffer = buffer.drop(0)
+        buffer = buffer.drop(1)
         sendToServerFunction(inFlightOperation)
       } else {
         inFlightOperation = null

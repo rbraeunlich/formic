@@ -20,6 +20,8 @@ object Main extends JSApp {
 
   var string: FormicString = _
 
+  val BACKSPACE_CODE = 8
+
   def main(): Unit = {
     system.init(new ExampleCallback(), ClientId())
     jQuery(setupUI _)
@@ -56,7 +58,7 @@ object Main extends JSApp {
     (event: JQueryEventObject) => {
       //this is quite some hack
       val index = document.getElementById(elementId).asInstanceOf[HTMLInputElement].selectionStart
-      if (event.which != 8) {
+      if (event.which != BACKSPACE_CODE) {
         val character = event.which.toChar
         println("Inserting new Character: " + character)
         string.add(index, character)
