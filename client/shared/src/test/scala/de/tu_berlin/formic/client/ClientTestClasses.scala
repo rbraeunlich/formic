@@ -13,16 +13,16 @@ import upickle.Js
   * @author Ronny Bräunlich
   */
 
-class TestDataTypeFactory extends AbstractClientDataTypeFactory[TestServerDataType, TestFormicDataType] {
+class TestDataTypeFactory extends AbstractClientDataTypeFactory[TestClientDataType, TestFormicDataType] {
 
   override val name: DataTypeName = TestClasses.dataTypeName
 
-  override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef): TestServerDataType = new TestServerDataType(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm)
+  override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef): TestClientDataType = new TestClientDataType(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm)
 
   override def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef): TestFormicDataType = new TestFormicDataType
 }
 
-class TestServerDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataTypeInstanceId, controlAlgorithm: ControlAlgorithmClient) extends AbstractClientDataType(dataTypeInstanceId, controlAlgorithm) {
+class TestClientDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataTypeInstanceId, controlAlgorithm: ControlAlgorithmClient) extends AbstractClientDataType(dataTypeInstanceId, controlAlgorithm) {
 
   var data = "{data}"
 
@@ -38,6 +38,8 @@ class TestServerDataType(override val historyBuffer: HistoryBuffer, val dataType
   override def getDataAsJson: String = data
 
   override val transformer: OperationTransformer = TestTransformer
+
+  override def cloneOperationWithNewContext(op: DataTypeOperation, context: OperationContext): DataTypeOperation = op
 }
 
 class TestFormicDataType extends FormicDataType {

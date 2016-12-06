@@ -200,7 +200,9 @@ class AbstractClientDataTypeTestClientDataType(dataTypeInstanceId: DataTypeInsta
   override def getDataAsJson: String = data
 
   override def cloneOperationWithNewContext(op: DataTypeOperation, context: OperationContext): DataTypeOperation = {
-    case abstr:AbstractClientDataTypeSpecTestOperation => AbstractClientDataTypeSpecTestOperation(abstr.id, context, abstr.clientId, abstr.data)
+    op match {
+      case abstr: AbstractClientDataTypeSpecTestOperation => AbstractClientDataTypeSpecTestOperation(abstr.id, context, abstr.clientId, abstr.data)
+    }
   }
 }
 

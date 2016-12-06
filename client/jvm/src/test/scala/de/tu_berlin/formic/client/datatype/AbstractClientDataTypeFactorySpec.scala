@@ -46,6 +46,8 @@ class AbstractClientDataTypeFactorySpecServerDataType extends AbstractClientData
   override def apply(op: DataTypeOperation): Unit = {}
 
   override def getDataAsJson: String = ""
+
+  override def cloneOperationWithNewContext(op: DataTypeOperation, context: OperationContext): DataTypeOperation = op
 }
 
 class AbstractClientDataTypeFactorySpecFormicDataType extends FormicDataType {
