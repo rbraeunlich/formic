@@ -7,6 +7,7 @@ import org.scalajs.dom.document
 import org.scalajs.dom.raw.HTMLInputElement
 import org.scalajs.jquery.{JQueryEventObject, jQuery}
 
+import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.JSApp
 import scala.util.{Failure, Success}
@@ -18,7 +19,7 @@ object Main extends JSApp {
 
   val system = new FormicSystem()
 
-  var string: FormicString = _
+  val strings: ArrayBuffer[FormicString] = collection.mutable.ArrayBuffer()
 
   val BACKSPACE_CODE = 8
 
@@ -33,16 +34,17 @@ object Main extends JSApp {
   }
 
   def createNewString() = {
-    string = new FormicString(() => updateUI(string.dataTypeInstanceId.id), system)
-    val id = string.dataTypeInstanceId
+    val id = DataTypeInstanceId()
+    val string = new FormicString(() => updateUI(id.id), system, id)
+    strings += string
     val inputId = id.id
-    jQuery("body").append("<p>String data type with id " + id + "</p>")
+    jQuery("body").append("<p>String data type with id " + inputId + "</p>")
     jQuery("body").append("<input id=\"" + inputId + "\" name=\"string\" type=\"text\"</input>")
     jQuery("#" + inputId).keypress(keyPressHandler(inputId))
   }
 
   def updateUI(id: String): Unit = {
-    string.getAll.foreach {
+    strings.find(s => s.dataTypeInstanceId.id == id).get.getAll.foreach {
       buff => jQuery("#" + id).value(buff.mkString)
     }
   }
@@ -60,10 +62,10 @@ object Main extends JSApp {
       if (event.which != BACKSPACE_CODE) {
         val character = event.which.toChar
         println("Inserting new Character: " + character)
-        string.add(index, character)
+        strings.find(s => s.dataTypeInstanceId.id == elementId).get.add(index, character)
       } else {
         //since a delete with backspace starts behind the character to delete
-        string.remove(index - 1)
+        strings.find(s => s.dataTypeInstanceId.id == elementId).get.remove(index - 1)
       }
     }
   }
