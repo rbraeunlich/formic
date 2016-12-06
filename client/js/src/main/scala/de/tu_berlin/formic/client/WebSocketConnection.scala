@@ -43,8 +43,11 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
       dispatcher ! read[FormicMessage](msg)
     //TODO Buffer messages when being offline
     //gotta add the client id
-    case req: CreateRequest =>
+    case (ref: ActorRef, req: CreateRequest) =>
       log.debug(s"Received CreateRequest: $req")
+      //this is a little hack because the FormicSystem does not know the dispatcher
+      //create requests can only be from the local client because remote ones arrive as FormicMsgs
+      dispatcher ! (ref, req)
       webSocketConnection.send(write(CreateRequest(clientId, req.dataTypeInstanceId, req.dataType)))
     case hist: HistoricOperationRequest =>
       log.debug(s"Sending $hist")

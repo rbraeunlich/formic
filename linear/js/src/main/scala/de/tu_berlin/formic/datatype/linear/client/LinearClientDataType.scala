@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.linear.client
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType
-import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation, LinearTransformer}
 import upickle.default._
 
@@ -30,6 +30,13 @@ class LinearClientDataType[T](id: DataTypeInstanceId, controlAlgorithmClient: Co
 
   override def getDataAsJson: String = {
     write(data)
+  }
+
+  override def cloneOperationWithNewContext(op: DataTypeOperation, context: OperationContext): DataTypeOperation = {
+    op match {
+      case in:LinearInsertOperation => LinearInsertOperation(in.index, in.o, in.id, context, in.clientId)
+      case del:LinearDeleteOperation => LinearDeleteOperation(del.index, del.id, context, del.clientId)
+    }
   }
 }
 

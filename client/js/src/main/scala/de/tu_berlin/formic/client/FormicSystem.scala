@@ -2,7 +2,8 @@ package de.tu_berlin.formic.client
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.ask
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.NewDataTypeCreated
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
@@ -13,6 +14,7 @@ import de.tu_berlin.formic.datatype.linear.client._
 
 import scala.concurrent.duration._
 import scala.scalajs.js.annotation.JSExport
+import scala.util.{Failure, Success}
 
 /**
   * @author Ronny Bräunlich
@@ -37,9 +39,12 @@ class FormicSystem extends DataTypeInitiator {
 
   var factories: Map[DataTypeName, ActorRef] = Map.empty
 
+  implicit val system = ActorSystem("FormicSystem")
+
+  implicit val ec = system.dispatcher
+
   @JSExport
   def init(callback: NewInstanceCallback, username: ClientId = ClientId()) = {
-    implicit val system = ActorSystem("FormicSystem")
     initFactories()
     val instantiator = system.actorOf(Props(new DataTypeInstantiator(factories)))
     val wrappedCallback = system.actorOf(Props(new NewInstanceCallbackActorWrapper(callback)))
@@ -55,28 +60,30 @@ class FormicSystem extends DataTypeInitiator {
     val name = dataType.dataTypeName
     factories.find(t => t._1 == name) match {
       case Some((k, v)) =>
-        import scala.concurrent.ExecutionContext.Implicits.global
-        val response = ask(v, CreateRequest(id, DataTypeInstanceId(), name))(2.seconds)
+        val request = CreateRequest(id, dataType.dataTypeInstanceId, name)
+        ask(v, LocalCreateRequest(connection, dataType.dataTypeInstanceId))(2.seconds)
           .mapTo[NewDataTypeCreated]
           .map(msg => msg.dataTypeActor)
-          .onSuccess {
-            case actor: ActorRef =>
+          .onComplete {
+            case Success(actor) =>
               dataType.actor = actor
-              dataType.connection = connection
+              actor ! ReceiveCallback(dataType.callback)
+              connection ! (actor, request)
+            case Failure(ex) => throw ex
           }
       case None => throw new IllegalArgumentException("Unknown data type: " + name)
     }
   }
 
   def initFactories()(implicit actorSystem: ActorSystem): Unit = {
-    val formicBooleanListFactory = actorSystem.actorOf(Props(new FormicBooleanListDataTypeFactory(this)), FormicBooleanListDataTypeFactory.dataTypeName.name)
-    val formicDoubleListFactroy = actorSystem.actorOf(Props(new FormicDoubleListDataTypeFactory(this)), FormicDoubleListDataTypeFactory.dataTypeName.name)
-    val formicIntegerListFactory = actorSystem.actorOf(Props(new FormicIntegerListDataTypeFactory(this)), FormicDoubleListDataTypeFactory.dataTypeName.name)
-    val formicStringFactory = actorSystem.actorOf(Props(new FormicStringDataTypeFactory(this)), FormicStringDataTypeFactory.dataTypeName.name)
+    val formicBooleanListFactory = actorSystem.actorOf(Props(new FormicBooleanListDataTypeFactory), FormicBooleanListDataTypeFactory.dataTypeName.name)
+    val formicDoubleListFactroy = actorSystem.actorOf(Props(new FormicDoubleListDataTypeFactory), FormicDoubleListDataTypeFactory.dataTypeName.name)
+    val formicIntegerListFactory = actorSystem.actorOf(Props(new FormicIntegerListDataTypeFactory), FormicIntegerListDataTypeFactory.dataTypeName.name)
+    val formicStringFactory = actorSystem.actorOf(Props(new FormicStringDataTypeFactory), FormicStringDataTypeFactory.dataTypeName.name)
 
     FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Boolean](FormicBooleanListDataTypeFactory.dataTypeName))
     FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Double](FormicDoubleListDataTypeFactory.dataTypeName))
-    FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Int](FormicDoubleListDataTypeFactory.dataTypeName))
+    FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Int](FormicIntegerListDataTypeFactory.dataTypeName))
     FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Char](FormicStringDataTypeFactory.dataTypeName))
 
     factories += (FormicBooleanListDataTypeFactory.dataTypeName -> formicBooleanListFactory)

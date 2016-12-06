@@ -3,7 +3,6 @@ package de.tu_berlin.formic.common.datatype
 import akka.actor.{Actor, ActorLogging}
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
-import de.tu_berlin.formic.common.datatype.AbstractServerDataType.GetHistory
 import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
 /**
   * @author Ronny Bräunlich
@@ -46,8 +45,6 @@ abstract class AbstractServerDataType(val id: DataTypeInstanceId, val controlAlg
     case upd:UpdateRequest =>
       log.debug(s"DataType $id received UpdateRequest: $upd")
       sender ! UpdateResponse(id, dataTypeName, getDataAsJson)
-
-    case GetHistory => sender ! new HistoryBuffer(historyBuffer.history)
   }
 
   /**
@@ -76,8 +73,4 @@ abstract class AbstractServerDataType(val id: DataTypeInstanceId, val controlAlg
   def getDataAsJson: String
 
   def causallyNotReadyOperations = privateCausallyNotReadyOperations
-}
-
-object AbstractServerDataType {
-  case object GetHistory
 }

@@ -11,12 +11,11 @@ import scala.scalajs.js.annotation.JSExport
   * @author Ronny Bräunlich
   */
 @JSExport
-class FormicDoubleList(callback: () => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId()) extends FormicList[Double](callback, initiator, dataTypeInstanceId) {
+class FormicDoubleList(callback: () => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId())
+  extends FormicList[Double](callback, initiator, dataTypeInstanceId, FormicDoubleListDataTypeFactory.dataTypeName) {
 
   def this(callback: () => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataTypeInstanceId, wrapped: ActorRef){
     this(callback, initiator, dataTypeInstanceId)
     this.actor = wrapped
   }
-
-  override val dataTypeName: DataTypeName = FormicDoubleListDataTypeFactory.dataTypeName
 }

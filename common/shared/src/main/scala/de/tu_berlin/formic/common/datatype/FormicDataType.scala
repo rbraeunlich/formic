@@ -11,8 +11,6 @@ import de.tu_berlin.formic.common.message.OperationMessage
   */
 trait FormicDataType {
 
-  var connection: ActorRef = _
-
   val dataTypeName: DataTypeName
 
   var callback: () => Unit

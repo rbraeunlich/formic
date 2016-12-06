@@ -10,7 +10,7 @@ import upickle.default.Writer
 /**
   * @author Ronny Bräunlich
   */
-abstract class FormicLinearDataTypeFactory[S](initiator: DataTypeInitiator)(implicit writer: Writer[S]) extends AbstractClientDataTypeFactory[LinearClientDataType[S], FormicList[S]]{
+abstract class FormicLinearDataTypeFactory[S](implicit writer: Writer[S]) extends AbstractClientDataTypeFactory[LinearClientDataType[S], FormicList[S]]{
 
   override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef): LinearClientDataType[S] = {
     LinearClientDataType(dataTypeInstanceId, new GoogleWaveOTClient((op) => outgoingConnection ! OperationMessage(null, dataTypeInstanceId, name, List(op))), name)

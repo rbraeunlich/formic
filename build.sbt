@@ -139,7 +139,8 @@ lazy val example = project.in(file("example")).
     name := "formic-example-app",
     persistLauncher := true,
     skip in packageJSDependencies := false,
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.1",
+    libraryDependencies += "be.doeraene" %%% "scalajs-jquery" % "0.9.1",
+    jsDependencies += "org.webjars" % "jquery" % "2.1.4" / "2.1.4/jquery.js",
     jsDependencies += RuntimeDOM
   ).
   dependsOn(commonJS, linearJS, clientJS).

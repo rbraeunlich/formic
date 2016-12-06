@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
 import de.tu_berlin.formic.client.Dispatcher.{ErrorMessage, WrappedUpdateResponse}
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.DataTypeInstanceId
-import de.tu_berlin.formic.common.message.{CreateResponse, OperationMessage, UpdateResponse}
+import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse, OperationMessage, UpdateResponse}
 
 /**
   * @author Ronny Bräunlich
@@ -27,6 +27,10 @@ class Dispatcher(val outgoingConnection: ActorRef, val newInstanceCallback: Acto
     case ErrorMessage(errorText) => log.error("Error from WebSocket connection: " + errorText)
     case rep: CreateResponse =>
       //TODO the data type may now send its operations to the server
+    case (ref:ActorRef, req:CreateRequest) =>
+      //this is a little hack to inform the Dispatcher about new, locally created data types
+      instances += (req.dataTypeInstanceId -> ref)
+
     //TODO more?
   }
 }
@@ -35,6 +39,9 @@ object Dispatcher {
 
   case class ErrorMessage(errorText: String)
 
+  /**
+    * To be able to pass the outgoing connection to the next actor, the UpdateResponse has to be wrapped.
+    */
   case class WrappedUpdateResponse(outgoingConnection: ActorRef, updateResponse: UpdateResponse)
 
 }
