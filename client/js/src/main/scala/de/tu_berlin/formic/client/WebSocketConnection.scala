@@ -16,14 +16,12 @@ import org.scalajs.dom._
 class WebSocketConnection(val newInstanceCallback: ActorRef,
                           val instantiator: ActorRef,
                           val clientId: ClientId,
-                          val webSocketConnectionFactory: WebSocketFactory)
+                          val webSocketConnectionFactory: WebSocketFactory,
+                          val url: String)
   extends Actor
     with Connection
     with OutgoingConnection
     with ActorLogging {
-
-  //TODO read from config
-  val url = s"ws://${clientId.id}@0.0.0.0:8080/formic"
 
   var dispatcher: ActorRef = _
   var webSocketConnection: dom.WebSocket = webSocketConnectionFactory.createConnection(url)

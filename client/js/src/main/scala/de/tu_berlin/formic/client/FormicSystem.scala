@@ -48,7 +48,8 @@ class FormicSystem extends DataTypeInitiator {
     initFactories()
     val instantiator = system.actorOf(Props(new DataTypeInstantiator(factories)))
     val wrappedCallback = system.actorOf(Props(new NewInstanceCallbackActorWrapper(callback)))
-    connection = system.actorOf(Props(new WebSocketConnection(wrappedCallback, instantiator, username, WebSocketFactory)))
+    val url = s"ws://${username.id}@0.0.0.0:8080/formic"
+    connection = system.actorOf(Props(new WebSocketConnection(wrappedCallback, instantiator, username, WebSocketFactory, url)))
   }
 
   @JSExport
