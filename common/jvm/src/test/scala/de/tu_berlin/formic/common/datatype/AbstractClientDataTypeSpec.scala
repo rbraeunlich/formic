@@ -1,15 +1,16 @@
 package de.tu_berlin.formic.common.datatype
 
-import akka.actor.{ActorSystem, Props}
-import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
+import akka.actor.{ActorRef, ActorSystem, Props, Terminated}
+import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType
-import de.tu_berlin.formic.common.message.OperationMessage
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
+import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest.Assertions._
 import org.scalatest.{Matchers, WordSpecLike}
-
+import scala.concurrent.duration._
 /**
   * @author Ronny Bräunlich
   */
@@ -20,10 +21,33 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
   with Matchers {
 
   "AbstractClientDataType" must {
+
+    "ignore messages until callback is set" in {
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient)))
+      val operationMessage = OperationMessage(
+        ClientId(),
+        DataTypeInstanceId(),
+        AbstractClientDataTypeSpec.dataTypeName,
+        List(
+          AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "")
+        )
+      )
+
+      dataType ! LocalOperationMessage(operationMessage)
+      expectNoMsg()
+      dataType ! operationMessage
+      expectNoMsg()
+      dataType ! UpdateRequest(ClientId(), DataTypeInstanceId())
+      expectNoMsg()
+
+      dataType.underlyingActor.historyBuffer.history shouldBe empty
+    }
+
     "apply received local operations immediately from an local operation message" in {
       val dataTypeInstanceId = DataTypeInstanceId()
       val data = "{foo}"
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient)))
+      addCallback(dataType)
       val operationMessage = OperationMessage(
         ClientId(),
         dataTypeInstanceId,
@@ -43,6 +67,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       val data = "{foo}"
       val controlAlgo = new AbstractClientDataTypeSpecControlAlgorithmClient
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, controlAlgo)))
+      addCallback(dataType)
       val operationMessage = OperationMessage(
         ClientId(),
         dataTypeInstanceId,
@@ -61,6 +86,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       val dataTypeInstanceId = DataTypeInstanceId()
       val data = "{foo}"
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient)))
+      addCallback(dataType)
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val operationMessage = OperationMessage(
         ClientId(),
@@ -78,6 +104,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       val dataTypeInstanceId = DataTypeInstanceId()
       val data = "{foo}"
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient)))
+      addCallback(dataType)
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val operation2 = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val operationMessage = OperationMessage(
@@ -103,6 +130,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       val dataTypeInstanceId = DataTypeInstanceId()
       val data = "{foo}"
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient)))
+      addCallback(dataType)
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val operationMessage = OperationMessage(
         ClientId(),
@@ -119,6 +147,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
     "apply received operations from an operation message" in {
       val dataTypeInstanceId = DataTypeInstanceId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient)))
+      addCallback(dataType)
       val data = "{foo}"
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val operationMessage = OperationMessage(
@@ -136,6 +165,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
     "not apply operations when the ControlAlgorithm states they are not ready and store them" in {
       val dataTypeInstanceId = DataTypeInstanceId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient(false))))
+      addCallback(dataType)
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "{}")
       val message = OperationMessage(
         ClientId(),
@@ -164,6 +194,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       }
 
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), controlAlgo)))
+      addCallback(dataType)
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "{1}")
       val message = OperationMessage(
         ClientId(),
@@ -176,6 +207,23 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
 
       hasBeenTransformed should be(true)
     }
+
+    "replace a callback when receiving a new one and kill the old one" in {
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient(false))))
+      addCallback(dataType)
+      val oldCallback = dataType.children.head
+      val watcher = TestProbe()
+      watcher.watch(oldCallback)
+
+      dataType ! ReceiveCallback(() => {})
+
+      dataType.children should have size 2
+      watcher.expectMsgPF(2.seconds){case Terminated(ref) => ref should equal(oldCallback)}
+    }
+  }
+
+  def addCallback(dataType: ActorRef) = {
+    dataType ! ReceiveCallback(() => {})
   }
 
 }

@@ -1,12 +1,12 @@
 package de.tu_berlin.formic.common.datatype.client
 
 import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props}
-import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.{GetHistory, ReceiveCallback}
-import de.tu_berlin.formic.common.datatype.client.CallbackWrapper.Invoke
 import de.tu_berlin.formic.common.datatype._
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
+import de.tu_berlin.formic.common.datatype.client.CallbackWrapper.Invoke
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 
 /**
@@ -63,8 +63,6 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId, val controlAlg
       log.debug(s"DataType $id received UpdateRequest: $req")
       sender ! UpdateResponse(id, dataTypeName, getDataAsJson)
 
-    case GetHistory => sender ! new HistoryBuffer(historyBuffer.history)
-
     case ReceiveCallback(callback) =>
       val newWrapper = context.actorOf(Props(new CallbackWrapper(callback)))
       callbackWrapper ! PoisonPill
@@ -99,8 +97,6 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId, val controlAlg
 }
 
 object AbstractClientDataType {
-
-  case object GetHistory
 
   case class ReceiveCallback(callback: () => Unit)
 
