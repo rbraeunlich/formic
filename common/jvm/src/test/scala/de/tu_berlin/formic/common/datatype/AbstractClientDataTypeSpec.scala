@@ -74,6 +74,31 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       dataType.underlyingActor.historyBuffer.history should contain(operation)
     }
 
+    "update the operation context of local operations" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val data = "{foo}"
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient)))
+      val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+      val operation2 = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+      val operationMessage = OperationMessage(
+        ClientId(),
+        dataTypeInstanceId,
+        AbstractClientDataTypeSpec.dataTypeName,
+        List(operation)
+      )
+      val operationMessage2 = OperationMessage(
+        ClientId(),
+        dataTypeInstanceId,
+        AbstractClientDataTypeSpec.dataTypeName,
+        List(operation2)
+      )
+
+      dataType ! LocalOperationMessage(operationMessage)
+      dataType ! LocalOperationMessage(operationMessage2)
+
+      dataType.underlyingActor.historyBuffer.history.head should equal(AbstractClientDataTypeSpecTestOperation(operation2.id, OperationContext(List(operation.id)), operation2.clientId, operation2.data))
+    }
+
     "add remote operations to the history buffer" in {
       val dataTypeInstanceId = DataTypeInstanceId()
       val data = "{foo}"
@@ -173,6 +198,10 @@ class AbstractClientDataTypeTestClientDataType(dataTypeInstanceId: DataTypeInsta
   }
 
   override def getDataAsJson: String = data
+
+  override def cloneOperationWithNewContext(op: DataTypeOperation, context: OperationContext): DataTypeOperation = {
+    case abstr:AbstractClientDataTypeSpecTestOperation => AbstractClientDataTypeSpecTestOperation(abstr.id, context, abstr.clientId, abstr.data)
+  }
 }
 
 case class AbstractClientDataTypeSpecTestOperation(id: OperationId, operationContext: OperationContext, var clientId: ClientId, data: String) extends DataTypeOperation
