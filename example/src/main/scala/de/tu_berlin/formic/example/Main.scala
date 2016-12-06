@@ -33,11 +33,10 @@ object Main extends JSApp {
   }
 
   def createNewString() = {
-    val inputId = "string123"
-    val localUpdate = () => updateUI(inputId)
-    string = new FormicString(localUpdate, system)
+    string = new FormicString(() => updateUI(string.dataTypeInstanceId.id), system)
     val id = string.dataTypeInstanceId
-    jQuery("body").append("<p>String data type with id" + id + "</p>")
+    val inputId = id.id
+    jQuery("body").append("<p>String data type with id " + id + "</p>")
     jQuery("body").append("<input id=\"" + inputId + "\" name=\"string\" type=\"text\"</input>")
     jQuery("#" + inputId).keypress(keyPressHandler(inputId))
   }

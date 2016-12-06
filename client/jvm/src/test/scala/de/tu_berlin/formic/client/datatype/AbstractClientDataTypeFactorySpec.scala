@@ -26,7 +26,7 @@ class AbstractClientDataTypeFactorySpec extends TestKit(ActorSystem("AbstractCli
       val outgoing = TestProbe()
       val instanceId = DataTypeInstanceId()
 
-      factory ! WrappedCreateRequest(outgoing.ref, CreateRequest(ClientId(), instanceId, DataTypeName("AbstractClientDataTypeFactorySpec") ))
+      factory ! WrappedCreateRequest(outgoing.ref, "", CreateRequest(ClientId(), instanceId, DataTypeName("AbstractClientDataTypeFactorySpec") ))
 
       val msg = expectMsgClass(classOf[NewDataTypeCreated])
       msg.dataTypeInstanceId should equal(instanceId)
@@ -60,7 +60,7 @@ class AbstractClientDataTypeFactorySpecFactory extends AbstractClientDataTypeFac
 
   override val name: DataTypeName = DataTypeName("AbstractClientDataTypeFactorySpec")
 
-  override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef): AbstractClientDataTypeFactorySpecServerDataType = {
+  override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef, data: Option[String]): AbstractClientDataTypeFactorySpecServerDataType = {
     new AbstractClientDataTypeFactorySpecServerDataType
   }
 

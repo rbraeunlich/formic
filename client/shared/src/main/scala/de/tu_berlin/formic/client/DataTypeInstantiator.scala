@@ -16,7 +16,7 @@ class DataTypeInstantiator(val factories: Map[DataTypeName, ActorRef]) extends A
       factories.find(t => t._1 == rep.dataType) match {
         case Some((k,v)) =>
           //that ways the factory directly answers to the dispatcher
-          v forward WrappedCreateRequest(outgoing, CreateRequest(null, rep.dataTypeInstanceId, k))
+          v forward WrappedCreateRequest(outgoing, rep.data, CreateRequest(null, rep.dataTypeInstanceId, k))
         case None => throw new IllegalArgumentException(s"Unknown data type name: ${rep.dataType}")
       }
   }
