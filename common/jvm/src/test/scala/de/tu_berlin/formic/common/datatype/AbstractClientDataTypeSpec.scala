@@ -217,7 +217,6 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
 
       dataType ! ReceiveCallback(() => {})
 
-      dataType.children should have size 2
       watcher.expectMsgPF(2.seconds){case Terminated(ref) => ref should equal(oldCallback)}
     }
   }
