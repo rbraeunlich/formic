@@ -5,7 +5,7 @@ import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import de.tu_berlin.formic.client.{StopSystemAfterAll, TestControlAlgorithm}
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataType, AbstractClientDataTypeFactory}
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{NewDataTypeCreated, WrappedCreateRequest}
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import org.scalatest.{Matchers, WordSpecLike}
@@ -26,12 +26,25 @@ class AbstractClientDataTypeFactorySpec extends TestKit(ActorSystem("AbstractCli
       val outgoing = TestProbe()
       val instanceId = DataTypeInstanceId()
 
-      factory ! WrappedCreateRequest(outgoing.ref, "", CreateRequest(ClientId(), instanceId, DataTypeName("AbstractClientDataTypeFactorySpec") ))
+      factory ! WrappedCreateRequest(outgoing.ref, null, CreateRequest(ClientId(), instanceId, DataTypeName("AbstractClientDataTypeFactorySpec") ))
 
       val msg = expectMsgClass(classOf[NewDataTypeCreated])
       msg.dataTypeInstanceId should equal(instanceId)
       msg.dataTypeActor should not equal null
       msg.wrapper shouldBe a[AbstractClientDataTypeFactorySpecFormicDataType]
+    }
+
+    "create only a data type when receoving a LocalCreateRequest" in {
+      val factory = system.actorOf(Props(new AbstractClientDataTypeFactorySpecFactory))
+      val outgoing = TestProbe()
+      val instanceId = DataTypeInstanceId()
+
+      factory ! LocalCreateRequest(outgoing.ref, instanceId)
+
+      val msg = expectMsgClass(classOf[NewDataTypeCreated])
+      msg.dataTypeInstanceId should equal(instanceId)
+      msg.dataTypeActor should not equal null
+      msg.wrapper should be(null)
     }
 
   }

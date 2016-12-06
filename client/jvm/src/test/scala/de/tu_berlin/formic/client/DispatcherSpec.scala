@@ -79,6 +79,18 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
         dispatcher ! message
       }
     }
+
+    "remember the actor when receiving a tuple of actor and CreateRequest" in {
+      val instantiator = TestActorRef(Props(new DataTypeInstantiator(Map.empty)))
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val request = CreateRequest(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName)
+      val actor = TestProbe()
+      val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(null, TestProbe().ref, instantiator)))
+
+      dispatcher ! (actor.ref, request)
+
+      dispatcher.underlyingActor.instances should contain (dataTypeInstanceId -> actor.ref)
+    }
   }
 }
 
