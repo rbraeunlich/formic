@@ -82,6 +82,7 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
       user1Outgoing.complete()
       user2Outgoing.complete()
 
+      println("Shutting down OperationsIntergrationTest server")
       server.terminate()
     }
   }

@@ -12,17 +12,12 @@ import scala.collection.mutable.ArrayBuffer
 /**
   * @author Ronny Bräunlich
   */
-class LinearClientDataType[T](
-                               id: DataTypeInstanceId,
-                               controlAlgorithmClient: ControlAlgorithmClient,
-                               val dataTypeName: DataTypeName,
-                               val initialData: Option[String],
-                               implicit val writer: Writer[T])
-  extends AbstractClientDataType(id, controlAlgorithmClient) {
+class LinearClientDataType[T](id: DataTypeInstanceId, controlAlgorithmClient: ControlAlgorithmClient, val dataTypeName: DataTypeName, val initialData: Option[String])(implicit val writer: Writer[T], val reader: Reader[T]) extends AbstractClientDataType(id, controlAlgorithmClient) {
+
 
   override val transformer: OperationTransformer = LinearTransformer
 
-  private val privateData: ArrayBuffer[T] = if(initialData.isDefined) read(initialData.get) else new ArrayBuffer[T]()
+  private val privateData = initialData.map(s => read[ArrayBuffer[T]](s)).getOrElse(new ArrayBuffer[T]())
 
   def data = privateData
 
@@ -48,12 +43,6 @@ class LinearClientDataType[T](
 
 object LinearClientDataType {
 
-  def apply[T](
-                id: DataTypeInstanceId,
-                controlAlgorithm: ControlAlgorithmClient,
-                dataTypeName: DataTypeName,
-                initialData: Option[String] = Option.empty)
-              (implicit writer: Writer[T]): LinearClientDataType[T] =
-    new LinearClientDataType(id, controlAlgorithm, dataTypeName, initialData, writer)
+  def apply[T](id: DataTypeInstanceId, controlAlgorithm: ControlAlgorithmClient, dataTypeName: DataTypeName, initialData: Option[String])(implicit writer: Writer[T], reader: Reader[T]): LinearClientDataType[T] = new LinearClientDataType(id, controlAlgorithm, dataTypeName, initialData)
 
 }

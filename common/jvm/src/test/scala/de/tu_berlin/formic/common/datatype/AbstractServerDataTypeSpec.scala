@@ -40,7 +40,7 @@ class AbstractServerDataTypeSpecTestControlAlgorithm(applied: Boolean = true) ex
 /**
   * @author Ronny Bräunlich
   */
-class AbstractServerDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSpec"))
+class AbstractServerDataTypeSpec extends TestKit(ActorSystem("AbstractServerDataTypeSpec"))
   with WordSpecLike
   with ImplicitSender
   with StopSystemAfterAll
