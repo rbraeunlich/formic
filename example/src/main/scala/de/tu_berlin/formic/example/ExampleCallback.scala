@@ -5,8 +5,6 @@ import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
 import de.tu_berlin.formic.datatype.linear.client.FormicString
 import org.scalajs.jquery._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 /**
   * @author Ronny Bräunlich
   */

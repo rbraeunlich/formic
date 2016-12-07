@@ -12,8 +12,8 @@ import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertO
 import upickle.default._
 
 import scala.collection.mutable.ArrayBuffer
-import scala.concurrent.Future
 import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContext, Future}
 import scala.scalajs.js.annotation.{JSExport, JSExportDescendentClasses}
 
 /**
@@ -30,7 +30,6 @@ abstract class FormicList[T](private var _callback: () => Unit, initiator: DataT
     _callback = newCallback
     actor ! ReceiveCallback(newCallback)
   }
-
 
   //TODO find a better way to distinguish remote and local instantiations
   if (initiator != null) initiator.initDataType(this)
@@ -52,18 +51,20 @@ abstract class FormicList[T](private var _callback: () => Unit, initiator: DataT
   }
 
   @JSExport
-  def get(index: Int): Future[T] = {
-    import scala.concurrent.ExecutionContext.Implicits.global
-    ask(actor, UpdateRequest(_, _)).
+  def get(index: Int)(implicit ec: ExecutionContext): Future[T] = {
+    ask(actor, UpdateRequest(null, dataTypeInstanceId)).
       mapTo[UpdateResponse].
-      map(rep => rep.data).
-      map(data => read[ArrayBuffer[T]](data)).
+      map(rep => {
+        rep.data
+      }).
+      map(data => {
+        read[ArrayBuffer[T]](data)
+      }).
       map(buffer => buffer(index))
   }
 
   @JSExport
-  def getAll: Future[ArrayBuffer[T]] = {
-    import scala.concurrent.ExecutionContext.Implicits.global
+  def getAll()(implicit ec: ExecutionContext): Future[ArrayBuffer[T]] = {
     val updateRequest = UpdateRequest(null, dataTypeInstanceId)
     ask(actor, updateRequest).
       mapTo[UpdateResponse].

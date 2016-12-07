@@ -1,0 +1,150 @@
+package de.tu_berlin.formic.datatype.linear.client
+
+import akka.actor.{ActorSystem, Props}
+import akka.testkit.{TestKit, TestProbe}
+import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.datatype.{FormicDataType, OperationContext}
+import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
+import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
+import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
+import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation}
+import org.scalatest._
+import scala.concurrent.duration._
+import scala.util.{Failure, Success}
+
+/**
+  * @author Ronny Bräunlich
+  */
+class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
+  with WordSpecLike
+  with BeforeAndAfterAll
+  with Matchers {
+
+  implicit val ec = system.dispatcher
+
+  "FormicList" must {
+    "use the initiator if present" in {
+      val initiator = new FormicListSpecInitiator()
+      val list = new FormicBooleanList(() => {}, initiator)
+
+      initiator.initCalled should be(true)
+    }
+
+    "not crash without initiator" in {
+      new FormicBooleanList(() => {}, null)
+    }
+
+    "inform the wrapped data type actor about a new callback when set" in {
+      val dataTypeActor = TestProbe()
+      val list = new FormicBooleanList(() => {}, null)
+      list.actor = dataTypeActor.ref
+      val newCallback: () => Unit = () => {println("test")}
+
+      list.callback = newCallback
+
+      dataTypeActor.expectMsg(ReceiveCallback(newCallback))
+    }
+
+    "wrap add invocation in LocalOperationMessage and send it to the data type actor" in {
+      val dataTypeActor = TestProbe()
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val list = new FormicBooleanList(() => {}, null, dataTypeInstanceId)
+      list.actor = dataTypeActor.ref
+      list.add(0, false)
+
+      val msg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
+      val wrappedMsg = msg.op
+      wrappedMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
+      wrappedMsg.dataType should equal(list.dataTypeName)
+      wrappedMsg.operations should have size 1
+      val insertOperation = wrappedMsg.operations.head.asInstanceOf[LinearInsertOperation]
+      insertOperation.index should be(0)
+      insertOperation.o.asInstanceOf[Boolean] should be(false)
+      insertOperation.clientId should be(null)
+      insertOperation.id should not be null
+      insertOperation.operationContext should equal(OperationContext(List.empty))
+    }
+
+    "wrap remove invocation in LocalOperationMessage and send it to the data type actor" in {
+      val dataTypeActor = TestProbe()
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val list = new FormicBooleanList(() => {}, null, dataTypeInstanceId)
+      list.actor = dataTypeActor.ref
+      list.add(0, false)
+      dataTypeActor.receiveN(1)
+      list.remove(0)
+
+
+      val msg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
+      val wrappedMsg = msg.op
+      wrappedMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
+      wrappedMsg.dataType should equal(list.dataTypeName)
+      wrappedMsg.operations should have size 1
+      val insertOperation = wrappedMsg.operations.head.asInstanceOf[LinearDeleteOperation]
+      insertOperation.index should be(0)
+      insertOperation.clientId should be(null)
+      insertOperation.id should not be null
+      insertOperation.operationContext should equal(OperationContext(List.empty))
+    }
+
+    "send an UpdateRequest to the wrapped data type actor when get is called" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeActor = new TestProbe(system){
+        def receiveUpdateRequestAndAnswer() = {
+          expectMsgPF(){
+            case up:UpdateRequest =>
+              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              sender ! UpdateResponse(dataTypeInstanceId, FormicBooleanListDataTypeFactory.dataTypeName, "[false]")
+          }
+        }
+      }
+      val list = new FormicBooleanList(() => {}, null, dataTypeInstanceId)
+      list.actor = dataTypeActor.ref
+
+      val answer = list.get(0)
+
+      dataTypeActor.receiveUpdateRequestAndAnswer()
+
+      awaitCond(answer.isCompleted)
+      answer.value.get match {
+        case Success(bool) => bool should be(false)
+        case Failure(ex) => fail(ex)
+      }
+    }
+
+    "send an UpdateRequest to the wrapped data type actor when getAll is called" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeActor = new TestProbe(system){
+        def receiveUpdateRequestAndAnswer() = {
+          expectMsgPF(){
+            case up:UpdateRequest =>
+              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              sender ! UpdateResponse(dataTypeInstanceId, FormicBooleanListDataTypeFactory.dataTypeName, "[false, true]")
+          }
+        }
+      }
+      val list = new FormicBooleanList(() => {}, null, dataTypeInstanceId)
+      list.actor = dataTypeActor.ref
+
+      val answer = list.getAll()
+
+      dataTypeActor.receiveUpdateRequestAndAnswer()
+
+      awaitCond(answer.isCompleted)
+      answer.value.get match {
+        case Success(bool) => bool should contain inOrder(false, true)
+        case Failure(ex) => fail(ex)
+      }
+    }
+  }
+}
+
+class FormicListSpecInitiator extends DataTypeInitiator {
+
+  var initCalled = false
+
+  override def initDataType(dataType: FormicDataType): Unit = {
+    initCalled = true
+  }
+}

@@ -8,7 +8,6 @@ import org.scalajs.dom.raw.HTMLInputElement
 import org.scalajs.jquery.{JQueryEventObject, jQuery}
 
 import scala.collection.mutable.ArrayBuffer
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.JSApp
 import scala.util.{Failure, Success}
 
@@ -18,6 +17,8 @@ import scala.util.{Failure, Success}
 object Main extends JSApp {
 
   val system = new FormicSystem()
+
+  implicit val ec = system.system.dispatcher
 
   val strings: ArrayBuffer[FormicString] = collection.mutable.ArrayBuffer()
 
