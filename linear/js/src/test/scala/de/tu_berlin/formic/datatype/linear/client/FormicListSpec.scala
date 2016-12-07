@@ -23,6 +23,10 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
 
   implicit val ec = system.dispatcher
 
+  override def afterAll(): Unit = {
+    system.terminate()
+  }
+
   "FormicList" must {
     "use the initiator if present" in {
       val initiator = new FormicListSpecInitiator()
@@ -134,6 +138,130 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
       awaitCond(answer.isCompleted)
       answer.value.get match {
         case Success(bool) => bool should contain inOrder(false, true)
+        case Failure(ex) => fail(ex)
+      }
+    }
+  }
+
+  "FormicBooleanList" must {
+    "work with boolean values" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeActor = new TestProbe(system){
+        def receiveUpdateRequestAndAnswer() = {
+          expectMsgPF(){
+            case up:UpdateRequest =>
+              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              sender ! UpdateResponse(dataTypeInstanceId, FormicBooleanListDataTypeFactory.dataTypeName, "[false, true]")
+          }
+        }
+      }
+      val list = new FormicBooleanList(() => {}, null, dataTypeInstanceId, dataTypeActor.ref)
+
+      list.add(0, true)
+      dataTypeActor.receiveN(1)
+      list.add(1, false)
+      dataTypeActor.receiveN(1)
+
+      val answer = list.getAll()
+
+      dataTypeActor.receiveUpdateRequestAndAnswer()
+
+      awaitCond(answer.isCompleted)
+      answer.value.get match {
+        case Success(bool) => bool should contain inOrder(false, true)
+        case Failure(ex) => fail(ex)
+      }
+    }
+  }
+
+  "FormicDoubleList" must {
+    "work with double values" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeActor = new TestProbe(system){
+        def receiveUpdateRequestAndAnswer() = {
+          expectMsgPF(){
+            case up:UpdateRequest =>
+              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              sender ! UpdateResponse(dataTypeInstanceId, FormicDoubleListDataTypeFactory.dataTypeName, "[0.5, 1.2]")
+          }
+        }
+      }
+      val list = new FormicDoubleList(() => {}, null, dataTypeInstanceId, dataTypeActor.ref)
+
+      list.add(0, 0.456)
+      dataTypeActor.receiveN(1)
+      list.add(1, 100.1)
+      dataTypeActor.receiveN(1)
+
+      val answer = list.getAll()
+
+      dataTypeActor.receiveUpdateRequestAndAnswer()
+
+      awaitCond(answer.isCompleted)
+      answer.value.get match {
+        case Success(bool) => bool should contain inOrder(0.5, 1.2)
+        case Failure(ex) => fail(ex)
+      }
+    }
+  }
+
+  "FormicIntegerList" must {
+    "work with integer values" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeActor = new TestProbe(system){
+        def receiveUpdateRequestAndAnswer() = {
+          expectMsgPF(){
+            case up:UpdateRequest =>
+              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              sender ! UpdateResponse(dataTypeInstanceId, FormicIntegerListDataTypeFactory.dataTypeName, "[4, 5]")
+          }
+        }
+      }
+      val list = new FormicIntegerList(() => {}, null, dataTypeInstanceId, dataTypeActor.ref)
+
+      list.add(0, 4)
+      dataTypeActor.receiveN(1)
+      list.add(1, 5)
+      dataTypeActor.receiveN(1)
+
+      val answer = list.getAll()
+
+      dataTypeActor.receiveUpdateRequestAndAnswer()
+
+      awaitCond(answer.isCompleted)
+      answer.value.get match {
+        case Success(bool) => bool should contain inOrder(4, 5)
+        case Failure(ex) => fail(ex)
+      }
+    }
+  }
+
+  "FormicString" must {
+    "work with char values" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeActor = new TestProbe(system){
+        def receiveUpdateRequestAndAnswer() = {
+          expectMsgPF(){
+            case up:UpdateRequest =>
+              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              sender ! UpdateResponse(dataTypeInstanceId, FormicStringDataTypeFactory.dataTypeName, "[\"a\", \"b\"]")
+          }
+        }
+      }
+      val list = new FormicString(() => {}, null, dataTypeInstanceId, dataTypeActor.ref)
+
+      list.add(0, 'a')
+      dataTypeActor.receiveN(1)
+      list.add(1, 'b')
+      dataTypeActor.receiveN(1)
+
+      val answer = list.getAll()
+
+      dataTypeActor.receiveUpdateRequestAndAnswer()
+
+      awaitCond(answer.isCompleted)
+      answer.value.get match {
+        case Success(bool) => bool should contain inOrder('a', 'b')
         case Failure(ex) => fail(ex)
       }
     }
