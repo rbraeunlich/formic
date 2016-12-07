@@ -65,7 +65,11 @@ lazy val linear = crossProject.in(file("linear")).
   jvmSettings(
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test"
-
+    )
+  ).
+  jsSettings(
+    libraryDependencies ++= Seq(
+      "eu.unicredit" %%% "akkajstestkit" % ("0." + akkaVersion + "-SNAPSHOT")
     )
   )
   .dependsOn(common)
