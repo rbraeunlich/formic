@@ -1,15 +1,16 @@
-package de.tu_berlin.formic.common.datatype
+package de.tu_berlin.formic.common.datatype.client
 
-import akka.actor.{ActorRef, ActorSystem, Props, Terminated}
+import akka.actor.{ActorSystem, Props, Terminated}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType
+import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest.Assertions._
 import org.scalatest.{Matchers, WordSpecLike}
+
 import scala.concurrent.duration._
 /**
   * @author Ronny Bräunlich
