@@ -1,11 +1,11 @@
 package de.tu_berlin.formic.common.datatype.client
 
 import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props}
-import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype._
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.{InitialOperation, ReceiveCallback}
 import de.tu_berlin.formic.common.datatype.client.CallbackWrapper.Invoke
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 
@@ -15,13 +15,14 @@ import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, Upda
   *
   * @author Ronny Bräunlich
   */
-abstract class AbstractClientDataType(val id: DataTypeInstanceId, val controlAlgorithm: ControlAlgorithmClient) extends Actor with ActorLogging {
+abstract class AbstractClientDataType(val id: DataTypeInstanceId, val controlAlgorithm: ControlAlgorithmClient, lastOperationId: Option[OperationId]) extends Actor with ActorLogging {
 
   val dataTypeName: DataTypeName
 
   val transformer: OperationTransformer
 
   val historyBuffer: HistoryBuffer = new HistoryBuffer()
+  if(lastOperationId.isDefined) historyBuffer.addOperation(InitialOperation(lastOperationId.get))
 
   def receive = {
     case ReceiveCallback(callback) =>
@@ -99,5 +100,16 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId, val controlAlg
 object AbstractClientDataType {
 
   case class ReceiveCallback(callback: () => Unit)
+
+  /**
+    * Data types on the client might have been created based on an UpdateResponse.
+    * To have a "first" operation in the history, this class exists. It is more like a
+    * placeholder for the missing history.
+    * @param id the initial operation id
+    */
+  private case class InitialOperation(id: OperationId) extends DataTypeOperation {
+    override val operationContext: OperationContext = OperationContext(List.empty)
+    override var clientId: ClientId = _
+  }
 
 }

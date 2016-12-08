@@ -6,7 +6,7 @@ import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message.CreateRequest
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest.{Matchers, WordSpecLike}
 
 /**
@@ -25,7 +25,7 @@ class AbstractClientDataTypeFactorySpec extends TestKit(ActorSystem("AbstractCli
       val outgoing = TestProbe()
       val instanceId = DataTypeInstanceId()
 
-      factory ! WrappedCreateRequest(outgoing.ref, null, CreateRequest(ClientId(), instanceId, DataTypeName("AbstractClientDataTypeFactorySpec") ))
+      factory ! WrappedCreateRequest(outgoing.ref, null, Option.empty,CreateRequest(ClientId(), instanceId, DataTypeName("AbstractClientDataTypeFactorySpec") ))
 
       val msg = expectMsgClass(classOf[NewDataTypeCreated])
       msg.dataTypeInstanceId should equal(instanceId)
@@ -59,7 +59,7 @@ object AbstractClientDataTypeSpecControlAlgorithm extends ControlAlgorithmClient
   override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = op
 }
 
-class AbstractClientDataTypeFactorySpecServerDataType extends AbstractClientDataType(DataTypeInstanceId(), AbstractClientDataTypeSpecControlAlgorithm) {
+class AbstractClientDataTypeFactorySpecServerDataType extends AbstractClientDataType(DataTypeInstanceId(), AbstractClientDataTypeSpecControlAlgorithm, Option.empty) {
   override val dataTypeName: DataTypeName = DataTypeName("AbstractClientDataTypeFactorySpec")
 
   override val transformer: OperationTransformer = null
@@ -81,7 +81,7 @@ class AbstractClientDataTypeFactorySpecFactory extends AbstractClientDataTypeFac
 
   override val name: DataTypeName = DataTypeName("AbstractClientDataTypeFactorySpec")
 
-  override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef, data: Option[String]): AbstractClientDataTypeFactorySpecServerDataType = {
+  override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): AbstractClientDataTypeFactorySpecServerDataType = {
     new AbstractClientDataTypeFactorySpecServerDataType
   }
 

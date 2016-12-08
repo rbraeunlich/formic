@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.datatype.linear.client
 
-import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType
 import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, OperationContext, OperationTransformer}
@@ -12,7 +12,13 @@ import scala.collection.mutable.ArrayBuffer
 /**
   * @author Ronny Bräunlich
   */
-class LinearClientDataType[T](id: DataTypeInstanceId, controlAlgorithmClient: ControlAlgorithmClient, val dataTypeName: DataTypeName, val initialData: Option[String])(implicit val writer: Writer[T], val reader: Reader[T]) extends AbstractClientDataType(id, controlAlgorithmClient) {
+class LinearClientDataType[T](id: DataTypeInstanceId,
+                              controlAlgorithmClient: ControlAlgorithmClient,
+                              val dataTypeName: DataTypeName,
+                              val initialData: Option[String],
+                              lastOperationId: Option[OperationId])
+                             (implicit val writer: Writer[T], val reader: Reader[T])
+  extends AbstractClientDataType(id, controlAlgorithmClient, lastOperationId) {
 
 
   override val transformer: OperationTransformer = LinearTransformer
@@ -43,6 +49,7 @@ class LinearClientDataType[T](id: DataTypeInstanceId, controlAlgorithmClient: Co
 
 object LinearClientDataType {
 
-  def apply[T](id: DataTypeInstanceId, controlAlgorithm: ControlAlgorithmClient, dataTypeName: DataTypeName, initialData: Option[String])(implicit writer: Writer[T], reader: Reader[T]): LinearClientDataType[T] = new LinearClientDataType(id, controlAlgorithm, dataTypeName, initialData)
+  def apply[T](id: DataTypeInstanceId, controlAlgorithm: ControlAlgorithmClient, dataTypeName: DataTypeName, initialData: Option[String],lastOperationId: Option[OperationId])(implicit writer: Writer[T], reader: Reader[T]): LinearClientDataType[T] =
+    new LinearClientDataType(id, controlAlgorithm, dataTypeName, initialData, lastOperationId)
 
 }

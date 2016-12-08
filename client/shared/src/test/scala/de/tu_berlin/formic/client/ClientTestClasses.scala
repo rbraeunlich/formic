@@ -17,12 +17,12 @@ class TestDataTypeFactory extends AbstractClientDataTypeFactory[TestClientDataTy
 
   override val name: DataTypeName = TestClasses.dataTypeName
 
-  override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef, data: Option[String]): TestClientDataType = new TestClientDataType(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm, data)
+  override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId] = Option.empty): TestClientDataType = new TestClientDataType(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm, data, lastOperationId)
 
   override def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef): TestFormicDataType = new TestFormicDataType
 }
 
-class TestClientDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataTypeInstanceId, controlAlgorithm: ControlAlgorithmClient, initialData: Option[String] = Option.empty) extends AbstractClientDataType(dataTypeInstanceId, controlAlgorithm) {
+class TestClientDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataTypeInstanceId, controlAlgorithm: ControlAlgorithmClient, initialData: Option[String] = Option.empty, lastOperationId: Option[OperationId]) extends AbstractClientDataType(dataTypeInstanceId, controlAlgorithm, lastOperationId) {
 
   var data =  initialData.getOrElse("{data}")
 

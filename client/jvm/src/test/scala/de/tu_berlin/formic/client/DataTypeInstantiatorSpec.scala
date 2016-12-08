@@ -5,7 +5,7 @@ import akka.testkit.{EventFilter, ImplicitSender, TestActorRef, TestKit, TestPro
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.Dispatcher.WrappedUpdateResponse
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.NewDataTypeCreated
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
 import de.tu_berlin.formic.common.message.{UpdateRequest, UpdateResponse}
@@ -46,8 +46,9 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
       val instantiator = system.actorOf(Props(new DataTypeInstantiator(testFactories)))
       val outgoingConnection = TestProbe()
       val dataTypeInstanceId = DataTypeInstanceId()
+      val lastOperationId = OperationId()
       val json = "[\"a\",\"b\",\"c\"]"
-      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, json, Option.empty)
+      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, json, Option(lastOperationId))
 
       instantiator ! WrappedUpdateResponse(outgoingConnection.ref, updateResponse)
 
@@ -58,6 +59,7 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
       msg.dataTypeActor ! UpdateRequest(ClientId(), dataTypeInstanceId)
       val answer = expectMsgClass(classOf[UpdateResponse])
       answer.data should equal(json)
+      answer.lastOperationId.get should equal(lastOperationId)
     }
 
     "throw an exception when receiving an UpdateResponse with unknown data type name" in {

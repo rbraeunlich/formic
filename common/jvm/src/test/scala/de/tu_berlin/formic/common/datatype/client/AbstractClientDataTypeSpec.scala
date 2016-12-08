@@ -235,10 +235,17 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
 
       expectMsg(UpdateResponse(dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, data, Option(operationId)))
     }
+
+    "be initialized with lastOperationId if present" in {
+      val lastOperationId = OperationId()
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId))))
+
+      dataType.underlyingActor.historyBuffer.history.head.id should equal(lastOperationId)
+    }
   }
 }
 
-class AbstractClientDataTypeTestClientDataType(dataTypeInstanceId: DataTypeInstanceId, clientControlAlgorithm: ControlAlgorithmClient) extends AbstractClientDataType(dataTypeInstanceId, clientControlAlgorithm) {
+class AbstractClientDataTypeTestClientDataType(dataTypeInstanceId: DataTypeInstanceId, clientControlAlgorithm: ControlAlgorithmClient, lastOperationId: Option[OperationId] = Option.empty) extends AbstractClientDataType(dataTypeInstanceId, clientControlAlgorithm, lastOperationId) {
 
   var data = "{test}"
 
