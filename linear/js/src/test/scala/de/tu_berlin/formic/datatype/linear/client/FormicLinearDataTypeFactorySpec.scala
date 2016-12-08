@@ -32,7 +32,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicListSpe
       val outgoing = TestProbe()
       val dataTypeInstanceId = DataTypeInstanceId()
 
-      factory ! WrappedCreateRequest(outgoing.ref, "[false]", CreateRequest(
+      factory ! WrappedCreateRequest(outgoing.ref, "[false]", Option.empty, CreateRequest(
         ClientId(), dataTypeInstanceId, FormicBooleanListDataTypeFactory.dataTypeName
       ))
 
@@ -59,7 +59,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicListSpe
       val outgoing = TestProbe()
       val dataTypeInstanceId = DataTypeInstanceId()
 
-      factory ! WrappedCreateRequest(outgoing.ref, "[1.0]", CreateRequest(
+      factory ! WrappedCreateRequest(outgoing.ref, "[1.0]", Option.empty, CreateRequest(
         ClientId(), dataTypeInstanceId, FormicDoubleListDataTypeFactory.dataTypeName
       ))
 
@@ -86,7 +86,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicListSpe
       val outgoing = TestProbe()
       val dataTypeInstanceId = DataTypeInstanceId()
 
-      factory ! WrappedCreateRequest(outgoing.ref, "[2]", CreateRequest(
+      factory ! WrappedCreateRequest(outgoing.ref, "[2]", Option.empty, CreateRequest(
         ClientId(), dataTypeInstanceId, FormicBooleanListDataTypeFactory.dataTypeName
       ))
 
@@ -113,7 +113,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicListSpe
       val outgoing = TestProbe()
       val dataTypeInstanceId = DataTypeInstanceId()
 
-      factory ! WrappedCreateRequest(outgoing.ref, "[\"b\"]", CreateRequest(
+      factory ! WrappedCreateRequest(outgoing.ref, "[\"b\"]", Option.empty, CreateRequest(
         ClientId(), dataTypeInstanceId, FormicStringDataTypeFactory.dataTypeName
       ))
 
