@@ -31,7 +31,7 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
       val instantiator = system.actorOf(Props(new DataTypeInstantiator(testFactories)))
       val outgoingConnection = TestProbe()
       val dataTypeInstanceId = DataTypeInstanceId()
-      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "")
+      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "", Option.empty)
 
       instantiator ! WrappedUpdateResponse(outgoingConnection.ref, updateResponse)
 
@@ -47,7 +47,7 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
       val outgoingConnection = TestProbe()
       val dataTypeInstanceId = DataTypeInstanceId()
       val json = "[\"a\",\"b\",\"c\"]"
-      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, json)
+      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, json, Option.empty)
 
       instantiator ! WrappedUpdateResponse(outgoingConnection.ref, updateResponse)
 
@@ -64,7 +64,7 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
       val instantiator: TestActorRef[DataTypeInstantiator] = TestActorRef(Props(new DataTypeInstantiator(Map.empty)))
       val dataTypeInstanceId = DataTypeInstanceId()
       val outgoingConnection = TestProbe()
-      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "")
+      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "", Option.empty)
 
       EventFilter[IllegalArgumentException](occurrences = 1) intercept {
         instantiator ! WrappedUpdateResponse(outgoingConnection.ref, updateResponse)

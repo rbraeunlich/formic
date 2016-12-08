@@ -75,7 +75,11 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
       finalResponse.value.get match {
         case Success(m) =>
           val text = m.get.asTextMessage.getStrictText
-          read[FormicMessage](text) should equal(UpdateResponse(dataTypeInstanceId, StringDataTypeFactory.name, "[\"3\",\"2\",\"1\",\"c\",\"b\",\"a\"]"))
+          val readMsg = read[FormicMessage](text)
+          readMsg.asInstanceOf[UpdateResponse].dataTypeInstanceId should equal(dataTypeInstanceId)
+          readMsg.asInstanceOf[UpdateResponse].dataType should equal(StringDataTypeFactory.name)
+          readMsg.asInstanceOf[UpdateResponse].data should equal("[\"3\",\"2\",\"1\",\"c\",\"b\",\"a\"]")
+          //the lastOperationId is unimportant here
         case Failure(ex) => fail(ex)
       }
 
@@ -161,7 +165,7 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
     incomingUpdateResponse.value.get match {
       case Success(m) =>
         val text = m.get.asTextMessage.getStrictText
-        read[FormicMessage](text) should equal(UpdateResponse(dataTypeInstanceId, StringDataTypeFactory.name, "[]"))
+        read[FormicMessage](text) should equal(UpdateResponse(dataTypeInstanceId, StringDataTypeFactory.name, "[]", Option.empty))
       case Failure(ex) => fail(ex)
     }
     dataTypeInstanceId

@@ -166,7 +166,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
 
       userProxy ! UpdateRequest(ClientId(), dataTypeInstanceId)
 
-      outgoingProbe.expectMsg(UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "{data}"))
+      outgoingProbe.expectMsg(UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "{data}", Option.empty))
       userProxy.underlyingActor.watchlist should contain key dataTypeInstanceId
     }
 

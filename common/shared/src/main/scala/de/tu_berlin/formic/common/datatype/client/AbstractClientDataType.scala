@@ -61,7 +61,7 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId, val controlAlg
     case req: UpdateRequest =>
       //this is only called locally from the wrappers
       log.debug(s"DataType $id received UpdateRequest: $req")
-      sender ! UpdateResponse(id, dataTypeName, getDataAsJson)
+      sender ! UpdateResponse(id, dataTypeName, getDataAsJson, historyBuffer.history.headOption.map(op => op.id))
 
     case ReceiveCallback(callback) =>
       val newWrapper = context.actorOf(Props(new CallbackWrapper(callback)))

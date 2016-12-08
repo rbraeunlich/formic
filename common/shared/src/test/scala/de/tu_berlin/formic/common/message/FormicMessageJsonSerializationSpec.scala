@@ -13,7 +13,7 @@ import upickle.default._
   *
   * @author Ronny Bräunlich
   */
-class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
+  class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
 
   case class TestOperation(id: OperationId, operationContext: OperationContext,var clientId: ClientId) extends DataTypeOperation
 
@@ -56,9 +56,9 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
   }
 
   it should "serialize an UpdateResponse to JSON" in {
-    val serialized = write(UpdateResponse(DataTypeInstanceId.valueOf("1"), DataTypeName("test"), "{data}"))
+    val serialized = write(UpdateResponse(DataTypeInstanceId.valueOf("1"), DataTypeName("test"), "{data}", Option(OperationId("567"))))
 
-    serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.UpdateResponse\",\"dataTypeInstanceId\":{\"id\":\"1\"},\"dataType\":{\"$type\":\"de.tu_berlin.formic.common.datatype.DataTypeName\",\"name\":\"test\"},\"data\":\"{data}\"}")
+    serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.UpdateResponse\",\"dataTypeInstanceId\":{\"id\":\"1\"},\"dataType\":{\"$type\":\"de.tu_berlin.formic.common.datatype.DataTypeName\",\"name\":\"test\"},\"data\":\"{data}\",\"lastOperationId\":[{\"id\":\"567\"}]}")
   }
 
   it should "serialize an UpdateRequest to JSON" in {
@@ -110,13 +110,24 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
     deserialized.asInstanceOf[HistoricOperationRequest].sinceId should be(OperationId("1"))
   }
 
-  it should "deserialize an UpdateResponse" in {
-    val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.UpdateResponse\",\"dataTypeInstanceId\":{\"id\":\"1\"},\"dataType\":{\"$type\":\"de.tu_berlin.formic.datatype.common.datatype.DataTypeName\",\"name\":\"test\"},\"data\":\"{data}\"}")
+  it should "deserialize an UpdateResponse with lastOperationId" in {
+    val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.UpdateResponse\",\"dataTypeInstanceId\":{\"id\":\"1\"},\"dataType\":{\"$type\":\"de.tu_berlin.formic.datatype.common.datatype.DataTypeName\",\"name\":\"test\"},\"data\":\"{data}\", \"lastOperationId\":[{\"id\":\"1\"}]}")
 
     deserialized shouldBe a[UpdateResponse]
     deserialized.asInstanceOf[UpdateResponse].dataTypeInstanceId should be(DataTypeInstanceId("1"))
     deserialized.asInstanceOf[UpdateResponse].dataType should be(DataTypeName("test"))
     deserialized.asInstanceOf[UpdateResponse].data should be("{data}")
+    deserialized.asInstanceOf[UpdateResponse].lastOperationId.get should be(OperationId("1"))
+  }
+
+  it should "deserialize an UpdateResponse without lastOperationId" in {
+    val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.UpdateResponse\",\"dataTypeInstanceId\":{\"id\":\"1\"},\"dataType\":{\"$type\":\"de.tu_berlin.formic.datatype.common.datatype.DataTypeName\",\"name\":\"test\"},\"data\":\"{data}\", \"lastOperationId\": []}")
+
+    deserialized shouldBe a[UpdateResponse]
+    deserialized.asInstanceOf[UpdateResponse].dataTypeInstanceId should be(DataTypeInstanceId("1"))
+    deserialized.asInstanceOf[UpdateResponse].dataType should be(DataTypeName("test"))
+    deserialized.asInstanceOf[UpdateResponse].data should be("{data}")
+    deserialized.asInstanceOf[UpdateResponse].lastOperationId shouldBe empty
   }
 
   it should "deserialize an OperationMessage" in {

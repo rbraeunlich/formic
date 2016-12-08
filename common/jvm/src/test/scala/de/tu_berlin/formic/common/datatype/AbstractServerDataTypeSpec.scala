@@ -57,6 +57,7 @@ class AbstractServerDataTypeSpec extends TestKit(ActorSystem("AbstractServerData
       val msg = probe.expectMsgClass(classOf[UpdateResponse])
       msg.dataType should be(AbstractServerDataTypeSpec.dataTypeName)
       msg.data should be("{data}")
+      msg.lastOperationId shouldBe empty
     }
 
     "apply received operations from an operation message and publish the same message again" in {
@@ -114,10 +115,15 @@ class AbstractServerDataTypeSpec extends TestKit(ActorSystem("AbstractServerData
       val dataType = system.actorOf(Props(new AbstractServerDataTypeSpecTestServerDataType(new HistoryBuffer, DataTypeInstanceId(), new AbstractServerDataTypeSpecTestControlAlgorithm)))
       val msg = probe.expectMsgClass(classOf[UpdateResponse])
       val dataTypeInstanceId = msg.dataTypeInstanceId
+      //add something to the history
+      val operationId = OperationId()
+      val operation = AbstractServerDataTypeSpecTestOperation(operationId, OperationContext(List.empty), ClientId())
+      val operationMessage = OperationMessage(ClientId(), DataTypeInstanceId(), AbstractServerDataTypeSpec.dataTypeName, List(operation))
+      dataType ! operationMessage
 
       dataType ! UpdateRequest(clientId, dataTypeInstanceId)
 
-      expectMsg(UpdateResponse(dataTypeInstanceId, AbstractServerDataTypeSpec.dataTypeName, "{data}"))
+      expectMsg(UpdateResponse(dataTypeInstanceId, AbstractServerDataTypeSpec.dataTypeName, "{received}", Option(operationId)))
     }
 
     "not apply operations when the ControlAlgorithm states they are not ready and store them" in {

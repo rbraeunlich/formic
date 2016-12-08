@@ -18,7 +18,7 @@ abstract class AbstractServerDataType(val id: DataTypeInstanceId, val controlAlg
   private var privateCausallyNotReadyOperations: Set[DataTypeOperation] = Set.empty
 
   override def preStart(): Unit = {
-    context.system.eventStream.publish(UpdateResponse(id, dataTypeName, getDataAsJson))
+    context.system.eventStream.publish(UpdateResponse(id, dataTypeName, getDataAsJson, Option.empty))
   }
 
   def receive = {
@@ -44,7 +44,7 @@ abstract class AbstractServerDataType(val id: DataTypeInstanceId, val controlAlg
 
     case upd:UpdateRequest =>
       log.debug(s"DataType $id received UpdateRequest: $upd")
-      sender ! UpdateResponse(id, dataTypeName, getDataAsJson)
+      sender ! UpdateResponse(id, dataTypeName, getDataAsJson, historyBuffer.history.headOption.map(op => op.id))
   }
 
   /**

@@ -41,7 +41,7 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(null, newInstanceCallback.ref, instantiator)))
       val dataTypeInstanceId = DataTypeInstanceId()
 
-      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a")
+      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
 
       dispatcher.underlyingActor.instances should contain key dataTypeInstanceId
       newInstanceCallback.expectMsgClass(classOf[NewDataTypeCreated])
@@ -57,10 +57,10 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       val dataTypeInstanceId = DataTypeInstanceId()
       val dataTypeInstanceId2 = DataTypeInstanceId()
       //create two data types
-      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a")
+      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
       testFactory.expectMsg(WrappedCreateRequest(null, "a", CreateRequest(null, dataTypeInstanceId, TestClasses.dataTypeName)))
       testFactory.reply(NewDataTypeCreated(dataTypeInstanceId, testDataType.ref, new TestFormicDataType))
-      dispatcher ! UpdateResponse(dataTypeInstanceId2, TestClasses.dataTypeName, "a")
+      dispatcher ! UpdateResponse(dataTypeInstanceId2, TestClasses.dataTypeName, "a", Option.empty)
       testFactory.expectMsg(WrappedCreateRequest(null, "a", CreateRequest(null, dataTypeInstanceId2, TestClasses.dataTypeName)))
       testFactory.reply(NewDataTypeCreated(dataTypeInstanceId2, testDataType2.ref, new TestFormicDataType))
 

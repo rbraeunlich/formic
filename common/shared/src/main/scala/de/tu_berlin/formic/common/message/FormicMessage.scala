@@ -37,8 +37,9 @@ case class HistoricOperationRequest(clientId: ClientId, dataTypeInstanceId: Data
   * @param dataTypeInstanceId the id of the data type instance
   * @param dataType the data type name
   * @param data the actual data as JSON
+  * @param lastOperationId the id of the last operation applied, when this response was created, might be empty
   */
-case class UpdateResponse(dataTypeInstanceId: DataTypeInstanceId, dataType: DataTypeName, data: String) extends FormicMessage
+case class UpdateResponse(dataTypeInstanceId: DataTypeInstanceId, dataType: DataTypeName, data: String, lastOperationId: Option[OperationId]) extends FormicMessage
 
 /**
   * A message with which a client indicates that it wants to receive updates from now on from a certain data type instance.

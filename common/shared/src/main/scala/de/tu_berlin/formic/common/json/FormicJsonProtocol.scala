@@ -63,7 +63,8 @@ object FormicJsonProtocol {
           UpdateResponse(
             DataTypeInstanceId(map("dataTypeInstanceId").obj("id").str),
             DataTypeName(map("dataType").obj("name").str),
-            map("data").str
+            map("data").str,
+            map("lastOperationId").arr.headOption.map(value => OperationId(value.obj("id").str))
           )
         case "de.tu_berlin.formic.common.message.UpdateRequest" =>
           UpdateRequest(

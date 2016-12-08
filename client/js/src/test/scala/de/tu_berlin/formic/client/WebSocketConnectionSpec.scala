@@ -98,7 +98,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
     }
 
     "forward UpdateResponses from the WebSocketConnection to the dispatcher" in {
-      val updateResponse = UpdateResponse(DataTypeInstanceId(), TestClasses.dataTypeName, "")
+      val updateResponse = UpdateResponse(DataTypeInstanceId(), TestClasses.dataTypeName, "", Option.empty)
       val instantiator = TestProbe()
       val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, instantiator.ref, ClientId(), new TestWebSocketFactory, "")))
       connection ! OnConnect
@@ -111,7 +111,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
     "forward OperationMessages from the WebSocketConnection to the dispatcher" in {
       val dataTypeInstance = TestProbe()
       val dataTypeInstanceId = DataTypeInstanceId()
-      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "")
+      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "", Option.empty)
       val instantiator = new TestProbe(system) {
         def answerUpdateResponse() = {
           expectMsgPF(timeout) {

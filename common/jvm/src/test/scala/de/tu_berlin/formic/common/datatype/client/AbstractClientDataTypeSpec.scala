@@ -6,7 +6,7 @@ import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
-import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest}
+import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest.Assertions._
 import org.scalatest.{Matchers, WordSpecLike}
@@ -219,6 +219,21 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       dataType ! ReceiveCallback(() => {})
 
       watcher.expectMsgPF(2.seconds){case Terminated(ref) => ref should equal(oldCallback)}
+    }
+
+    "answer UpdateRequests with UpdateResponses" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val data = "{foo}"
+      val operationId = OperationId()
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient)))
+      dataType ! ReceiveCallback(() => {})
+      val operation = AbstractClientDataTypeSpecTestOperation(operationId, OperationContext(List.empty), ClientId(), data)
+      val operationMessage = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(operation))
+
+      dataType ! LocalOperationMessage(operationMessage)
+      dataType ! UpdateRequest(ClientId(), dataTypeInstanceId)
+
+      expectMsg(UpdateResponse(dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, data, Option(operationId)))
     }
   }
 }
