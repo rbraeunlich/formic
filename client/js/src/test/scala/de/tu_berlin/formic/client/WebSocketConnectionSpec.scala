@@ -16,9 +16,11 @@ import org.scalajs.dom.{CloseEvent, Event, MessageEvent, WebSocket}
 import org.scalatest._
 import upickle.default._
 
+import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExportAll
+import scala.util.{Failure, Success}
 
 /**
   * @author Ronny Bräunlich
@@ -56,12 +58,17 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       awaitAssert(factory.mock.asInstanceOf[WebSocket].onopen should not be null, timeout)
     }
 
-    "create a dispatcher" ignore {
-      var connection: TestActorRef[WebSocketConnection] = null
-      system.scheduler.scheduleOnce(0.millis) {
-        connection = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), new TestWebSocketFactory, "")))
+    "create a dispatcher" in {
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), new TestWebSocketFactory, "")))
+      val f = Future{
+        connection.underlyingActor.dispatcher should not equal null
       }
-      awaitAssert(connection.underlyingActor.dispatcher should not equal null, timeout)
+      system.scheduler.scheduleOnce(0.millis)(f)
+      awaitCond(f.isCompleted, timeout)
+      f.value.get match {
+        case Success(result) => result
+        case Failure(ex) => fail(ex)
+      }
     }
 
     "register for onerror and onmessage events" in {
