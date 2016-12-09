@@ -3,11 +3,11 @@ package de.tu_berlin.formic.common.controlalgo
 import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, OperationTransformer}
 
 /**
-  * The implementation of the Google Wave OT algorithm on the server side
+  * The implementation of the Wave OT algorithm on the server side
   *
   * @author Ronny Bräunlich
   */
-class GoogleWaveOTServer extends ControlAlgorithm {
+class WaveOTServer extends ControlAlgorithm {
   /**
     * Decides if an operation is causally ready to be applied. If not, the data type has to
     * store the operation somewhere to be checked for later application.

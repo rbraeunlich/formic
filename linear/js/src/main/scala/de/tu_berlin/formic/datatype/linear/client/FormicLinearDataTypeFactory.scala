@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.linear.client
 
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
-import de.tu_berlin.formic.common.controlalgo.GoogleWaveOTClient
+import de.tu_berlin.formic.common.controlalgo.WaveOTClient
 import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataTypeFactory, DataTypeInitiator}
 import de.tu_berlin.formic.common.message.OperationMessage
 import upickle.default._
@@ -15,7 +15,7 @@ abstract class FormicLinearDataTypeFactory[S](implicit val writer: Writer[S], va
   override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): LinearClientDataType[S] = {
     LinearClientDataType(
       dataTypeInstanceId,
-      new GoogleWaveOTClient((op) => outgoingConnection ! OperationMessage(null, dataTypeInstanceId, name, List(op))),
+      new WaveOTClient((op) => outgoingConnection ! OperationMessage(null, dataTypeInstanceId, name, List(op))),
       name,
       data,
       lastOperationId

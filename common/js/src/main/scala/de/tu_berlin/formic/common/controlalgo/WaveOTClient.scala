@@ -3,13 +3,13 @@ package de.tu_berlin.formic.common.controlalgo
 import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, OperationTransformer}
 
 /**
-  * The client implementation of the Google Wave OT algorithm. In order to keep it free from
+  * The client implementation of the Wave OT algorithm. In order to keep it free from
   * Actors etc., it takes a function as parameter which it uses to send loca operations to the
   * server.
   *
   * @author Ronny Bräunlich
   */
-class GoogleWaveOTClient(sendToServerFunction: (DataTypeOperation) => Unit) extends ControlAlgorithmClient {
+class WaveOTClient(sendToServerFunction: (DataTypeOperation) => Unit) extends ControlAlgorithmClient {
 
   var buffer: List[DataTypeOperation] = List.empty
 
