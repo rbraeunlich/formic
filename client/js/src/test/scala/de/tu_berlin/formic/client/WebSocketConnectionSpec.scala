@@ -273,7 +273,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       }
       awaitAssert(factory.mock.sent shouldBe empty, timeout)
 
-      connection ! OnConnect
+      connection ! OnConnect(factory.mock.asInstanceOf[WebSocket])
 
       awaitCond(factory.mock.sent.nonEmpty, timeout)
       //explicitely kill the actor or else the running job won't stop
@@ -299,7 +299,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       }
       awaitAssert(factory.mock.sent shouldBe empty, timeout)
 
-      connection ! OnConnect
+      connection ! OnConnect(factory.mock.asInstanceOf[WebSocket])
 
       awaitCond(factory.mock.sent.nonEmpty, timeout)
       //explicitely kill the actor or else the running job won't stop
@@ -324,7 +324,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       }
       awaitAssert(factory.mock.sent shouldBe empty, timeout)
 
-      connection ! OnConnect
+      connection ! OnConnect(factory.mock.asInstanceOf[WebSocket])
 
       awaitCond(factory.mock.sent.nonEmpty, timeout)
       //explicitely kill the actor or else the running job won't stop
@@ -349,7 +349,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       }
       awaitAssert(factory.mock.sent shouldBe empty, timeout)
 
-      connection ! OnConnect
+      connection ! OnConnect(factory.mock.asInstanceOf[WebSocket])
 
       awaitCond(factory.mock.sent.nonEmpty, timeout)
       //explicitely kill the actor or else the running job won't stop

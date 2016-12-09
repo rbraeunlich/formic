@@ -31,13 +31,15 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
   var webSocketConnection: dom.WebSocket = _
   var connectionTry: Cancellable = _
 
+  def retryConnection(): Unit = {
+    val tryWebSocket = webSocketConnectionFactory.createConnection(url)
+    tryWebSocket.onopen = { event: Event => self ! OnConnect(tryWebSocket) }
+  }
+
   override def preStart(): Unit = {
     super.preStart()
     dispatcher = context.actorOf(Props(new Dispatcher(self, newInstanceCallback, instantiator)), "dispatcher")
-    connectionTry = context.system.scheduler.schedule(100.millis, 2.seconds) {
-      webSocketConnection = webSocketConnectionFactory.createConnection(url)
-      webSocketConnection.onopen = { event: Event => self ! OnConnect }
-    }
+    connectionTry = context.system.scheduler.schedule(100.millis, 5.seconds) {retryConnection()}
     self ! Start
   }
 
@@ -62,10 +64,7 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
       dispatcher ! read[FormicMessage](msg)
     case OnClose(code) =>
       log.warning("Became offline with code " + code)
-      connectionTry = context.system.scheduler.schedule(100.millis, 2.seconds) {
-        webSocketConnection = webSocketConnectionFactory.createConnection(url)
-        webSocketConnection.onopen = { event: Event => self ! OnConnect }
-      }
+      connectionTry = context.system.scheduler.schedule(100.millis, 5.seconds) {retryConnection()}
       context.become(offline(scala.collection.mutable.Set.empty))
     case (ref: ActorRef, req: CreateRequest) =>
       log.debug(s"Received CreateRequest: $req")
@@ -85,9 +84,10 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
   }
 
   def offline(buffer: scala.collection.mutable.Set[FormicMessage]): Receive = {
-    case OnConnect =>
+    case OnConnect(ws: WebSocket) =>
       log.debug("Connecting")
       connectionTry.cancel
+      webSocketConnection = ws
       webSocketConnection.onerror = { event: ErrorEvent => self ! OnError(event.message) }
       webSocketConnection.onmessage = { event: MessageEvent => self ! OnMessage(event.data.toString) }
       webSocketConnection.onclose = { event: CloseEvent => self ! OnClose(event.code) }
@@ -136,15 +136,13 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
 
 object WebSocketConnection {
 
-  val CONNECTED_WEBSOCKET = 1
-
-  case object OnConnect
-
   case class OnError(message: String)
 
   case class OnMessage(message: String)
 
   case class OnClose(closeCode: Int)
+
+  case class OnConnect(openWebSocket: WebSocket)
 
   /**
     * An initial message to the WebSocketConnection so that it can start being offline and has the
