@@ -31,8 +31,7 @@ abstract class FormicList[T](private var _callback: () => Unit, initiator: DataT
     actor ! ReceiveCallback(newCallback)
   }
 
-  //TODO find a better way to distinguish remote and local instantiations
-  if (initiator != null) initiator.initDataType(this)
+  initiator.initDataType(this)
 
   @JSExport
   def add(index: Int, o: T) = {

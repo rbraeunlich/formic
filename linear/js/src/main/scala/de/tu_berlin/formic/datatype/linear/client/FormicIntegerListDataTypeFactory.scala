@@ -12,7 +12,7 @@ import upickle.default._
 class FormicIntegerListDataTypeFactory extends FormicLinearDataTypeFactory[Int] {
 
   override def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef): FormicList[Int] = {
-    new FormicIntegerList(() => {}, null, dataTypeInstanceId, dataType)
+    new FormicIntegerList(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType)
   }
 
   override val name: DataTypeName = FormicIntegerListDataTypeFactory.dataTypeName
