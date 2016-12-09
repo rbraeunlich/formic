@@ -1,14 +1,14 @@
 package de.tu_berlin.formic.datatype.linear.client
 
 import akka.actor.{ActorSystem, Props}
-import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
+import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
 import de.tu_berlin.formic.common.message.OperationMessage
-import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation}
+import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation, LinearNoOperation}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 import upickle.default._
 
@@ -72,6 +72,27 @@ class LinearClientDataTypeSpec extends TestKit(ActorSystem("FormicListSpec"))
       dataType ! opDelMsg
 
       awaitAssert(dataType.underlyingActor.data should equal(ArrayBuffer[Int]()))
+    }
+
+    "not change after receiving a no-op operation" in {
+      //gotta watch the Actor, else the test could pass with an exception
+      val watcherProbe = TestProbe()
+      val dataType: TestActorRef[LinearClientDataType[Int]] =
+        TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty)))
+      watcherProbe watch dataType
+      //insert some data
+      val op = LinearInsertOperation(0, 2, OperationId(), OperationContext(List.empty), ClientId())
+      val op2 = LinearInsertOperation(1, 3, OperationId(), OperationContext(List.empty), ClientId())
+      val noop = LinearNoOperation(15, OperationId(), OperationContext(List.empty), ClientId())
+      val opMsg = OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(op2, op))
+      val noopMsg = OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(noop))
+      dataType ! ReceiveCallback(() => {})
+      dataType ! opMsg
+
+      dataType ! noopMsg
+
+      watcherProbe.expectNoMsg()
+      awaitAssert(dataType.underlyingActor.data should equal(ArrayBuffer(2, 3)))
     }
 
     "clone a local linear insert operation correctly" in {

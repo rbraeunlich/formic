@@ -11,7 +11,7 @@ case class LinearInsertOperation(index: Int, o: Any, id: OperationId, operationC
 
 case class LinearDeleteOperation(index: Int, id: OperationId, operationContext: OperationContext,var clientId: ClientId) extends LinearStructureOperation
 
-case class LinearNoOperation(index: Int, id: OperationId, operationContext: OperationContext,var clientId: ClientId) extends LinearStructureOperation
+case class LinearNoOperation(index: Int = -1, id: OperationId, operationContext: OperationContext,var clientId: ClientId) extends LinearStructureOperation
 
 /**
   * Transforms two operations according to the IT rules in a TP1 valid way.

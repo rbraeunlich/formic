@@ -6,7 +6,7 @@ import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.message.OperationMessage
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
-import de.tu_berlin.formic.datatype.linear.{LinearServerDataType, LinearDeleteOperation, LinearInsertOperation}
+import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation, LinearNoOperation, LinearServerDataType}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 import scala.collection.mutable.ArrayBuffer
@@ -53,6 +53,20 @@ class LinearServerDataTypeSpec extends TestKit(ActorSystem("LinearServerDataType
       dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), IntegerListDataTypeFactory.name, List(delete))
 
       dataType.underlyingActor.data should be(ArrayBuffer(0, 3))
+    }
+
+    "not change when receiving no-op operation" in {
+      val dataType = TestActorRef[LinearServerDataType[Int]](Props(LinearServerDataType[Int](DataTypeInstanceId(), LinearDataTypeSpecControlAlgorithm, IntegerListDataTypeFactory.name)))
+      //insert some data
+      val op = LinearInsertOperation(0, Integer.valueOf(1), OperationId(), OperationContext(List.empty), ClientId())
+      val op2 = LinearInsertOperation(1, Integer.valueOf(3), OperationId(), OperationContext(List.empty), ClientId())
+      val noop = LinearNoOperation(0, OperationId(), OperationContext(List.empty), ClientId())
+
+      dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), IntegerListDataTypeFactory.name, List(op))
+      dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), IntegerListDataTypeFactory.name, List(op2))
+      dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), IntegerListDataTypeFactory.name, List(noop))
+
+      dataType.underlyingActor.data should be(ArrayBuffer(1, 3))
     }
 
     "result in a valid JSON representation" in {
