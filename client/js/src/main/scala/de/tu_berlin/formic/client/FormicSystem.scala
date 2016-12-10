@@ -2,6 +2,7 @@ package de.tu_berlin.formic.client
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.ask
+import com.typesafe.config.{Config, ConfigFactory}
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
@@ -20,17 +21,20 @@ import scala.util.{Failure, Success}
   * @author Ronny Bräunlich
   */
 @JSExport
-class FormicSystem extends DataTypeInitiator {
+class FormicSystem(config: Config = ConfigFactory.load()) extends DataTypeInitiator {
 
-  //TODO Read from Properties as default
-  @JSExport
-  var serverAddress: String = _
+  implicit val system = ActorSystem("FormicSystem", config)
 
-  @JSExport
-  var serverPort: String = _
+  implicit val ec = system.dispatcher
 
   @JSExport
-  var bufferSize: Int = _
+  var serverAddress: String = system.settings.config.getString("formic.server.address")
+
+  @JSExport
+  var serverPort: String = system.settings.config.getString("formic.server.port")
+
+  @JSExport
+  var bufferSize: Int = system.settings.config.getInt("formic.client.buffersize")
 
   var connection: ActorRef = _
 
@@ -39,16 +43,12 @@ class FormicSystem extends DataTypeInitiator {
 
   var factories: Map[DataTypeName, ActorRef] = Map.empty
 
-  implicit val system = ActorSystem("FormicSystem")
-
-  implicit val ec = system.dispatcher
-
   @JSExport
   def init(callback: NewInstanceCallback, username: ClientId = ClientId()) = {
     initFactories()
     val instantiator = system.actorOf(Props(new DataTypeInstantiator(factories)))
     val wrappedCallback = system.actorOf(Props(new NewInstanceCallbackActorWrapper(callback)))
-    val url = s"ws://${username.id}@0.0.0.0:8080/formic"
+    val url = s"ws://${username.id}@$serverAddress:$serverPort/formic"
     connection = system.actorOf(Props(new WebSocketConnection(wrappedCallback, instantiator, username, WebSocketFactory, url)))
   }
 
