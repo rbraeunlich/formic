@@ -6,8 +6,8 @@ import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.Dispatcher.ErrorMessage
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{NewDataTypeCreated, WrappedCreateRequest}
-import de.tu_berlin.formic.common.message.{CreateRequest, OperationMessage, UpdateResponse}
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.message.{CreateRequest, HistoricOperationRequest, OperationMessage, UpdateResponse}
+import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest.{Matchers, WordSpecLike}
 
 /**
@@ -90,6 +90,17 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       dispatcher ! (actor.ref, request)
 
       dispatcher.underlyingActor.instances should contain (dataTypeInstanceId -> actor.ref)
+    }
+
+    "forward an HistoricOperationRequest to the outgoing connection" in {
+      val instantiator = TestActorRef(Props(new DataTypeInstantiator(Map.empty)))
+      val outgoing = TestProbe()
+      val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(outgoing.ref, TestProbe().ref, instantiator)))
+      val historicRequest = HistoricOperationRequest(ClientId(), DataTypeInstanceId(), OperationId())
+
+      dispatcher ! historicRequest
+
+      outgoing.expectMsg(historicRequest)
     }
   }
 }

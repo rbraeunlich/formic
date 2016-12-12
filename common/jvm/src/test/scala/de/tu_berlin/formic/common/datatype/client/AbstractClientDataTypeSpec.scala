@@ -6,12 +6,13 @@ import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
-import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
+import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest.Assertions._
 import org.scalatest.{Matchers, WordSpecLike}
 
 import scala.concurrent.duration._
+
 /**
   * @author Ronny Bräunlich
   */
@@ -218,7 +219,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
 
       dataType ! ReceiveCallback(() => {})
 
-      watcher.expectMsgPF(2.seconds){case Terminated(ref) => ref should equal(oldCallback)}
+      watcher.expectMsgPF(2.seconds) { case Terminated(ref) => ref should equal(oldCallback) }
     }
 
     "answer UpdateRequests with UpdateResponses" in {
@@ -241,6 +242,67 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId))))
 
       dataType.underlyingActor.historyBuffer.history.head.id should equal(lastOperationId)
+    }
+
+    "send an HistoricOperationRequest after it receives a remote OperationMessage whose parent it does no know" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val data = "{foo}"
+      val operationId = OperationId()
+      val previousOperation = OperationId()
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient)))
+      dataType ! ReceiveCallback(() => {})
+      val operation = AbstractClientDataTypeSpecTestOperation(operationId, OperationContext(List(previousOperation)), ClientId(), data)
+      val operationMessage = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(operation))
+
+      dataType ! operationMessage
+
+      val answer = expectMsgClass(classOf[HistoricOperationRequest])
+      answer.sinceId should equal(null)
+      answer.dataTypeInstanceId should equal(dataTypeInstanceId)
+    }
+
+    "apply the operations of an HistoricOperationRequest that have not been applied" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val data = "{foo}"
+      val operationId = OperationId()
+      val previousOperation = OperationId()
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient)))
+      dataType ! ReceiveCallback(() => {})
+      val normalOperation = AbstractClientDataTypeSpecTestOperation(operationId, OperationContext(List.empty), ClientId(), data)
+      val missingParentOperation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List(previousOperation)), ClientId(), data)
+      val missingOperation = AbstractClientDataTypeSpecTestOperation(previousOperation, OperationContext(List(operationId)), ClientId(), data)
+      val operationMessage = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(normalOperation))
+      val missingParentMessage = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(missingParentOperation))
+      //let the data type first apply an operation
+      dataType ! operationMessage
+
+      dataType ! missingParentMessage
+
+      val answer = expectMsgClass(classOf[HistoricOperationRequest])
+      answer.sinceId should equal(operationId)
+
+      dataType ! OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(missingParentOperation, missingOperation))
+
+      dataType.underlyingActor.historyBuffer.history should contain inOrder(missingParentOperation, missingOperation, normalOperation)
+    }
+
+    "must not apply duplicated received operations" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient)))
+      dataType ! ReceiveCallback(() => {})
+      val data = "{foo}"
+      val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+      val operationMessage = OperationMessage(
+        ClientId(),
+        dataTypeInstanceId,
+        AbstractClientDataTypeSpec.dataTypeName,
+        List(operation)
+      )
+
+      dataType ! operationMessage
+      dataType ! operationMessage
+
+      dataType.underlyingActor.historyBuffer.history should equal(List(operation))
     }
   }
 }

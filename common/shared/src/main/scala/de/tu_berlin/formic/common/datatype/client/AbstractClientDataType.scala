@@ -7,7 +7,7 @@ import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.{InitialOperation, ReceiveCallback}
 import de.tu_berlin.formic.common.datatype.client.CallbackWrapper.Invoke
-import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
+import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
 
 /**
   * The data types on the client basically receive only operation messages. Also, they need another
@@ -48,13 +48,15 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId, val controlAlg
 
     case opMsg: OperationMessage =>
       log.debug(s"DataType $id received operation message $opMsg")
-      //on the client we expect that the server always sends the operations in correct order
+      //there should be no need to handle duplicates on the Client
       opMsg.operations.
         reverse.
+        filter(op => historyBuffer.findOperation(op.id).isEmpty).
         foreach(op => {
-          if (controlAlgorithm.canBeApplied(op, historyBuffer)) {
+          if (controlAlgorithm.canBeApplied(op, historyBuffer) && isPreviousOperationPresent(op, historyBuffer)) {
             applyOperation(op)
-            //the control algorithm might need the duplicates as acks, therefore we filter afterwards
+          } else if(!isPreviousOperationPresent(op, historyBuffer)){
+            sender ! HistoricOperationRequest(null, id, historyBuffer.history.headOption.map(op => op.id).orNull)
           }
         })
       callbackWrapper ! Invoke
@@ -94,6 +96,19 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId, val controlAlg
   def cloneOperationWithNewContext(op: DataTypeOperation, context: OperationContext): DataTypeOperation
 
   def getDataAsJson: String
+
+
+  /**
+    * Due to the possibility of being disconnected from the server, it might happen that some operations
+    * are missing and operations are being received out of order.
+    * @param op the operation whose OperationContext has to be checked
+    * @param historyBuffer the buffer containing all previous operations
+    * @return true, if the operation from the operation context is present, false otherwise
+    */
+  def isPreviousOperationPresent(op: DataTypeOperation, historyBuffer: HistoryBuffer): Boolean = {
+    if(op.operationContext.operations.isEmpty) true
+    else historyBuffer.findOperation(op.operationContext.operations.head).isDefined
+  }
 
 }
 

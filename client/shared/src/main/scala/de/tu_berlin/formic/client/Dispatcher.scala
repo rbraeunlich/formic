@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
 import de.tu_berlin.formic.client.Dispatcher.{ErrorMessage, WrappedUpdateResponse}
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.DataTypeInstanceId
-import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse, OperationMessage, UpdateResponse}
+import de.tu_berlin.formic.common.message._
 
 /**
   * @author Ronny Bräunlich
@@ -30,8 +30,7 @@ class Dispatcher(val outgoingConnection: ActorRef, val newInstanceCallback: Acto
     case (ref:ActorRef, req:CreateRequest) =>
       //this is a little hack to inform the Dispatcher about new, locally created data types
       instances += (req.dataTypeInstanceId -> ref)
-
-    //TODO more?
+    case hist: HistoricOperationRequest => outgoingConnection ! hist
   }
 }
 
