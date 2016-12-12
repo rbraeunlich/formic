@@ -48,7 +48,6 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId, val controlAlg
 
     case opMsg: OperationMessage =>
       log.debug(s"DataType $id received operation message $opMsg")
-      //there should be no need to handle duplicates on the Client
       opMsg.operations.
         reverse.
         filter(op => historyBuffer.findOperation(op.id).isEmpty).
@@ -56,6 +55,7 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId, val controlAlg
           if (controlAlgorithm.canBeApplied(op, historyBuffer) && isPreviousOperationPresent(op, historyBuffer)) {
             applyOperation(op)
           } else if(!isPreviousOperationPresent(op, historyBuffer)){
+            //TODO optimize, this might generate too many messages
             sender ! HistoricOperationRequest(null, id, historyBuffer.history.headOption.map(op => op.id).orNull)
           }
         })
