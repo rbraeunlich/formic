@@ -30,8 +30,11 @@ class HistoryBuffer(private var privateHistory: List[DataTypeOperation] = List.e
     *         order, i.e. the first operation in the list is the newest one. The list might be empty.
     */
   def findAllOperationsAfter(id: OperationId): List[DataTypeOperation] = {
-    val index = history.map(op => op.id).indexOf(id)
-    history.slice(0, index)
+    if (id == null) history
+    else {
+      val index = history.map(op => op.id).indexOf(id)
+      history.slice(0, index)
+    }
   }
 
   /**

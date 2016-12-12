@@ -59,6 +59,14 @@ class HistoryBufferSpec extends FlatSpec with Matchers {
     buffer.findAllOperationsAfter(OperationId("5")) should be(empty)
   }
 
+  it should "return all operations for null as previous operation id" in {
+    val buffer = new HistoryBuffer()
+    val op1 = TestDataTypeOperation(OperationId("1"), OperationContext(List.empty), ClientId("1"))
+    buffer.addOperation(op1)
+
+    buffer.findAllOperationsAfter(null) should contain(op1)
+  }
+
   it should "find all later operations in correct order" in {
     val buffer = new HistoryBuffer()
     val clientId = ClientId("1")

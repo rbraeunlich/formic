@@ -57,8 +57,10 @@ object FormicJsonProtocol {
           HistoricOperationRequest(
             ClientId(map("clientId").obj("id").str),
             DataTypeInstanceId(map("dataTypeInstanceId").obj("id").str),
-            OperationId(map("sinceId").obj("id").str)
-          )
+            map("sinceId") match {
+              case Js.Null => null
+              case obj:Js.Obj => OperationId(obj("id").str)
+            })
         case "de.tu_berlin.formic.common.message.UpdateResponse" =>
           UpdateResponse(
             DataTypeInstanceId(map("dataTypeInstanceId").obj("id").str),

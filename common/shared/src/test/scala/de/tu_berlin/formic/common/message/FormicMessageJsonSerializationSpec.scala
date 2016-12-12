@@ -49,10 +49,16 @@ import upickle.default._
     serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.CreateRequest\",\"clientId\":{\"id\":\"678\"},\"dataTypeInstanceId\":{\"id\":\"91011\"},\"dataType\":{\"$type\":\"de.tu_berlin.formic.common.datatype.DataTypeName\",\"name\":\"test\"}}")
   }
 
-  it should "serialize a HistoricOperationRequest to JSON" in {
+  it should "serialize a HistoricOperationRequest with sinceId to JSON" in {
     val serialized = write(HistoricOperationRequest(ClientId.valueOf("123"), DataTypeInstanceId.valueOf("456"), OperationId.valueOf("1")))
 
     serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.HistoricOperationRequest\",\"clientId\":{\"id\":\"123\"},\"dataTypeInstanceId\":{\"id\":\"456\"},\"sinceId\":{\"id\":\"1\"}}")
+  }
+
+  it should "serialize a HistoricOperationRequest without sinceId to JSON" in {
+    val serialized = write(HistoricOperationRequest(ClientId.valueOf("123"), DataTypeInstanceId.valueOf("456"), null))
+
+    serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.HistoricOperationRequest\",\"clientId\":{\"id\":\"123\"},\"dataTypeInstanceId\":{\"id\":\"456\"},\"sinceId\":null}")
   }
 
   it should "serialize an UpdateResponse to JSON" in {
@@ -101,13 +107,22 @@ import upickle.default._
     deserialized.asInstanceOf[CreateRequest].dataType should be(DataTypeName("test"))
   }
 
-  it should "deserialize a HistoricOperationRequest" in {
+  it should "deserialize a HistoricOperationRequest with sinceId" in {
     val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.HistoricOperationRequest\",\"clientId\":{\"id\":\"123\"},\"dataTypeInstanceId\":{\"id\":\"456\"},\"sinceId\":{\"id\":\"1\"}}")
 
     deserialized shouldBe a[HistoricOperationRequest]
     deserialized.asInstanceOf[HistoricOperationRequest].dataTypeInstanceId should be(DataTypeInstanceId("456"))
     deserialized.asInstanceOf[HistoricOperationRequest].clientId should be(ClientId("123"))
     deserialized.asInstanceOf[HistoricOperationRequest].sinceId should be(OperationId("1"))
+  }
+
+  it should "deserialize a HistoricOperationRequest without sinceId" in {
+    val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.HistoricOperationRequest\",\"clientId\":{\"id\":\"123\"},\"dataTypeInstanceId\":{\"id\":\"456\"},\"sinceId\":null}")
+
+    deserialized shouldBe a[HistoricOperationRequest]
+    deserialized.asInstanceOf[HistoricOperationRequest].dataTypeInstanceId should be(DataTypeInstanceId("456"))
+    deserialized.asInstanceOf[HistoricOperationRequest].clientId should be(ClientId("123"))
+    deserialized.asInstanceOf[HistoricOperationRequest].sinceId should be(null)
   }
 
   it should "deserialize an UpdateResponse with lastOperationId" in {

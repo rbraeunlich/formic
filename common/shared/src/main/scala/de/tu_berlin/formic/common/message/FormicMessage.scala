@@ -1,9 +1,7 @@
 package de.tu_berlin.formic.common.message
 
 import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation}
-import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
-import upickle.Js
 
 /**
   * @author Ronny Bräunlich
@@ -28,7 +26,7 @@ case class CreateRequest(clientId: ClientId, dataTypeInstanceId: DataTypeInstanc
   * If a client was disconnected and missed some operations it can send this request.
   * @param clientId The client that is missing operations
   * @param dataTypeInstanceId The data type the client needs the operations for
-  * @param sinceId the operation id of the last operation the client knows about
+  * @param sinceId the operation id of the last operation the client knows about, might be null
   */
 case class HistoricOperationRequest(clientId: ClientId, dataTypeInstanceId: DataTypeInstanceId, sinceId: OperationId) extends FormicMessage
 

@@ -4,7 +4,7 @@ import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, Op
 
 /**
   * The client implementation of the Wave OT algorithm. In order to keep it free from
-  * Actors etc., it takes a function as parameter which it uses to send loca operations to the
+  * Actors etc., it takes a function as parameter which it uses to send local operations to the
   * server.
   *
   * @author Ronny Bräunlich
