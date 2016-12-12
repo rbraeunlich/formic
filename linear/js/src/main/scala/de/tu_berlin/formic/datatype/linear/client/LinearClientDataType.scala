@@ -1,5 +1,6 @@
 package de.tu_berlin.formic.datatype.linear.client
 
+import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType
 import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, OperationContext, OperationTransformer}
@@ -16,9 +17,10 @@ class LinearClientDataType[T](id: DataTypeInstanceId,
                               controlAlgorithmClient: ControlAlgorithmClient,
                               val dataTypeName: DataTypeName,
                               val initialData: Option[String],
-                              lastOperationId: Option[OperationId])
+                              lastOperationId: Option[OperationId],
+                              outgoingConnection: ActorRef)
                              (implicit val writer: Writer[T], val reader: Reader[T])
-  extends AbstractClientDataType(id, controlAlgorithmClient, lastOperationId) {
+  extends AbstractClientDataType(id, controlAlgorithmClient, lastOperationId, outgoingConnection) {
 
 
   override val transformer: OperationTransformer = LinearTransformer
@@ -50,7 +52,7 @@ class LinearClientDataType[T](id: DataTypeInstanceId,
 
 object LinearClientDataType {
 
-  def apply[T](id: DataTypeInstanceId, controlAlgorithm: ControlAlgorithmClient, dataTypeName: DataTypeName, initialData: Option[String], lastOperationId: Option[OperationId])(implicit writer: Writer[T], reader: Reader[T]): LinearClientDataType[T] =
-    new LinearClientDataType(id, controlAlgorithm, dataTypeName, initialData, lastOperationId)
+  def apply[T](id: DataTypeInstanceId, controlAlgorithm: ControlAlgorithmClient, dataTypeName: DataTypeName, initialData: Option[String], lastOperationId: Option[OperationId], outgoingConnection: ActorRef)(implicit writer: Writer[T], reader: Reader[T]): LinearClientDataType[T] =
+    new LinearClientDataType(id, controlAlgorithm, dataTypeName, initialData, lastOperationId, outgoingConnection)
 
 }

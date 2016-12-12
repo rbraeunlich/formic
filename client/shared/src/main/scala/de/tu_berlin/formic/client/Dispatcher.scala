@@ -19,17 +19,26 @@ class Dispatcher(val outgoingConnection: ActorRef, val newInstanceCallback: Acto
         case Some((k, v)) => v ! op
         case None => log.warning(s"Did not find data type instance with id ${op.dataTypeInstanceId}, dropping message $op")
       }
+
     case rep: UpdateResponse =>
       instantiator ! WrappedUpdateResponse(outgoingConnection, rep)
+
     case created: NewDataTypeCreated =>
       instances += (created.dataTypeInstanceId -> created.dataTypeActor)
       newInstanceCallback ! created
+
     case ErrorMessage(errorText) => log.error("Error from WebSocket connection: " + errorText)
+
     case rep: CreateResponse =>
-      //TODO the data type may now send its operations to the server
+      instances.find(t => t._1 == rep.dataTypeInstanceId) match {
+        case Some((k, v)) => v ! rep
+        case None => log.warning(s"Did not find data type instance with id ${rep.dataTypeInstanceId}, dropping message $rep")
+      }
+
     case (ref:ActorRef, req:CreateRequest) =>
       //this is a little hack to inform the Dispatcher about new, locally created data types
       instances += (req.dataTypeInstanceId -> ref)
+
     case hist: HistoricOperationRequest => outgoingConnection ! hist
   }
 }

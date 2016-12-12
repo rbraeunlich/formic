@@ -6,7 +6,7 @@ import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.Dispatcher.ErrorMessage
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{NewDataTypeCreated, WrappedCreateRequest}
-import de.tu_berlin.formic.common.message.{CreateRequest, HistoricOperationRequest, OperationMessage, UpdateResponse}
+import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest.{Matchers, WordSpecLike}
 
@@ -101,6 +101,29 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       dispatcher ! historicRequest
 
       outgoing.expectMsg(historicRequest)
+    }
+
+    "forward an CreateResponse to the correct data type instance" in {
+      val testDataType = TestProbe()
+      val testDataType2 = TestProbe()
+      val testFactory = TestProbe()
+      val testFactories: Map[DataTypeName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory.ref)
+      val instantiator = TestActorRef(Props(new DataTypeInstantiator(testFactories)))
+      val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(null, TestProbe().ref, instantiator)))
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId2 = DataTypeInstanceId()
+      //create two data types
+      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
+      testFactory.expectMsg(WrappedCreateRequest(null, "a", Option.empty,CreateRequest(null, dataTypeInstanceId, TestClasses.dataTypeName)))
+      testFactory.reply(NewDataTypeCreated(dataTypeInstanceId, testDataType.ref, new TestFormicDataType))
+      dispatcher ! UpdateResponse(dataTypeInstanceId2, TestClasses.dataTypeName, "a", Option.empty)
+      testFactory.expectMsg(WrappedCreateRequest(null, "a", Option.empty, CreateRequest(null, dataTypeInstanceId2, TestClasses.dataTypeName)))
+      testFactory.reply(NewDataTypeCreated(dataTypeInstanceId2, testDataType2.ref, new TestFormicDataType))
+      val response = CreateResponse(dataTypeInstanceId2)
+
+      dispatcher ! response
+
+      testDataType2.expectMsg(response)
     }
   }
 }

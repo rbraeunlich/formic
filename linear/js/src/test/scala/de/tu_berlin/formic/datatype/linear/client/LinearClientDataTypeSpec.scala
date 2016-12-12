@@ -31,7 +31,7 @@ class LinearClientDataTypeSpec extends TestKit(ActorSystem("FormicListSpec"))
 
     "create an empty array buffer when no initial data is present" in {
       val dataType: TestActorRef[LinearClientDataType[Int]] =
-        TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty)))
+        TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty, TestProbe().ref)))
 
       dataType.underlyingActor.data should equal(ArrayBuffer.empty[Int])
     }
@@ -41,7 +41,7 @@ class LinearClientDataTypeSpec extends TestKit(ActorSystem("FormicListSpec"))
       val initialDataJson = write(initialData)
       val initialOperationId = OperationId()
       val dataType: TestActorRef[LinearClientDataType[Int]] =
-        TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option(initialDataJson), Option(initialOperationId))))
+        TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option(initialDataJson), Option(initialOperationId), TestProbe().ref)))
 
       dataType.underlyingActor.data should equal(initialData)
       dataType.underlyingActor.historyBuffer.history.headOption.map(op => op.id).get should equal(initialOperationId)
@@ -49,7 +49,7 @@ class LinearClientDataTypeSpec extends TestKit(ActorSystem("FormicListSpec"))
 
     "apply a linear insert operation correctly" in {
       val dataType: TestActorRef[LinearClientDataType[Int]] =
-        TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty)))
+        TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty, TestProbe().ref)))
       val op = LinearInsertOperation(0, 213, OperationId(), OperationContext(List.empty), ClientId())
       val opMsg = OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(op))
       dataType ! ReceiveCallback(() => {})
@@ -61,7 +61,7 @@ class LinearClientDataTypeSpec extends TestKit(ActorSystem("FormicListSpec"))
 
     "apply a linear delete operation correctly" in {
       val dataType: TestActorRef[LinearClientDataType[Int]] =
-        TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty)))
+        TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty, TestProbe().ref)))
       val opIns = LinearInsertOperation(0, 213, OperationId(), OperationContext(List.empty), ClientId())
       val opInsMsg = OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(opIns))
       val opDel = LinearDeleteOperation(0, OperationId(), OperationContext(List.empty), ClientId())
@@ -78,7 +78,7 @@ class LinearClientDataTypeSpec extends TestKit(ActorSystem("FormicListSpec"))
       //gotta watch the Actor, else the test could pass with an exception
       val watcherProbe = TestProbe()
       val dataType: TestActorRef[LinearClientDataType[Int]] =
-        TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty)))
+        TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty, TestProbe().ref)))
       watcherProbe watch dataType
       //insert some data
       val op = LinearInsertOperation(0, 2, OperationId(), OperationContext(List.empty), ClientId())
@@ -97,7 +97,7 @@ class LinearClientDataTypeSpec extends TestKit(ActorSystem("FormicListSpec"))
 
     "clone a local linear insert operation correctly" in {
       val dataType: TestActorRef[LinearClientDataType[Int]] =
-        TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty)))
+        TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty, TestProbe().ref)))
       //one operation first to be able to check the changed OperationContext
       val opId = OperationId()
       val opIns = LinearInsertOperation(0, 213, opId, OperationContext(List.empty), ClientId())
@@ -116,7 +116,7 @@ class LinearClientDataTypeSpec extends TestKit(ActorSystem("FormicListSpec"))
 
     "clone a local linear delete operation correctly" in {
       val dataType: TestActorRef[LinearClientDataType[Int]] =
-        TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty)))
+        TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty, TestProbe().ref)))
       //one operation first to be able to check the changed OperationContext
       val opId = OperationId()
       val opIns = LinearInsertOperation(0, 213, opId, OperationContext(List.empty), ClientId())
@@ -135,7 +135,7 @@ class LinearClientDataTypeSpec extends TestKit(ActorSystem("FormicListSpec"))
 
     "correctly return its data as JSON" in {
       val dataType: TestActorRef[LinearClientDataType[Int]] =
-        TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty)))
+        TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty, TestProbe().ref)))
       val opIns = LinearInsertOperation(0, 213, OperationId(), OperationContext(List.empty), ClientId())
       val opInsMsg = OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(opIns))
       dataType ! ReceiveCallback(() => {})

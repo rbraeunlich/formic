@@ -59,7 +59,7 @@ object AbstractClientDataTypeSpecControlAlgorithm extends ControlAlgorithmClient
   override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = op
 }
 
-class AbstractClientDataTypeFactorySpecServerDataType extends AbstractClientDataType(DataTypeInstanceId(), AbstractClientDataTypeSpecControlAlgorithm, Option.empty) {
+class AbstractClientDataTypeFactorySpecServerDataType(outgoingConnection: ActorRef) extends AbstractClientDataType(DataTypeInstanceId(), AbstractClientDataTypeSpecControlAlgorithm, Option.empty, outgoingConnection) {
   override val dataTypeName: DataTypeName = DataTypeName("AbstractClientDataTypeFactorySpec")
 
   override val transformer: OperationTransformer = null
@@ -82,7 +82,7 @@ class AbstractClientDataTypeFactorySpecFactory extends AbstractClientDataTypeFac
   override val name: DataTypeName = DataTypeName("AbstractClientDataTypeFactorySpec")
 
   override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): AbstractClientDataTypeFactorySpecServerDataType = {
-    new AbstractClientDataTypeFactorySpecServerDataType
+    new AbstractClientDataTypeFactorySpecServerDataType(outgoingConnection)
   }
 
   override def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef): AbstractClientDataTypeFactorySpecFormicDataType = {

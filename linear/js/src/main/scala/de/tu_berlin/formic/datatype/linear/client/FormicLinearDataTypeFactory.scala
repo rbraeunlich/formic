@@ -1,10 +1,10 @@
 package de.tu_berlin.formic.datatype.linear.client
 
 import akka.actor.ActorRef
-import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
 import de.tu_berlin.formic.common.controlalgo.WaveOTClient
-import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataTypeFactory, DataTypeInitiator}
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory
 import de.tu_berlin.formic.common.message.OperationMessage
+import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
 import upickle.default._
 
 /**
@@ -18,7 +18,8 @@ abstract class FormicLinearDataTypeFactory[S](implicit val writer: Writer[S], va
       new WaveOTClient((op) => outgoingConnection ! OperationMessage(null, dataTypeInstanceId, name, List(op))),
       name,
       data,
-      lastOperationId
+      lastOperationId,
+      outgoingConnection
     )
   }
 }

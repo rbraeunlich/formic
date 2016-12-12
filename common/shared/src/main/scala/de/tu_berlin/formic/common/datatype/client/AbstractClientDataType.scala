@@ -6,7 +6,7 @@ import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.{InitialOperation, ReceiveCallback}
 import de.tu_berlin.formic.common.datatype.client.CallbackWrapper.Invoke
-import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
+import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 
 /**
@@ -15,7 +15,10 @@ import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
   *
   * @author Ronny Bräunlich
   */
-abstract class AbstractClientDataType(val id: DataTypeInstanceId, val controlAlgorithm: ControlAlgorithmClient, lastOperationId: Option[OperationId]) extends Actor with ActorLogging {
+abstract class AbstractClientDataType(val id: DataTypeInstanceId,
+                                      val controlAlgorithm: ControlAlgorithmClient,
+                                      lastOperationId: Option[OperationId],
+                                      val outgoingConnection: ActorRef) extends Actor with ActorLogging {
 
   val dataTypeName: DataTypeName
 
@@ -27,19 +30,37 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId, val controlAlg
   def receive = {
     case ReceiveCallback(callback) =>
       val wrapper = context.actorOf(Props(new CallbackWrapper(callback)))
-      context.become(withCallback(wrapper))
+      context.become(unacknowledged(wrapper) orElse otherMessages(wrapper))
   }
 
-  def existsOperationWithDirectContextDependencyMissing(operations: List[DataTypeOperation], historyBuffer: HistoryBuffer): Boolean = {
-    operations.
-      filterNot(op => isPreviousOperationPresent(op, historyBuffer)).
-      exists(op => !operations.exists(
-        otherOp => op.operationContext.operations.headOption.contains(otherOp.id)
+  /**
+    * A data type that has not been acknowledged by the server yet, cannot send its operations to
+    * the server.
+    */
+  def unacknowledged(callbackWrapper: ActorRef): Receive = {
+    case msg: LocalOperationMessage =>
+      log.debug(s"DataType $id received local operation message $msg")
+      //the Client should never generate more than one operation
+      val operation = msg.op.operations.head
+      val clonedOperation = cloneOperationWithNewContext(
+        operation,
+        OperationContext(historyBuffer.history.headOption.map(op => op.id).toList)
       )
-      )
+      apply(operation)
+      historyBuffer.addOperation(clonedOperation)
+      callbackWrapper ! Invoke
+
+    case CreateResponse(_) =>
+      outgoingConnection ! OperationMessage(null, id, dataTypeName, historyBuffer.history)
+      context.become(acknowledged(callbackWrapper) orElse otherMessages(callbackWrapper))
+
+    case ReceiveCallback(callback) =>
+      val newWrapper = context.actorOf(Props(new CallbackWrapper(callback)))
+      callbackWrapper ! PoisonPill
+      context.become(unacknowledged(newWrapper) orElse otherMessages(newWrapper))
   }
 
-  def withCallback(callbackWrapper: ActorRef): Receive = {
+  def acknowledged(callbackWrapper: ActorRef): Receive = {
     case msg: LocalOperationMessage =>
       log.debug(s"DataType $id received local operation message $msg")
       //the Client should never generate more than one operation
@@ -68,15 +89,17 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId, val controlAlg
         callbackWrapper ! Invoke
       }
 
+    case ReceiveCallback(callback) =>
+      val newWrapper = context.actorOf(Props(new CallbackWrapper(callback)))
+      callbackWrapper ! PoisonPill
+      context.become(acknowledged(newWrapper) orElse otherMessages(newWrapper))
+  }
+
+  def otherMessages(callbackWrapper: ActorRef): Receive = {
     case req: UpdateRequest =>
       //this is only called locally from the wrappers
       log.debug(s"DataType $id received UpdateRequest: $req")
       sender ! UpdateResponse(id, dataTypeName, getDataAsJson, historyBuffer.history.headOption.map(op => op.id))
-
-    case ReceiveCallback(callback) =>
-      val newWrapper = context.actorOf(Props(new CallbackWrapper(callback)))
-      callbackWrapper ! PoisonPill
-      context.become(withCallback(newWrapper))
   }
 
   private def applyOperation(dataTypeOperation: DataTypeOperation) = {
@@ -118,6 +141,18 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId, val controlAlg
     else historyBuffer.findOperation(op.operationContext.operations.head).isDefined
   }
 
+  /**
+    * Since the compressed OperationContext only contains a single operation, we have to check
+    * if that operation is present, either in the other operations or in the history. If not, the
+    * operation cannot be applied.
+    */
+  def existsOperationWithDirectContextDependencyMissing(operations: List[DataTypeOperation], historyBuffer: HistoryBuffer): Boolean = {
+    operations.
+      filterNot(op => isPreviousOperationPresent(op, historyBuffer)).
+      exists(op => !operations.exists(
+        otherOp => op.operationContext.operations.headOption.contains(otherOp.id))
+      )
+  }
 }
 
 object AbstractClientDataType {
