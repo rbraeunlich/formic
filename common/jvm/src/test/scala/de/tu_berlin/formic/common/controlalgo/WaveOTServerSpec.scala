@@ -104,4 +104,6 @@ object WaveOTTestTransformer extends OperationTransformer {
     val toTransform = pair._1.asInstanceOf[WaveOTTestOperation]
     WaveOTTestOperation(toTransform.id, OperationContext(List(pair._2.id)), toTransform.clientId, toTransform.transformations + 1)
   }
+
+  override def bulkTransform(operation: DataTypeOperation, bridge: List[DataTypeOperation]): List[DataTypeOperation] = bridge
 }

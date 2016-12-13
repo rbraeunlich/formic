@@ -71,6 +71,8 @@ object TestControlAlgorithm extends ControlAlgorithm {
 object TestTransformer extends OperationTransformer {
 
   override def transform(pair: (DataTypeOperation, DataTypeOperation)): DataTypeOperation = pair._1
+
+  override def bulkTransform(operation: DataTypeOperation, bridge: List[DataTypeOperation]): List[DataTypeOperation] = bridge
 }
 
 object TestClasses {

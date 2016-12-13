@@ -97,32 +97,32 @@ class WaveOTClientSpec extends WordSpec with Matchers {
       val operation = WaveOTClientTestOperation(OperationId(), OperationContext(List.empty), ClientId())
       val operation2 = WaveOTClientTestOperation(OperationId(), OperationContext(List(operation.id)), ClientId())
       val operation3 = WaveOTClientTestOperation(OperationId(), OperationContext(List(operation2.id)), ClientId())
-      val operation4 = WaveOTClientTestOperation(operationId, OperationContext(List.empty), clientId)
+      val remoteOperation = WaveOTClientTestOperation(operationId, OperationContext(List.empty), clientId)
       controlAlgo.canLocalOperationBeApplied(operation)
       controlAlgo.canLocalOperationBeApplied(operation2)
       controlAlgo.canLocalOperationBeApplied(operation3)
-      val transformed = controlAlgo.transform(operation4, new HistoryBuffer(), WaveOTClientTestTransformer)
+      val transformed = controlAlgo.transform(remoteOperation, new HistoryBuffer(), WaveOTClientTestTransformer)
 
       transformed should equal(WaveOTClientTestOperation(operationId, OperationContext(List(operation3.id)), clientId, 3))
     }
 
-    "replace the whole translation bridge (in-flight + buffer) with their transformation with the remote operation" in {
+    "replace the whole translation bridge (in-flight + buffer) with their transformation with the remote operation by using transformers bulk transformation" in {
       val operationId = OperationId()
       val clientId = ClientId()
       val controlAlgo = new WaveOTClient((op) => ())
       val operation = WaveOTClientTestOperation(OperationId(), OperationContext(List.empty), ClientId())
       val operation2 = WaveOTClientTestOperation(OperationId(), OperationContext(List(operation.id)), ClientId())
       val operation3 = WaveOTClientTestOperation(OperationId(), OperationContext(List(operation2.id)), ClientId())
-      val operation4 = WaveOTClientTestOperation(operationId, OperationContext(List.empty), clientId)
+      val remoteOperation = WaveOTClientTestOperation(operationId, OperationContext(List.empty), clientId)
       controlAlgo.canLocalOperationBeApplied(operation)
       controlAlgo.canLocalOperationBeApplied(operation2)
       controlAlgo.canLocalOperationBeApplied(operation3)
 
-      controlAlgo.transform(operation4, new HistoryBuffer(), WaveOTClientTestTransformer)
-      controlAlgo.inFlightOperation should equal(WaveOTClientTestOperation(operation.id, OperationContext(List(operation4.id)), operation.clientId, 1))
+      controlAlgo.transform(remoteOperation, new HistoryBuffer(), WaveOTClientTestTransformer)
+      controlAlgo.inFlightOperation should equal(WaveOTClientTestOperation(operation.id, OperationContext(List(remoteOperation.id)), operation.clientId, 1))
       controlAlgo.buffer should contain inOrder(
-        WaveOTClientTestOperation(operation2.id, OperationContext(List(operation4.id)), operation2.clientId, 1),
-        WaveOTClientTestOperation(operation3.id, OperationContext(List(operation4.id)), operation3.clientId, 1)
+        WaveOTClientTestOperation(operation2.id, OperationContext(List(operation.id)), operation2.clientId, 1),
+        WaveOTClientTestOperation(operation3.id, OperationContext(List(operation2.id)), operation3.clientId, 1)
         )
     }
   }
@@ -136,5 +136,20 @@ object WaveOTClientTestTransformer extends OperationTransformer {
   override def transform(pair: (DataTypeOperation, DataTypeOperation)): DataTypeOperation = {
     val toTransform = pair._1.asInstanceOf[WaveOTClientTestOperation]
     WaveOTClientTestOperation(toTransform.id, OperationContext(List(pair._2.id)), toTransform.clientId, toTransform.transformations + 1)
+  }
+
+  /**
+    * Performs a bulk transformation against all operations present in the bridge.
+    * Only the first operation in the bridge receives a new context, the others retain
+    * their original one.
+    *
+    * @param operation the operation that is transformed against the bridge
+    * @param bridge    the operations that have to be transformed
+    */
+  override def bulkTransform(operation: DataTypeOperation, bridge: List[DataTypeOperation]): List[DataTypeOperation] = {
+    if(bridge.isEmpty) bridge
+    val last = bridge.lastOption.map(op => WaveOTClientTestOperation(op.id, OperationContext(List(operation.id)), op.clientId, op.asInstanceOf[WaveOTClientTestOperation].transformations + 1)).get
+    val transformed = bridge.take(bridge.size - 1).map(op => WaveOTClientTestOperation(op.id, op.operationContext, op.clientId, op.asInstanceOf[WaveOTClientTestOperation].transformations + 1))
+    transformed :+ last
   }
 }
