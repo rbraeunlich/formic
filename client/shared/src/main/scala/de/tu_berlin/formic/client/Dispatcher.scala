@@ -30,6 +30,7 @@ class Dispatcher(val outgoingConnection: ActorRef, val newInstanceCallback: Acto
     case ErrorMessage(errorText) => log.error("Error from WebSocket connection: " + errorText)
 
     case rep: CreateResponse =>
+      log.debug(s"Dispatcher received CreateResponse $rep")
       instances.find(t => t._1 == rep.dataTypeInstanceId) match {
         case Some((k, v)) => v ! rep
         case None => log.warning(s"Did not find data type instance with id ${rep.dataTypeInstanceId}, dropping message $rep")

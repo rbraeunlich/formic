@@ -33,7 +33,7 @@ class AbstractClientDataTypeFactorySpec extends TestKit(ActorSystem("AbstractCli
       msg.wrapper shouldBe a[AbstractClientDataTypeFactorySpecFormicDataType]
     }
 
-    "create only a data type when receoving a LocalCreateRequest" in {
+    "create only a data type when receiving a LocalCreateRequest" in {
       val factory = system.actorOf(Props(new AbstractClientDataTypeFactorySpecFactory))
       val outgoing = TestProbe()
       val instanceId = DataTypeInstanceId()
