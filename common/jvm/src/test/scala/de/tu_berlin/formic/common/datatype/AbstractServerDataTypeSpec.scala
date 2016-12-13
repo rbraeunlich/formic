@@ -60,7 +60,7 @@ class AbstractServerDataTypeSpec extends TestKit(ActorSystem("AbstractServerData
       msg.lastOperationId shouldBe empty
     }
 
-    "apply received operations from an operation message and publish the same message again" in {
+    "apply received operations from an operation message and publish the same message again if no transformations took place" in {
       val probe = TestProbe()
       system.eventStream.subscribe(probe.ref, classOf[OperationMessage])
       val dataType = system.actorOf(Props(new AbstractServerDataTypeSpecTestServerDataType(new HistoryBuffer, DataTypeInstanceId(), new AbstractServerDataTypeSpecTestControlAlgorithm)))
@@ -237,6 +237,25 @@ class AbstractServerDataTypeSpec extends TestKit(ActorSystem("AbstractServerData
       dataType ! message
 
       dataType.underlyingActor.historyBuffer.history should be(List(operation))
+    }
+
+    "publish the transformed operation if a transformation took place" in {
+      val probe = TestProbe()
+      system.eventStream.subscribe(probe.ref, classOf[OperationMessage])
+      val originalOperation = AbstractServerDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId())
+      val transformedOperation = AbstractServerDataTypeSpecTestOperation(OperationId(), OperationContext(List(OperationId())), ClientId())
+      val controlAlgorithm = new ControlAlgorithm {
+
+        override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = transformedOperation
+
+        override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = true
+
+      }
+      val dataType = system.actorOf(Props(new AbstractServerDataTypeSpecTestServerDataType(new HistoryBuffer, DataTypeInstanceId(), controlAlgorithm)))
+      val message = OperationMessage(ClientId(), DataTypeInstanceId(), AbstractServerDataTypeSpec.dataTypeName, List(originalOperation))
+      dataType ! message
+
+      probe.expectMsg(OperationMessage(message.clientId, message.dataTypeInstanceId, message.dataType, List(transformedOperation)))
     }
   }
 }
