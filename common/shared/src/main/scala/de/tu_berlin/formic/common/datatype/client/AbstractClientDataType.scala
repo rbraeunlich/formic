@@ -50,7 +50,8 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
       historyBuffer.addOperation(clonedOperation)
       callbackWrapper ! Invoke
 
-    case CreateResponse(_) =>
+    case rep:CreateResponse =>
+      log.debug(s"DataType $id received CreateResponse $rep")
       outgoingConnection ! OperationMessage(null, id, dataTypeName, historyBuffer.history)
       context.become(acknowledged(callbackWrapper) orElse otherMessages(callbackWrapper))
 
