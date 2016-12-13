@@ -79,11 +79,12 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
 
     case opMsg: OperationMessage =>
       log.debug(s"DataType $id received operation message $opMsg")
-      val duplicatesRemoved = opMsg.operations.filter(op => historyBuffer.findOperation(op.id).isEmpty)
-      if (existsOperationWithDirectContextDependencyMissing(duplicatesRemoved, historyBuffer)) {
+      //we do not filter here for duplicates because that would remove acknowledgements
+      //the control algorithm has to do that
+      if (existsOperationWithDirectContextDependencyMissing(opMsg.operations, historyBuffer)) {
         sender ! HistoricOperationRequest(null, id, historyBuffer.history.headOption.map(op => op.id).orNull)
       } else {
-        duplicatesRemoved.
+        opMsg.operations.
           reverse.
           filter(op => controlAlgorithm.canBeApplied(op, historyBuffer)).
           foreach(applyOperation)

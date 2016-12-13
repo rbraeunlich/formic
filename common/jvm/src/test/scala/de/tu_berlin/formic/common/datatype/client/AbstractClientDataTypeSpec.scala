@@ -306,8 +306,17 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
 
     "must not apply duplicated received operations" in {
       val dataTypeInstanceId = DataTypeInstanceId()
+      //because the control algorithm has to check for duplicates, we have to make sure the data type listens to it
+      val controlAlgorithm = new ControlAlgorithmClient {
+
+        override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = true
+
+        override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = op
+
+        override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = history.findOperation(op.id).isEmpty
+      }
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
-        Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
+        Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, controlAlgorithm, outgoingConnection = TestProbe().ref)))
       dataType ! ReceiveCallback(() => {})
       dataType ! CreateResponse(dataTypeInstanceId)
       val data = "{foo}"
@@ -343,6 +352,40 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       val toServer = outgoing.expectMsgClass(classOf[OperationMessage])
       toServer.operations should contain inOrder(AbstractClientDataTypeSpecTestOperation(operation2.id, OperationContext(List(operation.id)), operation2.clientId, operation2.data), operation)
     }
+  }
+
+  "pass acknowledgements to the control algorithm" in {
+    val outgoing = TestProbe()
+    val dataTypeInstanceId = DataTypeInstanceId()
+    val data = "{foo}"
+    val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+    val operation2 = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+    val operationMessage = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(operation))
+    val operationMessage2 = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(operation2))
+    val controlAlgorithm = new ControlAlgorithmClient {
+
+      var correctOperationPassed = false
+
+      override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = true
+
+      override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = op
+
+      override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = {
+        if (op == operation) correctOperationPassed = true
+        true
+      }
+    }
+    val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+      Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, controlAlgorithm, outgoingConnection = outgoing.ref)))
+    dataType ! ReceiveCallback(() => {})
+    dataType ! CreateResponse(dataTypeInstanceId)
+
+    dataType ! LocalOperationMessage(operationMessage)
+    dataType ! LocalOperationMessage(operationMessage2)
+    //acknowledgement
+    dataType ! operationMessage
+
+    controlAlgorithm.correctOperationPassed should be(true)
   }
 }
 
