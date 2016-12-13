@@ -17,7 +17,7 @@ class ExampleCallback extends NewInstanceCallback {
     val id = instance.dataTypeInstanceId.id
     val inputId = id
     jQuery("body").append("<p>String data type with id " + id + "</p>")
-    jQuery("body").append("<input id=\"" + inputId + "\" name=\"string\" type=\"text\" value=\"\"></input>")
+    jQuery("body").append("<textarea rows=\"30\" cols=\"50\" id=\"" + inputId + "\"></textarea>")
     jQuery("#" + inputId).keypress(Main.keyPressHandler(inputId))
 
     Main.updateUIForFormicString(instance.asInstanceOf[FormicString])()

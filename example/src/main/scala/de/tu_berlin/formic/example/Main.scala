@@ -1,5 +1,6 @@
 package de.tu_berlin.formic.example
 
+import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.FormicSystem
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.datatype.linear.client.FormicString
@@ -16,7 +17,7 @@ import scala.util.{Failure, Success}
   */
 object Main extends JSApp {
 
-  val system = new FormicSystem()
+  val system = new FormicSystem(ConfigFactory.load())
 
   implicit val ec = system.system.dispatcher
 
@@ -40,7 +41,7 @@ object Main extends JSApp {
     strings += string
     val inputId = id.id
     jQuery("body").append("<p>String data type with id " + inputId + "</p>")
-    jQuery("body").append("<input id=\"" + inputId + "\" name=\"string\" type=\"text\"</input>")
+    jQuery("body").append("<textarea rows=\"30\" cols=\"50\" id=\"" + inputId + "\"></textarea>")
     jQuery("#" + inputId).keypress(keyPressHandler(inputId))
   }
 
