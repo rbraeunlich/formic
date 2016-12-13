@@ -1,10 +1,11 @@
 package de.tu_berlin.formic.common.datatype.client
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.RemoteInstantiation
 import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
-import de.tu_berlin.formic.common.message.CreateRequest
+import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse}
 
 import scala.reflect.ClassTag
 
@@ -21,6 +22,7 @@ abstract class AbstractClientDataTypeFactory[T <: AbstractClientDataType : Class
       val initialData = if(data == null || data.isEmpty) Option.empty else Option(data)
       val actor = context.actorOf(Props(createDataType(id, outgoingConnection, initialData, lastOperationId)), id.id)
       val wrapper = createWrapperType(id, actor)
+      actor ! RemoteInstantiation
       sender ! NewDataTypeCreated(id, actor, wrapper)
 
     case local: LocalCreateRequest =>

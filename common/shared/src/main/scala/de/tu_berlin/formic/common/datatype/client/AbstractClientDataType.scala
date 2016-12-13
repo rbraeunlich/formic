@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype._
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.{InitialOperation, ReceiveCallback}
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType._
 import de.tu_berlin.formic.common.datatype.client.CallbackWrapper.Invoke
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
@@ -31,6 +31,18 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
     case ReceiveCallback(callback) =>
       val wrapper = context.actorOf(Props(new CallbackWrapper(callback)))
       context.become(unacknowledged(wrapper) orElse otherMessages(wrapper))
+    case RemoteInstantiation =>
+      context.become(acknowledgedWithoutCallback)
+  }
+
+  /**
+    * Data types that are created on the client because of an UpdateRequest are already acknowledged,
+    * therefore, this intermediate state is needed.
+    */
+  def acknowledgedWithoutCallback: Receive = {
+    case ReceiveCallback(callback) =>
+      val wrapper = context.actorOf(Props(new CallbackWrapper(callback)))
+      context.become(acknowledged(wrapper) orElse otherMessages(wrapper))
   }
 
   /**
@@ -50,7 +62,7 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
       historyBuffer.addOperation(clonedOperation)
       callbackWrapper ! Invoke
 
-    case rep:CreateResponse =>
+    case rep: CreateResponse =>
       log.debug(s"DataType $id received CreateResponse $rep")
       outgoingConnection ! OperationMessage(null, id, dataTypeName, historyBuffer.history)
       context.become(acknowledged(callbackWrapper) orElse otherMessages(callbackWrapper))
@@ -158,6 +170,12 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
 }
 
 object AbstractClientDataType {
+
+  /**
+    * This message object is needed to give the data type a hint, if it has to wait for an acknowledgement
+    * or not after being instantiated.
+    */
+  case object RemoteInstantiation
 
   case class ReceiveCallback(callback: () => Unit)
 
