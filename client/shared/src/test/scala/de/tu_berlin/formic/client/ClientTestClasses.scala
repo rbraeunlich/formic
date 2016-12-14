@@ -78,6 +78,8 @@ object TestControlAlgorithm extends ControlAlgorithmClient {
   override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = op
 
   override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = true
+
+  override def currentOperationContext: OperationContext = OperationContext(List.empty)
 }
 
 object TestTransformer extends OperationTransformer {

@@ -168,4 +168,6 @@ class LinearClientDataTypeSpecControlAlgoClient extends ControlAlgorithmClient {
   override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = true
 
   override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = op
+
+  override def currentOperationContext: OperationContext = OperationContext(List.empty)
 }
