@@ -1,4 +1,4 @@
-package de.tu_berlin.formic.server
+package de.tu_berlin.formic.example2
 
 import akka.NotUsed
 import akka.actor.ActorSystem
@@ -23,6 +23,7 @@ object NetworkRoute {
     } ~
     path("index") {
       getFromResource("index.html")
-    }
+    } ~
+      getFromResourceDirectory("") //this route is needed to serve the JavaScript files to clients
   }
 }

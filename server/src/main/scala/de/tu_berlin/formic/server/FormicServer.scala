@@ -3,7 +3,7 @@ package de.tu_berlin.formic.server
 import akka.NotUsed
 import akka.actor.{ActorRef, ActorSystem, PoisonPill, Props}
 import akka.event.Logging
-import akka.http.scaladsl.Http
+import akka.http.scaladsl.{Http, server}
 import akka.http.scaladsl.model.HttpResponse
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model.ws.{Message, TextMessage}
@@ -50,7 +50,7 @@ object FormicServer {
     factories += (StringDataTypeFactory.name -> stringFactory)
   }
 
-  def main(args: Array[String]): Unit = {
+  def start(route: server.Route): Unit = {
     val decider: Supervision.Decider = {
       case _: IllegalArgumentException => Supervision.Resume
       case _ => Supervision.Stop
@@ -65,9 +65,7 @@ object FormicServer {
     val serverAddress = system.settings.config.getString("formic.server.address")
     val serverPort = system.settings.config.getInt("formic.server.port")
     val binding = Http().bindAndHandle(
-      handleExceptions(myExceptionHandler) {
-        NetworkRoute.route((username) => newUserProxy(username))
-      },
+      handleExceptions(myExceptionHandler) {route},
       serverAddress,
       serverPort)
 

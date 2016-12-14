@@ -19,7 +19,9 @@ lazy val root = project
     websockettestsJS,
     websockettestsJVM,
     server,
-    example
+    example,
+    exampleNeuJS,
+    exampleNeuJVM
   )
 
 lazy val commonSettings = Seq(
@@ -149,3 +151,21 @@ lazy val example = project.in(file("example")).
   ).
   dependsOn(commonJS, linearJS, clientJS).
   enablePlugins(ScalaJSPlugin)
+
+lazy val exampleNeu = crossProject.in(file("exampleNeu")).
+  settings(commonSettings: _*).
+  jsSettings(
+    libraryDependencies += "be.doeraene" %%% "scalajs-jquery" % "0.9.1",
+    jsDependencies += "org.webjars" % "jquery" % "2.1.4" / "2.1.4/jquery.js",
+    jsDependencies += RuntimeDOM,
+    persistLauncher := true,
+    skip in packageJSDependencies := false
+  ).
+  dependsOn(client, common)
+
+lazy val exampleNeuJS = exampleNeu.js.dependsOn(commonJS, linearJS, clientJS)
+lazy val exampleNeuJVM = exampleNeu.jvm.settings(
+  (resources in Compile) += (fastOptJS in (exampleNeuJS, Compile)).value.data,
+  (resources in Compile) += (packageJSDependencies in (exampleNeuJS, Compile)).value,
+  (resources in Compile) += (packageScalaJSLauncher in (exampleNeuJS, Compile)).value.data
+).dependsOn(commonJVM, linearJVM, clientJVM, server)
