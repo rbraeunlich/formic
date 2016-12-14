@@ -3,6 +3,7 @@ package de.tu_berlin.formic.common.datatype
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
+import de.tu_berlin.formic.common.datatype.AbstractServerDataType.HistoricOperationsAnswer
 import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest.Assertions._
@@ -106,7 +107,7 @@ class AbstractServerDataTypeSpec extends TestKit(ActorSystem("AbstractServerData
 
       dataType ! HistoricOperationRequest(clientId, dataTypeInstanceId, op1.id)
 
-      expectMsg(OperationMessage(clientId, dataTypeInstanceId, AbstractServerDataTypeSpec.dataTypeName, List(op2)))
+      expectMsg(HistoricOperationsAnswer(OperationMessage(clientId, dataTypeInstanceId, AbstractServerDataTypeSpec.dataTypeName, List(op2))))
     }
 
     "answer an UpdateRequest with its full data in an UpdateResponse" in {

@@ -1,6 +1,7 @@
 package de.tu_berlin.formic.server
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import de.tu_berlin.formic.common.datatype.AbstractServerDataType.HistoricOperationsAnswer
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.server.datatype.NewDataTypeCreated
@@ -71,6 +72,10 @@ class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = C
         case Some((_, ref)) => ref ! operationMessage
         case None => throw new IllegalArgumentException(s"Data type instance with id ${operationMessage.dataTypeInstanceId.id} unkown")
       }
+
+    case HistoricOperationsAnswer(opMsg) =>
+      log.debug(s"Sending historic operations to user $id: $opMsg")
+      outgoing ! opMsg
   }
 }
 

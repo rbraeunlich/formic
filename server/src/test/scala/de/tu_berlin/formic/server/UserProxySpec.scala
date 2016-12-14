@@ -119,12 +119,12 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
     }
 
     "forward HistoricOperationRequests to the correct data type" in {
-      val factory = system.actorOf(Props[datatype.TestDataTypeFactory])
-      val userProxy = system.actorOf(Props(new UserProxy(Map(datatype.TestClasses.dataTypeName -> factory))))
+      val factory = system.actorOf(Props[TestDataTypeFactory])
+      val userProxy = system.actorOf(Props(new UserProxy(Map(TestClasses.dataTypeName -> factory))))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
       val dataTypeInstanceId = DataTypeInstanceId()
-      userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, datatype.TestClasses.dataTypeName)
+      userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName)
       outgoingProbe.receiveOne(3 seconds)
       val operationId = OperationId()
       val operationMessage = OperationMessage(

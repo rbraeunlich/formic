@@ -35,22 +35,22 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
 
   override def afterAll(): Unit = {
     super.afterAll()
+    server.terminate()
     system.terminate()
+  }
+
+  val server = new Thread {
+    override def run() {
+      FormicServer.main(Array.empty)
+    }
+
+    def terminate(): Unit ={
+      FormicServer.terminate()
+    }
   }
 
   "Formic server" must {
     "allow two users to work on a linear structure together" in {
-      SystemProperties.noTraceSupression.toggle()
-
-      val server = new Thread {
-        override def run() {
-          FormicServer.main(Array.empty)
-        }
-
-        def terminate(): Unit ={
-          FormicServer.terminate()
-        }
-      }
       server.setDaemon(true)
       server.start()
       Thread.sleep(3000)
@@ -135,11 +135,14 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
     user1Outgoing.offer(TextMessage(write(u1Msg2)))
     user1Outgoing.offer(TextMessage(write(u1Msg3)))
     // 3 acks for u1
-    verifyEqual(user1Incoming.pull(), u1Msg1)
+
+    val transformedu1op1 = LinearInsertOperation(u1op1.index, u1op1.o, u1op1.id, OperationContext(List(u2op3.id)), user1Id)
+    val transformedu1Msg1 = OperationMessage(user1Id, u1Msg1.dataTypeInstanceId, u1Msg1.dataType, List(transformedu1op1))
+    verifyEqual(user1Incoming.pull(), transformedu1Msg1)
     verifyEqual(user1Incoming.pull(), u1Msg2)
     verifyEqual(user1Incoming.pull(), u1Msg3)
     //3 incoming for u2
-    verifyEqual(user2Incoming.pull(), u1Msg1)
+    verifyEqual(user2Incoming.pull(), transformedu1Msg1)
     verifyEqual(user2Incoming.pull(), u1Msg2)
     verifyEqual(user2Incoming.pull(), u1Msg3)
   }

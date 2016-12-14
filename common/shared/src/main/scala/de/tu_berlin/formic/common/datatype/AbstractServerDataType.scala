@@ -3,8 +3,8 @@ package de.tu_berlin.formic.common.datatype
 import akka.actor.{Actor, ActorLogging}
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
+import de.tu_berlin.formic.common.datatype.AbstractServerDataType.HistoricOperationsAnswer
 import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
-
 /**
   * @author Ronny Bräunlich
   */
@@ -43,7 +43,7 @@ abstract class AbstractServerDataType(val id: DataTypeInstanceId, val controlAlg
 
     case hist: HistoricOperationRequest =>
       log.debug(s"DataType $id received HistoricOperationRequest: $hist")
-      sender ! OperationMessage(hist.clientId, id, dataTypeName, historyBuffer.findAllOperationsAfter(hist.sinceId))
+      sender !  HistoricOperationsAnswer(OperationMessage(hist.clientId, id, dataTypeName, historyBuffer.findAllOperationsAfter(hist.sinceId)))
 
     case upd: UpdateRequest =>
       log.debug(s"DataType $id received UpdateRequest: $upd")
@@ -76,4 +76,13 @@ abstract class AbstractServerDataType(val id: DataTypeInstanceId, val controlAlg
   def getDataAsJson: String
 
   def causallyNotReadyOperations = privateCausallyNotReadyOperations
+}
+
+object AbstractServerDataType {
+  /**
+    * If the answer was an OperationMessage, nobody could distinguish between
+    * incoming operations and answers to HistoricOperationRequests. Therfore we need this little
+    * wrapper.
+    */
+  case class HistoricOperationsAnswer(operationMessage: OperationMessage)
 }
