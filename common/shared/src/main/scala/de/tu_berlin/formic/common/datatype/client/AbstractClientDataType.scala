@@ -84,7 +84,13 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
       //setting the new context MUST happen before calling canLocalOperationBeApplied
       val clonedOperation = cloneOperationWithNewContext(
         operation,
-        controlAlgorithm.currentOperationContext
+        //a data type that results from a remote instantiation never told the control algo about
+        //the initial operation, therefore we have to distinguish that here
+        //TODO gotta find a better way
+        if(historyBuffer.history.headOption.nonEmpty && historyBuffer.history.head.isInstanceOf[InitialOperation]){
+          OperationContext(List(historyBuffer.history.head.id))
+        }
+        else controlAlgorithm.currentOperationContext
       )
       if (controlAlgorithm.canLocalOperationBeApplied(clonedOperation)) {
         //local operations can be applied immediately by definition

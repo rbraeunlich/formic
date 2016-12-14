@@ -5,7 +5,7 @@ import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype._
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.{ReceiveCallback, RemoteInstantiation}
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest.Assertions._
@@ -478,7 +478,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       dataType.underlyingActor.historyBuffer.history.head should equal(AbstractClientDataTypeSpecTestOperation(operation.id, OperationContext(List(lastOperationId)), operation.clientId, operation.data))
     }
 
-    "add initialized lastOperationId to first local operation when being acknowledged" in {
+    "add initialized lastOperationId to first local operation when going from un- to acknowledged" in {
       val lastOperationId = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
@@ -490,7 +490,20 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       dataType ! LocalOperationMessage(operationMessage)
 
       dataType.underlyingActor.historyBuffer.history.head should equal(AbstractClientDataTypeSpecTestOperation(operation.id, OperationContext(List(lastOperationId)), operation.clientId, operation.data))
+    }
 
+    "add initialized lastOperationId to first local operation when being a remote instantiation" in {
+      val lastOperationId = OperationId()
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+        Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
+      dataType ! RemoteInstantiation
+      dataType ! ReceiveCallback(() => {})
+      val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "")
+      val operationMessage = OperationMessage(ClientId(), DataTypeInstanceId(), AbstractClientDataTypeSpec.dataTypeName, List(operation))
+
+      dataType ! LocalOperationMessage(operationMessage)
+
+      dataType.underlyingActor.historyBuffer.history.head should equal(AbstractClientDataTypeSpecTestOperation(operation.id, OperationContext(List(lastOperationId)), operation.clientId, operation.data))
     }
   }
 }
