@@ -106,12 +106,40 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       dataType.underlyingActor.historyBuffer.history should contain(operation)
     }
 
-    "update the operation context of local operations" in {
+    "update the operation context of local operations when unacknowledged" in {
       val dataTypeInstanceId = DataTypeInstanceId()
       val data = "{foo}"
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
       dataType ! ReceiveCallback(() => {})
+      val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+      val operation2 = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+      val operationMessage = OperationMessage(
+        ClientId(),
+        dataTypeInstanceId,
+        AbstractClientDataTypeSpec.dataTypeName,
+        List(operation)
+      )
+      val operationMessage2 = OperationMessage(
+        ClientId(),
+        dataTypeInstanceId,
+        AbstractClientDataTypeSpec.dataTypeName,
+        List(operation2)
+      )
+
+      dataType ! LocalOperationMessage(operationMessage)
+      dataType ! LocalOperationMessage(operationMessage2)
+
+      dataType.underlyingActor.historyBuffer.history.head should equal(AbstractClientDataTypeSpecTestOperation(operation2.id, OperationContext(List(operation.id)), operation2.clientId, operation2.data))
+    }
+
+    "update the operation context of local operations when acknowledged using the control algorithm" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val data = "{foo}"
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+        Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
+      dataType ! ReceiveCallback(() => {})
+      dataType ! CreateResponse(dataTypeInstanceId)
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val operation2 = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val operationMessage = OperationMessage(
@@ -203,6 +231,8 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
         }
 
         override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = true
+
+        override def currentOperationContext: OperationContext = OperationContext(List.empty) //not important here
       }
 
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
@@ -314,6 +344,8 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
         override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = op
 
         override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = history.findOperation(op.id).isEmpty
+
+        override def currentOperationContext: OperationContext = OperationContext(List.empty) //not important here
       }
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, controlAlgorithm, outgoingConnection = TestProbe().ref)))
@@ -352,40 +384,86 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       val toServer = outgoing.expectMsgClass(classOf[OperationMessage])
       toServer.operations should contain inOrder(AbstractClientDataTypeSpecTestOperation(operation2.id, OperationContext(List(operation.id)), operation2.clientId, operation2.data), operation)
     }
-  }
 
-  "pass acknowledgements to the control algorithm" in {
-    val outgoing = TestProbe()
-    val dataTypeInstanceId = DataTypeInstanceId()
-    val data = "{foo}"
-    val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
-    val operation2 = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
-    val operationMessage = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(operation))
-    val operationMessage2 = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(operation2))
-    val controlAlgorithm = new ControlAlgorithmClient {
 
-      var correctOperationPassed = false
+    "pass acknowledgements to the control algorithm" in {
+      val outgoing = TestProbe()
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val data = "{foo}"
+      val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+      val operation2 = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+      val operationMessage = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(operation))
+      val operationMessage2 = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(operation2))
+      val controlAlgorithm = new ControlAlgorithmClient {
 
-      override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = true
+        var correctOperationPassed = false
 
-      override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = op
+        override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = true
 
-      override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = {
-        if (op == operation) correctOperationPassed = true
-        true
+        override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = op
+
+        override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = {
+          if (op == operation) correctOperationPassed = true
+          true
+        }
+
+        override def currentOperationContext: OperationContext = OperationContext(List.empty) // not important here
       }
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+        Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, controlAlgorithm, outgoingConnection = outgoing.ref)))
+      dataType ! ReceiveCallback(() => {})
+      dataType ! CreateResponse(dataTypeInstanceId)
+
+      dataType ! LocalOperationMessage(operationMessage)
+      dataType ! LocalOperationMessage(operationMessage2)
+      //acknowledgement
+      dataType ! operationMessage
+
+      controlAlgorithm.correctOperationPassed should be(true)
     }
-    val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
-      Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, controlAlgorithm, outgoingConnection = outgoing.ref)))
-    dataType ! ReceiveCallback(() => {})
-    dataType ! CreateResponse(dataTypeInstanceId)
 
-    dataType ! LocalOperationMessage(operationMessage)
-    dataType ! LocalOperationMessage(operationMessage2)
-    //acknowledgement
-    dataType ! operationMessage
+    "passes local operations to the control algorithm when the CreateResponse comes" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val data = "{foo}"
+      val outgoing = TestProbe()
+      val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+      val operation2 = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+      val operationMessage = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(operation))
+      val operationMessage2 = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(operation2))
 
-    controlAlgorithm.correctOperationPassed should be(true)
+      val controlAlgorithm = new ControlAlgorithmClient {
+        var first = true
+        var correct = true
+
+        override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = {
+          if (first) {
+            correct &= op == operation
+            op should equal(operation)
+            first = false
+          } else {
+            val comparisonOperation = AbstractClientDataTypeSpecTestOperation(operation2.id, OperationContext(List(operation.id)), operation2.clientId, operation2.data)
+            correct &= op == comparisonOperation
+            op should equal(comparisonOperation)
+          }
+          true
+        }
+
+        override def currentOperationContext: OperationContext = OperationContext(List.empty)
+
+        override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = op
+
+        override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = true
+      }
+
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, controlAlgorithm, outgoingConnection = outgoing.ref)))
+      dataType ! ReceiveCallback(() => {})
+
+      dataType ! LocalOperationMessage(operationMessage)
+      dataType ! LocalOperationMessage(operationMessage2)
+      dataType ! CreateResponse(dataTypeInstanceId)
+
+      controlAlgorithm.correct should equal(true)
+    }
   }
 }
 
@@ -432,12 +510,23 @@ class AbstractClientDataTypeSpecControlAlgorithmClient(canRemoteBeApplied: Boole
 
   var didTransform = false
 
-  override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = true
+  var context: List[OperationId] = List.empty
+
+  override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = {
+    context = List(op.id)
+    true
+  }
 
   override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = canRemoteBeApplied
 
   override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = {
+    context = List(op.id)
     didTransform = true
     op
+  }
+
+  override def currentOperationContext: OperationContext = {
+    println(s"returning current context $context")
+    OperationContext(context)
   }
 }

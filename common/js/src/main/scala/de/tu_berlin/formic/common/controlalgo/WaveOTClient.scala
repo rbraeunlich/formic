@@ -1,6 +1,7 @@
 package de.tu_berlin.formic.common.controlalgo
 
-import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, OperationTransformer}
+import de.tu_berlin.formic.common.OperationId
+import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, OperationContext, OperationTransformer}
 
 /**
   * The client implementation of the Wave OT algorithm. In order to keep it free from
@@ -14,6 +15,8 @@ class WaveOTClient(sendToServerFunction: (DataTypeOperation) => Unit) extends Co
   var buffer: List[DataTypeOperation] = List.empty
 
   var inFlightOperation: DataTypeOperation = _
+
+  var currentContext: List[OperationId] = List.empty
 
   /**
     * Decides if an operation is causally ready to be applied. If not, the data type has to
@@ -54,6 +57,8 @@ class WaveOTClient(sendToServerFunction: (DataTypeOperation) => Unit) extends Co
       val transformedBridge = transformer.bulkTransform(op, buffer :+ inFlightOperation)
       inFlightOperation = transformedBridge.last
       buffer = transformedBridge.take(transformedBridge.size - 1)
+    } else {
+      currentContext = List(transformed.id)
     }
     transformed
   }
@@ -71,6 +76,7 @@ class WaveOTClient(sendToServerFunction: (DataTypeOperation) => Unit) extends Co
     } else {
       buffer = buffer :+ op
     }
+    currentContext = List(op.id)
     true
   }
 
@@ -78,4 +84,6 @@ class WaveOTClient(sendToServerFunction: (DataTypeOperation) => Unit) extends Co
     //acknowledgements can never come out of order
     inFlightOperation != null && op.id == inFlightOperation.id
   }
+
+  def currentOperationContext = OperationContext(currentContext)
 }

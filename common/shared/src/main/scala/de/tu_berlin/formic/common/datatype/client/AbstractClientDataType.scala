@@ -64,6 +64,9 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
 
     case rep: CreateResponse =>
       log.debug(s"DataType $id received CreateResponse $rep")
+      //we have to inform the control algorithm about the buffered operations
+      historyBuffer.history.reverse.foreach(controlAlgorithm.canLocalOperationBeApplied)
+      //TODO WaveOT will actually send the same operations again here, gotta find a better way
       outgoingConnection ! OperationMessage(null, id, dataTypeName, historyBuffer.history)
       context.become(acknowledged(callbackWrapper) orElse otherMessages(callbackWrapper))
 
@@ -78,9 +81,10 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
       log.debug(s"DataType $id received local operation message $msg")
       //the Client should never generate more than one operation
       val operation = msg.op.operations.head
+      //setting the new context MUST happen before calling canLocalOperationBeApplied
       val clonedOperation = cloneOperationWithNewContext(
         operation,
-        OperationContext(historyBuffer.history.headOption.map(op => op.id).toList)
+        controlAlgorithm.currentOperationContext
       )
       if (controlAlgorithm.canLocalOperationBeApplied(clonedOperation)) {
         //local operations can be applied immediately by definition

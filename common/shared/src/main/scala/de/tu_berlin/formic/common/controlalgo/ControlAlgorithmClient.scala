@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.controlalgo
 
-import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer}
+import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, OperationContext}
 
 /**
   * Client and server control algorithms may be different. Therefore we have this interface.
@@ -16,4 +16,11 @@ trait ControlAlgorithmClient extends ControlAlgorithm {
     * @return true if the operation can be applied
     */
   def canLocalOperationBeApplied(op: DataTypeOperation): Boolean
+
+  /**
+    * On the client it is not necessarily the history that defines the current operation context.
+    * If the control algorithm performs a certain reordering between operations, only it can now
+    * what the current context should be.
+    */
+  def currentOperationContext: OperationContext
 }
