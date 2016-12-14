@@ -163,11 +163,21 @@ class LinearClientDataTypeSpec extends TestKit(ActorSystem("FormicListSpec"))
 
 class LinearClientDataTypeSpecControlAlgoClient extends ControlAlgorithmClient {
 
-  override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = true
+  var context: List[OperationId] = List.empty
+
+  override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = {
+    context = List(op.id)
+    true
+  }
 
   override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = true
 
-  override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = op
+  override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = {
+    context = List(op.id)
+    op
+  }
 
-  override def currentOperationContext: OperationContext = OperationContext(List.empty)
+  override def currentOperationContext: OperationContext = {
+    OperationContext(context)
+  }
 }
