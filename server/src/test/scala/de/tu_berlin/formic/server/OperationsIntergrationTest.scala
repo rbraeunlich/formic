@@ -6,8 +6,9 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.headers.{Authorization, BasicHttpCredentials}
 import akka.http.scaladsl.model.ws.{Message, TextMessage, WebSocketRequest}
 import akka.http.scaladsl.model.{StatusCodes, Uri}
+import akka.http.scaladsl.server.Directives._
 import akka.stream.scaladsl.{Flow, Keep, Sink, SinkQueueWithCancel, Source, SourceQueueWithComplete}
-import akka.stream.{ActorMaterializer, OverflowStrategy}
+import akka.stream.{ActorMaterializer, ActorMaterializerSettings, OverflowStrategy}
 import akka.testkit.TestKit
 import de.tu_berlin.formic.common.datatype.OperationContext
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
@@ -21,7 +22,6 @@ import upickle.default._
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.language.postfixOps
-import scala.sys.SystemProperties
 import scala.util.{Failure, Success}
 
 /**
@@ -31,7 +31,18 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
   with WordSpecLike
   with Matchers
   with OneInstancePerTest
-  with BeforeAndAfterAll{
+  with BeforeAndAfterAll {
+
+  implicit val materializer = ActorMaterializer(ActorMaterializerSettings(system))
+
+  val testRoute = path("formic") {
+    extractCredentials {
+      creds =>
+        get {
+          handleWebSocketMessages(FormicServer.newUserProxy(creds.get.asInstanceOf[BasicHttpCredentials].username))
+        }
+    }
+  }
 
   override def afterAll(): Unit = {
     super.afterAll()
@@ -41,10 +52,10 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
 
   val server = new Thread {
     override def run() {
-      FormicServer.main(Array.empty)
+      FormicServer.start(testRoute)
     }
 
-    def terminate(): Unit ={
+    def terminate(): Unit = {
       FormicServer.terminate()
     }
   }
@@ -79,7 +90,7 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
           readMsg.asInstanceOf[UpdateResponse].dataTypeInstanceId should equal(dataTypeInstanceId)
           readMsg.asInstanceOf[UpdateResponse].dataType should equal(StringDataTypeFactory.name)
           readMsg.asInstanceOf[UpdateResponse].data should equal("[\"3\",\"2\",\"1\",\"c\",\"b\",\"a\"]")
-          //the lastOperationId is unimportant here
+        //the lastOperationId is unimportant here
         case Failure(ex) => fail(ex)
       }
 
@@ -164,7 +175,7 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
 
     val incomingUpdateResponse = user2Incoming.pull()
     //can't start sending operation messages before the client is subscribed to the data type instance
-    Await.ready(incomingUpdateResponse, 3 seconds)
+    Await.ready(incomingUpdateResponse, 5 seconds)
     incomingUpdateResponse.value.get match {
       case Success(m) =>
         val text = m.get.asTextMessage.getStrictText
@@ -184,13 +195,13 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
     val serverAddress = system.settings.config.getString("formic.server.address")
     val serverPort = system.settings.config.getInt("formic.server.port")
     val (upgradeResponse, sinkAndSource) =
-    Http().singleWebSocketRequest(
-      WebSocketRequest(
-        Uri(s"ws://$serverAddress:$serverPort/formic"),
-        List(Authorization(BasicHttpCredentials(username, "")))
-      ),
-      flow
-    )
+      Http().singleWebSocketRequest(
+        WebSocketRequest(
+          Uri(s"ws://$serverAddress:$serverPort/formic"),
+          List(Authorization(BasicHttpCredentials(username, "")))
+        ),
+        flow
+      )
     val connected = upgradeResponse.map { upgrade =>
       if (upgrade.response.status == StatusCodes.SwitchingProtocols) {
         Done
