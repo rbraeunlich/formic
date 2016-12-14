@@ -1,4 +1,4 @@
-package de.tu_berlin.formic.example2
+package de.tu_berlin.formic.example
 
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.FormicSystem

@@ -19,9 +19,8 @@ lazy val root = project
     websockettestsJS,
     websockettestsJVM,
     server,
-    example,
-    exampleNeuJS,
-    exampleNeuJVM
+    exampleJS,
+    exampleJVM
   )
 
 lazy val commonSettings = Seq(
@@ -139,20 +138,7 @@ lazy val server = (project in file("server")).
   ).
   dependsOn(commonJVM, linearJVM)
 
-lazy val example = project.in(file("example")).
-  settings(commonSettings: _*).
-  settings(
-    name := "formic-example-app",
-    persistLauncher := true,
-    skip in packageJSDependencies := false,
-    libraryDependencies += "be.doeraene" %%% "scalajs-jquery" % "0.9.1",
-    jsDependencies += "org.webjars" % "jquery" % "2.1.4" / "2.1.4/jquery.js",
-    jsDependencies += RuntimeDOM
-  ).
-  dependsOn(commonJS, linearJS, clientJS).
-  enablePlugins(ScalaJSPlugin)
-
-lazy val exampleNeu = crossProject.in(file("exampleNeu")).
+lazy val example = crossProject.in(file("example")).
   settings(commonSettings: _*).
   jsSettings(
     libraryDependencies += "be.doeraene" %%% "scalajs-jquery" % "0.9.1",
@@ -163,9 +149,9 @@ lazy val exampleNeu = crossProject.in(file("exampleNeu")).
   ).
   dependsOn(client, common)
 
-lazy val exampleNeuJS = exampleNeu.js.dependsOn(commonJS, linearJS, clientJS)
-lazy val exampleNeuJVM = exampleNeu.jvm.settings(
-  (resources in Compile) += (fastOptJS in (exampleNeuJS, Compile)).value.data,
-  (resources in Compile) += (packageJSDependencies in (exampleNeuJS, Compile)).value,
-  (resources in Compile) += (packageScalaJSLauncher in (exampleNeuJS, Compile)).value.data
+lazy val exampleJS = example.js.dependsOn(commonJS, linearJS, clientJS)
+lazy val exampleJVM = example.jvm.settings(
+  (resources in Compile) += (fastOptJS in (exampleJS, Compile)).value.data,
+  (resources in Compile) += (packageJSDependencies in (exampleJS, Compile)).value,
+  (resources in Compile) += (packageScalaJSLauncher in (exampleJS, Compile)).value.data
 ).dependsOn(commonJVM, linearJVM, clientJVM, server)

@@ -1,4 +1,4 @@
-package de.tu_berlin.formic.example2
+package de.tu_berlin.formic.example
 
 import akka.http.scaladsl.server.directives.Credentials
 import akka.http.scaladsl.server.directives.Credentials.{Missing, Provided}

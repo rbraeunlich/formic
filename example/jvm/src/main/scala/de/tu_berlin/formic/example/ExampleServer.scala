@@ -1,4 +1,4 @@
-package de.tu_berlin.formic.example2
+package de.tu_berlin.formic.example
 
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings}
 import de.tu_berlin.formic.server.FormicServer

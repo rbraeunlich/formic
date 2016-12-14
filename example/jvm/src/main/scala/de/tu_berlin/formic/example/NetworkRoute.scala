@@ -1,4 +1,4 @@
-package de.tu_berlin.formic.example2
+package de.tu_berlin.formic.example
 
 import akka.NotUsed
 import akka.actor.ActorSystem

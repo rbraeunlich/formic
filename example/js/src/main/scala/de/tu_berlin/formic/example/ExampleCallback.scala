@@ -1,4 +1,4 @@
-package de.tu_berlin.formic.example2
+package de.tu_berlin.formic.example
 
 import de.tu_berlin.formic.client.NewInstanceCallback
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
