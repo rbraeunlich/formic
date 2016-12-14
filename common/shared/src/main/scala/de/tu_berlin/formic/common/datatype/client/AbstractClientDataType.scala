@@ -30,7 +30,7 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
   def receive = {
     case ReceiveCallback(callback) =>
       val wrapper = context.actorOf(Props(new CallbackWrapper(callback)))
-      context.become(unacknowledged(wrapper) orElse otherMessages(wrapper))
+      context.become(unacknowledged(wrapper))
     case RemoteInstantiation =>
       context.become(acknowledgedWithoutCallback)
   }
@@ -42,7 +42,7 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
   def acknowledgedWithoutCallback: Receive = {
     case ReceiveCallback(callback) =>
       val wrapper = context.actorOf(Props(new CallbackWrapper(callback)))
-      context.become(acknowledged(wrapper) orElse otherMessages(wrapper))
+      context.become(acknowledged(wrapper))
   }
 
   /**
@@ -68,12 +68,18 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
       historyBuffer.history.reverse.foreach(controlAlgorithm.canLocalOperationBeApplied)
       //TODO WaveOT will actually send the same operations again here, gotta find a better way
       outgoingConnection ! OperationMessage(null, id, dataTypeName, historyBuffer.history)
-      context.become(acknowledged(callbackWrapper) orElse otherMessages(callbackWrapper))
+      context.become(acknowledged(callbackWrapper))
 
     case ReceiveCallback(callback) =>
       val newWrapper = context.actorOf(Props(new CallbackWrapper(callback)))
       callbackWrapper ! PoisonPill
-      context.become(unacknowledged(newWrapper) orElse otherMessages(newWrapper))
+      context.become(unacknowledged(newWrapper))
+
+
+    case req: UpdateRequest =>
+      //this is only called locally from the wrappers
+      log.debug(s"DataType $id received UpdateRequest: $req")
+      sender ! UpdateResponse(id, dataTypeName, getDataAsJson, historyBuffer.history.headOption.map(op => op.id))
   }
 
   def acknowledged(callbackWrapper: ActorRef): Receive = {
@@ -116,10 +122,8 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
     case ReceiveCallback(callback) =>
       val newWrapper = context.actorOf(Props(new CallbackWrapper(callback)))
       callbackWrapper ! PoisonPill
-      context.become(acknowledged(newWrapper) orElse otherMessages(newWrapper))
-  }
+      context.become(acknowledged(newWrapper))
 
-  def otherMessages(callbackWrapper: ActorRef): Receive = {
     case req: UpdateRequest =>
       //this is only called locally from the wrappers
       log.debug(s"DataType $id received UpdateRequest: $req")
