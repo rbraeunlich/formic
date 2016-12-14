@@ -464,6 +464,34 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
 
       controlAlgorithm.correct should equal(true)
     }
+
+    "add initialized lastOperationId to first local operation when being unacknowledged" in {
+      val lastOperationId = OperationId()
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+        Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
+      dataType ! ReceiveCallback(() => {})
+      val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "")
+      val operationMessage = OperationMessage(ClientId(), DataTypeInstanceId(), AbstractClientDataTypeSpec.dataTypeName, List(operation))
+
+      dataType ! LocalOperationMessage(operationMessage)
+
+      dataType.underlyingActor.historyBuffer.history.head should equal(AbstractClientDataTypeSpecTestOperation(operation.id, OperationContext(List(lastOperationId)), operation.clientId, operation.data))
+    }
+
+    "add initialized lastOperationId to first local operation when being acknowledged" in {
+      val lastOperationId = OperationId()
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+        Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
+      dataType ! ReceiveCallback(() => {})
+      dataType ! CreateResponse(DataTypeInstanceId())
+      val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "")
+      val operationMessage = OperationMessage(ClientId(), DataTypeInstanceId(), AbstractClientDataTypeSpec.dataTypeName, List(operation))
+
+      dataType ! LocalOperationMessage(operationMessage)
+
+      dataType.underlyingActor.historyBuffer.history.head should equal(AbstractClientDataTypeSpecTestOperation(operation.id, OperationContext(List(lastOperationId)), operation.clientId, operation.data))
+
+    }
   }
 }
 
@@ -526,7 +554,6 @@ class AbstractClientDataTypeSpecControlAlgorithmClient(canRemoteBeApplied: Boole
   }
 
   override def currentOperationContext: OperationContext = {
-    println(s"returning current context $context")
     OperationContext(context)
   }
 }
