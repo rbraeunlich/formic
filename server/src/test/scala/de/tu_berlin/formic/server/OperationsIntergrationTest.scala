@@ -33,13 +33,12 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
   with OneInstancePerTest
   with BeforeAndAfterAll {
 
-  implicit val materializer = ActorMaterializer(ActorMaterializerSettings(system))
-
   val testRoute = path("formic") {
     extractCredentials {
       creds =>
         get {
-          handleWebSocketMessages(FormicServer.newUserProxy(creds.get.asInstanceOf[BasicHttpCredentials].username))
+          handleWebSocketMessages(FormicServer.newUserProxy(creds.get.asInstanceOf[BasicHttpCredentials].username)
+          (FormicServer.system, FormicServer.materializer))
         }
     }
   }

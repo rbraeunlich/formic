@@ -56,7 +56,7 @@ class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = C
       log.debug(s"Incoming UpdateRequest from user $id: $req")
       context.actorSelection(s"../*/${req.dataTypeInstanceId.id}").resolveOne(3 seconds).onComplete {
         case Success(ref) => ref ! req
-        case Failure(ex) => throw new IllegalArgumentException(s"Data type instance with id ${req.dataTypeInstanceId.id} unkown")
+        case Failure(ex) => throw new IllegalArgumentException(s"Data type instance with id ${req.dataTypeInstanceId.id} not found. Exception: $ex")
       }
 
     case rep: UpdateResponse =>

@@ -31,7 +31,16 @@ object FormicServer {
 
   var factories: Map[DataTypeName, ActorRef] = Map.empty
 
+  val decider: Supervision.Decider = {
+    case _: IllegalArgumentException => Supervision.Resume
+    case _ => Supervision.Stop
+  }
+
   implicit val system = ActorSystem("formic-server")
+
+  implicit val materializer = ActorMaterializer(ActorMaterializerSettings(system).withSupervisionStrategy(decider))
+
+  implicit val ec = system.dispatcher
 
   def initFactories()(implicit actorSystem: ActorSystem) = {
     val booleanListFactory = actorSystem.actorOf(Props[BooleanListDataTypeFactory], BooleanListDataTypeFactory.name.name)
@@ -51,13 +60,6 @@ object FormicServer {
   }
 
   def start(route: server.Route): Unit = {
-    val decider: Supervision.Decider = {
-      case _: IllegalArgumentException => Supervision.Resume
-      case _ => Supervision.Stop
-    }
-    implicit val materializer = ActorMaterializer(ActorMaterializerSettings(system).withSupervisionStrategy(decider))
-    implicit val ec = system.dispatcher
-
     val myExceptionHandler: ExceptionHandler = ExceptionHandler {
       case iae: IllegalArgumentException => complete(HttpResponse(NotFound, entity = iae.getMessage))
     }

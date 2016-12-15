@@ -10,7 +10,7 @@ object ExampleServer {
 
   def main(args: Array[String]): Unit = {
     implicit val system = FormicServer.system
-    implicit val materializer = ActorMaterializer(ActorMaterializerSettings(system))
+    implicit val materializer = FormicServer.materializer
     FormicServer.start(NetworkRoute.route(FormicServer.newUserProxy))
   }
 
