@@ -7,5 +7,3 @@ sudo: required
 install:
   - nvm install 6.9.1
   - npm install jsdom
-script:
-  sbt 'set inScope(ThisScope in websockettestsJS)(postLinkJSEnv := new org.scalajs.jsenv.RetryingComJSEnv(PhantomJSEnv().value))' ++$scala test
