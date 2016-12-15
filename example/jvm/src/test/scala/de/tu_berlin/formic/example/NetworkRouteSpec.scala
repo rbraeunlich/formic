@@ -1,4 +1,4 @@
-package de.tu_berlin.formic.server
+package de.tu_berlin.formic.example
 
 import akka.http.scaladsl.model.{StatusCode, StatusCodes}
 import akka.http.scaladsl.model.headers.BasicHttpCredentials
@@ -7,7 +7,6 @@ import akka.http.scaladsl.testkit.{ScalatestRouteTest, WSProbe}
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
-
 /**
   * @author Ronny Bräunlich
   */

@@ -140,6 +140,15 @@ lazy val server = (project in file("server")).
 
 lazy val example = crossProject.in(file("example")).
   settings(commonSettings: _*).
+  settings(
+    libraryDependencies += "org.scalatest" %%% "scalatest" % scalatestVersion % "test"
+  ).
+  jvmSettings(
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test",
+      "com.typesafe.akka" %%% "akka-http-testkit" % akkaHttpVersion % "test"
+    )
+  ).
   jsSettings(
     libraryDependencies += "be.doeraene" %%% "scalajs-jquery" % "0.9.1",
     jsDependencies += "org.webjars" % "jquery" % "2.1.4" / "2.1.4/jquery.js",

@@ -1,4 +1,4 @@
-package de.tu_berlin.formic.server
+package de.tu_berlin.formic.example
 
 import akka.http.scaladsl.model.headers.BasicHttpCredentials
 import akka.http.scaladsl.server.directives.Credentials
