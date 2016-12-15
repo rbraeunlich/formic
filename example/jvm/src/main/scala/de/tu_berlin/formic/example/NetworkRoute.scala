@@ -2,6 +2,7 @@ package de.tu_berlin.formic.example
 
 import akka.NotUsed
 import akka.actor.ActorSystem
+import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.model.ws.Message
 import akka.http.scaladsl.server
 import akka.http.scaladsl.server.Directives._
@@ -20,6 +21,9 @@ object NetworkRoute {
             handleWebSocketMessages(newUserMethod(identifier))
           }
       }
+    } ~
+    pathEndOrSingleSlash {
+      redirect("/index", StatusCodes.PermanentRedirect)
     } ~
     path("index") {
       getFromResource("index.html")
