@@ -78,6 +78,30 @@ lazy val linear = crossProject.in(file("linear")).
 lazy val linearJVM = linear.jvm.dependsOn(commonJVM)
 lazy val linearJS = linear.js.dependsOn(commonJS)
 
+lazy val tree = crossProject.in(file("tree")).
+  settings(commonSettings: _*).
+  settings(
+    name := "formic-tree",
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %%% "upickle" % uPickleVersion,
+      "org.scalatest" %%% "scalatest" % scalatestVersion % "test"
+    )
+  ).
+  jvmSettings(
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test"
+    )
+  ).
+  jsSettings(
+    libraryDependencies ++= Seq(
+      "eu.unicredit" %%% "akkajstestkit" % ("0." + akkaVersion + "-SNAPSHOT")
+    )
+  )
+  .dependsOn(common)
+
+lazy val treeJVM = tree.jvm.dependsOn(commonJVM)
+lazy val treeJS = tree.js.dependsOn(commonJS)
+
 lazy val client = crossProject.in(file("client")).
   settings(commonSettings: _*).
   settings(
