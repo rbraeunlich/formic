@@ -33,12 +33,14 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
   with OneInstancePerTest
   with BeforeAndAfterAll {
 
+  val formicServer = new FormicServer
+
   val testRoute = path("formic") {
     extractCredentials {
       creds =>
         get {
-          handleWebSocketMessages(FormicServer.newUserProxy(creds.get.asInstanceOf[BasicHttpCredentials].username)
-          (FormicServer.system, FormicServer.materializer))
+          handleWebSocketMessages(formicServer.newUserProxy(creds.get.asInstanceOf[BasicHttpCredentials].username)
+          (formicServer.system, formicServer.materializer))
         }
     }
   }
@@ -49,15 +51,7 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
     system.terminate()
   }
 
-  val server = new Thread {
-    override def run() {
-      FormicServer.start(testRoute)
-    }
-
-    def terminate(): Unit = {
-      FormicServer.terminate()
-    }
-  }
+  val server = new ServerThread(formicServer, testRoute)
 
   "Formic server" must {
     "allow two users to work on a linear structure together" in {

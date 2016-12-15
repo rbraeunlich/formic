@@ -27,12 +27,14 @@ import scala.language.postfixOps
 /**
   * @author Ronny Bräunlich
   */
-object FormicServer {
+class FormicServer {
 
   var factories: Map[DataTypeName, ActorRef] = Map.empty
 
   val decider: Supervision.Decider = {
-    case _: IllegalArgumentException => Supervision.Resume
+    case iae: IllegalArgumentException =>
+      system.log.error(iae, "Exception in stream")
+      Supervision.Resume
     case _ => Supervision.Stop
   }
 

@@ -9,9 +9,10 @@ import de.tu_berlin.formic.server.FormicServer
 object ExampleServer {
 
   def main(args: Array[String]): Unit = {
-    implicit val system = FormicServer.system
-    implicit val materializer = FormicServer.materializer
-    FormicServer.start(NetworkRoute.route(FormicServer.newUserProxy))
+    val server = new FormicServer
+    implicit val system = server.system
+    implicit val materializer = server.materializer
+    server.start(NetworkRoute.route(server.newUserProxy))
   }
 
 }
