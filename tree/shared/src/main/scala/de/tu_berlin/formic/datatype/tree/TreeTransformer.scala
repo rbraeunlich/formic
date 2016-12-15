@@ -7,7 +7,7 @@ trait TreeStructureOperation extends DataTypeOperation {
   val accessPath: AccessPath
 }
 
-case class TreeInsertOperation(accessPath: AccessPath, tree: TreeNode[Any], id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends TreeStructureOperation
+case class TreeInsertOperation(accessPath: AccessPath, tree: TreeNode, id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends TreeStructureOperation
 
 case class TreeDeleteOperation(accessPath: AccessPath, id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends TreeStructureOperation
 

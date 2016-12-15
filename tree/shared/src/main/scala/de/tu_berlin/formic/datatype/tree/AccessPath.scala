@@ -2,21 +2,18 @@ package de.tu_berlin.formic.datatype.tree
 
 /**
   * Represents the path a a certain node within a tree.
+  *
   * @author Ronny Bräunlich
   */
 class AccessPath(path: List[Int]) {
 
-  private val _path = scala.collection.mutable.ArrayBuffer(path:_*)
-
-  def list: List[Int] = _path.toList
+  val list: List[Int] = path
 
   /**
     * After descending one level inside the tree, the first element of the path can be dropped.
+    * This method returns a copy with only element less int the list.
     */
-  def dropFirstElement = _path.drop(1)
-
-
-  override def toString = s"AccessPath(${_path})"
+  def dropFirstElement = AccessPath(path.drop(1))
 
 
   def canEqual(other: Any): Boolean = other.isInstanceOf[AccessPath]
@@ -24,14 +21,16 @@ class AccessPath(path: List[Int]) {
   override def equals(other: Any): Boolean = other match {
     case that: AccessPath =>
       (that canEqual this) &&
-        _path == that._path
+        list == that.list
     case _ => false
   }
 
   override def hashCode(): Int = {
-    val state = Seq(_path)
+    val state = Seq(list)
     state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
+
+  override def toString = s"AccessPath($list)"
 }
 
 object AccessPath {
