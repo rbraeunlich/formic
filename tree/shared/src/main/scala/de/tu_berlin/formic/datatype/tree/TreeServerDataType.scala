@@ -3,12 +3,12 @@ package de.tu_berlin.formic.datatype.tree
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype.{AbstractServerDataType, DataTypeName, DataTypeOperation, OperationTransformer}
-
 import upickle.default._
+
 /**
   * @author Ronny Bräunlich
   */
-class TreeServerDataType[T](id: DataTypeInstanceId, controlAlgorithm: ControlAlgorithm, val dataTypeName: DataTypeName)(implicit val reader: Reader[T], val writer: Writer[T]) extends AbstractServerDataType(id, controlAlgorithm) {
+class TreeServerDataType[T](id: DataTypeInstanceId, controlAlgorithm: ControlAlgorithm, val dataTypeName: DataTypeName)(implicit val writer: Writer[T]) extends AbstractServerDataType(id, controlAlgorithm) {
 
   implicit val treeNodeWriter = new TreeNodeWriter[T]()
 
@@ -27,4 +27,9 @@ class TreeServerDataType[T](id: DataTypeInstanceId, controlAlgorithm: ControlAlg
   override def getDataAsJson: String = {
     write(data)
   }
+}
+
+object TreeServerDataType {
+  def apply[T](id: DataTypeInstanceId, controlAlgorithm: ControlAlgorithm, dataTypeName: DataTypeName)
+              (implicit writer: Writer[T]): TreeServerDataType[T] = new TreeServerDataType(id, controlAlgorithm, dataTypeName)
 }

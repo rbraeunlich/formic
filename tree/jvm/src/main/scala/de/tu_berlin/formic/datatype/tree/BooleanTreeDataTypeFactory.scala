@@ -5,8 +5,8 @@ import de.tu_berlin.formic.common.datatype.DataTypeName
 /**
   * @author Ronny Bräunlich
   */
-class BooleanTreeDataTypeFactory {
-
+class BooleanTreeDataTypeFactory extends TreeDataTypeFactory[Boolean] {
+  override val name: DataTypeName = BooleanTreeDataTypeFactory.name
 }
 
 object BooleanTreeDataTypeFactory {
