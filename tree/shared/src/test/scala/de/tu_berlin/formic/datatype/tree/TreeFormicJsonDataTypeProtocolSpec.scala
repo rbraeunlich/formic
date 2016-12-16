@@ -32,4 +32,35 @@ class TreeFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
 
     serialized should equal(s"""{\"accessPath\":[5,6],\"operationId\":\"${operationId.id}\",\"operationContext\":[],\"clientId\":\"${clientId.id}\"}""")
   }
+
+  it should "deserialize an insert operation" in {
+    val operationId = OperationId()
+    val clientId = ClientId()
+    val protocol = new TreeFormicJsonDataTypeProtocol[Int](DataTypeName("intTree"))
+    val json = s"""{\"accessPath\":[0,1],\"tree\":{\"value\":100,\"children\":[{\"value\":1,\"children\":[]}]},\"operationId\":\"${operationId.id}\",\"operationContext\":[],\"clientId\":\"${clientId.id}\"}"""
+
+    val deserialized = protocol.deserializeOperation(json)
+
+    deserialized shouldBe a[TreeInsertOperation]
+    deserialized.asInstanceOf[TreeInsertOperation].clientId should equal(clientId)
+    deserialized.asInstanceOf[TreeInsertOperation].id should equal(operationId)
+    deserialized.asInstanceOf[TreeInsertOperation].operationContext should equal(OperationContext())
+    deserialized.asInstanceOf[TreeInsertOperation].tree should equal(TreeNode(100, ArrayBuffer(TreeNode(1))))
+    deserialized.asInstanceOf[TreeInsertOperation].accessPath should equal(AccessPath(0, 1))
+  }
+
+  it should "deserialize a delete operation" in {
+    val operationId = OperationId()
+    val clientId = ClientId()
+    val protocol = new TreeFormicJsonDataTypeProtocol[Int](DataTypeName("intTree"))
+    val json = s"""{\"accessPath\":[5,6],\"operationId\":\"${operationId.id}\",\"operationContext\":[],\"clientId\":\"${clientId.id}\"}"""
+
+    val deserialized = protocol.deserializeOperation(json)
+
+    deserialized shouldBe a[TreeDeleteOperation]
+    deserialized.asInstanceOf[TreeDeleteOperation].clientId should equal(clientId)
+    deserialized.asInstanceOf[TreeDeleteOperation].id should equal(operationId)
+    deserialized.asInstanceOf[TreeDeleteOperation].operationContext should equal(OperationContext())
+    deserialized.asInstanceOf[TreeDeleteOperation].accessPath should equal(AccessPath(5, 6))
+  }
 }
