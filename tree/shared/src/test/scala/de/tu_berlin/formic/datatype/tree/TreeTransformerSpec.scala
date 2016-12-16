@@ -70,8 +70,8 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
   it should "not change first insert operation when the two are effect independent" in {
     val path1 = AccessPath(List(0, 0))
     val path2 = AccessPath(List(1, 0))
-    val op1 = TreeInsertOperation(path1, TreeNode("Foo", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
-    val op2 = TreeInsertOperation(path2, TreeNode("Bar", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
+    val op1 = TreeInsertOperation(path1, ValueTreeNode("Foo"), OperationId(), OperationContext(), ClientId())
+    val op2 = TreeInsertOperation(path2, ValueTreeNode("Bar"), OperationId(), OperationContext(), ClientId())
 
     val transformed = TreeTransformer.transform((op1, op2))
 
@@ -81,8 +81,8 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
   it should "not change first insert operation when the index value at the transformation point is smaller" in {
     val path1 = AccessPath(List(0, 0))
     val path2 = AccessPath(List(0, 1))
-    val op1 = TreeInsertOperation(path1, TreeNode("Foo", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
-    val op2 = TreeInsertOperation(path2, TreeNode("Bar", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
+    val op1 = TreeInsertOperation(path1, ValueTreeNode("Foo"), OperationId(), OperationContext(), ClientId())
+    val op2 = TreeInsertOperation(path2, ValueTreeNode("Bar"), OperationId(), OperationContext(), ClientId())
 
     val transformed = TreeTransformer.transform((op1, op2))
 
@@ -92,8 +92,8 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
   it should "increment the index at the transformation point of the first insert operation when its index is higher" in {
     val path1 = AccessPath(List(0, 2))
     val path2 = AccessPath(List(0, 1))
-    val op1 = TreeInsertOperation(path1, TreeNode("Foo", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
-    val op2 = TreeInsertOperation(path2, TreeNode("Bar", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
+    val op1 = TreeInsertOperation(path1, ValueTreeNode("Foo"), OperationId(), OperationContext(), ClientId())
+    val op2 = TreeInsertOperation(path2, ValueTreeNode("Bar"), OperationId(), OperationContext(), ClientId())
 
     val transformed = TreeTransformer.transform((op1, op2))
 
@@ -103,8 +103,8 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
   it should "increment the index at the transformation point of the first insert operation if the paths are equal at the transformation point and the path is longer" in {
     val path1 = AccessPath(0, 1, 0)
     val path2 = AccessPath(0, 1)
-    val op1 = TreeInsertOperation(path1, TreeNode("Foo", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
-    val op2 = TreeInsertOperation(path2, TreeNode("Bar", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
+    val op1 = TreeInsertOperation(path1, ValueTreeNode("Foo"), OperationId(), OperationContext(), ClientId())
+    val op2 = TreeInsertOperation(path2, ValueTreeNode("Bar"), OperationId(), OperationContext(), ClientId())
 
     val transformed = TreeTransformer.transform((op1, op2))
 
@@ -114,8 +114,8 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
   it should "not change the first insert operation when the paths are equal at the transformation point and the path is shorter" in {
     val path1 = AccessPath(0, 1)
     val path2 = AccessPath(0, 1, 0)
-    val op1 = TreeInsertOperation(path1, TreeNode("Foo", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
-    val op2 = TreeInsertOperation(path2, TreeNode("Bar", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
+    val op1 = TreeInsertOperation(path1, ValueTreeNode("Foo"), OperationId(), OperationContext(), ClientId())
+    val op2 = TreeInsertOperation(path2, ValueTreeNode("Bar"), OperationId(), OperationContext(), ClientId())
 
     val transformed = TreeTransformer.transform((op1, op2))
 
@@ -125,8 +125,8 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
   it should "return no-operation if both access paths are equal and the trees too" in {
     val path1 = AccessPath(0, 2, 1)
     val path2 = AccessPath(0, 2, 1)
-    val op1 = TreeInsertOperation(path1, TreeNode("Foo", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
-    val op2 = TreeInsertOperation(path2, TreeNode("Foo", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
+    val op1 = TreeInsertOperation(path1, ValueTreeNode("Foo"), OperationId(), OperationContext(), ClientId())
+    val op2 = TreeInsertOperation(path2, ValueTreeNode("Foo"), OperationId(), OperationContext(), ClientId())
 
     val transformed = TreeTransformer.transform((op1, op2))
 
@@ -136,8 +136,8 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
   it should "not change the first insert operation when both access paths are equal, the trees not and the client id is bigger" in {
     val path1 = AccessPath(0, 2, 1)
     val path2 = AccessPath(0, 2, 1)
-    val op1 = TreeInsertOperation(path1, TreeNode("Foo", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId("2"))
-    val op2 = TreeInsertOperation(path2, TreeNode("Bar", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId("1"))
+    val op1 = TreeInsertOperation(path1, ValueTreeNode("Foo"), OperationId(), OperationContext(), ClientId("2"))
+    val op2 = TreeInsertOperation(path2, ValueTreeNode("Bar"), OperationId(), OperationContext(), ClientId("1"))
 
     val transformed = TreeTransformer.transform((op1, op2))
 
@@ -147,8 +147,8 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
   it should "increment the index at the transformation point of the first insert operation when both access paths are equal, the trees not and the client id is smaller" in {
     val path1 = AccessPath(0, 2, 1)
     val path2 = AccessPath(0, 2, 1)
-    val op1 = TreeInsertOperation(path1, TreeNode("Foo", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId("1"))
-    val op2 = TreeInsertOperation(path2, TreeNode("Bar", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId("2"))
+    val op1 = TreeInsertOperation(path1, ValueTreeNode("Foo"), OperationId(), OperationContext(), ClientId("1"))
+    val op2 = TreeInsertOperation(path2, ValueTreeNode("Bar"), OperationId(), OperationContext(), ClientId("2"))
 
     val transformed = TreeTransformer.transform((op1, op2))
 
@@ -224,7 +224,7 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
   it should "not change the insert operation when it is effect independent with the delete operation" in {
     val path1 = AccessPath(List(0, 2, 1))
     val path2 = AccessPath(List(1, 2, 1))
-    val op1 = TreeInsertOperation(path1, TreeNode("abc", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
+    val op1 = TreeInsertOperation(path1, ValueTreeNode("abc"), OperationId(), OperationContext(), ClientId())
     val op2 = TreeDeleteOperation(path2, OperationId(), OperationContext(), ClientId())
 
     val transformed = TreeTransformer.transform((op1, op2))
@@ -235,7 +235,7 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
   it should "not change the insert operation when its index at the transformation point is smaller than the one from the delete operation" in {
     val path1 = AccessPath(List(0, 2))
     val path2 = AccessPath(List(0, 3))
-    val op1 = TreeInsertOperation(path1, TreeNode("abc", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
+    val op1 = TreeInsertOperation(path1, ValueTreeNode("abc"), OperationId(), OperationContext(), ClientId())
     val op2 = TreeDeleteOperation(path2, OperationId(), OperationContext(), ClientId())
 
     val transformed = TreeTransformer.transform((op1, op2))
@@ -246,7 +246,7 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
   it should "decrease the index at the transformation point when the index of the insert at the transformation point is greater than the one from the delete operation" in {
     val path1 = AccessPath(List(0, 3))
     val path2 = AccessPath(List(0, 2))
-    val op1 = TreeInsertOperation(path1, TreeNode("abc", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
+    val op1 = TreeInsertOperation(path1, ValueTreeNode("abc"), OperationId(), OperationContext(), ClientId())
     val op2 = TreeDeleteOperation(path2, OperationId(), OperationContext(), ClientId())
 
     val transformed = TreeTransformer.transform((op1, op2))
@@ -257,7 +257,7 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
   it should "return the no operation when the index at the transformation point is equal to the one of the delete operation and its path is longer" in {
     val path1 = AccessPath(List(0, 2, 1))
     val path2 = AccessPath(List(0, 2))
-    val op1 = TreeInsertOperation(path1, TreeNode("abc", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
+    val op1 = TreeInsertOperation(path1, ValueTreeNode("abc"), OperationId(), OperationContext(), ClientId())
     val op2 = TreeDeleteOperation(path2, OperationId(), OperationContext(), ClientId())
 
     val transformed = TreeTransformer.transform((op1, op2))
@@ -268,7 +268,7 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
   it should "not change the insert operation when the index at the transformation point is equal to the one of the delete operation and its path is shorter" in {
     val path1 = AccessPath(List(0, 2))
     val path2 = AccessPath(List(0, 2, 1))
-    val op1 = TreeInsertOperation(path1, TreeNode("abc", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
+    val op1 = TreeInsertOperation(path1, ValueTreeNode("abc"), OperationId(), OperationContext(), ClientId())
     val op2 = TreeDeleteOperation(path2, OperationId(), OperationContext(), ClientId())
 
     val transformed = TreeTransformer.transform((op1, op2))
@@ -280,7 +280,7 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
     val path1 = AccessPath(List(0, 2, 1))
     val path2 = AccessPath(List(1, 2, 1))
     val op1 = TreeDeleteOperation(path1, OperationId(), OperationContext(), ClientId())
-    val op2 = TreeInsertOperation(path2, TreeNode("abc", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
+    val op2 = TreeInsertOperation(path2, ValueTreeNode("abc"), OperationId(), OperationContext(), ClientId())
 
     val transformed = TreeTransformer.transform((op1, op2))
 
@@ -291,7 +291,7 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
     val path1 = AccessPath(List(0, 2))
     val path2 = AccessPath(List(0, 3))
     val op1 = TreeDeleteOperation(path1, OperationId(), OperationContext(), ClientId())
-    val op2 = TreeInsertOperation(path2, TreeNode("abc", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
+    val op2 = TreeInsertOperation(path2, ValueTreeNode("abc"), OperationId(), OperationContext(), ClientId())
 
 
     val transformed = TreeTransformer.transform((op1, op2))
@@ -303,7 +303,7 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
     val path1 = AccessPath(List(0, 3))
     val path2 = AccessPath(List(0, 2))
     val op1 = TreeDeleteOperation(path1, OperationId(), OperationContext(), ClientId())
-    val op2 = TreeInsertOperation(path2, TreeNode("abc", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
+    val op2 = TreeInsertOperation(path2, ValueTreeNode("abc"), OperationId(), OperationContext(), ClientId())
 
     val transformed = TreeTransformer.transform((op1, op2))
 
@@ -314,7 +314,7 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
     val path1 = AccessPath(List(0, 2, 1))
     val path2 = AccessPath(List(0, 2))
     val op1 = TreeDeleteOperation(path1, OperationId(), OperationContext(), ClientId())
-    val op2 = TreeInsertOperation(path2, TreeNode("abc", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
+    val op2 = TreeInsertOperation(path2, ValueTreeNode("abc"), OperationId(), OperationContext(), ClientId())
 
     val transformed = TreeTransformer.transform((op1, op2))
 
@@ -325,7 +325,7 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
     val path1 = AccessPath(List(0, 2))
     val path2 = AccessPath(List(0, 2, 1))
     val op1 = TreeDeleteOperation(path1, OperationId(), OperationContext(), ClientId())
-    val op2 = TreeInsertOperation(path2, TreeNode("abc", ArrayBuffer.empty), OperationId(), OperationContext(), ClientId())
+    val op2 = TreeInsertOperation(path2, ValueTreeNode("abc"), OperationId(), OperationContext(), ClientId())
 
 
     val transformed = TreeTransformer.transform((op1, op2))

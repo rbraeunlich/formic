@@ -14,9 +14,9 @@ import scala.collection.mutable.ArrayBuffer
   */
 class TreeFormicJsonDataTypeProtocol[T](val name: DataTypeName)(implicit val reader: Reader[T], val writer: Writer[T]) extends FormicJsonDataTypeProtocol {
 
-  implicit val treeNodeWriter = new TreeNodeWriter[T]
+  implicit val treeNodeWriter = new ValueTreeNodeWriter[T]
 
-  implicit val treeNodeReader = new TreeNodeReader[T]
+  implicit val treeNodeReader = new ValueTreeNodeReader[T]
 
   override def deserializeOperation(json: String): DataTypeOperation = {
     val valueMap = upickle.json.read(json).obj
@@ -25,7 +25,7 @@ class TreeFormicJsonDataTypeProtocol[T](val name: DataTypeName)(implicit val rea
     val clientId = ClientId(valueMap("clientId").str)
     val accessPath = AccessPath(valueMap("accessPath").arr.map(v => v.num.toInt).toList)
     if (valueMap.contains("tree")) {
-      TreeInsertOperation(accessPath, readJs[TreeNode](valueMap("tree")), operationId, OperationContext(operationContext), clientId)
+      TreeInsertOperation(accessPath, readJs[ValueTreeNode](valueMap("tree")), operationId, OperationContext(operationContext), clientId)
     } else {
       TreeDeleteOperation(accessPath, operationId, OperationContext(operationContext), clientId)
     }
@@ -56,8 +56,8 @@ class TreeFormicJsonDataTypeProtocol[T](val name: DataTypeName)(implicit val rea
   }
 }
 
-class TreeNodeWriter[T]()(implicit val writer: Writer[T]) extends Writer[TreeNode] {
-  override def write0: (TreeNode) => Value = {
+class ValueTreeNodeWriter[T]()(implicit val writer: Writer[T]) extends Writer[ValueTreeNode] {
+  override def write0: (ValueTreeNode) => Value = {
     node =>
       Js.Obj(
         ("value", writeJs(node.value.asInstanceOf[T])),
@@ -66,12 +66,12 @@ class TreeNodeWriter[T]()(implicit val writer: Writer[T]) extends Writer[TreeNod
   }
 }
 
-class TreeNodeReader[T]()(implicit val reader: Reader[T]) extends Reader[TreeNode] {
+class ValueTreeNodeReader[T]()(implicit val reader: Reader[T]) extends Reader[ValueTreeNode] {
 
-  override def read0: PartialFunction[Value, TreeNode] = {
+  override def read0: PartialFunction[Value, ValueTreeNode] = {
     case obj: Js.Obj =>
       val value = readJs[T](obj("value"))
       val children = obj("children").arr.map(this.read0)
-      TreeNode(value, children.to[ArrayBuffer])
+      ValueTreeNode(value, children.toList)
   }
 }

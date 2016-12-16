@@ -15,7 +15,7 @@ class TreeFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
     val operationId = OperationId()
     val clientId = ClientId()
     val protocol = new TreeFormicJsonDataTypeProtocol[Int](DataTypeName("intTree"))
-    val operation = TreeInsertOperation(AccessPath(0, 1), TreeNode(100, ArrayBuffer(TreeNode(1), TreeNode(2))), operationId, OperationContext(), clientId)
+    val operation = TreeInsertOperation(AccessPath(0, 1), ValueTreeNode(100, List(ValueTreeNode(1), ValueTreeNode(2))), operationId, OperationContext(), clientId)
 
     val serialized = protocol.serializeOperation(operation)
 
@@ -45,7 +45,7 @@ class TreeFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
     deserialized.asInstanceOf[TreeInsertOperation].clientId should equal(clientId)
     deserialized.asInstanceOf[TreeInsertOperation].id should equal(operationId)
     deserialized.asInstanceOf[TreeInsertOperation].operationContext should equal(OperationContext())
-    deserialized.asInstanceOf[TreeInsertOperation].tree should equal(TreeNode(100, ArrayBuffer(TreeNode(1))))
+    deserialized.asInstanceOf[TreeInsertOperation].tree should equal(ValueTreeNode(100, List(ValueTreeNode(1))))
     deserialized.asInstanceOf[TreeInsertOperation].accessPath should equal(AccessPath(0, 1))
   }
 

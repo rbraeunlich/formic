@@ -8,8 +8,6 @@ import de.tu_berlin.formic.common.message.OperationMessage
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
-import scala.collection.mutable.ArrayBuffer
-
 /**
   * @author Ronny Bräunlich
   */
@@ -26,22 +24,22 @@ class TreeServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
   "TreeServerDataType" must {
     "insert data" in {
       val tree: TestActorRef[TreeServerDataType[Boolean]] = TestActorRef(Props(new TreeServerDataType[Boolean](DataTypeInstanceId(), TreeServerDataTypeSpecControlAlgorithm, BooleanTreeDataTypeFactory.name)))
-      val op1 = TreeInsertOperation(AccessPath(), TreeNode(true, ArrayBuffer(TreeNode(false))), OperationId(), OperationContext(), ClientId())
-      val op2 = TreeInsertOperation(AccessPath(1), TreeNode(true), OperationId(), OperationContext(), ClientId())
-      val op3 = TreeInsertOperation(AccessPath(1, 0), TreeNode(false), OperationId(), OperationContext(), ClientId())
+      val op1 = TreeInsertOperation(AccessPath(), ValueTreeNode(true, List(ValueTreeNode(false))), OperationId(), OperationContext(), ClientId())
+      val op2 = TreeInsertOperation(AccessPath(1), ValueTreeNode(true), OperationId(), OperationContext(), ClientId())
+      val op3 = TreeInsertOperation(AccessPath(1, 0), ValueTreeNode(false), OperationId(), OperationContext(), ClientId())
 
       tree ! OperationMessage(ClientId(), DataTypeInstanceId(), BooleanTreeDataTypeFactory.name, List(op1))
       tree ! OperationMessage(ClientId(), DataTypeInstanceId(), BooleanTreeDataTypeFactory.name, List(op2))
       tree ! OperationMessage(ClientId(), DataTypeInstanceId(), BooleanTreeDataTypeFactory.name, List(op3))
 
-      tree.underlyingActor.data should equal(TreeNode(true, ArrayBuffer(TreeNode(false), TreeNode(true, ArrayBuffer(TreeNode(false))))))
+      tree.underlyingActor.data should equal(ValueTreeNode(true, List(ValueTreeNode(false), ValueTreeNode(true, List(ValueTreeNode(false))))))
     }
 
     "delete data" in {
       val tree: TestActorRef[TreeServerDataType[Boolean]] = TestActorRef(Props(new TreeServerDataType[Boolean](DataTypeInstanceId(), TreeServerDataTypeSpecControlAlgorithm, BooleanTreeDataTypeFactory.name)))
-      val op1 = TreeInsertOperation(AccessPath(), TreeNode(true, ArrayBuffer(TreeNode(false))), OperationId(), OperationContext(), ClientId())
-      val op2 = TreeInsertOperation(AccessPath(1), TreeNode(true), OperationId(), OperationContext(), ClientId())
-      val op3 = TreeInsertOperation(AccessPath(1, 0), TreeNode(false), OperationId(), OperationContext(), ClientId())
+      val op1 = TreeInsertOperation(AccessPath(), ValueTreeNode(true, List(ValueTreeNode(false))), OperationId(), OperationContext(), ClientId())
+      val op2 = TreeInsertOperation(AccessPath(1), ValueTreeNode(true), OperationId(), OperationContext(), ClientId())
+      val op3 = TreeInsertOperation(AccessPath(1, 0), ValueTreeNode(false), OperationId(), OperationContext(), ClientId())
       tree ! OperationMessage(ClientId(), DataTypeInstanceId(), BooleanTreeDataTypeFactory.name, List(op1))
       tree ! OperationMessage(ClientId(), DataTypeInstanceId(), BooleanTreeDataTypeFactory.name, List(op2))
       tree ! OperationMessage(ClientId(), DataTypeInstanceId(), BooleanTreeDataTypeFactory.name, List(op3))
@@ -49,24 +47,24 @@ class TreeServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
 
       tree ! OperationMessage(ClientId(), DataTypeInstanceId(), BooleanTreeDataTypeFactory.name, List(deleteOperation))
 
-      tree.underlyingActor.data should equal(TreeNode(true, ArrayBuffer(TreeNode(false))))
+      tree.underlyingActor.data should equal(ValueTreeNode(true, List(ValueTreeNode(false))))
     }
 
     "not change after no-operation" in {
       val tree: TestActorRef[TreeServerDataType[Boolean]] = TestActorRef(Props(new TreeServerDataType[Boolean](DataTypeInstanceId(), TreeServerDataTypeSpecControlAlgorithm, BooleanTreeDataTypeFactory.name)))
-      val op = TreeInsertOperation(AccessPath(), TreeNode(true, ArrayBuffer(TreeNode(false))), OperationId(), OperationContext(), ClientId())
+      val op = TreeInsertOperation(AccessPath(), ValueTreeNode(true, List(ValueTreeNode(false))), OperationId(), OperationContext(), ClientId())
       val noop = TreeNoOperation(AccessPath(), OperationId(), OperationContext(), ClientId())
       tree ! OperationMessage(ClientId(), DataTypeInstanceId(), BooleanTreeDataTypeFactory.name, List(op))
 
       tree ! OperationMessage(ClientId(), DataTypeInstanceId(), BooleanTreeDataTypeFactory.name, List(noop))
 
-      tree.underlyingActor.data should equal(TreeNode(true, ArrayBuffer(TreeNode(false))))
+      tree.underlyingActor.data should equal(ValueTreeNode(true, List(ValueTreeNode(false))))
     }
 
     "result in valid JSON representation" in {
       val tree: TestActorRef[TreeServerDataType[Boolean]] = TestActorRef(Props(new TreeServerDataType[Boolean](DataTypeInstanceId(), TreeServerDataTypeSpecControlAlgorithm, BooleanTreeDataTypeFactory.name)))
-      val op1 = TreeInsertOperation(AccessPath(), TreeNode(true, ArrayBuffer(TreeNode(false))), OperationId(), OperationContext(), ClientId())
-      val op2 = TreeInsertOperation(AccessPath(1), TreeNode(true), OperationId(), OperationContext(), ClientId())
+      val op1 = TreeInsertOperation(AccessPath(), ValueTreeNode(true, List(ValueTreeNode(false))), OperationId(), OperationContext(), ClientId())
+      val op2 = TreeInsertOperation(AccessPath(1), ValueTreeNode(true), OperationId(), OperationContext(), ClientId())
 
       tree ! OperationMessage(ClientId(), DataTypeInstanceId(), BooleanTreeDataTypeFactory.name, List(op1))
       tree ! OperationMessage(ClientId(), DataTypeInstanceId(), BooleanTreeDataTypeFactory.name, List(op2))
