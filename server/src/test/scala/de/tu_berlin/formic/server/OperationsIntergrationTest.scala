@@ -185,12 +185,11 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
 
     // upgradeResponse is a Future[WebSocketUpgradeResponse] that
     // completes or fails when the connection succeeds or fails
-    val serverAddress = system.settings.config.getString("formic.server.address")
-    val serverPort = system.settings.config.getInt("formic.server.port")
+    val serverPort = server.binding.localAddress.getPort
     val (upgradeResponse, sinkAndSource) =
       Http().singleWebSocketRequest(
         WebSocketRequest(
-          Uri(s"ws://$serverAddress:$serverPort/formic"),
+          Uri(s"ws://0.0.0.0:$serverPort/formic"),
           List(Authorization(BasicHttpCredentials(username, "")))
         ),
         flow

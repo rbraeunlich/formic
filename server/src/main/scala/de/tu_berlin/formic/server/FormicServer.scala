@@ -61,7 +61,7 @@ class FormicServer {
     factories += (StringDataTypeFactory.name -> stringFactory)
   }
 
-  def start(route: server.Route): Unit = {
+  def start(route: server.Route): Http.ServerBinding = {
     val myExceptionHandler: ExceptionHandler = ExceptionHandler {
       case iae: IllegalArgumentException => complete(HttpResponse(NotFound, entity = iae.getMessage))
     }
@@ -82,6 +82,7 @@ class FormicServer {
         log.error(ex, "Failed to bind to {}:{}!", serverAddress, serverPort)
         system.terminate()
     }
+    Await.result(binding, 5.seconds)
   }
 
   def newUserProxy(username: String)(implicit actorSystem: ActorSystem, materializer: ActorMaterializer): Flow[Message, Message, NotUsed] = {

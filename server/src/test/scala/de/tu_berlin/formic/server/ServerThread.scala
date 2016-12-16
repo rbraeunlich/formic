@@ -1,5 +1,6 @@
 package de.tu_berlin.formic.server
 
+import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route
 
 /**
@@ -7,8 +8,10 @@ import akka.http.scaladsl.server.Route
   */
 class ServerThread(val server: FormicServer, val route: Route) extends Thread {
 
+  var binding: Http.ServerBinding = _
+
   override def run() {
-    server.start(route)
+    binding = server.start(route)
   }
 
   def terminate(): Unit = {
