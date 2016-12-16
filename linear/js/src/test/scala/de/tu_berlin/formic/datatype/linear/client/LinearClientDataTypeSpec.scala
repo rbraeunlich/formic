@@ -17,7 +17,7 @@ import scala.collection.mutable.ArrayBuffer
 /**
   * @author Ronny Bräunlich
   */
-class LinearClientDataTypeSpec extends TestKit(ActorSystem("FormicListSpec"))
+class LinearClientDataTypeSpec extends TestKit(ActorSystem("LinearClientDataTypeSpec"))
   with WordSpecLike
   with BeforeAndAfterAll
   with Matchers
