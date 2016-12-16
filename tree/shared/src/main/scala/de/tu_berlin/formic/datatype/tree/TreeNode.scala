@@ -18,7 +18,9 @@ case class TreeNode(value: Any, children: ArrayBuffer[TreeNode] = ArrayBuffer.em
 
 
   def applyOperation(operation: TreeStructureOperation) = {
-    applyOperationInternal(operation, operation.accessPath)
+    if(!operation.isInstanceOf[TreeNoOperation]) {
+      applyOperationInternal(operation, operation.accessPath)
+    }
   }
 
   private def isCorrectLevel(accessPath: AccessPath): Boolean = {

@@ -74,5 +74,4 @@ class TreeNodeReader[T]()(implicit val reader: Reader[T]) extends Reader[TreeNod
       val children = obj("children").arr.map(this.read0)
       TreeNode(value, children.to[ArrayBuffer])
   }
-
 }
