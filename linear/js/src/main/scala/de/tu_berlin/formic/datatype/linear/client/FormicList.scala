@@ -20,18 +20,14 @@ import scala.scalajs.js.annotation.{JSExport, JSExportDescendentClasses}
   * @author Ronny Bräunlich
   */
 @JSExportDescendentClasses
-abstract class FormicList[T](private var _callback: () => Unit, initiator: DataTypeInitiator, val dataTypeInstanceId: DataTypeInstanceId, val dataTypeName: DataTypeName)(implicit val writer: Writer[T], val reader: Reader[T]) extends FormicDataType {
+abstract class FormicList[T](_callback: () => Unit,
+                             initiator: DataTypeInitiator,
+                             dataTypeInstanceId: DataTypeInstanceId,
+                             dataTypeName: DataTypeName)
+                            (implicit val writer: Writer[T], val reader: Reader[T])
+  extends FormicDataType(_callback, dataTypeName, dataTypeInstanceId = dataTypeInstanceId, initiator = initiator ) {
 
   implicit val timeout: Timeout = 1.seconds
-
-  override def callback: () => Unit = _callback
-
-  override def callback_=(newCallback: () => Unit) {
-    _callback = newCallback
-    actor ! ReceiveCallback(newCallback)
-  }
-
-  initiator.initDataType(this)
 
   @JSExport
   def add(index: Int, o: T) = {
