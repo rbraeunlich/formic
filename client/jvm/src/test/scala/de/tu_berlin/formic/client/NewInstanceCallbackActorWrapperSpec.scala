@@ -20,7 +20,7 @@ class NewInstanceCallbackActorWrapperSpec extends TestKit(ActorSystem("Dispatche
     "forward messages to the callback" in {
       val callback = new TestNewInstanceCallback
       val wrapper = system.actorOf(Props(new NewInstanceCallbackActorWrapper(callback)))
-      val dataTypeWrapper = new TestFormicDataType
+      val dataTypeWrapper = new TestFormicDataType(wrapper)
 
       wrapper ! NewDataTypeCreated(DataTypeInstanceId(), TestProbe().ref, dataTypeWrapper)
 
