@@ -73,10 +73,9 @@ class AbstractClientDataTypeFactorySpecServerDataType(outgoingConnection: ActorR
   override def cloneOperationWithNewContext(op: DataTypeOperation, context: OperationContext): DataTypeOperation = op
 }
 
-class AbstractClientDataTypeFactorySpecFormicDataType extends FormicDataType {
-  override val dataTypeName: DataTypeName = DataTypeName("AbstractClientDataTypeFactorySpec")
-  override var callback: () => Unit = _
-  override val dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId()
+class AbstractClientDataTypeFactorySpecFormicDataType extends FormicDataType(null, DataTypeName("AbstractClientDataTypeFactorySpec"),null, DataTypeInstanceId(), new DataTypeInitiator {
+  override def initDataType(dataType: FormicDataType): Unit = {}
+}) {
 }
 
 class AbstractClientDataTypeFactorySpecFactory extends AbstractClientDataTypeFactory[AbstractClientDataTypeFactorySpecServerDataType, AbstractClientDataTypeFactorySpecFormicDataType] {

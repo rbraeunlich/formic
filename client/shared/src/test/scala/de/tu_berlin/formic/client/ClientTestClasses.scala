@@ -3,7 +3,7 @@ package de.tu_berlin.formic.client
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype._
-import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataType, AbstractClientDataTypeFactory}
+import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataType, AbstractClientDataTypeFactory, DataTypeInitiator}
 import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest.Assertions._
@@ -24,7 +24,7 @@ class TestDataTypeFactory extends AbstractClientDataTypeFactory[TestClientDataTy
 
 class TestClientDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataTypeInstanceId, controlAlgorithm: ControlAlgorithmClient, initialData: Option[String] = Option.empty, lastOperationId: Option[OperationId], outgoingConnection: ActorRef) extends AbstractClientDataType(dataTypeInstanceId, controlAlgorithm, lastOperationId, outgoingConnection) {
 
-  var data =  initialData.getOrElse("{data}")
+  var data = initialData.getOrElse("{data}")
 
   override def apply(op: DataTypeOperation): Unit = {
     op match {
@@ -42,13 +42,12 @@ class TestClientDataType(override val historyBuffer: HistoryBuffer, val dataType
   override def cloneOperationWithNewContext(op: DataTypeOperation, context: OperationContext): DataTypeOperation = op
 }
 
-class TestFormicDataType extends FormicDataType {
-  override var callback: () => Unit = () => {}
-  override val dataTypeName: DataTypeName = TestClasses.dataTypeName
-  override val dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId()
+class TestFormicDataType extends FormicDataType(() => {}, TestClasses.dataTypeName, null, DataTypeInstanceId(), new DataTypeInitiator {
+  override def initDataType(dataType: FormicDataType): Unit = {}
+}) {
 }
 
-case class TestOperation(id: OperationId, operationContext: OperationContext,var clientId: ClientId) extends DataTypeOperation
+case class TestOperation(id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends DataTypeOperation
 
 class TestFormicJsonDataTypeProtocol extends FormicJsonDataTypeProtocol {
 
