@@ -8,7 +8,7 @@ import akka.http.scaladsl.model.ws.{Message, TextMessage, WebSocketRequest}
 import akka.http.scaladsl.model.{StatusCodes, Uri}
 import akka.http.scaladsl.server.Directives._
 import akka.stream.scaladsl.{Flow, Keep, Sink, SinkQueueWithCancel, Source, SourceQueueWithComplete}
-import akka.stream.{ActorMaterializer, ActorMaterializerSettings, OverflowStrategy}
+import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.testkit.TestKit
 import de.tu_berlin.formic.common.datatype.OperationContext
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._

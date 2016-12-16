@@ -2,22 +2,19 @@ package de.tu_berlin.formic.server
 
 import akka.Done
 import akka.actor.ActorSystem
+import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.headers.{Authorization, BasicHttpCredentials}
 import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage, WebSocketRequest}
 import akka.http.scaladsl.model.{StatusCodes, Uri}
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.{Http, server}
 import akka.stream.scaladsl.{Flow, Keep, Sink, SinkQueueWithCancel, Source, SourceQueueWithComplete}
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.testkit.TestKit
 import akka.util.ByteString
-import com.typesafe.config.ConfigFactory
-import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse, FormicMessage}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.datatype.linear.server.StringDataTypeFactory
 import org.scalatest.{path => _, _}
-import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import upickle.default._
 
 import scala.concurrent.duration._
