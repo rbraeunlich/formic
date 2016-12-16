@@ -15,6 +15,7 @@ import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse, Formic
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.datatype.linear.server.StringDataTypeFactory
 import org.scalatest.{path => _, _}
+import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import upickle.default._
 
 import scala.concurrent.duration._
