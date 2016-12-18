@@ -10,7 +10,7 @@ import org.scalajs.jquery.jQuery
   */
 class ExampleCallback extends NewInstanceCallback {
 
-  override def newCallbackFor(instance: FormicDataType, dataType: DataTypeName): () => Unit = Main.updateUIForFormicString(instance.asInstanceOf[FormicString])
+  override def newCallbackFor(instance: FormicDataType, dataType: DataTypeName): () => Unit = Main.updateUIForString(instance.dataTypeInstanceId)
 
   override def doNewInstanceCreated(instance: FormicDataType, dataType: DataTypeName): Unit = {
     Main.strings += instance.asInstanceOf[FormicString]
@@ -20,6 +20,6 @@ class ExampleCallback extends NewInstanceCallback {
     jQuery("body").append("<textarea rows=\"30\" cols=\"50\" id=\"" + inputId + "\"></textarea>")
     jQuery("#" + inputId).keypress(Main.keyPressHandler(inputId))
 
-    Main.updateUIForFormicString(instance.asInstanceOf[FormicString])()
+    Main.updateUIForString(instance.dataTypeInstanceId)()
   }
 }
