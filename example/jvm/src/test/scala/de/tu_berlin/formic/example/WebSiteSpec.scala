@@ -1,7 +1,6 @@
 package de.tu_berlin.formic.example
 
-import org.openqa.selenium.firefox.FirefoxDriver
-import org.scalatest.selenium.WebBrowser
+import org.scalatest.selenium.Firefox
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 
 /**
@@ -9,10 +8,8 @@ import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
   */
 class WebSiteSpec extends FlatSpec
   with Matchers
-  with WebBrowser
+  with Firefox
   with BeforeAndAfterAll{
-
-  implicit val webDriver = new FirefoxDriver()
 
   val host = "http://localhost:8080"
 
