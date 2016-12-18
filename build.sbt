@@ -170,7 +170,8 @@ lazy val example = crossProject.in(file("example")).
   jvmSettings(
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test",
-      "com.typesafe.akka" %%% "akka-http-testkit" % akkaHttpVersion % "test"
+      "com.typesafe.akka" %%% "akka-http-testkit" % akkaHttpVersion % "test",
+      "org.seleniumhq.selenium" % "selenium-java" % "3.0.1" % "test"
     )
   ).
   jsSettings(

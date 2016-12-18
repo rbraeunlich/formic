@@ -8,11 +8,13 @@ import de.tu_berlin.formic.server.FormicServer
   */
 object ExampleServer {
 
+  val server = new FormicServer
+
   def main(args: Array[String]): Unit = {
-    val server = new FormicServer
     implicit val system = server.system
     implicit val materializer = server.materializer
     server.start(NetworkRoute.route(server.newUserProxy))
   }
 
+  def shutdown = server.terminate()
 }
