@@ -46,8 +46,8 @@ object Main extends JSApp {
     val string = new FormicString(updateUIForString(id), system, id)
     strings += string
     val inputId = id.id
-    jQuery("body").append("<p>String data type with id " + inputId + "</p>")
-    jQuery("body").append("<textarea rows=\"30\" cols=\"50\" id=\"" + inputId + "\"></textarea>")
+    jQuery("body").append("<p class=\"stringId\">String data type with id " + inputId + "</p>")
+    jQuery("body").append("<textarea rows=\"30\" cols=\"50\" class=\"stringInput\" id=\"" + inputId + "\"></textarea>")
     jQuery("#" + inputId).keypress(keyPressHandler(inputId))
   }
 
