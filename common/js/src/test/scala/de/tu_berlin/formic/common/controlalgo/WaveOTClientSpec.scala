@@ -125,6 +125,24 @@ class WaveOTClientSpec extends WordSpec with Matchers {
         WaveOTClientTestOperation(operation3.id, OperationContext(List(operation2.id)), operation3.clientId, 1)
         )
     }
+
+    "update its current context after transforming an operation" in {
+      val controlAlgo = new WaveOTClient((op) => ())
+      val operation = WaveOTClientTestOperation(OperationId(), OperationContext(List.empty), ClientId())
+
+      controlAlgo.transform(operation, new HistoryBuffer(), WaveOTClientTestTransformer)
+
+      controlAlgo.currentOperationContext.operations should contain only operation.id
+    }
+
+    "update its current context when local operation can be applied" in {
+      val controlAlgo = new WaveOTClient((op) => ())
+      val operation = WaveOTClientTestOperation(OperationId(), OperationContext(List.empty), ClientId())
+
+      controlAlgo.canLocalOperationBeApplied(operation)
+
+      controlAlgo.currentOperationContext.operations should contain only operation.id
+    }
   }
 }
 
