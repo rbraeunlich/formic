@@ -77,16 +77,16 @@ class FormicSystem(config: Config = ConfigFactory.load()) extends DataTypeInitia
     }
   }
 
-  def initFactories()(implicit actorSystem: ActorSystem): Unit = {
+  def initFactories(): Unit = {
     initLinearFactories()
     initTreeFactories()
   }
 
-  def initLinearFactories()(implicit actorSystem: ActorSystem): Unit = {
-    val formicBooleanListFactory = actorSystem.actorOf(Props(new FormicBooleanListDataTypeFactory), FormicBooleanListDataTypeFactory.dataTypeName.name)
-    val formicDoubleListFactroy = actorSystem.actorOf(Props(new FormicDoubleListDataTypeFactory), FormicDoubleListDataTypeFactory.dataTypeName.name)
-    val formicIntegerListFactory = actorSystem.actorOf(Props(new FormicIntegerListDataTypeFactory), FormicIntegerListDataTypeFactory.dataTypeName.name)
-    val formicStringFactory = actorSystem.actorOf(Props(new FormicStringDataTypeFactory), FormicStringDataTypeFactory.dataTypeName.name)
+  def initLinearFactories(): Unit = {
+    val formicBooleanListFactory = system.actorOf(Props(new FormicBooleanListDataTypeFactory), FormicBooleanListDataTypeFactory.dataTypeName.name)
+    val formicDoubleListFactroy = system.actorOf(Props(new FormicDoubleListDataTypeFactory), FormicDoubleListDataTypeFactory.dataTypeName.name)
+    val formicIntegerListFactory = system.actorOf(Props(new FormicIntegerListDataTypeFactory), FormicIntegerListDataTypeFactory.dataTypeName.name)
+    val formicStringFactory = system.actorOf(Props(new FormicStringDataTypeFactory), FormicStringDataTypeFactory.dataTypeName.name)
 
     FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Boolean](FormicBooleanListDataTypeFactory.dataTypeName))
     FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Double](FormicDoubleListDataTypeFactory.dataTypeName))
@@ -99,11 +99,11 @@ class FormicSystem(config: Config = ConfigFactory.load()) extends DataTypeInitia
     factories += (FormicStringDataTypeFactory.dataTypeName -> formicStringFactory)
   }
 
-  def initTreeFactories()(implicit actorSystem: ActorSystem): Unit = {
-    val booleanTreeFactory = actorSystem.actorOf(Props(new FormicBooleanTreeFactory), FormicBooleanTreeFactory.name.name)
-    val doubleTreeFactory = actorSystem.actorOf(Props(new FormicDoubleTreeFactory), FormicDoubleTreeFactory.name.name)
-    val integerTreeFactory = actorSystem.actorOf(Props(new FormicIntegerTreeFactory), FormicIntegerTreeFactory.name.name)
-    val stringTreeFactory = actorSystem.actorOf(Props(new FormicStringTreeFactory), FormicStringTreeFactory.name.name)
+  def initTreeFactories(): Unit = {
+    val booleanTreeFactory = system.actorOf(Props(new FormicBooleanTreeFactory), FormicBooleanTreeFactory.name.name)
+    val doubleTreeFactory = system.actorOf(Props(new FormicDoubleTreeFactory), FormicDoubleTreeFactory.name.name)
+    val integerTreeFactory = system.actorOf(Props(new FormicIntegerTreeFactory), FormicIntegerTreeFactory.name.name)
+    val stringTreeFactory = system.actorOf(Props(new FormicStringTreeFactory), FormicStringTreeFactory.name.name)
 
     FormicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Boolean](FormicBooleanTreeFactory.name))
     FormicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Double](FormicDoubleTreeFactory.name))

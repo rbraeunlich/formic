@@ -45,16 +45,16 @@ class FormicServer {
 
   implicit val ec = system.dispatcher
 
-  def initFactories()(implicit actorSystem: ActorSystem) = {
+  def initFactories() = {
     initLinearFactories()
     initTreeFactories()
   }
 
-  def initLinearFactories()(implicit actorSystem: ActorSystem): Unit = {
-    val booleanListFactory = actorSystem.actorOf(Props[BooleanListDataTypeFactory], BooleanListDataTypeFactory.name.name)
-    val doubleListFactory = actorSystem.actorOf(Props[DoubleListDataTypeFactory], DoubleListDataTypeFactory.name.name)
-    val integerListFactory = actorSystem.actorOf(Props[IntegerListDataTypeFactory], IntegerListDataTypeFactory.name.name)
-    val stringFactory = actorSystem.actorOf(Props[StringDataTypeFactory], StringDataTypeFactory.name.name)
+  def initLinearFactories(): Unit = {
+    val booleanListFactory = system.actorOf(Props[BooleanListDataTypeFactory], BooleanListDataTypeFactory.name.name)
+    val doubleListFactory = system.actorOf(Props[DoubleListDataTypeFactory], DoubleListDataTypeFactory.name.name)
+    val integerListFactory = system.actorOf(Props[IntegerListDataTypeFactory], IntegerListDataTypeFactory.name.name)
+    val stringFactory = system.actorOf(Props[StringDataTypeFactory], StringDataTypeFactory.name.name)
 
     FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Boolean](BooleanListDataTypeFactory.name))
     FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Double](DoubleListDataTypeFactory.name))
@@ -67,11 +67,11 @@ class FormicServer {
     factories += (StringDataTypeFactory.name -> stringFactory)
   }
 
-  def initTreeFactories()(implicit actorSystem: ActorSystem): Unit = {
-    val booleanTreeFactory = actorSystem.actorOf(Props[BooleanTreeDataTypeFactory], BooleanTreeDataTypeFactory.name.name)
-    val doubleTreeFactory = actorSystem.actorOf(Props[DoubleTreeDataTypeFactory], DoubleTreeDataTypeFactory.name.name)
-    val integerTreeFactory = actorSystem.actorOf(Props[IntegerTreeDataTypeFactory], IntegerTreeDataTypeFactory.name.name)
-    val stringTreeFactory = actorSystem.actorOf(Props[StringTreeDataTypeFactory], StringTreeDataTypeFactory.name.name)
+  def initTreeFactories(): Unit = {
+    val booleanTreeFactory = system.actorOf(Props[BooleanTreeDataTypeFactory], BooleanTreeDataTypeFactory.name.name)
+    val doubleTreeFactory = system.actorOf(Props[DoubleTreeDataTypeFactory], DoubleTreeDataTypeFactory.name.name)
+    val integerTreeFactory = system.actorOf(Props[IntegerTreeDataTypeFactory], IntegerTreeDataTypeFactory.name.name)
+    val stringTreeFactory = system.actorOf(Props[StringTreeDataTypeFactory], StringTreeDataTypeFactory.name.name)
 
     FormicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Boolean](BooleanTreeDataTypeFactory.name))
     FormicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Double](DoubleTreeDataTypeFactory.name))
