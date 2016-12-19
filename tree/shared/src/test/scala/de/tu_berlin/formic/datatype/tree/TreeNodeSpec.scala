@@ -72,6 +72,27 @@ class TreeNodeSpec extends FlatSpec with Matchers {
     root.getData(AccessPath()) should equal("X")
   }
 
+  it should "return the correct node" in {
+    val leaf = ValueTreeNode("0")
+    val leftChild = ValueTreeNode("a", List(leaf))
+    val rightChild = ValueTreeNode("b")
+    val root = ValueTreeNode("X", List(leftChild, rightChild))
+
+    root.getNode(AccessPath(0)) should equal(leftChild)
+  }
+
+  it should "return the root for an empty path" in {
+    val root = ValueTreeNode("X")
+
+    root.getNode(AccessPath()) should equal(root)
+  }
+
+  it should "return its own data" in {
+    val root = ValueTreeNode("X")
+
+    root.getData should equal("X")
+  }
+
   "An EmptyTreeNode" should "replace itself with insert operation" in {
     val tree = ValueTreeNode(true)
     val operation = TreeInsertOperation(AccessPath(0, 1), tree, OperationId(), OperationContext(), ClientId())
@@ -91,5 +112,13 @@ class TreeNodeSpec extends FlatSpec with Matchers {
     val result = EmptyTreeNode.applyOperation(TreeNoOperation(AccessPath(0), OperationId(), OperationContext(), ClientId()))
 
     result should equal(EmptyTreeNode)
+  }
+
+  it should "return null as data" in {
+    EmptyTreeNode.getData.asInstanceOf[AnyRef] shouldBe null
+  }
+
+  it should "return null as data for a path" in {
+    EmptyTreeNode.getData(AccessPath(0,1)).asInstanceOf[AnyRef] shouldEqual null
   }
 }

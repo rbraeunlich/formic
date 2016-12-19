@@ -16,16 +16,12 @@ sealed trait TreeNode {
 case class ValueTreeNode(value: Any, children: List[ValueTreeNode] = List.empty) extends TreeNode {
 
   def getData(path: AccessPath): Any = {
-    //in contrast to the application of an operation, we need an empty path here
-    if (path.list.isEmpty) {
-      value
-    } else {
-      children(path.list.head).getData(path.dropFirstElement)
-    }
+    getNode(path).getData
   }
 
 
   override def getNode(path: AccessPath): TreeNode = {
+    //in contrast to the application of an operation, we need an empty path here
     if (path.list.isEmpty) {
       this
     } else {
