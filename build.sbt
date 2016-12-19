@@ -17,7 +17,6 @@ lazy val root = project
     clientJS,
     clientJVM,
     websockettestsJS,
-    websockettestsJVM,
     server,
     exampleJS,
     exampleJVM
@@ -141,12 +140,11 @@ lazy val websockettests = crossProject.in(file("websockettests")).
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.9.0"
     ),
-    jsEnv in Test := PhantomJSEnv().value
+    jsEnv in Test := new org.scalajs.jsenv.RetryingComJSEnv(PhantomJSEnv().value)
   )
   .dependsOn(common, linear, client)
 
 lazy val websockettestsJS = websockettests.js.dependsOn(commonJS, linearJS, clientJS)
-lazy val websockettestsJVM = websockettests.jvm.dependsOn(commonJVM, linearJVM, clientJVM)
 
 lazy val server = (project in file("server")).
   settings(commonSettings: _*).
