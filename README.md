@@ -36,6 +36,19 @@ There are basically two modes to run the whole library. The first is to treat th
  The example subproject shows how to run the application in the former mode.
  
  The whole client <-> server communication expects a WebSocket connection between the two.
+
+## Communication
+
+Client and server communicate via JSON messages. Therefore, both implementations are independent of each other and the used programming language. Actually, clients could be implemented in different programming languages and are not limited to using the provided ScalaJS client library.
+It would be only necessary to provide a Scala implementation for the server.
+ 
+The existing messages for client <-> server communication are defined in [FormicMessage](https://github.com/rbraeunlich/formic/blob/master/common/shared/src/main/scala/de/tu_berlin/formic/common/message/FormicMessage.scala) and the JSON serialization in [FormicJsonProtocol](https://github.com/rbraeunlich/formic/blob/master/common/shared/src/main/scala/de/tu_berlin/formic/common/json/FormicJsonProtocol.scala).
+Internally, [uPickle](http://www.lihaoyi.com/upickle-pprint/upickle/) is used for the serialization.
+
+### Custom operations
+
+Because the possible operations that can be applied to a data type shall not be limited up-front, every data type implementation has to provide an implementation of a [FormicJsonDataTypeProtocol](https://github.com/rbraeunlich/formic/blob/master/common/shared/src/main/scala/de/tu_berlin/formic/common/json/FormicJsonDataTypeProtocol.scala) and register it at the `FormicJsonProtocol`. 
+The custom protocol is used to de-/serialize the operations of a data type.
  
  Suggestions about how to improve *formic* are appreciated.
  
