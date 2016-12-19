@@ -505,6 +505,29 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
 
       dataType.underlyingActor.historyBuffer.history.head should equal(AbstractClientDataTypeSpecTestOperation(operation.id, OperationContext(List(lastOperationId)), operation.clientId, operation.data))
     }
+
+    "ignore messages until callback is set when being a remote instantiation" in {
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+        Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
+      val operationMessage = OperationMessage(
+        ClientId(),
+        DataTypeInstanceId(),
+        AbstractClientDataTypeSpec.dataTypeName,
+        List(
+          AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "")
+        )
+      )
+      dataType ! RemoteInstantiation
+
+      dataType ! LocalOperationMessage(operationMessage)
+      expectNoMsg()
+      dataType ! operationMessage
+      expectNoMsg()
+      dataType ! UpdateRequest(ClientId(), DataTypeInstanceId())
+      expectNoMsg()
+
+      dataType.underlyingActor.historyBuffer.history shouldBe empty
+    }
   }
 }
 
