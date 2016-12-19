@@ -6,6 +6,14 @@ formic - formidable internet collaboration
 *formic* is a library to enable [Operational Transformation](https://en.wikipedia.org/wiki/Operational_transformation)(OT) in applications.
 The goal is to hide the details of OT and let developers work with data types as if the were not edited concurrently.
 
+## Why the name *formic*?
+
+**Caution, minor Ender's Game spoiler!**
+
+The Formic in Ender's Game by Orson Scott Card are capable of instant, faster-than-light thought communication. Except for the faster-than-light part, this library shall help with non-blocking, instant modification of data.
+
+## The library
+
 Currently, the whole library is a graduation project.
 
 The library is composed of two main parts:
