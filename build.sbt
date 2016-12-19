@@ -123,10 +123,10 @@ lazy val client = crossProject.in(file("client")).
       "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test"
     )
   )
-  .dependsOn(common, linear)
+  .dependsOn(common, linear, tree)
 
-lazy val clientJS = client.js.dependsOn(commonJS, linearJS)
-lazy val clientJVM = client.jvm.dependsOn(commonJVM, linearJVM)
+lazy val clientJS = client.js.dependsOn(commonJS, linearJS, treeJS)
+lazy val clientJVM = client.jvm.dependsOn(commonJVM, linearJVM, treeJVM)
 
 //PhantomJS and AkkaJSTestkit do not work together, so they have to be split
 lazy val websockettests = crossProject.in(file("websockettests")).
@@ -160,7 +160,7 @@ lazy val server = (project in file("server")).
       "com.typesafe.akka" %%% "akka-http-testkit" % akkaHttpVersion % "test"
     )
   ).
-  dependsOn(commonJVM, linearJVM)
+  dependsOn(commonJVM, linearJVM, treeJVM)
 
 lazy val example = crossProject.in(file("example")).
   settings(commonSettings: _*).

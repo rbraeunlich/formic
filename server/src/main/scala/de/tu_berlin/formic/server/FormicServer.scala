@@ -18,6 +18,7 @@ import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message.FormicMessage
 import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataTypeProtocol
 import de.tu_berlin.formic.datatype.linear.server._
+import de.tu_berlin.formic.datatype.tree._
 import upickle.default._
 
 import scala.concurrent.Await
@@ -45,6 +46,11 @@ class FormicServer {
   implicit val ec = system.dispatcher
 
   def initFactories()(implicit actorSystem: ActorSystem) = {
+    initLinearFactories()
+    initTreeFactories()
+  }
+
+  def initLinearFactories()(implicit actorSystem: ActorSystem): Unit = {
     val booleanListFactory = actorSystem.actorOf(Props[BooleanListDataTypeFactory], BooleanListDataTypeFactory.name.name)
     val doubleListFactory = actorSystem.actorOf(Props[DoubleListDataTypeFactory], DoubleListDataTypeFactory.name.name)
     val integerListFactory = actorSystem.actorOf(Props[IntegerListDataTypeFactory], IntegerListDataTypeFactory.name.name)
@@ -59,6 +65,23 @@ class FormicServer {
     factories += (DoubleListDataTypeFactory.name -> doubleListFactory)
     factories += (IntegerListDataTypeFactory.name -> integerListFactory)
     factories += (StringDataTypeFactory.name -> stringFactory)
+  }
+
+  def initTreeFactories()(implicit actorSystem: ActorSystem): Unit = {
+    val booleanTreeFactory = actorSystem.actorOf(Props[BooleanTreeDataTypeFactory], BooleanTreeDataTypeFactory.name.name)
+    val doubleTreeFactory = actorSystem.actorOf(Props[DoubleTreeDataTypeFactory], DoubleTreeDataTypeFactory.name.name)
+    val integerTreeFactory = actorSystem.actorOf(Props[IntegerTreeDataTypeFactory], IntegerTreeDataTypeFactory.name.name)
+    val stringTreeFactory = actorSystem.actorOf(Props[StringTreeDataTypeFactory], StringTreeDataTypeFactory.name.name)
+
+    FormicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Boolean](BooleanTreeDataTypeFactory.name))
+    FormicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Double](DoubleTreeDataTypeFactory.name))
+    FormicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Int](IntegerTreeDataTypeFactory.name))
+    FormicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[String](StringTreeDataTypeFactory.name))
+
+    factories += (BooleanTreeDataTypeFactory.name -> booleanTreeFactory)
+    factories += (DoubleTreeDataTypeFactory.name -> doubleTreeFactory)
+    factories += (IntegerTreeDataTypeFactory.name -> integerTreeFactory)
+    factories += (StringTreeDataTypeFactory.name -> stringTreeFactory)
   }
 
   def start(route: server.Route): Http.ServerBinding = {
