@@ -144,12 +144,14 @@ class LinearTransformerSpec extends FlatSpec with Matchers {
   }
 
   it should "bulk transform complete bridge and change context of first transformed operation" in {
-    val op = LinearDeleteOperation(3, OperationId(), OperationContext(List.empty), ClientId("124"))
+    val op = LinearDeleteOperation(1, OperationId(), OperationContext(List.empty), ClientId("124"))
     val op1 = LinearDeleteOperation(2, OperationId(), OperationContext(List.empty), ClientId())
-    val op2 = LinearDeleteOperation(1, OperationId(), OperationContext(List(op1.id)), ClientId())
+    val op2 = LinearDeleteOperation(3, OperationId(), OperationContext(List(op1.id)), ClientId())
 
     val transformed = LinearTransformer.bulkTransform(op, List(op2, op1))
 
-    transformed should contain inOrder(op2, LinearDeleteOperation(op1.index, op1.id, OperationContext(List(op.id)), op1.clientId))
+    transformed should contain inOrder(
+      LinearDeleteOperation(2, op2.id, op2.operationContext, op2.clientId),
+      LinearDeleteOperation(1, op1.id, OperationContext(List(op.id)), op1.clientId))
   }
 }

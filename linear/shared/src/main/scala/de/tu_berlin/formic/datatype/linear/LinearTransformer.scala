@@ -32,7 +32,7 @@ object LinearTransformer extends OperationTransformer {
   }
 
   private def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = {
-    val context = OperationContext(if (withNewContext) List(pair._2.id) else List(pair._1.id))
+    val context = if(withNewContext) OperationContext(List(pair._2.id)) else pair._1.operationContext
     pair match {
       case (op1: LinearDeleteOperation, op2: LinearDeleteOperation) => transform(op1, op2, context)
       case (op1: LinearInsertOperation, op2: LinearInsertOperation) => transform(op1, op2, context)
@@ -78,7 +78,7 @@ object LinearTransformer extends OperationTransformer {
     val operationToChangeContext = bridge.last
     val others = bridge.take(bridge.size - 1)
     val transformedOperation = transform((operationToChangeContext, operation))
-    others.map(op => transformInternal((op, operation), withNewContext = false))
-    others :+ transformedOperation
+    val transformedOthers = others.map(op => transformInternal((op, operation), withNewContext = false))
+    transformedOthers :+ transformedOperation
   }
 }
