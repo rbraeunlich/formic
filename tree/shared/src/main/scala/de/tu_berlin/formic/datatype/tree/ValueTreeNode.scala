@@ -7,6 +7,10 @@ sealed trait TreeNode {
   def getData(path: AccessPath): Any
 
   def applyOperation(operation: TreeStructureOperation): TreeNode
+
+  def getNode(path: AccessPath): TreeNode
+
+  def getData: Any
 }
 
 case class ValueTreeNode(value: Any, children: List[ValueTreeNode] = List.empty) extends TreeNode {
@@ -19,6 +23,16 @@ case class ValueTreeNode(value: Any, children: List[ValueTreeNode] = List.empty)
       children(path.list.head).getData(path.dropFirstElement)
     }
   }
+
+
+  override def getNode(path: AccessPath): TreeNode = {
+    if (path.list.isEmpty) {
+      this
+    } else {
+      children(path.list.head).getNode(path.dropFirstElement)
+    }
+  }
+
 
 
   def applyOperation(operation: TreeStructureOperation): ValueTreeNode = {
@@ -59,6 +73,8 @@ case class ValueTreeNode(value: Any, children: List[ValueTreeNode] = List.empty)
       case no: TreeNoOperation => children
     }
   }
+
+  override def getData: Any = value
 }
 
 case object EmptyTreeNode extends TreeNode {
@@ -70,4 +86,8 @@ case object EmptyTreeNode extends TreeNode {
   }
 
   override def getData(path: AccessPath): Any = null
+
+  override def getNode(path: AccessPath): TreeNode = null
+
+  override def getData: Any = null
 }
