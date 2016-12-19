@@ -332,4 +332,24 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
 
     transformed should equal(TreeDeleteOperation(op1.accessPath, op1.id, OperationContext(List(op2.id)), op1.clientId))
   }
+
+  it should "not bulk transform anything if the bridge is empty" in {
+    val op = TreeDeleteOperation(AccessPath(), OperationId(), OperationContext(List.empty), ClientId("124"))
+
+    val transformed = TreeTransformer.bulkTransform(op, List.empty)
+
+    transformed shouldBe empty
+  }
+
+  it should "bulk transform complete bridge and change context of first transformed operation" in {
+    val op = TreeDeleteOperation(AccessPath(0,0), OperationId(), OperationContext(List.empty), ClientId("124"))
+    val op1 = TreeDeleteOperation(AccessPath(0,1), OperationId(), OperationContext(List.empty), ClientId())
+    val op2 = TreeDeleteOperation(AccessPath(0,2), OperationId(), OperationContext(List(op1.id)), ClientId())
+
+    val transformed = TreeTransformer.bulkTransform(op, List(op2, op1))
+
+    transformed should contain inOrder(
+      TreeDeleteOperation(AccessPath(0,1), op2.id, op2.operationContext, op2.clientId),
+      TreeDeleteOperation(AccessPath(0,0), op1.id, OperationContext(List(op.id)), op1.clientId))
+  }
 }
