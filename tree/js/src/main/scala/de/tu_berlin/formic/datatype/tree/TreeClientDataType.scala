@@ -44,3 +44,9 @@ class TreeClientDataType[T](id: DataTypeInstanceId,
     else write[ValueTreeNode](data.asInstanceOf[ValueTreeNode])
   }
 }
+
+object TreeClientDataType {
+  def apply[T](id: DataTypeInstanceId, controlAlgorithm: ControlAlgorithmClient, dataTypeName: DataTypeName, initialData: Option[String], lastOperationId: Option[OperationId], outgoingConnection: ActorRef)(implicit writer: Writer[T], reader: Reader[T]): TreeClientDataType[T] =
+    new TreeClientDataType(id, controlAlgorithm, dataTypeName, initialData, lastOperationId, outgoingConnection)
+
+}
