@@ -181,9 +181,9 @@ lazy val example = crossProject.in(file("example")).
   ).
   dependsOn(client, common)
 
-lazy val exampleJS = example.js.dependsOn(commonJS, linearJS, clientJS)
+lazy val exampleJS = example.js.dependsOn(commonJS, linearJS, treeJS, clientJS)
 lazy val exampleJVM = example.jvm.settings(
   (resources in Compile) += (fastOptJS in (exampleJS, Compile)).value.data,
   (resources in Compile) += (packageJSDependencies in (exampleJS, Compile)).value,
   (resources in Compile) += (packageScalaJSLauncher in (exampleJS, Compile)).value.data
-).dependsOn(commonJVM, linearJVM, clientJVM, server)
+).dependsOn(commonJVM, linearJVM, clientJVM, treeJVM, server)
