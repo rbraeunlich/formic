@@ -23,7 +23,8 @@ class FormicTree[T](_callback: () => Unit,
                    (implicit val writer: Writer[T], val reader: Reader[T])
   extends FormicDataType(_callback, dataTypeName, dataTypeInstanceId = dataTypeInstanceId, initiator = initiator) {
 
-  implicit val timeout: Timeout = 1.seconds
+  //TODO I suppose getDataAsJson within the TreeClientDataType is quite slow, optimize
+  implicit val timeout: Timeout = 3.seconds
 
   implicit val valueTreeNodeReader = new ValueTreeNodeReader[T]()
 

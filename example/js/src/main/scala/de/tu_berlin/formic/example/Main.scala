@@ -10,8 +10,8 @@ import org.scalajs.dom.raw.HTMLInputElement
 import org.scalajs.jquery.{JQueryEventObject, jQuery}
 
 import scala.collection.mutable.ArrayBuffer
-import scala.scalajs.js
 import scala.scalajs.js.JSApp
+import scala.util.{Failure, Success}
 
 /**
   * @author Ronny Bräunlich
@@ -40,8 +40,8 @@ object Main extends JSApp {
   }
 
   def setupUI() = {
-    jQuery("#new-string-button").click(createNewString _)
     jQuery("#subscribe-button").click(subscribe _)
+    jQuery("#new-string-button").click(createNewString _)
     jQuery("#new-tree-button").click(createNewTree _)
   }
 
@@ -73,16 +73,17 @@ object Main extends JSApp {
   }
 
   def updateUIForTree(id: DataTypeInstanceId): () => Unit = () => {
-    trees.find(s => s.dataTypeInstanceId == id).get.getTree().foreach(
-      rootNode => {
+    trees.find(s => s.dataTypeInstanceId == id).get.getTree().onComplete {
+      case Success(rootNode) =>
         val treeDiv = jQuery("#" + id.id)
         treeDiv.empty()
+        treeDiv.append(s"""Tree data type with id ${id.id}""")
         val ui = new UITree(id.id, rootNode)
         ui.drawTree()
         jQuery("#insert" + id.id).click(insertValueToTree(id.id))
         jQuery("#delete" + id.id).click(deleteFromTree(id.id))
-      }
-    )
+      case Failure(ex) => throw ex
+    }
   }
 
   def subscribe(): Unit = {
@@ -109,7 +110,6 @@ object Main extends JSApp {
 
   def insertValueToTree(id: String): (JQueryEventObject) => Unit = {
     (eventObject: JQueryEventObject) => {
-      println("insert value to tree")
       val tree = trees.find(s => s.dataTypeInstanceId.id == id).get
       val toInsert = jQuery("#input" + id).value()
       val where = jQuery("#path" + id).`val`().toString.split("/").filter(s => s.nonEmpty).map(s => s.toInt).toList
