@@ -49,8 +49,21 @@ Internally, [uPickle](http://www.lihaoyi.com/upickle-pprint/upickle/) is used fo
 
 Because the possible operations that can be applied to a data type shall not be limited up-front, every data type implementation has to provide an implementation of a [FormicJsonDataTypeProtocol](https://github.com/rbraeunlich/formic/blob/master/common/shared/src/main/scala/de/tu_berlin/formic/common/json/FormicJsonDataTypeProtocol.scala) and register it at the `FormicJsonProtocol`. 
 The custom protocol is used to de-/serialize the operations of a data type.
+
+## Running the example
+
+In order to start the sample application clone the project and start sbt in the root directory. Then switch into the exampleJVM project and then enter reStart:
+```
+sbt
+project exampleJVM
+reStart
+```
+
+Of course a simple `run` would also do the trick. The webserver then starts on 0.0.0.0:8080, so you can access it either using your current ip or `localhost`.
+
+## Final thoughts
+
+Suggestions about how to improve *formic* are appreciated.
  
- Suggestions about how to improve *formic* are appreciated.
- 
- Next to its functional intention, *formic* can also be seen as an example application for Scala, ScalaJS, Akka and AkkaJS.
+Next to its functional intention, *formic* can also be seen as an example application for Scala, ScalaJS, Akka and AkkaJS.
   The example application also contains some Selenium based tests.
