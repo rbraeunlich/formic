@@ -79,6 +79,7 @@ class WebSiteSpec extends FlatSpec
 
   "The button to create a tree" should "create a div containing input, buttons and a list" in {
     go to host + "/index"
+    Thread.sleep(10000)
     click on id("new-tree-button")
     Thread.sleep(2000)
     val treeHeadTag = tagName("div").findElement.get
