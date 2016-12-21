@@ -52,7 +52,6 @@ class WebSiteSpec extends FlatSpec
   "A single user" should "be able to write some text" in {
     go to host + "/index"
     click on id("new-string-button")
-    implicitlyWait(Span(1, Seconds))
     val inputTextArea = textArea(className("stringInput"))
     inputTextArea.underlying.sendKeys("abc")
     Thread.sleep(5000)
@@ -61,7 +60,6 @@ class WebSiteSpec extends FlatSpec
   "A second user" should "be able to subscribe to other string" in {
     go to host + "/index"
     click on id("new-string-button")
-    implicitlyWait(Span(1, Seconds))
     val inputTextArea = textArea(className("stringInput"))
     val stringId = inputTextArea.underlying.getAttribute("id")
     inputTextArea.underlying.sendKeys("abc")
