@@ -28,12 +28,12 @@ class WebSiteSpec extends FlatSpec
     serverThread.setDaemon(true)
     serverThread.run()
     Thread.sleep(3000)
-    implicitlyWait(Span(2, Seconds))
+    implicitlyWait(Span(5, Seconds))
   }
 
   override def afterAll(): Unit = {
     serverThread.terminate()
-    webDriver.quit()
+    quit()
   }
 
   "The home page" should "redirect to the index page" in {
@@ -75,7 +75,7 @@ class WebSiteSpec extends FlatSpec
     textField("subscribe-id")(secondUserDriver).value = stringId
     click.on("subscribe-button")(secondUserDriver)
     textArea(className("stringInput")).value should be("abc")
-    secondUserDriver.close()
+    secondUserDriver.quit()
   }
 
   "The creation page" should "offer a button to create a tree" in {
