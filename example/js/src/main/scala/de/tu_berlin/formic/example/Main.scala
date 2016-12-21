@@ -63,6 +63,7 @@ object Main extends JSApp {
     val tree = new FormicIntegerTree(updateUIForTree(id), system, id)
     trees += tree
     insertBasicTreeElements(id.id)
+    updateUIForTree(id)
   }
 
   def updateUIForString(id: DataTypeInstanceId): () => Unit = () => {
