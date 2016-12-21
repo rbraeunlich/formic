@@ -79,7 +79,7 @@ class WebSiteSpec extends FlatSpec
     click on id("new-tree-button")
   }
 
-  "The button to create a tree" should "create a div containing input, buttons and a list" in {
+  "The button to create a tree" should "create a div containing input, buttons and a list" ignore {
     go to host + "/index"
     click on id("new-tree-button")
     Thread.sleep(2000)
