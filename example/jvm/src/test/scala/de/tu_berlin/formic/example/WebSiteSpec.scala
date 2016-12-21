@@ -96,7 +96,7 @@ class WebSiteSpec extends FlatSpec
     xpath(s"//div[@id='$treeId']/div/ul/li").findElement.get.text should be("empty")
   }
 
-  "A single user" should "be able to modify the tree" in {
+  "A single user" should "be able to modify the tree" ignore {
     go to host + "/index"
     click on id("new-tree-button")
     Thread.sleep(5000)
