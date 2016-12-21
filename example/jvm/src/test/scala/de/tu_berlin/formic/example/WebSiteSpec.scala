@@ -86,6 +86,7 @@ class WebSiteSpec extends FlatSpec
   "The button to create a tree" should "create a div containing input, buttons and a list" in {
     go to host + "/index"
     click on id("new-tree-button")
+    Thread.sleep(2000)
     val treeHeadTag = tagName("div").findElement.get
     val treeId = treeHeadTag.attribute("id").get.replaceFirst("head", "")
     id("insert"+treeId).findElement should not be empty
@@ -101,6 +102,7 @@ class WebSiteSpec extends FlatSpec
   "A single user" should "be able to modify the tree" in {
     go to host + "/index"
     click on id("new-tree-button")
+    Thread.sleep(2000)
     val treeHeadTag = tagName("div").findElement.get
     val treeId = treeHeadTag.attribute("id").get.replaceFirst("head", "")
     id("input"+treeId).findElement.get.underlying.sendKeys("2")
@@ -108,6 +110,22 @@ class WebSiteSpec extends FlatSpec
     Thread.sleep(3000)
     singleSel("path"+treeId).value should equal("0")
     xpath(s"//div[@id='$treeId']/div/ul/li").findElement.get.text should be("2")
+  }
+
+  "A second user" should "be able to subscribe to a tree" in {
+    go to host + "/index"
+    click on id("new-tree-button")
+    val treeHeadTag = tagName("div").findElement.get
+    val treeId = treeHeadTag.attribute("id").get.replaceFirst("head", "")
+    id("input"+treeId).findElement.get.underlying.sendKeys("3")
+    click on id("insert"+treeId)
+    val secondUserDriver = new FirefoxDriver()
+    go.to(host+"/index")(secondUserDriver)
+    textField("subscribe-id")(secondUserDriver).value = treeId
+    click.on("subscribe-button")(secondUserDriver)
+    Thread.sleep(3000)
+    xpath(s"//div[@id='$treeId']/div/ul/li").findElement(secondUserDriver).get.text should be("3")
+    secondUserDriver.quit()
   }
 }
 

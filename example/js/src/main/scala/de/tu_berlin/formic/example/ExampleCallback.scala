@@ -32,8 +32,7 @@ class ExampleCallback extends NewInstanceCallback {
       case tree: FormicIntegerTree =>
         Main.trees += tree
         if(jQuery("body").has("#"+tree.dataTypeInstanceId.id).length == 0){
-          jQuery("body").append(s"""<div id=\"${tree.dataTypeInstanceId.id}\">""")
-          jQuery("body").append("</div>")
+          Main.insertBasicTreeElements(tree.dataTypeInstanceId.id)
         }
         Main.updateUIForTree(tree.dataTypeInstanceId)()
     }
