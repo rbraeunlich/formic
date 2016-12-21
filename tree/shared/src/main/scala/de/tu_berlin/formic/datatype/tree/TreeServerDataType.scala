@@ -15,6 +15,7 @@ class TreeServerDataType[T](id: DataTypeInstanceId, controlAlgorithm: ControlAlg
   override val transformer: OperationTransformer = TreeTransformer
 
   override def apply(op: DataTypeOperation): Unit = {
+    log.debug(s"Applying operation: $op")
     data = data.applyOperation(op.asInstanceOf[TreeStructureOperation])
   }
 

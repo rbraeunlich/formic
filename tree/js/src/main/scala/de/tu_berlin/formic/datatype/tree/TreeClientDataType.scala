@@ -29,6 +29,7 @@ class TreeClientDataType[T](id: DataTypeInstanceId,
   override val transformer: OperationTransformer = TreeTransformer
 
   override def apply(op: DataTypeOperation): Unit = {
+    log.debug(s"Applying operation: $op")
     privateData = data.applyOperation(op.asInstanceOf[TreeStructureOperation])
   }
 

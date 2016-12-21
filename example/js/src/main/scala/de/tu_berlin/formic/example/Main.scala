@@ -59,9 +59,7 @@ object Main extends JSApp {
     val id = DataTypeInstanceId()
     val tree = new FormicIntegerTree(updateUIForTree(id), system, id)
     trees += tree
-    val inputId = id.id
-    jQuery("body").append(s"""<div id=\"$inputId\">""")
-    jQuery("body").append("</div>")
+    insertBasicTreeElements(id.id)
   }
 
   def updateUIForString(id: DataTypeInstanceId): () => Unit = () => {
@@ -80,8 +78,6 @@ object Main extends JSApp {
         treeDiv.append(s"""Tree data type with id ${id.id}""")
         val ui = new UITree(id.id, rootNode)
         ui.drawTree()
-        jQuery("#insert" + id.id).click(insertValueToTree(id.id))
-        jQuery("#delete" + id.id).click(deleteFromTree(id.id))
       case Failure(ex) => throw ex
     }
   }
@@ -124,5 +120,22 @@ object Main extends JSApp {
       val where = jQuery("#path" + id).`val`().toString.split("/").filter(s => s.nonEmpty).map(s => s.toInt).toList
       tree.remove(AccessPath(where))
     }
+  }
+
+  def insertBasicTreeElements(id: String) = {
+    jQuery("body").append(s"""<div id=\"head$id\">""")
+    val headElements = new StringBuilder
+    headElements ++= "<p>"
+    headElements ++= s"""<button id="insert$id">Insert</button>"""
+    headElements ++= s"""<input id="input$id" type="number" step="1">"""
+    headElements ++= """</br>"""
+    headElements ++= s"""<button id="delete$id">Delete</button>"""
+    headElements ++= "</p>"
+    jQuery(s"#head$id").append(headElements.toString())
+    jQuery("body").append("</div>")
+    jQuery("body").append(s"""<div id=\"$id\">""")
+    jQuery("body").append("</div>")
+    jQuery("#insert" + id).click(insertValueToTree(id))
+    jQuery("#delete" + id).click(deleteFromTree(id))
   }
 }

@@ -17,9 +17,11 @@ class UITree(val whereId: String, val what: TreeNode) {
     what match {
       case v: ValueTreeNode =>
         tree ++= s"<li>${what.getData}"
-        tree ++= "<ul>"
-        if (v.children.nonEmpty) drawChildren(tree, v.getNode(AccessPath()).asInstanceOf[ValueTreeNode])
-        tree ++= "</ul>"
+        if (v.children.nonEmpty) {
+          tree ++= "<ul>"
+          drawChildren(tree, v.getNode(AccessPath()).asInstanceOf[ValueTreeNode])
+          tree ++= "</ul>"
+        }
         tree ++= "</li>"
       case EmptyTreeNode =>
         tree ++= "<li>empty</li>"
@@ -30,12 +32,11 @@ class UITree(val whereId: String, val what: TreeNode) {
   }
 
   def drawChildren(tree: StringBuilder, node: ValueTreeNode): Unit = {
-    val children = node.children
     node.children.foreach(childNode => {
       tree ++= s"<li>${childNode.getData}"
       if (childNode.children.nonEmpty) {
         tree ++= "<ul>"
-        children.foreach(drawChildren(tree, _))
+        drawChildren(tree, childNode)
         tree ++= "</ul>"
       }
       tree ++= "</li>"
@@ -46,17 +47,11 @@ class UITree(val whereId: String, val what: TreeNode) {
   def inputElements(what: TreeNode, id: String): String = {
     val elements = new StringBuilder
     elements ++= "<p>"
-    elements ++= s"""<button id="insert$id">Insert</button>"""
-    elements ++= s"""<input id="input$id" type="number" step="1">"""
-    elements ++= """</br>"""
-    elements ++= s"""<button id="delete$id">Delete</button>"""
-    elements ++= "</p>"
-    elements ++= "<p>"
     elements ++= s"""<select id="path$id">"""
     what match {
       case EmptyTreeNode => elements ++= "<option value=\"\">root</option>"
       case v: ValueTreeNode =>
-        if(v.children.isEmpty) elements ++= "<option value=\"0\">0/</option>"
+        if (v.children.isEmpty) elements ++= "<option value=\"0\">0/</option>"
         else elements ++= addTreeLevel("", v.children)
     }
     elements ++= "</select>"
