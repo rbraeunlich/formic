@@ -26,6 +26,8 @@ object Main extends JSApp {
 
   val trees: ArrayBuffer[FormicIntegerTree] = collection.mutable.ArrayBuffer()
 
+  val userId = ClientId()
+
   val BACKSPACE_CODE = 8
   val ARROWKEY_DOWN = 40
   val ARROWKEY_UP = 38
@@ -35,11 +37,12 @@ object Main extends JSApp {
   val keysToIgnore = List(BACKSPACE_CODE, ARROWKEY_DOWN, ARROWKEY_UP, ARROWKEY_LEFT, ARROWKEY_RIGHT)
 
   def main(): Unit = {
-    system.init(new ExampleCallback(), ClientId())
+    system.init(new ExampleCallback(), userId)
     jQuery(setupUI _)
   }
 
   def setupUI() = {
+    jQuery("#userId").text(s"User: ${userId.id}")
     jQuery("#subscribe-button").click(subscribe _)
     jQuery("#new-string-button").click(createNewString _)
     jQuery("#new-tree-button").click(createNewTree _)

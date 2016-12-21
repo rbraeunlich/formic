@@ -93,6 +93,7 @@ class WebSiteSpec extends FlatSpec
     id("delete"+treeId).findElement should not be empty
     id("input"+treeId).findElement should not be empty
     id(treeId).findElement should not be empty
+    Thread.sleep(2000)
     val treeTag = id(treeId).findElement.get
     treeTag.text should include("Tree data type with id " + treeId)
     id("path"+treeId).findElement should not be empty
@@ -102,7 +103,7 @@ class WebSiteSpec extends FlatSpec
   "A single user" should "be able to modify the tree" in {
     go to host + "/index"
     click on id("new-tree-button")
-    Thread.sleep(2000)
+    Thread.sleep(5000)
     val treeHeadTag = tagName("div").findElement.get
     val treeId = treeHeadTag.attribute("id").get.replaceFirst("head", "")
     id("input"+treeId).findElement.get.underlying.sendKeys("2")
@@ -115,6 +116,7 @@ class WebSiteSpec extends FlatSpec
   "A second user" should "be able to subscribe to a tree" in {
     go to host + "/index"
     click on id("new-tree-button")
+    Thread.sleep(5000)
     val treeHeadTag = tagName("div").findElement.get
     val treeId = treeHeadTag.attribute("id").get.replaceFirst("head", "")
     id("input"+treeId).findElement.get.underlying.sendKeys("3")
