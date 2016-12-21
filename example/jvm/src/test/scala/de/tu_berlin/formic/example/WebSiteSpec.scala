@@ -1,11 +1,7 @@
 package de.tu_berlin.formic.example
 
-import java.util.function.Consumer
-
-import org.openqa.selenium.Keys
 import org.openqa.selenium.firefox.FirefoxDriver
-import org.openqa.selenium.logging.LogEntry
-import org.scalatest.selenium.{Firefox, WebBrowser}
+import org.scalatest.selenium.WebBrowser
 import org.scalatest.time.{Seconds, Span}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 
@@ -15,7 +11,7 @@ import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 class WebSiteSpec extends FlatSpec
   with Matchers
   with WebBrowser
-  with BeforeAndAfterAll{
+  with BeforeAndAfterAll {
 
   implicit val webDriver = new FirefoxDriver()
 
@@ -28,7 +24,7 @@ class WebSiteSpec extends FlatSpec
     serverThread.setDaemon(true)
     serverThread.run()
     Thread.sleep(3000)
-    implicitlyWait(Span(5, Seconds))
+    implicitlyWait(Span(10, Seconds))
   }
 
   override def afterAll(): Unit = {
@@ -38,7 +34,7 @@ class WebSiteSpec extends FlatSpec
 
   "The home page" should "redirect to the index page" in {
     go to host
-    currentUrl should be (host + "/index")
+    currentUrl should be(host + "/index")
   }
 
   "The creation page" should "offer a button to create a text" in {
@@ -71,7 +67,7 @@ class WebSiteSpec extends FlatSpec
     inputTextArea.underlying.sendKeys("abc")
     Thread.sleep(5000)
     val secondUserDriver = new FirefoxDriver()
-    go.to(host+"/index")(secondUserDriver)
+    go.to(host + "/index")(secondUserDriver)
     textField("subscribe-id")(secondUserDriver).value = stringId
     click.on("subscribe-button")(secondUserDriver)
     textArea(className("stringInput")).value should be("abc")
@@ -89,14 +85,14 @@ class WebSiteSpec extends FlatSpec
     Thread.sleep(2000)
     val treeHeadTag = tagName("div").findElement.get
     val treeId = treeHeadTag.attribute("id").get.replaceFirst("head", "")
-    id("insert"+treeId).findElement should not be empty
-    id("delete"+treeId).findElement should not be empty
-    id("input"+treeId).findElement should not be empty
+    id("insert" + treeId).findElement should not be empty
+    id("delete" + treeId).findElement should not be empty
+    id("input" + treeId).findElement should not be empty
     id(treeId).findElement should not be empty
-    Thread.sleep(2000)
+    Thread.sleep(5000)
     val treeTag = id(treeId).findElement.get
     treeTag.text should include("Tree data type with id " + treeId)
-    id("path"+treeId).findElement should not be empty
+    id("path" + treeId).findElement should not be empty
     xpath(s"//div[@id='$treeId']/div/ul/li").findElement.get.text should be("empty")
   }
 
@@ -106,10 +102,10 @@ class WebSiteSpec extends FlatSpec
     Thread.sleep(5000)
     val treeHeadTag = tagName("div").findElement.get
     val treeId = treeHeadTag.attribute("id").get.replaceFirst("head", "")
-    id("input"+treeId).findElement.get.underlying.sendKeys("2")
-    click on id("insert"+treeId)
+    numberField("input" + treeId).value = "2"
+    click on id("insert" + treeId)
     Thread.sleep(3000)
-    singleSel("path"+treeId).value should equal("0")
+    singleSel("path" + treeId).value should equal("0")
     xpath(s"//div[@id='$treeId']/div/ul/li").findElement.get.text should be("2")
   }
 
@@ -119,14 +115,49 @@ class WebSiteSpec extends FlatSpec
     Thread.sleep(5000)
     val treeHeadTag = tagName("div").findElement.get
     val treeId = treeHeadTag.attribute("id").get.replaceFirst("head", "")
-    id("input"+treeId).findElement.get.underlying.sendKeys("3")
-    click on id("insert"+treeId)
+    numberField("input" + treeId).value = "3"
+    click on id("insert" + treeId)
     val secondUserDriver = new FirefoxDriver()
-    go.to(host+"/index")(secondUserDriver)
+    go.to(host + "/index")(secondUserDriver)
     textField("subscribe-id")(secondUserDriver).value = treeId
     click.on("subscribe-button")(secondUserDriver)
     Thread.sleep(3000)
     xpath(s"//div[@id='$treeId']/div/ul/li").findElement(secondUserDriver).get.text should be("3")
+    secondUserDriver.quit()
+  }
+
+  "Two users" should "be able to concurrently edit the tree" in {
+    go to host + "/index"
+    click on id("new-tree-button")
+    Thread.sleep(5000)
+    val treeHeadTag = tagName("div").findElement.get
+    val treeId = treeHeadTag.attribute("id").get.replaceFirst("head", "")
+    numberField("input" + treeId).value = "1"
+    click on id("insert" + treeId)
+    val secondUserDriver = new FirefoxDriver()
+    go.to(host + "/index")(secondUserDriver)
+    textField("subscribe-id")(secondUserDriver).value = treeId
+    click.on("subscribe-button")(secondUserDriver)
+    Thread.sleep(3000)
+    xpath(s"//div[@id='$treeId']/div/ul/li").findElement(secondUserDriver).get.text should be("1")
+
+    val user1Id = id("userId").findElement.get.text.replace("User: ", "")
+    val user2Id = id("userId").findElement(secondUserDriver).get.text.replace("User: ", "")
+    val firstValue = "10"
+    val secondValue = "100"
+
+    numberField("input" + treeId).value = if(user1Id > user2Id) firstValue else secondValue
+    numberField("input" + treeId)(secondUserDriver).value = if(user2Id <= user1Id) secondValue else firstValue
+    click on id("insert" + treeId)
+    click.on("insert" + treeId)(secondUserDriver)
+    Thread.sleep(5000)
+    val elementsUser1 = xpath(s"//div[@id='$treeId']/div/ul/li/ul/li").findAllElements.toList
+    elementsUser1.head.text should be(firstValue)
+    elementsUser1(1).text should be(secondValue)
+    val elementsUser2 = xpath(s"//div[@id='$treeId']/div/ul/li/ul/li").findAllElements(secondUserDriver).toList
+    elementsUser2.head.text should be(firstValue)
+    elementsUser2(1).text should be(secondValue)
+
     secondUserDriver.quit()
   }
 }
