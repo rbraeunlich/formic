@@ -28,7 +28,7 @@ class WebSiteSpec extends FlatSpec
     serverThread.setDaemon(true)
     serverThread.run()
     Thread.sleep(3000)
-    implicitlyWait(Span(1, Seconds))
+    implicitlyWait(Span(2, Seconds))
   }
 
   override def afterAll(): Unit = {
@@ -75,8 +75,40 @@ class WebSiteSpec extends FlatSpec
     textField("subscribe-id")(secondUserDriver).value = stringId
     click.on("subscribe-button")(secondUserDriver)
     textArea(className("stringInput")).value should be("abc")
+    secondUserDriver.close()
   }
 
+  "The creation page" should "offer a button to create a tree" in {
+    go to host + "/index"
+    click on id("new-tree-button")
+  }
+
+  "The button to create a tree" should "create a div containing input, buttons and a list" in {
+    go to host + "/index"
+    click on id("new-tree-button")
+    val treeHeadTag = tagName("div").findElement.get
+    val treeId = treeHeadTag.attribute("id").get.replaceFirst("head", "")
+    id("insert"+treeId).findElement should not be empty
+    id("delete"+treeId).findElement should not be empty
+    id("input"+treeId).findElement should not be empty
+    id(treeId).findElement should not be empty
+    val treeTag = id(treeId).findElement.get
+    treeTag.text should include("Tree data type with id " + treeId)
+    id("path"+treeId).findElement should not be empty
+    xpath(s"//div[@id='$treeId']/div/ul/li").findElement.get.text should be("empty")
+  }
+
+  "A single user" should "be able to modify the tree" in {
+    go to host + "/index"
+    click on id("new-tree-button")
+    val treeHeadTag = tagName("div").findElement.get
+    val treeId = treeHeadTag.attribute("id").get.replaceFirst("head", "")
+    id("input"+treeId).findElement.get.underlying.sendKeys("2")
+    click on id("insert"+treeId)
+    Thread.sleep(3000)
+    singleSel("path"+treeId).value should equal("0")
+    xpath(s"//div[@id='$treeId']/div/ul/li").findElement.get.text should be("2")
+  }
 }
 
 
