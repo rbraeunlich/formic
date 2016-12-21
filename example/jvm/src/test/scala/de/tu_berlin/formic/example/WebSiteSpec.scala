@@ -89,7 +89,7 @@ class WebSiteSpec extends FlatSpec
     id("delete" + treeId).findElement should not be empty
     id("input" + treeId).findElement should not be empty
     id(treeId).findElement should not be empty
-    Thread.sleep(5000)
+    Thread.sleep(15000)
     val treeTag = id(treeId).findElement.get
     treeTag.text should include("Tree data type with id " + treeId)
     id("path" + treeId).findElement should not be empty
