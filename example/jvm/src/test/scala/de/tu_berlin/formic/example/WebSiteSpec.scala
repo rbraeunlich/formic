@@ -1,6 +1,7 @@
 package de.tu_berlin.formic.example
 
 import org.openqa.selenium.firefox.FirefoxDriver
+import org.scalactic.source
 import org.scalatest.selenium.WebBrowser
 import org.scalatest.time.{Seconds, Span}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
@@ -68,7 +69,7 @@ class WebSiteSpec extends FlatSpec
     go.to(host + "/index")(secondUserDriver)
     textField("subscribe-id")(secondUserDriver).value = stringId
     click.on("subscribe-button")(secondUserDriver)
-    textArea(className("stringInput")).value should be("abc")
+    textArea(className("stringInput"))(secondUserDriver, implicitly[source.Position]).value should be("abc")
     secondUserDriver.quit()
   }
 
