@@ -24,7 +24,6 @@ class WebSiteSpec extends FlatSpec
     serverThread.setDaemon(true)
     serverThread.run()
     println("Starting FormicServer for WebSiteSpec")
-    Thread.sleep(10000)
     implicitlyWait(Span(10, Seconds))
   }
 
@@ -34,29 +33,23 @@ class WebSiteSpec extends FlatSpec
   }
 
   "The home page" should "redirect to the index page" in {
-    try {
-      go to host
-      currentUrl should be(host + "/index")
-      Thread.sleep(30000)
-    }
-    catch{
-      case ex: Exception => fail(ex)
-    }
+    go to host
+    currentUrl should be(host + "/index")
   }
 
-  "The creation page" should "offer a button to create a text" ignore {
+  "The creation page" should "offer a button to create a text" in {
     go to host + "/index"
     click on id("new-string-button")
   }
 
-  "The button to create a text" should "write the name and append a text area" ignore {
+  "The button to create a text" should "write the name and append a text area" in {
     go to host + "/index"
     click on id("new-string-button")
     className("stringId").element.text should include("String data type with id")
     className("stringInput").element shouldNot be(null)
   }
 
-  "A single user" should "be able to write some text" ignore {
+  "A single user" should "be able to write some text" in {
     go to host + "/index"
     click on id("new-string-button")
     val inputTextArea = textArea(className("stringInput"))
@@ -64,7 +57,7 @@ class WebSiteSpec extends FlatSpec
     Thread.sleep(5000)
   }
 
-  "A second user" should "be able to subscribe to other string" ignore {
+  "A second user" should "be able to subscribe to other string" in {
     go to host + "/index"
     click on id("new-string-button")
     val inputTextArea = textArea(className("stringInput"))
@@ -153,8 +146,8 @@ class WebSiteSpec extends FlatSpec
     val firstValue = "10"
     val secondValue = "100"
 
-    numberField("input" + treeId).value = if(user1Id > user2Id) firstValue else secondValue
-    numberField("input" + treeId)(secondUserDriver).value = if(user2Id <= user1Id) secondValue else firstValue
+    numberField("input" + treeId).value = if (user1Id > user2Id) firstValue else secondValue
+    numberField("input" + treeId)(secondUserDriver).value = if (user2Id <= user1Id) secondValue else firstValue
     click on id("insert" + treeId)
     click.on("insert" + treeId)(secondUserDriver)
     Thread.sleep(5000)
