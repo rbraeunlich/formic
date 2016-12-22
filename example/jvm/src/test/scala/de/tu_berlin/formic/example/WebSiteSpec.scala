@@ -86,10 +86,10 @@ class WebSiteSpec extends FlatSpec
     id("insert" + treeId).findElement should not be empty
     id("delete" + treeId).findElement should not be empty
     id("input" + treeId).findElement should not be empty
-    Thread.sleep(5000)
+    Thread.sleep(20000)
     id(treeId).findElement should not be empty
     val treeTag = id(treeId).findElement.get
-    //treeTag.text should include("Tree data type with id " + treeId)
+    treeTag.text should include("Tree data type with id " + treeId)
     id("path" + treeId).findElement should not be empty
     xpath(s"//div[@id='$treeId']/div/ul/li").findElement.get.text should be("empty")
   }
@@ -115,6 +115,7 @@ class WebSiteSpec extends FlatSpec
     val treeId = treeHeadTag.attribute("id").get.replaceFirst("head", "")
     numberField("input" + treeId).value = "3"
     click on id("insert" + treeId)
+    Thread.sleep(5000)
     val secondUserDriver = new FirefoxDriver()
     go.to(host + "/index")(secondUserDriver)
     textField("subscribe-id")(secondUserDriver).value = treeId
@@ -132,6 +133,7 @@ class WebSiteSpec extends FlatSpec
     val treeId = treeHeadTag.attribute("id").get.replaceFirst("head", "")
     numberField("input" + treeId).value = "1"
     click on id("insert" + treeId)
+    Thread.sleep(5000)
     val secondUserDriver = new FirefoxDriver()
     go.to(host + "/index")(secondUserDriver)
     textField("subscribe-id")(secondUserDriver).value = treeId
