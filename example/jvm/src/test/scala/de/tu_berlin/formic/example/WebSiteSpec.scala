@@ -30,13 +30,18 @@ class WebSiteSpec extends FlatSpec
 
   override def afterAll(): Unit = {
     serverThread.terminate()
-    quit()
+    close()
   }
 
   "The home page" should "redirect to the index page" in {
-    go to host
-    currentUrl should be(host + "/index")
-    Thread.sleep(30000)
+    try {
+      go to host
+      currentUrl should be(host + "/index")
+      Thread.sleep(30000)
+    }
+    catch{
+      case ex: Exception => fail(ex)
+    }
   }
 
   "The creation page" should "offer a button to create a text" ignore {
