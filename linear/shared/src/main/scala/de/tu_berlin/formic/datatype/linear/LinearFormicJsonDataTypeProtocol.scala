@@ -19,28 +19,39 @@ class LinearFormicJsonDataTypeProtocol[T](val name: DataTypeName)(implicit val r
     val index = valueMap("index").num.toInt
     if (valueMap.contains("object")) {
       LinearInsertOperation(index, readJs[T](valueMap("object")).asInstanceOf[Object], operationId, OperationContext(operationContext), clientId)
-    } else {
+    } else if(index > -1 ) {
       LinearDeleteOperation(index, operationId, OperationContext(operationContext), clientId)
+    } else {
+      LinearNoOperation(operationId, OperationContext(operationContext), clientId)
     }
   }
 
   override def serializeOperation(op: DataTypeOperation): String = {
     op match {
       case insert: LinearInsertOperation =>
-        Js.Obj(
+        write(Js.Obj(
           ("index", Js.Num(insert.index)),
           ("object", writeJs(insert.o.asInstanceOf[T])),
           ("operationId", Js.Str(op.id.id)),
           ("operationContext", Js.Arr(op.operationContext.operations.map(o => Js.Str(o.id)): _*)),
           ("clientId", Js.Str(op.clientId.id))
-        ).toString()
+        ))
+
       case delete: LinearDeleteOperation =>
-        Js.Obj(
+        write(Js.Obj(
           ("index", Js.Num(delete.index)),
           ("operationId", Js.Str(op.id.id)),
           ("operationContext", Js.Arr(op.operationContext.operations.map(o => Js.Str(o.id)): _*)),
           ("clientId", Js.Str(op.clientId.id))
-        ).toString()
+        ))
+
+      case no: LinearNoOperation =>
+        write(Js.Obj(
+          ("index", Js.Num(no.index)),
+          ("operationId", Js.Str(op.id.id)),
+          ("operationContext", Js.Arr(op.operationContext.operations.map(o => Js.Str(o.id)): _*)),
+          ("clientId", Js.Str(op.clientId.id))
+        ))
     }
   }
 }

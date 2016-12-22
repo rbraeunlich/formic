@@ -11,7 +11,9 @@ case class LinearInsertOperation(index: Int, o: Any, id: OperationId, operationC
 
 case class LinearDeleteOperation(index: Int, id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends LinearStructureOperation
 
-case class LinearNoOperation(index: Int = -1, id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends LinearStructureOperation
+case class LinearNoOperation(id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends LinearStructureOperation {
+  override val index: Int = -1
+}
 
 /**
   * Transforms two operations according to the IT rules in a TP1 valid way.
@@ -44,7 +46,7 @@ object LinearTransformer extends OperationTransformer {
   private def transform(o1: LinearDeleteOperation, o2: LinearDeleteOperation, newContext: OperationContext): LinearStructureOperation = {
     if (o1.index < o2.index) return LinearDeleteOperation(o1.index, o1.id, newContext, o1.clientId)
     else if (o1.index > o2.index) return LinearDeleteOperation(o1.index - 1, o1.id, newContext, o1.clientId)
-    LinearNoOperation(-1, o1.id, newContext, o1.clientId)
+    LinearNoOperation(o1.id, newContext, o1.clientId)
   }
 
   private def transform(o1: LinearDeleteOperation, o2: LinearInsertOperation, newContext: OperationContext): LinearStructureOperation = {
@@ -55,7 +57,7 @@ object LinearTransformer extends OperationTransformer {
   private def transform(o1: LinearInsertOperation, o2: LinearInsertOperation, newContext: OperationContext): LinearStructureOperation = {
     if (o1.index < o2.index) LinearInsertOperation(o1.index, o1.o, o1.id, newContext, o1.clientId)
     else if (o1.index > o2.index) LinearInsertOperation(o1.index + 1, o1.o, o1.id, newContext, o1.clientId)
-    else if (o1.o == o2.o) LinearNoOperation(-1, o1.id, newContext, o1.clientId)
+    else if (o1.o == o2.o) LinearNoOperation(o1.id, newContext, o1.clientId)
     else if (o1.clientId > o2.clientId) LinearInsertOperation(o1.index, o1.o, o1.id, newContext, o1.clientId)
     else LinearInsertOperation(o1.index + 1, o1.o, o1.id, newContext, o1.clientId)
   }

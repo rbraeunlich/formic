@@ -34,7 +34,7 @@ class LinearClientDataType[T](id: DataTypeInstanceId,
     op match {
       case LinearInsertOperation(index, o, _, _, _) => privateData.insert(index, o.asInstanceOf[T])
       case LinearDeleteOperation(index, _, _, _) => privateData.remove(index)
-      case LinearNoOperation(_, _, _, _) => //do nothing
+      case LinearNoOperation(_, _, _) => //do nothing
     }
   }
 

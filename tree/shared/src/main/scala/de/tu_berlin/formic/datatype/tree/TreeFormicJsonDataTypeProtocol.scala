@@ -7,8 +7,6 @@ import upickle.Js
 import upickle.Js.Value
 import upickle.default._
 
-import scala.collection.mutable.ArrayBuffer
-
 /**
   * @author Ronny Bräunlich
   */
@@ -26,6 +24,8 @@ class TreeFormicJsonDataTypeProtocol[T](val name: DataTypeName)(implicit val rea
     val accessPath = AccessPath(valueMap("accessPath").arr.map(v => v.num.toInt).toList)
     if (valueMap.contains("tree")) {
       TreeInsertOperation(accessPath, readJs[ValueTreeNode](valueMap("tree")), operationId, OperationContext(operationContext), clientId)
+    } else if (accessPath == AccessPath(-1)) {
+      TreeNoOperation(operationId, OperationContext(operationContext), clientId)
     } else {
       TreeDeleteOperation(accessPath, operationId, OperationContext(operationContext), clientId)
     }
@@ -47,6 +47,15 @@ class TreeFormicJsonDataTypeProtocol[T](val name: DataTypeName)(implicit val rea
         write(
           Js.Obj(
             ("accessPath", writeJs(del.accessPath.list)),
+            ("operationId", Js.Str(op.id.id)),
+            ("operationContext", Js.Arr(op.operationContext.operations.map(o => Js.Str(o.id)): _*)),
+            ("clientId", Js.Str(op.clientId.id))
+          )
+        )
+      case no: TreeNoOperation =>
+        write(
+          Js.Obj(
+            ("accessPath", writeJs(no.accessPath.list)),
             ("operationId", Js.Str(op.id.id)),
             ("operationContext", Js.Arr(op.operationContext.operations.map(o => Js.Str(o.id)): _*)),
             ("clientId", Js.Str(op.clientId.id))

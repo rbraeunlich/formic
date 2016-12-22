@@ -60,7 +60,7 @@ class LinearServerDataTypeSpec extends TestKit(ActorSystem("LinearServerDataType
       //insert some data
       val op = LinearInsertOperation(0, Integer.valueOf(1), OperationId(), OperationContext(List.empty), ClientId())
       val op2 = LinearInsertOperation(1, Integer.valueOf(3), OperationId(), OperationContext(List.empty), ClientId())
-      val noop = LinearNoOperation(0, OperationId(), OperationContext(List.empty), ClientId())
+      val noop = LinearNoOperation(OperationId(), OperationContext(List.empty), ClientId())
 
       dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), IntegerListDataTypeFactory.name, List(op))
       dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), IntegerListDataTypeFactory.name, List(op2))

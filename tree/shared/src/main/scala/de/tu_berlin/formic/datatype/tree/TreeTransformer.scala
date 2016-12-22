@@ -11,7 +11,9 @@ case class TreeInsertOperation(accessPath: AccessPath, tree: ValueTreeNode, id: 
 
 case class TreeDeleteOperation(accessPath: AccessPath, id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends TreeStructureOperation
 
-case class TreeNoOperation(accessPath: AccessPath, id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends TreeStructureOperation
+case class TreeNoOperation(id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends TreeStructureOperation {
+  override val accessPath: AccessPath = AccessPath(-1)
+}
 
 /**
   * @author Ronny Bräunlich
@@ -46,7 +48,7 @@ object TreeTransformer extends OperationTransformer {
   }
 
   private def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = {
-    val context = if(withNewContext) OperationContext(List(pair._2.id)) else pair._1.operationContext
+    val context = if (withNewContext) OperationContext(List(pair._2.id)) else pair._1.operationContext
     pair match {
       case (op1: TreeInsertOperation, op2: TreeInsertOperation) => transform(op1, op2, context)
       case (op1: TreeDeleteOperation, op2: TreeDeleteOperation) => transform(op1, op2, context)
@@ -85,7 +87,7 @@ object TreeTransformer extends OperationTransformer {
       return TreeInsertOperation(op1.accessPath, op1.tree, op1.id, context, op1.clientId)
     }
     if (op1.tree == op2.tree) {
-      return TreeNoOperation(op1.accessPath, op1.id, context, op1.clientId)
+      return TreeNoOperation(op1.id, context, op1.clientId)
     }
     if (op1.clientId > op2.clientId) {
       return TreeInsertOperation(op1.accessPath, op1.tree, op1.id, context, op1.clientId)
@@ -107,12 +109,12 @@ object TreeTransformer extends OperationTransformer {
       return TreeDeleteOperation(newPath, op1.id, context, op1.clientId)
     }
     if (op1.accessPath.list.size > op2.accessPath.list.size) {
-      return TreeNoOperation(op1.accessPath, op1.id, context, op1.clientId)
+      return TreeNoOperation(op1.id, context, op1.clientId)
     }
     if (op1.accessPath.list.size < op2.accessPath.list.size) {
       return TreeDeleteOperation(op1.accessPath, op1.id, context, op1.clientId)
     }
-    TreeNoOperation(op1.accessPath, op1.id, context, op1.clientId)
+    TreeNoOperation(op1.id, context, op1.clientId)
   }
 
   private def transform(op1: TreeInsertOperation, op2: TreeDeleteOperation, context: OperationContext): DataTypeOperation = {
@@ -128,7 +130,7 @@ object TreeTransformer extends OperationTransformer {
       return TreeInsertOperation(newPath, op1.tree, op1.id, context, op1.clientId)
     }
     if (op1.accessPath.list.size > op2.accessPath.list.size) {
-      return TreeNoOperation(op1.accessPath, op1.id, context, op1.clientId)
+      return TreeNoOperation(op1.id, context, op1.clientId)
     }
     TreeInsertOperation(op1.accessPath, op1.tree, op1.id, context, op1.clientId)
   }

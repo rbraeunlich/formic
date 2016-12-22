@@ -130,7 +130,7 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
 
     val transformed = TreeTransformer.transform((op1, op2))
 
-    transformed should equal(TreeNoOperation(op1.accessPath, op1.id, OperationContext(List(op2.id)), op1.clientId))
+    transformed should equal(TreeNoOperation(op1.id, OperationContext(List(op2.id)), op1.clientId))
   }
 
   it should "not change the first insert operation when both access paths are equal, the trees not and the client id is bigger" in {
@@ -196,7 +196,7 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
 
     val transformed = TreeTransformer.transform((op1, op2))
 
-    transformed should equal(TreeNoOperation(op1.accessPath, op1.id, OperationContext(List(op2.id)), op1.clientId))
+    transformed should equal(TreeNoOperation(op1.id, OperationContext(List(op2.id)), op1.clientId))
   }
 
   it should "not change the first delete operation when the index at the transformation point is equal and the path of the first operation shorter" in {
@@ -218,7 +218,7 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
 
     val transformed = TreeTransformer.transform((op1, op2))
 
-    transformed should equal(TreeNoOperation(op1.accessPath, op1.id, OperationContext(List(op2.id)), op1.clientId))
+    transformed should equal(TreeNoOperation(op1.id, OperationContext(List(op2.id)), op1.clientId))
   }
 
   it should "not change the insert operation when it is effect independent with the delete operation" in {
@@ -262,7 +262,7 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
 
     val transformed = TreeTransformer.transform((op1, op2))
 
-    transformed should equal(TreeNoOperation(op1.accessPath, op1.id, OperationContext(List(op2.id)), op1.clientId))
+    transformed should equal(TreeNoOperation(op1.id, OperationContext(List(op2.id)), op1.clientId))
   }
 
   it should "not change the insert operation when the index at the transformation point is equal to the one of the delete operation and its path is shorter" in {

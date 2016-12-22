@@ -90,7 +90,7 @@ class LinearClientDataTypeSpec extends TestKit(ActorSystem("LinearClientDataType
       //insert some data
       val op = LinearInsertOperation(0, 2, OperationId(), OperationContext(List.empty), ClientId())
       val op2 = LinearInsertOperation(1, 3, OperationId(), OperationContext(List.empty), ClientId())
-      val noop = LinearNoOperation(15, OperationId(), OperationContext(List.empty), ClientId())
+      val noop = LinearNoOperation(OperationId(), OperationContext(List.empty), ClientId())
       val opMsg = OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(op2, op))
       val noopMsg = OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(noop))
       dataType ! ReceiveCallback(() => {})

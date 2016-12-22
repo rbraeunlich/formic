@@ -80,7 +80,7 @@ class TreeClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val tree = ValueTreeNode(1.6, List(ValueTreeNode(2.0), ValueTreeNode(1.7)))
       val dataType: TestActorRef[TreeClientDataType[Double]] =
         TestActorRef(Props(new TreeClientDataType[Double](DataTypeInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option(write(tree)), Option(OperationId()), outgoing.ref)))
-      val operation = TreeNoOperation(AccessPath(0), OperationId(), OperationContext(), ClientId())
+      val operation = TreeNoOperation(OperationId(), OperationContext(), ClientId())
       dataType ! ReceiveCallback(() => {})
       dataType ! CreateResponse(DataTypeInstanceId())
 

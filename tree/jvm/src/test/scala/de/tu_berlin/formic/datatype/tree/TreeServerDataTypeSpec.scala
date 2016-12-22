@@ -53,7 +53,7 @@ class TreeServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
     "not change after no-operation" in {
       val tree: TestActorRef[TreeServerDataType[Boolean]] = TestActorRef(Props(new TreeServerDataType[Boolean](DataTypeInstanceId(), TreeServerDataTypeSpecControlAlgorithm, BooleanTreeDataTypeFactory.name)))
       val op = TreeInsertOperation(AccessPath(), ValueTreeNode(true, List(ValueTreeNode(false))), OperationId(), OperationContext(), ClientId())
-      val noop = TreeNoOperation(AccessPath(), OperationId(), OperationContext(), ClientId())
+      val noop = TreeNoOperation(OperationId(), OperationContext(), ClientId())
       tree ! OperationMessage(ClientId(), DataTypeInstanceId(), BooleanTreeDataTypeFactory.name, List(op))
 
       tree ! OperationMessage(ClientId(), DataTypeInstanceId(), BooleanTreeDataTypeFactory.name, List(noop))

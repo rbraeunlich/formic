@@ -49,7 +49,7 @@ class TreeNodeSpec extends FlatSpec with Matchers {
     val leftChild = ValueTreeNode("a")
     val rightChild = ValueTreeNode("b")
     val root = ValueTreeNode("X", List(leftChild, rightChild))
-    val operation = TreeNoOperation(AccessPath(0), OperationId(), OperationContext(), ClientId())
+    val operation = TreeNoOperation(OperationId(), OperationContext(), ClientId())
 
     val result = root.applyOperation(operation)
 
@@ -109,7 +109,7 @@ class TreeNodeSpec extends FlatSpec with Matchers {
   }
 
   it should "ignore no operations" in {
-    val result = EmptyTreeNode.applyOperation(TreeNoOperation(AccessPath(0), OperationId(), OperationContext(), ClientId()))
+    val result = EmptyTreeNode.applyOperation(TreeNoOperation(OperationId(), OperationContext(), ClientId()))
 
     result should equal(EmptyTreeNode)
   }

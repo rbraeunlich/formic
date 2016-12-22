@@ -4,8 +4,6 @@ import de.tu_berlin.formic.common.datatype.{DataTypeName, OperationContext}
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import org.scalatest.{FlatSpec, Matchers}
 
-import scala.collection.mutable.ArrayBuffer
-
 /**
   * @author Ronny Bräunlich
   */
@@ -33,6 +31,18 @@ class TreeFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
     serialized should equal(s"""{\"accessPath\":[5,6],\"operationId\":\"${operationId.id}\",\"operationContext\":[],\"clientId\":\"${clientId.id}\"}""")
   }
 
+  it should "serialize a no operation" in {
+    val operationId = OperationId()
+    val clientId = ClientId()
+    val protocol = new TreeFormicJsonDataTypeProtocol[Int](DataTypeName("intTree"))
+    val operation = TreeNoOperation(operationId, OperationContext(), clientId)
+
+    val serialized = protocol.serializeOperation(operation)
+
+    serialized should equal(s"""{\"accessPath\":[-1],\"operationId\":\"${operationId.id}\",\"operationContext\":[],\"clientId\":\"${clientId.id}\"}""")
+
+  }
+
   it should "deserialize an insert operation" in {
     val operationId = OperationId()
     val clientId = ClientId()
@@ -41,12 +51,7 @@ class TreeFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
 
     val deserialized = protocol.deserializeOperation(json)
 
-    deserialized shouldBe a[TreeInsertOperation]
-    deserialized.asInstanceOf[TreeInsertOperation].clientId should equal(clientId)
-    deserialized.asInstanceOf[TreeInsertOperation].id should equal(operationId)
-    deserialized.asInstanceOf[TreeInsertOperation].operationContext should equal(OperationContext())
-    deserialized.asInstanceOf[TreeInsertOperation].tree should equal(ValueTreeNode(100, List(ValueTreeNode(1))))
-    deserialized.asInstanceOf[TreeInsertOperation].accessPath should equal(AccessPath(0, 1))
+    deserialized should equal(TreeInsertOperation(AccessPath(0, 1), ValueTreeNode(100, List(ValueTreeNode(1))), operationId, OperationContext(), clientId))
   }
 
   it should "deserialize a delete operation" in {
@@ -57,10 +62,17 @@ class TreeFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
 
     val deserialized = protocol.deserializeOperation(json)
 
-    deserialized shouldBe a[TreeDeleteOperation]
-    deserialized.asInstanceOf[TreeDeleteOperation].clientId should equal(clientId)
-    deserialized.asInstanceOf[TreeDeleteOperation].id should equal(operationId)
-    deserialized.asInstanceOf[TreeDeleteOperation].operationContext should equal(OperationContext())
-    deserialized.asInstanceOf[TreeDeleteOperation].accessPath should equal(AccessPath(5, 6))
+    deserialized should equal(TreeDeleteOperation(AccessPath(5, 6), operationId, OperationContext(), clientId))
+  }
+
+  it should "deserialize a no operation" in {
+    val operationId = OperationId()
+    val clientId = ClientId()
+    val protocol = new TreeFormicJsonDataTypeProtocol[Int](DataTypeName("intTree"))
+    val json = s"""{\"accessPath\":[-1],\"operationId\":\"${operationId.id}\",\"operationContext\":[],\"clientId\":\"${clientId.id}\"}"""
+
+    val deserialized = protocol.deserializeOperation(json)
+
+    deserialized should equal(TreeNoOperation(operationId, OperationContext(), clientId))
   }
 }

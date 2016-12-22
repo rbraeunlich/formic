@@ -5,7 +5,6 @@ import de.tu_berlin.formic.common.{ClientId, OperationId}
 import org.scalatest._
 import upickle.default._
 
-import scala.runtime.RichChar
 /**
   * @author Ronny Bräunlich
   */
@@ -22,7 +21,7 @@ class LinearFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
 
     val serialized = protocol.serializeOperation(op)
 
-    serialized should equal(s"""{\n    \"index\": 0,\n    \"object\": \"1\",\n    \"operationId\": \"${operationId.id}\",\n    \"operationContext\": [],\n    \"clientId\": \"${clientId.id}\"\n}""")
+    serialized should equal(s"""{\"index\":0,\"object\":\"1\",\"operationId\":\"${operationId.id}\",\"operationContext\":[],\"clientId\":\"${clientId.id}\"}""")
   }
 
   it should "serialize a linear delete operation" in {
@@ -35,7 +34,19 @@ class LinearFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
 
     val serialized = protocol.serializeOperation(op)
 
-    serialized should equal(s"""{\n    \"index\": 0,\n    \"operationId\": \"${operationId.id}\",\n    \"operationContext\": [],\n    \"clientId\": \"${clientId.id}\"\n}""")
+    serialized should equal(s"""{\"index\":0,\"operationId\":\"${operationId.id}\",\"operationContext\":[],\"clientId\":\"${clientId.id}\"}""")
+  }
+
+  it should "serialize a no operation" in {
+    val protocol = new LinearFormicJsonDataTypeProtocol[Char](DataTypeName("string"))
+    val operationId = OperationId()
+    val context = OperationContext(List.empty)
+    val clientId = ClientId()
+    val op = LinearNoOperation(id = operationId, operationContext = context, clientId = clientId)
+
+    val serialized = protocol.serializeOperation(op)
+
+    serialized should equal(s"""{\"index\":-1,\"operationId\":\"${operationId.id}\",\"operationContext\":[],\"clientId\":\"${clientId.id}\"}""")
   }
 
   it should "deserialize a linear insert operation" in {
@@ -54,6 +65,14 @@ class LinearFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
     val op = protocol.deserializeOperation(json)
 
     op should be(LinearDeleteOperation(0, OperationId("1"), OperationContext(List.empty), ClientId("123")))
+  }
 
+  it should "deserialize a no operation" in {
+    val protocol = new LinearFormicJsonDataTypeProtocol[Char](DataTypeName("string"))
+    val json = s"""{\"index\":-1,\"operationId\":\"567\",\"operationContext\":[],\"clientId\":\"89\"}"""
+
+    val op = protocol.deserializeOperation(json)
+
+    op should equal(LinearNoOperation(OperationId("567"), OperationContext(), ClientId("89")))
   }
 }

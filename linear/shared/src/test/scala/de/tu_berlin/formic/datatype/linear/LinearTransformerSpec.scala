@@ -33,7 +33,7 @@ class LinearTransformerSpec extends FlatSpec with Matchers {
 
     val transformed = LinearTransformer.transform((op1, op2))
 
-    transformed should equal(LinearNoOperation(-1, op1.id, OperationContext(List(op2.id)), op1.clientId))
+    transformed should equal(LinearNoOperation(op1.id, OperationContext(List(op2.id)), op1.clientId))
   }
 
   it should "not change the index of the first insert operation if it has a lower index than the second one" in {
@@ -60,7 +60,7 @@ class LinearTransformerSpec extends FlatSpec with Matchers {
 
     val transformed = LinearTransformer.transform((op1, op2))
 
-    transformed should equal(LinearNoOperation(-1, op1.id, OperationContext(List(op2.id)), op1.clientId))
+    transformed should equal(LinearNoOperation(op1.id, OperationContext(List(op2.id)), op1.clientId))
   }
 
   it should "not change the first operation if both insertions want to insert the same object at the same index and it has a higher client id" in {
