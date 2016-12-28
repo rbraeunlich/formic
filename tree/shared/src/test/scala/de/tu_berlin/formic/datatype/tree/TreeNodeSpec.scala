@@ -93,6 +93,14 @@ class TreeNodeSpec extends FlatSpec with Matchers {
     root.getData should equal("X")
   }
 
+  it should "ignore the insertion of an EmptyTreeNode" in {
+    val root = ValueTreeNode("X")
+
+    val result = root.applyOperation(TreeInsertOperation(AccessPath(0), EmptyTreeNode, OperationId(), OperationContext(), ClientId()))
+
+    result should equal(root)
+  }
+
   "An EmptyTreeNode" should "replace itself with insert operation" in {
     val tree = ValueTreeNode(true)
     val operation = TreeInsertOperation(AccessPath(0, 1), tree, OperationId(), OperationContext(), ClientId())

@@ -12,7 +12,7 @@ class TreeServerDataType[T](id: DataTypeInstanceId, controlAlgorithm: ControlAlg
 
   implicit val treeNodeWriter = new ValueTreeNodeWriter[T]()
 
-  override val transformer: OperationTransformer = TreeTransformer
+  override val transformer: OperationTransformer = new TreeTransformer
 
   override def apply(op: DataTypeOperation): Unit = {
     log.debug(s"Applying operation: $op")

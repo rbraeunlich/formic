@@ -37,7 +37,7 @@ class TreeFormicJsonDataTypeProtocol[T](val name: DataTypeName)(implicit val rea
         write(
           Js.Obj(
             ("accessPath", writeJs(ins.accessPath.list)),
-            ("tree", writeJs(ins.tree)),
+            ("tree", writeJs(ins.tree.asInstanceOf[ValueTreeNode])),
             ("operationId", Js.Str(op.id.id)),
             ("operationContext", Js.Arr(op.operationContext.operations.map(o => Js.Str(o.id)): _*)),
             ("clientId", Js.Str(op.clientId.id))

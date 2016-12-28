@@ -3,24 +3,24 @@ package de.tu_berlin.formic.datatype.tree
 /**
   * @author Ronny Bräunlich
   */
-sealed trait TreeNode {
-  def getData(path: AccessPath): Any
+trait TreeNode {
 
-  def applyOperation(operation: TreeStructureOperation): TreeNode
-
-  def getNode(path: AccessPath): TreeNode
-
-  def getData: Any
-}
-
-case class ValueTreeNode(value: Any, children: List[ValueTreeNode] = List.empty) extends TreeNode {
+  val children: List[TreeNode]
 
   def getData(path: AccessPath): Any = {
     getNode(path).getData
   }
 
+  def applyOperation(operation: TreeStructureOperation): TreeNode = {
+    if (!operation.isInstanceOf[TreeNoOperation]) {
+      return applyOperationInternal(operation, operation.accessPath)
+    }
+    this
+  }
 
-  override def getNode(path: AccessPath): TreeNode = {
+  protected def applyOperationInternal(operation: TreeStructureOperation, accessPath: AccessPath): TreeNode
+
+  def getNode(path: AccessPath): TreeNode = {
     //in contrast to the application of an operation, we need an empty path here
     if (path.list.isEmpty) {
       this
@@ -29,14 +29,10 @@ case class ValueTreeNode(value: Any, children: List[ValueTreeNode] = List.empty)
     }
   }
 
+  def getData: Any
+}
 
-
-  def applyOperation(operation: TreeStructureOperation): ValueTreeNode = {
-    if (!operation.isInstanceOf[TreeNoOperation]) {
-      return applyOperationInternal(operation, operation.accessPath)
-    }
-    this
-  }
+case class ValueTreeNode(value: Any, children: List[ValueTreeNode] = List.empty) extends TreeNode {
 
   private def isCorrectLevel(accessPath: AccessPath): Boolean = {
     accessPath.list.length == 1
@@ -49,7 +45,7 @@ case class ValueTreeNode(value: Any, children: List[ValueTreeNode] = List.empty)
     * @param operation  the operation to apply
     * @param accessPath the remaining access path
     */
-  private def applyOperationInternal(operation: TreeStructureOperation, accessPath: AccessPath): ValueTreeNode = {
+  override protected def applyOperationInternal(operation: TreeStructureOperation, accessPath: AccessPath): ValueTreeNode = {
     if (isCorrectLevel(accessPath)) {
       ValueTreeNode(value, executeOperation(operation, accessPath.list.head))
     } else {
@@ -61,9 +57,10 @@ case class ValueTreeNode(value: Any, children: List[ValueTreeNode] = List.empty)
 
   private def executeOperation(operation: TreeStructureOperation, index: Int): List[ValueTreeNode] = {
     operation match {
-      case ins: TreeInsertOperation =>
+      case TreeInsertOperation(_, tree: ValueTreeNode, _, _, _) =>
         val (front, back) = children.splitAt(index)
-        front ++ List(ins.tree) ++ back
+        front ++ List(tree) ++ back
+      case TreeInsertOperation(_, EmptyTreeNode, _, _, _) => children //ignore insertion of EmptyTreeNode
       case del: TreeDeleteOperation =>
         children.take(index) ++ children.drop(index + 1)
       case no: TreeNoOperation => children
@@ -86,4 +83,8 @@ case object EmptyTreeNode extends TreeNode {
   override def getNode(path: AccessPath): TreeNode = null
 
   override def getData: Any = null
+
+  override val children: List[TreeNode] = List.empty
+
+  override protected def applyOperationInternal(operation: TreeStructureOperation, accessPath: AccessPath): TreeNode = EmptyTreeNode
 }

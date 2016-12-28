@@ -6,7 +6,6 @@ import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType
 import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
 import upickle.default._
-
 /**
   * @author Ronny Bräunlich
   */
@@ -26,7 +25,7 @@ class TreeClientDataType[T](id: DataTypeInstanceId,
 
   def data: TreeNode = privateData
 
-  override val transformer: OperationTransformer = TreeTransformer
+  override val transformer: OperationTransformer = new TreeTransformer
 
   override def apply(op: DataTypeOperation): Unit = {
     log.debug(s"Applying operation: $op")

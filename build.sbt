@@ -14,6 +14,10 @@ lazy val root = project
     commonJVM,
     linearJS,
     linearJVM,
+    treeJS,
+    treeJVM,
+    jsonJS,
+    jsonJVM,
     clientJS,
     clientJVM,
     websockettestsJS,
@@ -101,6 +105,30 @@ lazy val tree = crossProject.in(file("tree")).
 lazy val treeJVM = tree.jvm.dependsOn(commonJVM)
 lazy val treeJS = tree.js.dependsOn(commonJS)
 
+lazy val json = crossProject.in(file("json")).
+  settings(commonSettings: _*).
+  settings(
+    name := "formic-json",
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %%% "upickle" % uPickleVersion,
+      "org.scalatest" %%% "scalatest" % scalatestVersion % "test"
+    )
+  ).
+  jvmSettings(
+    libraryDependencies ++= Seq(
+      "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test"
+    )
+  ).
+  jsSettings(
+    libraryDependencies ++= Seq(
+      "eu.unicredit" %%% "akkajstestkit" % ("0." + akkaVersion + "-SNAPSHOT")
+    )
+  )
+  .dependsOn(common, tree)
+
+lazy val jsonJVM = json.jvm.dependsOn(commonJVM, treeJVM)
+lazy val jsonJS = json.js.dependsOn(commonJS, treeJS)
+
 lazy val client = crossProject.in(file("client")).
   settings(commonSettings: _*).
   settings(
@@ -122,10 +150,10 @@ lazy val client = crossProject.in(file("client")).
       "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test"
     )
   )
-  .dependsOn(common, linear, tree)
+  .dependsOn(common, linear, tree, json)
 
-lazy val clientJS = client.js.dependsOn(commonJS, linearJS, treeJS)
-lazy val clientJVM = client.jvm.dependsOn(commonJVM, linearJVM, treeJVM)
+lazy val clientJS = client.js.dependsOn(commonJS, linearJS, treeJS, jsonJS)
+lazy val clientJVM = client.jvm.dependsOn(commonJVM, linearJVM, treeJVM, jsonJVM)
 
 //PhantomJS and AkkaJSTestkit do not work together, so they have to be split
 lazy val websockettests = crossProject.in(file("websockettests")).
@@ -158,7 +186,7 @@ lazy val server = (project in file("server")).
       "com.typesafe.akka" %%% "akka-http-testkit" % akkaHttpVersion % "test"
     )
   ).
-  dependsOn(commonJVM, linearJVM, treeJVM)
+  dependsOn(commonJVM, linearJVM, treeJVM, jsonJVM)
 
 lazy val example = crossProject.in(file("example")).
   settings(commonSettings: _*).
@@ -186,4 +214,4 @@ lazy val exampleJVM = example.jvm.settings(
   (resources in Compile) += (fastOptJS in (exampleJS, Compile)).value.data,
   (resources in Compile) += (packageJSDependencies in (exampleJS, Compile)).value,
   (resources in Compile) += (packageScalaJSLauncher in (exampleJS, Compile)).value.data
-).dependsOn(commonJVM, linearJVM, clientJVM, treeJVM, server)
+).dependsOn(commonJVM, linearJVM, clientJVM, treeJVM, jsonJVM, server)

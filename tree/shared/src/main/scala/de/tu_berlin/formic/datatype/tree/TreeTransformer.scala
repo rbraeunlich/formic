@@ -7,7 +7,7 @@ trait TreeStructureOperation extends DataTypeOperation {
   val accessPath: AccessPath
 }
 
-case class TreeInsertOperation(accessPath: AccessPath, tree: ValueTreeNode, id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends TreeStructureOperation
+case class TreeInsertOperation(accessPath: AccessPath, tree: TreeNode, id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends TreeStructureOperation
 
 case class TreeDeleteOperation(accessPath: AccessPath, id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends TreeStructureOperation
 
@@ -18,7 +18,7 @@ case class TreeNoOperation(id: OperationId, operationContext: OperationContext, 
 /**
   * @author Ronny Bräunlich
   */
-object TreeTransformer extends OperationTransformer {
+class TreeTransformer extends OperationTransformer {
 
   def transformationPoint(path1: AccessPath, path2: AccessPath): Int = {
     val combined = path1.list.zip(path2.list).zipWithIndex
@@ -58,11 +58,11 @@ object TreeTransformer extends OperationTransformer {
   }
 
 
-  private def updatePlus(accessPath: AccessPath, tp: Int): AccessPath = {
+  protected def updatePlus(accessPath: AccessPath, tp: Int): AccessPath = {
     AccessPath(accessPath.list.zipWithIndex.map(t => if (t._2 == tp) t._1 + 1 else t._1))
   }
 
-  def updateMinus(accessPath: AccessPath, tp: Int): AccessPath = {
+  protected def updateMinus(accessPath: AccessPath, tp: Int): AccessPath = {
     AccessPath(accessPath.list.zipWithIndex.map(t => if (t._2 == tp) t._1 - 1 else t._1))
   }
 
@@ -155,3 +155,6 @@ object TreeTransformer extends OperationTransformer {
   }
 }
 
+object TreeTransformer {
+  def apply: TreeTransformer = new TreeTransformer()
+}
