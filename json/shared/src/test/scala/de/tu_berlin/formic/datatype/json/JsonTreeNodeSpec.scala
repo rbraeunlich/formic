@@ -90,11 +90,14 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
     an[IllegalArgumentException] should be thrownBy node.applyOperation(operation)
   }
 
-  "A character node" should "reject a replace operation" in {
+  "A character node" should "accept a replace operation" in {
     val node = CharacterNode("char", 'a')
-    val operation = JsonReplaceOperation(AccessPath(), CharacterNode("char", 'b'), OperationId(), OperationContext(), ClientId())
+    val replacement = CharacterNode("char", 'b')
+    val operation = JsonReplaceOperation(AccessPath(), replacement, OperationId(), OperationContext(), ClientId())
 
-    an[IllegalArgumentException] should be thrownBy node.applyOperation(operation)
+    val after = node.applyOperation(operation)
+
+    after should equal(replacement)
   }
 
   it should "reject an insertion operation" in {
@@ -292,6 +295,10 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
   }
 
   it should "forward replace operations" in {
+
+  }
+
+  it should "reject duplicated keys" in {
 
   }
 }

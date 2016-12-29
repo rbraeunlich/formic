@@ -51,12 +51,41 @@ case class CharacterNode(key: String, private val value: Char) extends AtomicNod
   override def getData: Char = value
 
   override def applyOperationRecursive(operation: TreeStructureOperation, accessPath: AccessPath): CharacterNode = {
-    //slightly dirty but all Char changes should be done by StringNode not the CharacterNode itself
-    throw new IllegalArgumentException(s"Illegal operation received: $operation")
+    if (accessPath.list.nonEmpty) throw new IllegalArgumentException("Atomic node cannot have children")
+    operation match {
+      case JsonReplaceOperation(_, newNode: CharacterNode, _, _, _) => newNode
+      case _ => throw new IllegalArgumentException(s"Illegal operation received: $operation")
+    }
   }
 }
 
-case class ArrayNode(key: String, children: List[JsonTreeNode[_]]) extends JsonTreeNode[List[JsonTreeNode[_]]] {
+/**
+  *
+  * @tparam T the type of the contained children
+  * @tparam V the type of the value this node contains
+  */
+trait JsonTreeNodeWithChildren[T <: JsonTreeNode[_], V] extends JsonTreeNode[V] {
+
+  override val children: List[T]
+
+  def executeOperation(operation: TreeStructureOperation, accessPath: AccessPath): List[T] = {
+    val index = accessPath.list.head
+    operation match {
+      case TreeInsertOperation(_, tree: T, _, _, _) =>
+        if (index > children.length) throw new ArrayIndexOutOfBoundsException
+        val (front, back) = children.splitAt(index)
+        front ++ List(tree) ++ back
+      case del: TreeDeleteOperation =>
+        if (index > children.length - 1) throw new ArrayIndexOutOfBoundsException
+        children.take(index) ++ children.drop(index + 1)
+      case rep: JsonReplaceOperation =>
+        if (index > children.length - 1) throw new ArrayIndexOutOfBoundsException
+        children.updated(index, children(index).applyOperationRecursive(rep, accessPath.dropFirstElement).asInstanceOf[T])
+    }
+  }
+}
+
+case class ArrayNode(key: String, children: List[JsonTreeNode[_]]) extends JsonTreeNodeWithChildren[JsonTreeNode[_], List[JsonTreeNode[_]]] {
 
   override def getData: List[JsonTreeNode[_]] = children
 
@@ -73,26 +102,9 @@ case class ArrayNode(key: String, children: List[JsonTreeNode[_]]) extends JsonT
       ArrayNode(key, children.updated(accessPath.list.head, newChild))
     }
   }
-
-  private def executeOperation(operation: TreeStructureOperation, accessPath: AccessPath): List[JsonTreeNode[_]] = {
-    val index = accessPath.list.head
-    operation match {
-      case TreeInsertOperation(_, tree: JsonTreeNode[_], _, _, _) =>
-        if(index > children.length) throw new ArrayIndexOutOfBoundsException
-        val (front, back) = children.splitAt(index)
-        front ++ List(tree) ++ back
-      case del: TreeDeleteOperation =>
-        if(index > children.length - 1) throw new ArrayIndexOutOfBoundsException
-        children.take(index) ++ children.drop(index + 1)
-      case rep: JsonReplaceOperation =>
-        if(index > children.length - 1) throw new ArrayIndexOutOfBoundsException
-        children.updated(index, children(index).applyOperationRecursive(rep, accessPath.dropFirstElement))
-    }
-  }
-
 }
 
-case class StringNode(key: String, children: List[CharacterNode]) extends JsonTreeNode[String] {
+case class StringNode(key: String, children: List[CharacterNode]) extends JsonTreeNodeWithChildren[CharacterNode, String] {
   override def getData: String = children.map(c => c.getData).mkString
 
   private def isCorrectLevel(accessPath: AccessPath): Boolean = {
@@ -104,23 +116,6 @@ case class StringNode(key: String, children: List[CharacterNode]) extends JsonTr
       StringNode(key, executeOperation(operation, accessPath))
     } else {
       throw new IllegalArgumentException("Character nodes cannot have children")
-    }
-  }
-
-  private def executeOperation(operation: TreeStructureOperation, accessPath: AccessPath): List[CharacterNode] = {
-    val index = accessPath.list.head
-    if(index > children.length) throw new ArrayIndexOutOfBoundsException
-    operation match {
-      case TreeInsertOperation(_, char: CharacterNode, _, _, _) =>
-        if(index > children.length) throw new ArrayIndexOutOfBoundsException
-        val (front, back) = children.splitAt(index)
-        front ++ List(char) ++ back
-      case del: TreeDeleteOperation =>
-        if(index > children.length - 1) throw new ArrayIndexOutOfBoundsException
-        children.take(index) ++ children.drop(index + 1)
-      case rep: JsonReplaceOperation =>
-        if(index > children.length - 1) throw new ArrayIndexOutOfBoundsException
-        children.updated(index, rep.tree.asInstanceOf[CharacterNode])
     }
   }
 }
