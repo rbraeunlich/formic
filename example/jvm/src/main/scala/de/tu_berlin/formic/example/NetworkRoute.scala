@@ -8,6 +8,7 @@ import akka.http.scaladsl.server
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Flow
+import de.tu_berlin.formic.common.ClientId
 
 /**
   * @author Ronny Bräunlich
@@ -15,12 +16,9 @@ import akka.stream.scaladsl.Flow
 object NetworkRoute {
   def route(newUserMethod: (String) => Flow[Message, Message, NotUsed])(implicit actorSystem: ActorSystem, materializer: ActorMaterializer): server.Route = {
     path("formic") {
-      authenticateBasic[String]("FormicRealm", (creds) => UniqueUsernameAuthenticator.authenticate(creds)) {
-        identifier =>
           get {
-            handleWebSocketMessages(newUserMethod(identifier))
+            handleWebSocketMessages(newUserMethod(ClientId().id))
           }
-      }
     } ~
     pathEndOrSingleSlash {
       redirect("/index", StatusCodes.PermanentRedirect)
