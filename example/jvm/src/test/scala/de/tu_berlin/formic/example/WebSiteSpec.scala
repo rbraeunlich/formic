@@ -33,24 +33,24 @@ class WebSiteSpec extends FlatSpec
     close()
   }
 
-  "The home page" should "redirect to the index page" in {
+  "The home page" should "redirect to the index page" ignore {
     go to host
     currentUrl should be(host + "/index")
   }
 
-  "The creation page" should "offer a button to create a text" in {
+  "The creation page" should "offer a button to create a text" ignore {
     go to host + "/index"
     click on id("new-string-button")
   }
 
-  "The button to create a text" should "write the name and append a text area" in {
+  "The button to create a text" should "write the name and append a text area" ignore {
     go to host + "/index"
     click on id("new-string-button")
     className("stringId").element.text should include("String data type with id")
     className("stringInput").element shouldNot be(null)
   }
 
-  "A single user" should "be able to write some text" in {
+  "A single user" should "be able to write some text" ignore {
     go to host + "/index"
     click on id("new-string-button")
     val inputTextArea = textArea(className("stringInput"))
@@ -58,7 +58,7 @@ class WebSiteSpec extends FlatSpec
     Thread.sleep(5000)
   }
 
-  "A second user" should "be able to subscribe to other string" in {
+  "A second user" should "be able to subscribe to other string" ignore {
     go to host + "/index"
     click on id("new-string-button")
     val inputTextArea = textArea(className("stringInput"))
@@ -73,12 +73,12 @@ class WebSiteSpec extends FlatSpec
     secondUserDriver.quit()
   }
 
-  "The creation page" should "offer a button to create a tree" in {
+  "The creation page" should "offer a button to create a tree" ignore {
     go to host + "/index"
     click on id("new-tree-button")
   }
 
-  "The button to create a tree" should "create a div containing input, buttons and a list" in {
+  "The button to create a tree" should "create a div containing input, buttons and a list" ignore {
     go to host + "/index"
     click on id("new-tree-button")
     Thread.sleep(2000)
@@ -95,7 +95,7 @@ class WebSiteSpec extends FlatSpec
     xpath(s"//div[@id='$treeId']/div/ul/li").findElement.get.text should be("empty")
   }
 
-  "A single user" should "be able to modify the tree" in {
+  "A single user" should "be able to modify the tree" ignore {
     go to host + "/index"
     click on id("new-tree-button")
     Thread.sleep(5000)
@@ -108,7 +108,7 @@ class WebSiteSpec extends FlatSpec
     xpath(s"//div[@id='$treeId']/div/ul/li").findElement.get.text should be("2")
   }
 
-  "A second user" should "be able to subscribe to a tree" in {
+  "A second user" should "be able to subscribe to a tree" ignore {
     go to host + "/index"
     click on id("new-tree-button")
     Thread.sleep(5000)
@@ -126,7 +126,7 @@ class WebSiteSpec extends FlatSpec
     secondUserDriver.quit()
   }
 
-  "Two users" should "be able to concurrently edit the tree" in {
+  "Two users" should "be able to concurrently edit the tree" ignore {
     go to host + "/index"
     click on id("new-tree-button")
     Thread.sleep(5000)
