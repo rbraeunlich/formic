@@ -16,7 +16,7 @@ class JsonTransformer extends TreeTransformer {
     transformInternal(pair, withNewContext = true)
   }
 
-  private def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = {
+  override protected def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = {
     val context = if (withNewContext) OperationContext(List(pair._2.id)) else pair._1.operationContext
     pair match {
       case (op1: JsonReplaceOperation, op2: JsonReplaceOperation) => transform(op1, op2, context)
@@ -24,7 +24,7 @@ class JsonTransformer extends TreeTransformer {
       case (op1: JsonReplaceOperation, op2: TreeDeleteOperation) => transform(op1, op2, context)
       case (TreeInsertOperation(path, tree, id, _, clientId), _: JsonReplaceOperation) => TreeInsertOperation(path, tree, id, context, clientId) //only have to change the context here
       case (TreeDeleteOperation(path, id, _, clientId), _: JsonReplaceOperation) => TreeDeleteOperation(path, id, context, clientId) //only have to change the context here
-      case (_, _) => super.transform(pair)
+      case (_, _) => super.transformInternal(pair, withNewContext)
     }
   }
 
@@ -78,7 +78,4 @@ class JsonTransformer extends TreeTransformer {
     }
     JsonReplaceOperation(op1.accessPath, op1.tree, op1.id, context, op1.clientId)
   }
-
-  //TODO bulk transform
-
 }

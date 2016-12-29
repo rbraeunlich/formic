@@ -47,7 +47,7 @@ class TreeTransformer extends OperationTransformer {
     transformedOthers :+ transformedOperation
   }
 
-  private def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = {
+  protected def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = {
     val context = if (withNewContext) OperationContext(List(pair._2.id)) else pair._1.operationContext
     pair match {
       case (op1: TreeInsertOperation, op2: TreeInsertOperation) => transform(op1, op2, context)
