@@ -13,12 +13,12 @@ trait TreeNode {
 
   def applyOperation(operation: TreeStructureOperation): TreeNode = {
     if (!operation.isInstanceOf[TreeNoOperation]) {
-      return applyOperationInternal(operation, operation.accessPath)
+      return applyOperationRecursive(operation, operation.accessPath)
     }
     this
   }
 
-  protected def applyOperationInternal(operation: TreeStructureOperation, accessPath: AccessPath): TreeNode
+  def applyOperationRecursive(operation: TreeStructureOperation, accessPath: AccessPath): TreeNode
 
   def getNode(path: AccessPath): TreeNode = {
     //in contrast to the application of an operation, we need an empty path here
@@ -45,12 +45,12 @@ case class ValueTreeNode(value: Any, children: List[ValueTreeNode] = List.empty)
     * @param operation  the operation to apply
     * @param accessPath the remaining access path
     */
-  override protected def applyOperationInternal(operation: TreeStructureOperation, accessPath: AccessPath): ValueTreeNode = {
+  override def applyOperationRecursive(operation: TreeStructureOperation, accessPath: AccessPath): ValueTreeNode = {
     if (isCorrectLevel(accessPath)) {
       ValueTreeNode(value, executeOperation(operation, accessPath.list.head))
     } else {
       val child = children(accessPath.list.head)
-      val newChild = child.applyOperationInternal(operation, accessPath.dropFirstElement)
+      val newChild = child.applyOperationRecursive(operation, accessPath.dropFirstElement)
       ValueTreeNode(value, children.updated(accessPath.list.head, newChild))
     }
   }
@@ -86,5 +86,5 @@ case object EmptyTreeNode extends TreeNode {
 
   override val children: List[TreeNode] = List.empty
 
-  override protected def applyOperationInternal(operation: TreeStructureOperation, accessPath: AccessPath): TreeNode = EmptyTreeNode
+  override def applyOperationRecursive(operation: TreeStructureOperation, accessPath: AccessPath): TreeNode = EmptyTreeNode
 }
