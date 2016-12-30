@@ -168,24 +168,28 @@ class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) e
     }
   }
 
+
+  override def toString = s"ObjectNode($key, $children)"
+
   def canEqual(other: Any): Boolean = other.isInstanceOf[ObjectNode]
 
   override def equals(other: Any): Boolean = other match {
     case that: ObjectNode =>
       (that canEqual this) &&
-        key == that.key
+        key == that.key &&
+        children == that.children
     case _ => false
   }
 
   override def hashCode(): Int = {
-    val state = Seq(key)
+    val state = Seq(key, children)
     state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
-
-  override def toString = s"ObjectNode($key, $children)"
 }
 
 object ObjectNode {
   def apply(key: String, children: List[JsonTreeNode[_]]): ObjectNode = new ObjectNode(key, children.sortBy(_.key))
+
+  def unapply(arg: ObjectNode): Option[(String, List[JsonTreeNode[_]])] = Some(arg.key, arg.children)
 }
 

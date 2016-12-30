@@ -126,14 +126,14 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
   }
 
   it should "accept valid deletion" in {
-    val children: List[JsonTreeNode[_]] = List(NumberNode("a", 1.0), BooleanNode("b", value = false))
+    val children: List[JsonTreeNode[_]] = List(NumberNode(null, 1.0), BooleanNode(null, value = false))
     val node = ArrayNode("bar", children)
     val insertion = NumberNode("c", 3.0)
     val operation = TreeDeleteOperation(AccessPath(0), OperationId(), OperationContext(), ClientId())
 
     val changed = node.applyOperation(operation)
 
-    changed should equal(ArrayNode(node.key, List(BooleanNode("b", value = false))))
+    changed should equal(ArrayNode(node.key, List(BooleanNode(null, value = false))))
   }
 
   it should "accept a valid replace operation" in {
@@ -230,12 +230,12 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
   }
 
   it should "accept valid deletion" in {
-    val node = StringNode("text", List(CharacterNode("0", 'f')))
+    val node = StringNode("text", List(CharacterNode(null, 'f'), CharacterNode(null, 'g')))
     val operation = TreeDeleteOperation(AccessPath(0), OperationId(), OperationContext(), ClientId())
 
     val changed = node.applyOperation(operation)
 
-    changed should equal(StringNode(node.key, List.empty))
+    changed should equal(StringNode(node.key, List(CharacterNode(null, 'g'))))
   }
 
   it should "reject invalid deletion" in {
