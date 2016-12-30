@@ -88,7 +88,7 @@ class FormicServer {
 
   def initJsonFactory() = {
     val factory = system.actorOf(Props[JsonDataTypeFactory], JsonDataTypeFactory.name.name)
-    FormicJsonProtocol.registerProtocol(new JsonFormicJsonDataTypeProtocol(JsonDataTypeFactory.name))
+    FormicJsonProtocol.registerProtocol(new JsonFormicJsonDataTypeProtocol(JsonDataTypeFactory.name)(JsonFormicJsonDataTypeProtocol.reader, JsonFormicJsonDataTypeProtocol.writer))
     factories += (JsonDataTypeFactory.name -> factory)
   }
 
