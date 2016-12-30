@@ -191,7 +191,7 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
 
   it should "reject invalid deletion" in {
     val node = ArrayNode("bar", List.empty)
-    val operation = TreeDeleteOperation(AccessPath(0),  OperationId(), OperationContext(), ClientId())
+    val operation = TreeDeleteOperation(AccessPath(0), OperationId(), OperationContext(), ClientId())
 
     an[ArrayIndexOutOfBoundsException] should be thrownBy node.applyOperation(operation)
   }
@@ -231,7 +231,7 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
 
   it should "accept valid deletion" in {
     val node = StringNode("text", List(CharacterNode("0", 'f')))
-    val operation = TreeDeleteOperation(AccessPath(0),  OperationId(), OperationContext(), ClientId())
+    val operation = TreeDeleteOperation(AccessPath(0), OperationId(), OperationContext(), ClientId())
 
     val changed = node.applyOperation(operation)
 
@@ -240,7 +240,7 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
 
   it should "reject invalid deletion" in {
     val node = StringNode("text", List.empty)
-    val operation = TreeDeleteOperation(AccessPath(0),  OperationId(), OperationContext(), ClientId())
+    val operation = TreeDeleteOperation(AccessPath(0), OperationId(), OperationContext(), ClientId())
 
     an[ArrayIndexOutOfBoundsException] should be thrownBy node.applyOperation(operation)
   }
@@ -263,42 +263,118 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
   }
 
   "An object node" should "accept a valid insertion" in {
+    val node = ObjectNode(null, List.empty)
+    val insertion = NumberNode("foo", 1.0)
+    val operation = TreeInsertOperation(AccessPath(0), insertion, OperationId(), OperationContext(), ClientId())
 
+    val changed = node.applyOperation(operation)
+
+    changed should equal(ObjectNode(null, List(insertion)))
   }
 
   it should "accept a valid deletion" in {
+    val node = ObjectNode(null, List(NumberNode("foo", 1.0)))
+    val operation = TreeDeleteOperation(AccessPath(0), OperationId(), OperationContext(), ClientId())
 
+    val changed = node.applyOperation(operation)
+
+    changed should equal(ObjectNode(null, List.empty))
   }
 
   it should "accept a valid replacement" in {
+    val node = ObjectNode(null, List(NumberNode("foo", 1.0)))
+    val replacement = NumberNode("foo", 2.0)
+    val operation = JsonReplaceOperation(AccessPath(0), replacement, OperationId(), OperationContext(), ClientId())
 
+    val changed = node.applyOperation(operation)
+
+    changed should equal(ObjectNode(null, List(replacement)))
   }
 
-  it should "reject an invalid insertion" in {
+  it should "reject an invalid insertion path" in {
+    val node = ObjectNode(null, List.empty)
+    val insertion = NumberNode("foo", 1.0)
+    val operation = TreeInsertOperation(AccessPath(5), insertion, OperationId(), OperationContext(), ClientId())
 
+    an[ArrayIndexOutOfBoundsException] should be thrownBy node.applyOperation(operation)
   }
 
   it should "reject an invalid deletion" in {
+    val node = ObjectNode(null, List.empty)
+    val operation = TreeDeleteOperation(AccessPath(5), OperationId(), OperationContext(), ClientId())
 
+    an[ArrayIndexOutOfBoundsException] should be thrownBy node.applyOperation(operation)
   }
 
   it should "reject an invalid replacement" in {
+    val node = ObjectNode(null, List.empty)
+    val operation = JsonReplaceOperation(AccessPath(5), NumberNode("foo", 1.0), OperationId(), OperationContext(), ClientId())
 
+    an[ArrayIndexOutOfBoundsException] should be thrownBy node.applyOperation(operation)
   }
 
   it should "forward insertion operations" in {
+    val nested = ObjectNode("nested", List.empty)
+    val node = ObjectNode(null, List(nested))
+    val insertion = NumberNode("foo", 1.0)
+    val operation = TreeInsertOperation(AccessPath(0, 0), insertion, OperationId(), OperationContext(), ClientId())
 
+    val changed = node.applyOperation(operation)
+
+    changed should equal(ObjectNode(null, List(ObjectNode(nested.key, List(insertion)))))
   }
 
   it should "forward delete operations" in {
+    val nested = ObjectNode("nested", List(NumberNode("num", 2.0)))
+    val node = ObjectNode(null, List(nested))
+    val operation = TreeDeleteOperation(AccessPath(0, 0), OperationId(), OperationContext(), ClientId())
 
+    val changed = node.applyOperation(operation)
+
+    changed should equal(ObjectNode(null, List(ObjectNode(nested.key, List.empty))))
   }
 
   it should "forward replace operations" in {
+    val nested = ObjectNode("nested", List(NumberNode("num", 2.0)))
+    val node = ObjectNode(null, List(nested))
+    val replacement = NumberNode("num", 1.0)
+    val operation = JsonReplaceOperation(AccessPath(0, 0), replacement, OperationId(), OperationContext(), ClientId())
 
+    val changed = node.applyOperation(operation)
+
+    changed should equal(ObjectNode(null, List(ObjectNode(nested.key, List(replacement)))))
   }
 
   it should "reject duplicated keys" in {
+    val node = ObjectNode(null, List(NumberNode("foo", 2.0)))
+    val insertion = NumberNode("foo", 1.0)
+    val operation = TreeInsertOperation(AccessPath(0), insertion, OperationId(), OperationContext(), ClientId())
 
+    an[IllegalArgumentException] should be thrownBy node.applyOperation(operation)
+  }
+
+  it should "sort its children by key" in {
+    val lastNode = NumberNode("z", 2.0)
+    val middleNode = NumberNode("q", 100.3)
+    val firstNode = NumberNode("a", 3000)
+    val node = ObjectNode(null, List(middleNode,lastNode, firstNode))
+
+    node.getData should contain inOrder(firstNode, middleNode, lastNode)
+  }
+
+  it should "correctly translate a Json path" in {
+    val secondLevel = List(NumberNode("21", 2.0), NumberNode("22", 1.0))
+    val firstLevel = List(NumberNode("11", 100), ObjectNode("12", secondLevel))
+    val node = ObjectNode(null, firstLevel)
+
+    node.translateJsonPath(JsonPath("12", "22")) should equal(AccessPath(1, 1))
+  }
+
+  it should "correctly translate a Json path with an array in between" in {
+    val secondLevel = List(ArrayNode("21", List(NumberNode("0", 2.0), NumberNode("1", 1.0))))
+    val firstLevel = List(NumberNode("11", 100), ObjectNode("12", secondLevel))
+    val node = ObjectNode(null, firstLevel)
+
+    node.translateJsonPath(JsonPath("12", "21", "0")) should equal(AccessPath(1, 0, 0))
   }
 }

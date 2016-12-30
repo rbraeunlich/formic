@@ -120,3 +120,72 @@ case class StringNode(key: String, children: List[CharacterNode]) extends JsonTr
   }
 }
 
+class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) extends JsonTreeNode[List[JsonTreeNode[_]]] {
+
+  override def getData: List[JsonTreeNode[_]] = children
+
+  private def isCorrectLevel(accessPath: AccessPath): Boolean = {
+    accessPath.list.length == 1
+  }
+
+  override def applyOperationRecursive(operation: TreeStructureOperation, accessPath: AccessPath): JsonTreeNode[List[JsonTreeNode[_]]] = {
+    if (isCorrectLevel(accessPath)) {
+      ObjectNode(key, executeOperation(operation, accessPath))
+    } else {
+      val child = children(accessPath.list.head)
+      val newChild = child.applyOperationRecursive(operation, accessPath.dropFirstElement)
+      ObjectNode(key, children.updated(accessPath.list.head, newChild))
+    }
+  }
+
+  def executeOperation(operation: TreeStructureOperation, accessPath: AccessPath): List[JsonTreeNode[_]] = {
+    val index = accessPath.list.head
+    operation match {
+      case TreeInsertOperation(_, tree: JsonTreeNode[_], _, _, _) =>
+        if (index > children.length) throw new ArrayIndexOutOfBoundsException
+        if (children.map(child => child.key).contains(tree.key)) throw new IllegalArgumentException
+        val (front, back) = children.splitAt(index)
+        front ++ List(tree) ++ back
+      case del: TreeDeleteOperation =>
+        if (index > children.length - 1) throw new ArrayIndexOutOfBoundsException
+        children.take(index) ++ children.drop(index + 1)
+      case rep: JsonReplaceOperation =>
+        if (index > children.length - 1) throw new ArrayIndexOutOfBoundsException
+        children.updated(index, children(index).applyOperationRecursive(rep, accessPath.dropFirstElement))
+    }
+  }
+
+  def translateJsonPath(jsonPath: JsonPath): AccessPath = {
+    AccessPath(translatePathRecursive(this, jsonPath))
+  }
+
+  def translatePathRecursive(node: JsonTreeNode[_], jsonPath: JsonPath): List[Int] = {
+    if(jsonPath.path.isEmpty) return List.empty
+    val childWithIndex = node.children.zipWithIndex.find(t => t._1.key == jsonPath.path.head)
+    childWithIndex match {
+      case Some(c) => List(c._2) ::: translatePathRecursive(c._1, jsonPath.dropFirstElement)
+      case None => throw new IllegalArgumentException(s"Illegal JSON Path encountered: $jsonPath for node $node")
+    }
+  }
+
+  def canEqual(other: Any): Boolean = other.isInstanceOf[ObjectNode]
+
+  override def equals(other: Any): Boolean = other match {
+    case that: ObjectNode =>
+      (that canEqual this) &&
+        key == that.key
+    case _ => false
+  }
+
+  override def hashCode(): Int = {
+    val state = Seq(key)
+    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+  }
+
+  override def toString = s"ObjectNode($key, $children)"
+}
+
+object ObjectNode {
+  def apply(key: String, children: List[JsonTreeNode[_]]): ObjectNode = new ObjectNode(key, children.sortBy(_.key))
+}
+
