@@ -12,11 +12,13 @@ import akka.stream.scaladsl.Flow
 /**
   * @author Ronny Bräunlich
   */
-object NetworkRoute {
+class NetworkRoute(implicit val actorSystem: ActorSystem) {
+
+  val authenticator = UniqueUsernameAuthenticator(actorSystem)
 
   def route(newUserMethod: (String) => Flow[Message, Message, NotUsed])(implicit actorSystem: ActorSystem, materializer: ActorMaterializer): server.Route = {
     path("formic") {
-      authenticateBasic[String]("FormicRealm", (creds) => UniqueUsernameAuthenticator(actorSystem).authenticate(creds)) {
+      authenticateBasic[String]("FormicRealm", (creds) => authenticator.authenticate(creds)) {
         identifier =>
           get {
             handleWebSocketMessages(newUserMethod(identifier))

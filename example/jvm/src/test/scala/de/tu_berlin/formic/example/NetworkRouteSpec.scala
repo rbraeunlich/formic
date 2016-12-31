@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.example
 
-import akka.http.scaladsl.model.{StatusCode, StatusCodes}
+import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.model.headers.BasicHttpCredentials
 import akka.http.scaladsl.server.AuthenticationFailedRejection
 import akka.http.scaladsl.testkit.{ScalatestRouteTest, WSProbe}
@@ -17,14 +17,13 @@ class NetworkRouteSpec extends WordSpecLike
 
   override def afterAll(): Unit = {
     super.afterAll()
-    UniqueUsernameAuthenticator.clear()
   }
 
   "Network route" must {
     "reject users without authentification" in {
       implicit val materializer = ActorMaterializer()
       val probe = WSProbe()
-      val route = NetworkRoute.route((_) => Flow.fromSinkAndSource(Sink.ignore, Source.empty))
+      val route = new NetworkRoute()(system).route((_) => Flow.fromSinkAndSource(Sink.ignore, Source.empty))
 
       WS("/formic", probe.flow) ~> route ~> check {
         rejection shouldBe a[AuthenticationFailedRejection]
@@ -34,7 +33,7 @@ class NetworkRouteSpec extends WordSpecLike
     "accept users with unique username independent of password" in {
       implicit val materializer = ActorMaterializer()
       val probe = WSProbe()
-      val route = NetworkRoute.route((_) => Flow.fromSinkAndSource(Sink.ignore, Source.empty))
+      val route = new NetworkRoute()(system).route((_) => Flow.fromSinkAndSource(Sink.ignore, Source.empty))
 
       WS("/formic", probe.flow).addCredentials(BasicHttpCredentials("NetworkRoute", "")) ~> route ~> check {
         isWebSocketUpgrade should be(true)
@@ -46,7 +45,7 @@ class NetworkRouteSpec extends WordSpecLike
       implicit val materializer = ActorMaterializer()
       val probe = WSProbe()
       val probe2 = WSProbe()
-      val route = NetworkRoute.route((_) => Flow.fromSinkAndSource(Sink.ignore, Source.empty))
+      val route = new NetworkRoute()(system).route((_) => Flow.fromSinkAndSource(Sink.ignore, Source.empty))
 
       WS("/formic", probe.flow).addCredentials(BasicHttpCredentials("NetworkRoute2", "")) ~> route ~> check {
         isWebSocketUpgrade should be(true)

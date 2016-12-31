@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.example
 
 import akka.actor.ActorSystem
-import akka.event.Logging
+import akka.event.{LogSource, Logging}
 import akka.http.scaladsl.server.directives.Credentials
 import akka.http.scaladsl.server.directives.Credentials.{Missing, Provided}
 
@@ -12,7 +12,7 @@ class UniqueUsernameAuthenticator(actorSystem: ActorSystem) {
 
   private var usernames: Set[String] = Set.empty
 
-  val log = Logging(actorSystem, this)
+  val log = Logging.getLogger(actorSystem, this)
 
   def authenticate(creds: Credentials): Option[String] = {
     log.debug(s"Client trying to connect with credentials: $creds")
@@ -31,8 +31,6 @@ class UniqueUsernameAuthenticator(actorSystem: ActorSystem) {
         Option.empty
     }
   }
-
-  def clear() = usernames = Set.empty
 }
 
 object UniqueUsernameAuthenticator {

@@ -13,7 +13,7 @@ object ExampleServer {
   def main(args: Array[String]): Unit = {
     implicit val system = server.system
     implicit val materializer = server.materializer
-    server.start(NetworkRoute.route(server.newUserProxy))
+    server.start(new NetworkRoute().route(server.newUserProxy))
   }
 
   def shutdown = server.terminate()
