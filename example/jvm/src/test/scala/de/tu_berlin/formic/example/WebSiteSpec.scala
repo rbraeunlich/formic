@@ -38,9 +38,10 @@ class WebSiteSpec extends FlatSpec
     currentUrl should be(host + "/index")
   }
 
-  "The creation page" should "offer a button to create a text" ignore {
+  "The creation page" should "offer a button to create a text" in {
     go to host + "/index"
     click on id("new-string-button")
+    Thread.sleep(20000)
   }
 
   "The button to create a text" should "write the name and append a text area" ignore {
