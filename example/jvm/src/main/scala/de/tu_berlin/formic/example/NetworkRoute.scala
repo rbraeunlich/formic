@@ -13,6 +13,7 @@ import akka.stream.scaladsl.Flow
   * @author Ronny Bräunlich
   */
 object NetworkRoute {
+
   def route(newUserMethod: (String) => Flow[Message, Message, NotUsed])(implicit actorSystem: ActorSystem, materializer: ActorMaterializer): server.Route = {
     path("formic") {
       authenticateBasic[String]("FormicRealm", (creds) => UniqueUsernameAuthenticator(actorSystem).authenticate(creds)) {
