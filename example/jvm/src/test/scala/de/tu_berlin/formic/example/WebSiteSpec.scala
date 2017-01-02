@@ -1,6 +1,7 @@
 package de.tu_berlin.formic.example
 
-import org.openqa.selenium.firefox.FirefoxDriver
+import org.openqa.selenium.chrome.ChromeDriver
+import org.openqa.selenium.firefox.{FirefoxDriver, FirefoxOptions}
 import org.scalactic.source
 import org.scalatest.selenium.WebBrowser
 import org.scalatest.time.{Seconds, Span}
@@ -14,7 +15,7 @@ class WebSiteSpec extends FlatSpec
   with WebBrowser
   with BeforeAndAfterAll {
 
-  implicit val webDriver = new FirefoxDriver()
+  implicit val webDriver = new ChromeDriver()
 
   val host = "http://localhost:8080"
 
@@ -41,6 +42,7 @@ class WebSiteSpec extends FlatSpec
   "The creation page" should "offer a button to create a text" in {
     go to host + "/index"
     click on id("new-string-button")
+    webDriver.manage().logs().getAvailableLogTypes
     Thread.sleep(20000)
   }
 
