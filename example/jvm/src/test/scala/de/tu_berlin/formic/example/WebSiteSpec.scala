@@ -1,10 +1,6 @@
 package de.tu_berlin.formic.example
 
-import java.util.function.Consumer
-
 import org.openqa.selenium.chrome.{ChromeDriver, ChromeDriverService, ChromeOptions}
-import org.openqa.selenium.firefox.{FirefoxDriver, FirefoxOptions}
-import org.openqa.selenium.logging.LogEntry
 import org.scalactic.source
 import org.scalatest.selenium.WebBrowser
 import org.scalatest.time.{Seconds, Span}
@@ -71,7 +67,7 @@ class WebSiteSpec extends FlatSpec
     val stringId = inputTextArea.underlying.getAttribute("id")
     inputTextArea.underlying.sendKeys("abc")
     Thread.sleep(5000)
-    val secondUserDriver = new FirefoxDriver()
+    val secondUserDriver = new ChromeDriver()
     go.to(host + "/index")(secondUserDriver)
     textField("subscribe-id")(secondUserDriver).value = stringId
     click.on("subscribe-button")(secondUserDriver)
@@ -123,7 +119,7 @@ class WebSiteSpec extends FlatSpec
     numberField("input" + treeId).value = "3"
     click on id("insert" + treeId)
     Thread.sleep(5000)
-    val secondUserDriver = new FirefoxDriver()
+    val secondUserDriver = new ChromeDriver()
     go.to(host + "/index")(secondUserDriver)
     textField("subscribe-id")(secondUserDriver).value = treeId
     click.on("subscribe-button")(secondUserDriver)
@@ -141,7 +137,7 @@ class WebSiteSpec extends FlatSpec
     numberField("input" + treeId).value = "1"
     click on id("insert" + treeId)
     Thread.sleep(5000)
-    val secondUserDriver = new FirefoxDriver()
+    val secondUserDriver = new ChromeDriver()
     go.to(host + "/index")(secondUserDriver)
     textField("subscribe-id")(secondUserDriver).value = treeId
     click.on("subscribe-button")(secondUserDriver)
