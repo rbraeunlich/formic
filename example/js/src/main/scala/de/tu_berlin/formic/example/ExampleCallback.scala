@@ -25,7 +25,7 @@ class ExampleCallback(val main: Main) extends NewInstanceCallback {
         val id = str.dataTypeInstanceId.id
         val inputId = id
         jQuery("body").append("<p>String data type with id " + id + "</p>")
-        jQuery("body").append("<textarea rows=\"30\" cols=\"50\" id=\"" + inputId + "\"></textarea>")
+        jQuery("body").append("<textarea rows=\"30\" cols=\"50\" class=\"stringInput\" id=\"" + inputId + "\"></textarea>")
         jQuery("#" + inputId).keypress(main.keyPressHandler(inputId))
         main.updateUIForString(str.dataTypeInstanceId)()
 

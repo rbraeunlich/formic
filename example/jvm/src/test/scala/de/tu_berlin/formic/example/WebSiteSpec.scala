@@ -72,7 +72,7 @@ class WebSiteSpec extends FlatSpec
     textField("subscribe-id")(secondUserDriver).value = stringId
     click.on("subscribe-button")(secondUserDriver)
     Thread.sleep(5000)
-    textArea(className("stringInput"))(secondUserDriver, implicitly[source.Position]).value should be("abc")
+    textArea(stringId)(secondUserDriver).value should be("abc")
     secondUserDriver.quit()
   }
 
