@@ -4,19 +4,18 @@ scala:
 jdk:
   - oraclejdk8
 addons:
-  firefox: "50.0"
-  apt:
-    packages:
-      - chromium-browser
+  firefox: "50.1.0"
 sudo: required
 before_script:
   - "export DISPLAY=:99.0"
 before_install:
+  - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+  - sudo dpkg -i google-chrome*.deb
   - wget http://chromedriver.storage.googleapis.com/2.27/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
   - sudo chmod u+x chromedriver
   - sudo mv chromedriver /usr/bin/
-  - export CHROME_BIN=chromium-browser
+  - export CHROME_BIN=/usr/bin/google-chrome
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
 install:
 #geckodriver for selenium
