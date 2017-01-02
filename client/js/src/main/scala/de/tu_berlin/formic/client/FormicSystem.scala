@@ -22,7 +22,7 @@ import scala.util.{Failure, Success}
   * @author Ronny Bräunlich
   */
 @JSExport
-class FormicSystem(config: Config = ConfigFactory.load()) extends DataTypeInitiator {
+class FormicSystem(config: Config) extends DataTypeInitiator {
 
   implicit val system = ActorSystem("FormicSystem", config)
 
