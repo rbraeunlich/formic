@@ -52,7 +52,7 @@ class WebSiteSpec extends FlatSpec
     className("stringInput").element shouldNot be(null)
   }
 
-  "A single user" should "be able to write some text" ignore {
+  "A single user" should "be able to write some text" in {
     go to host + "/index"
     click on id("new-string-button")
     val inputTextArea = textArea(className("stringInput"))
@@ -71,6 +71,7 @@ class WebSiteSpec extends FlatSpec
     go.to(host + "/index")(secondUserDriver)
     textField("subscribe-id")(secondUserDriver).value = stringId
     click.on("subscribe-button")(secondUserDriver)
+    Thread.sleep(5000)
     textArea(className("stringInput"))(secondUserDriver, implicitly[source.Position]).value should be("abc")
     secondUserDriver.quit()
   }
