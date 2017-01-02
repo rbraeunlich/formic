@@ -36,6 +36,7 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
     log.debug("New WebSocket connection created")
     tryWebSocket.onopen = { event: Event => self ! OnConnect(tryWebSocket) }
     tryWebSocket.onerror = {event: ErrorEvent => log.error(s"!!!WebSocket error: ${event.message}!!!")}
+    tryWebSocket.onclose = {event: CloseEvent => log.error(s"!!!WebSocket closed: ${event.reason}!!!")}
   }
 
   override def preStart(): Unit = {
