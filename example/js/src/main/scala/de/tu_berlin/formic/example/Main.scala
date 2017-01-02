@@ -16,8 +16,8 @@ import scala.util.{Failure, Success}
 /**
   * @author Ronny Bräunlich
   */
-object Main extends JSApp {
 
+class Main {
   val system = new FormicSystem(ConfigFactory.load())
 
   implicit val ec = system.system.dispatcher
@@ -28,16 +28,8 @@ object Main extends JSApp {
 
   val userId = ClientId()
 
-  val BACKSPACE_CODE = 8
-  val ARROWKEY_DOWN = 40
-  val ARROWKEY_UP = 38
-  val ARROWKEY_LEFT = 37
-  val ARROWKEY_RIGHT = 39
-
-  val keysToIgnore = List(BACKSPACE_CODE, ARROWKEY_DOWN, ARROWKEY_UP, ARROWKEY_LEFT, ARROWKEY_RIGHT)
-
-  def main(): Unit = {
-    system.init(new ExampleCallback(), userId)
+  def start() = {
+    system.init(new ExampleCallback(this), userId)
     jQuery(setupUI _)
   }
 
@@ -95,7 +87,7 @@ object Main extends JSApp {
     (event: JQueryEventObject) => {
       //this is quite some hack
       val index = document.getElementById(elementId).asInstanceOf[HTMLInputElement].selectionStart
-      if (!keysToIgnore.contains(event.which)) {
+      if (!Main.keysToIgnore.contains(event.which)) {
         val character = event.which.toChar
         println("Inserting new Character: " + character)
         strings.find(s => s.dataTypeInstanceId.id == elementId).get.add(index, character)
@@ -140,5 +132,21 @@ object Main extends JSApp {
     jQuery("body").append("</div>")
     jQuery("#insert" + id).click(insertValueToTree(id))
     jQuery("#delete" + id).click(deleteFromTree(id))
+  }
+}
+
+object Main extends JSApp {
+
+  val BACKSPACE_CODE = 8
+  val ARROWKEY_DOWN = 40
+  val ARROWKEY_UP = 38
+  val ARROWKEY_LEFT = 37
+  val ARROWKEY_RIGHT = 39
+
+  val keysToIgnore = List(BACKSPACE_CODE, ARROWKEY_DOWN, ARROWKEY_UP, ARROWKEY_LEFT, ARROWKEY_RIGHT)
+
+  def main(): Unit = {
+    val mainClazz = new Main
+    mainClazz.start()
   }
 }

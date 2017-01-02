@@ -33,6 +33,7 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
 
   def retryConnection(): Unit = {
     val tryWebSocket = webSocketConnectionFactory.createConnection(url)
+    log.debug("New WebSocket connection created")
     tryWebSocket.onopen = { event: Event => self ! OnConnect(tryWebSocket) }
   }
 

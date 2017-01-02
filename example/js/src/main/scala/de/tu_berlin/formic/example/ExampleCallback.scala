@@ -9,32 +9,32 @@ import org.scalajs.jquery.jQuery
 /**
   * @author Ronny Bräunlich
   */
-class ExampleCallback extends NewInstanceCallback {
+class ExampleCallback(val main: Main) extends NewInstanceCallback {
 
   override def newCallbackFor(instance: FormicDataType, dataType: DataTypeName): () => Unit = {
     instance match {
-      case str: FormicString => Main.updateUIForString(instance.dataTypeInstanceId)
-      case tree: FormicIntegerTree => Main.updateUIForTree(instance.dataTypeInstanceId)
+      case str: FormicString => main.updateUIForString(instance.dataTypeInstanceId)
+      case tree: FormicIntegerTree => main.updateUIForTree(instance.dataTypeInstanceId)
     }
   }
 
   override def doNewInstanceCreated(instance: FormicDataType, dataType: DataTypeName): Unit = {
     instance match {
       case str: FormicString =>
-        Main.strings += str
+        main.strings += str
         val id = str.dataTypeInstanceId.id
         val inputId = id
         jQuery("body").append("<p>String data type with id " + id + "</p>")
         jQuery("body").append("<textarea rows=\"30\" cols=\"50\" id=\"" + inputId + "\"></textarea>")
-        jQuery("#" + inputId).keypress(Main.keyPressHandler(inputId))
-        Main.updateUIForString(str.dataTypeInstanceId)()
+        jQuery("#" + inputId).keypress(main.keyPressHandler(inputId))
+        main.updateUIForString(str.dataTypeInstanceId)()
 
       case tree: FormicIntegerTree =>
-        Main.trees += tree
+        main.trees += tree
         if(jQuery("body").has("#"+tree.dataTypeInstanceId.id).length == 0){
-          Main.insertBasicTreeElements(tree.dataTypeInstanceId.id)
+          main.insertBasicTreeElements(tree.dataTypeInstanceId.id)
         }
-        Main.updateUIForTree(tree.dataTypeInstanceId)()
+        main.updateUIForTree(tree.dataTypeInstanceId)()
     }
   }
 }

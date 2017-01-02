@@ -47,10 +47,10 @@ class FormicSystem(config: Config = ConfigFactory.load()) extends DataTypeInitia
   @JSExport
   def init(callback: NewInstanceCallback, username: ClientId = ClientId()) = {
     initFactories()
-    val instantiator = system.actorOf(Props(new DataTypeInstantiator(factories)))
-    val wrappedCallback = system.actorOf(Props(new NewInstanceCallbackActorWrapper(callback)))
+    val instantiator = system.actorOf(Props(new DataTypeInstantiator(factories)), "Instantiator")
+    val wrappedCallback = system.actorOf(Props(new NewInstanceCallbackActorWrapper(callback)), "CallbackActor")
     val url = s"ws://${username.id}@$serverAddress:$serverPort/formic"
-    connection = system.actorOf(Props(new WebSocketConnection(wrappedCallback, instantiator, username, WebSocketFactory, url)))
+    connection = system.actorOf(Props(new WebSocketConnection(wrappedCallback, instantiator, username, WebSocketFactory, url)), "WebSocketConnection")
   }
 
   @JSExport
