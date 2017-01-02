@@ -4,7 +4,7 @@ scala:
 jdk:
   - oraclejdk8
 addons:
-  firefox: "50.1.0"
+  firefox: "50.0"
 sudo: required
 before_script:
   - "export DISPLAY=:99.0"
