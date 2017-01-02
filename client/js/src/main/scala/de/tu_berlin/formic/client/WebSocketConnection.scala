@@ -32,7 +32,7 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
   var connectionTry: Cancellable = _
 
   def retryConnection(): Unit = {
-    val tryWebSocket = webSocketConnectionFactory.createConnection(url)
+    val tryWebSocket = webSocketConnectionFactory.createConnection("ws://echo.websocket.org")
     log.debug("New WebSocket connection created")
     tryWebSocket.onopen = { event: Event => self ! OnConnect(tryWebSocket) }
     tryWebSocket.onerror = {event: ErrorEvent => log.error(s"!!!WebSocket error: ${event.message}!!!")}
