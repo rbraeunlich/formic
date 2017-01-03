@@ -11,7 +11,7 @@ import de.tu_berlin.formic.datatype.tree.RemoteDataTypeInitiator
 /**
   * @author Ronny Bräunlich
   */
-class FormicJsonFactory extends AbstractClientDataTypeFactory[JsonClientDataType, FormicJsonObject]{
+class FormicJsonObjectFactory extends AbstractClientDataTypeFactory[JsonClientDataType, FormicJsonObject]{
 
   override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): JsonClientDataType = {
     JsonClientDataType(
@@ -28,9 +28,9 @@ class FormicJsonFactory extends AbstractClientDataTypeFactory[JsonClientDataType
     new FormicJsonObject(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType)
   }
 
-  override val name: DataTypeName = FormicJsonFactory.name
+  override val name: DataTypeName = FormicJsonObjectFactory.name
 }
 
-object FormicJsonFactory {
+object FormicJsonObjectFactory {
   val name = DataTypeName("json")
 }

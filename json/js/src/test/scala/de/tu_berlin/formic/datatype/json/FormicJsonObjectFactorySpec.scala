@@ -11,7 +11,7 @@ import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 /**
   * @author Ronny Bräunlich
   */
-class FormicJsonFactorySpec extends TestKit(ActorSystem("FormicJsonFactorySpec"))
+class FormicJsonObjectFactorySpec extends TestKit(ActorSystem("FormicJsonFactorySpec"))
   with WordSpecLike
   with BeforeAndAfterAll
   with Matchers
@@ -21,20 +21,20 @@ class FormicJsonFactorySpec extends TestKit(ActorSystem("FormicJsonFactorySpec")
     system.terminate()
   }
 
-  "A FormicJsonFactory" must {
+  "A FormicJsonObjectFactory" must {
     "have correct data type name" in {
-      val factory: TestActorRef[FormicJsonFactory] = TestActorRef(Props(new FormicJsonFactory()))
+      val factory: TestActorRef[FormicJsonObjectFactory] = TestActorRef(Props(new FormicJsonObjectFactory()))
 
       factory.underlyingActor.name should equal(DataTypeName("json"))
     }
 
     "create FormicJsonObjects and JsonClientDataType" in {
-      val factory = system.actorOf(Props(new FormicJsonFactory()))
+      val factory = system.actorOf(Props(new FormicJsonObjectFactory()))
       val outgoing = TestProbe()
       val dataTypeInstanceId = DataTypeInstanceId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "{\"value\":1.5, \"children\": []}", Option.empty, CreateRequest(
-        ClientId(), dataTypeInstanceId, FormicJsonFactory.name
+        ClientId(), dataTypeInstanceId, FormicJsonObjectFactory.name
       ))
 
       val answer = expectMsgClass(classOf[NewDataTypeCreated])
@@ -43,7 +43,7 @@ class FormicJsonFactorySpec extends TestKit(ActorSystem("FormicJsonFactorySpec")
       wrapper shouldBe a[FormicJsonObject]
       wrapper.dataTypeInstanceId should equal(dataTypeInstanceId)
       wrapper.actor should equal(answer.dataTypeActor)
-      wrapper.dataTypeName should equal(FormicJsonFactory.name)
+      wrapper.dataTypeName should equal(FormicJsonObjectFactory.name)
       answer.dataTypeActor should not be null
     }
   }
