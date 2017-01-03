@@ -18,6 +18,10 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
   with BeforeAndAfterAll
   with Matchers {
 
+  override def afterAll(): Unit = {
+    system.terminate()
+  }
+
   implicit val ec = system.dispatcher
 
   "Formic Tree" must {
