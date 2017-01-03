@@ -1,5 +1,8 @@
 package de.tu_berlin.formic.example
 
+import java.time.Instant
+
+import akka.http.scaladsl.model.DateTime
 import org.openqa.selenium.chrome.{ChromeDriver, ChromeDriverService, ChromeOptions}
 import org.scalactic.source
 import org.scalatest.selenium.WebBrowser
@@ -129,15 +132,15 @@ class WebSiteSpec extends FlatSpec
     secondUserDriver.quit()
   }
 
-  "Two users" should "be able to concurrently edit the tree" in {
+  "Two users" should "be able to concurrently edit the tree" ignore {
     go to host + "/index"
     click on id("new-tree-button")
-    Thread.sleep(5000)
+    Thread.sleep(3000)
     val treeHeadTag = tagName("div").findElement.get
     val treeId = treeHeadTag.attribute("id").get.replaceFirst("head", "")
     numberField("input" + treeId).value = "1"
     click on id("insert" + treeId)
-    Thread.sleep(5000)
+    Thread.sleep(3000)
     val secondUserDriver = new ChromeDriver()
     go.to(host + "/index")(secondUserDriver)
     textField("subscribe-id")(secondUserDriver).value = treeId
@@ -152,8 +155,27 @@ class WebSiteSpec extends FlatSpec
 
     numberField("input" + treeId).value = if (user1Id > user2Id) firstValue else secondValue
     numberField("input" + treeId)(secondUserDriver).value = if (user2Id <= user1Id) secondValue else firstValue
-    click on id("insert" + treeId)
-    click.on("insert" + treeId)(secondUserDriver)
+    val t1 = new Thread(new Runnable {
+      override def run(): Unit = {
+        println("Before Click1 " + Instant.now)
+        click on id("insert" + treeId)
+        println("After Click1 " + Instant.now)
+      }
+    })
+    val t2 = new Thread(new Runnable {
+      override def run(): Unit = {
+        println("Before Click2 " + Instant.now)
+        click.on("insert" + treeId)(secondUserDriver)
+        println("After Click2 " + Instant.now)
+      }
+    })
+    t1.start()
+    t2.start()
+    //println("Before Click1 " + Instant.now)
+    //click on id("insert" + treeId)
+    //println("After Click1 " + Instant.now)
+    //click.on("insert" + treeId)(secondUserDriver)
+    //println("After Click2 " + Instant.now)
     Thread.sleep(5000)
     val elementsUser1 = xpath(s"//div[@id='$treeId']/div/ul/li/ul/li").findAllElements.toList
     elementsUser1.head.text should be(firstValue)
