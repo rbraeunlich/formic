@@ -4,7 +4,7 @@ import akka.actor.{ActorSystem, PoisonPill, Props, Terminated}
 import akka.testkit.{EventFilter, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.Dispatcher.WrappedUpdateResponse
-import de.tu_berlin.formic.client.WebSocketConnection.{OnClose, OnConnect, OnError, OnMessage}
+import de.tu_berlin.formic.client.WebSocketConnection._
 import de.tu_berlin.formic.common.datatype.OperationContext
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
@@ -53,8 +53,8 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
 
     "register for onopen events" in {
       val factory = new TestWebSocketFactory
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), factory, "")))
-      system.scheduler.scheduleOnce(0.millis){
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), factory, "1")))
+      system.scheduler.scheduleOnce(0.millis) {
         awaitCond(factory.mock.onopen != null)
         factory.mock.onopen(null)
       }
@@ -62,8 +62,8 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
     }
 
     "create a dispatcher" in {
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), new TestWebSocketFactory, "")))
-      val f = Future{
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), new TestWebSocketFactory, "2")))
+      val f = Future {
         val result = connection.underlyingActor.dispatcher should not equal null
         //explicitely kill the actor or else the running job won't stop
         connection ! PoisonPill
@@ -79,7 +79,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
 
     "register for onerror and onmessage events" in {
       val factory = new TestWebSocketFactory
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), factory, "")))
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), factory, "3")))
       system.scheduler.scheduleOnce(0.millis) {
         awaitCond(factory.mock.onopen != null)
         factory.mock.onopen(null)
@@ -87,34 +87,42 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       awaitAssert(factory.mock.asInstanceOf[WebSocket].onmessage should not be null, timeout)
     }
 
-    "forward error messages to the dispatcher" ignore {
+    "forward error messages to the dispatcher" in {
       //EventFilter does not work yet in AkkaJS
-      val connection = system.actorOf(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), new TestWebSocketFactory, "")))
+      val factory = new TestWebSocketFactory
+      val connection = system.actorOf(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), factory, "4")))
       system.scheduler.scheduleOnce(0.millis) {
-        connection ! OnConnect
-
-        EventFilter.debug(message = "Received OnError message", occurrences = 1) intercept {
-          connection ! OnError("test")
-        }
+        awaitCond(factory.mock.onopen != null)
+        factory.mock.onopen(null)
+        connection ! OnError("test")
+      }
+      EventFilter.error(message = "Error from WebSocket connection: test", occurrences = 1) intercept {
+        connection ! OnError("test")
       }
     }
 
-    "forward CreateResponses from the WebSocketConnection to the dispatcher" ignore {
-      val createResponse = CreateResponse(DataTypeInstanceId())
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), new TestWebSocketFactory, "")))
-      //TODO
+    "forward CreateResponses from the WebSocketConnection to the dispatcher" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val factory = new TestWebSocketFactory
+      val createResponse = CreateResponse(dataTypeInstanceId)
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), factory, "5")))
+      val dataType = TestProbe()
       system.scheduler.scheduleOnce(0.millis) {
-        connection ! OnConnect
+        awaitCond(factory.mock.onopen != null)
+        factory.mock.onopen(null)
+        val dispatcher = connection.getSingleChild("dispatcher")
+        dispatcher ! NewDataTypeCreated(dataTypeInstanceId, dataType.ref, new TestFormicDataType())
 
         connection ! OnMessage(write(createResponse))
       }
+      dataType.expectMsg(timeout, createResponse)
     }
 
     "forward UpdateResponses from the WebSocketConnection to the dispatcher" in {
       val updateResponse = UpdateResponse(DataTypeInstanceId(), TestClasses.dataTypeName, "", Option.empty)
       val instantiator = TestProbe()
       val factory = new TestWebSocketFactory
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, instantiator.ref, ClientId(), factory, "")))
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, instantiator.ref, ClientId(), factory, "6")))
       system.scheduler.scheduleOnce(0.millis) {
         awaitCond(factory.mock.onopen != null)
         factory.mock.onopen(null)
@@ -138,7 +146,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       }
       val operationMessage = OperationMessage(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName, List.empty)
       val factory = new TestWebSocketFactory
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, instantiator.ref, ClientId(), factory, "")))
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, instantiator.ref, ClientId(), factory, "7")))
       system.scheduler.scheduleOnce(0.millis) {
         awaitCond(factory.mock.onopen != null)
         factory.mock.onopen(null)
@@ -155,7 +163,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       val probe = TestProbe()
       val factory = new TestWebSocketFactory
       val clientId = ClientId()
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, clientId, factory, "")))
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, clientId, factory, "8")))
       system.scheduler.scheduleOnce(0.millis) {
         awaitCond(factory.mock.onopen != null)
         factory.mock.onopen(null)
@@ -174,7 +182,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       val request = HistoricOperationRequest(null, DataTypeInstanceId(), OperationId())
       val factory = new TestWebSocketFactory
       val clientId = ClientId()
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, clientId, factory, "")))
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, clientId, factory, "9")))
       system.scheduler.scheduleOnce(0.millis) {
         awaitCond(factory.mock.onopen != null)
         factory.mock.onopen(null)
@@ -193,7 +201,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       val request = UpdateRequest(null, DataTypeInstanceId())
       val factory = new TestWebSocketFactory
       val clientId = ClientId()
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, clientId, factory, "")))
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, clientId, factory, "10")))
       system.scheduler.scheduleOnce(0.millis) {
         awaitCond(factory.mock.onopen != null)
         factory.mock.onopen(null)
@@ -212,7 +220,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       val message = OperationMessage(null, DataTypeInstanceId(), TestClasses.dataTypeName, List(TestOperation(OperationId(), OperationContext(List.empty), null)))
       val factory = new TestWebSocketFactory
       val clientId = ClientId()
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, clientId, factory, "")))
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, clientId, factory, "11")))
       system.scheduler.scheduleOnce(0.millis) {
         awaitCond(factory.mock.onopen != null)
         factory.mock.onopen(null)
@@ -233,7 +241,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
 
     "register for onclose events" in {
       val factory = new TestWebSocketFactory
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), factory, "")))
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), factory, "12")))
       system.scheduler.scheduleOnce(0.millis) {
         awaitCond(factory.mock.onopen != null)
         factory.mock.onopen(null)
@@ -244,7 +252,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
     "become offline after receiving an OnClose message" in {
       val watcher = TestProbe()
       val factory = new TestWebSocketFactory
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), factory, "")))
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, ClientId(), factory, "13")))
       system.scheduler.scheduleOnce(0.millis) {
         watcher watch connection
         awaitCond(factory.mock.onopen != null)
@@ -262,7 +270,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
     "buffer outgoing CreateRequests after becoming offline and send them after becoming connected again" in {
       val clientId = ClientId()
       val factory = new TestWebSocketFactory
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, clientId, factory, "")))
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, clientId, factory, "14")))
       val request = CreateRequest(null, DataTypeInstanceId(), TestClasses.dataTypeName)
       val probe = TestProbe()
       system.scheduler.scheduleOnce(0.millis) {
@@ -288,7 +296,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
     "buffer outgoing HistoricOperationRequests after becoming offline and send them after becoming connected again" in {
       val clientId = ClientId()
       val factory = new TestWebSocketFactory
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, clientId, factory, "")))
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, clientId, factory, "15")))
       val request = HistoricOperationRequest(null, DataTypeInstanceId(), OperationId())
       system.scheduler.scheduleOnce(0.millis) {
         awaitCond(factory.mock.onopen != null)
@@ -314,7 +322,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
     "buffer outgoing UpdateRequests after becoming offline and send them after becoming connected again" in {
       val clientId = ClientId()
       val factory = new TestWebSocketFactory
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, clientId, factory, "")))
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, clientId, factory, "16")))
       val request = UpdateRequest(null, DataTypeInstanceId())
       system.scheduler.scheduleOnce(0.millis) {
         awaitCond(factory.mock.onopen != null)
@@ -339,7 +347,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
     "buffer outgoing OperationMessages after becoming offline and send them after becoming connected again" in {
       val clientId = ClientId()
       val factory = new TestWebSocketFactory
-      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, clientId, factory, "")))
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(TestProbe().ref, TestProbe().ref, clientId, factory, "17")))
       val message = OperationMessage(null, DataTypeInstanceId(), TestClasses.dataTypeName, List(TestOperation(OperationId(), OperationContext(List.empty), null)))
       system.scheduler.scheduleOnce(0.millis) {
         awaitCond(factory.mock.onopen != null)
