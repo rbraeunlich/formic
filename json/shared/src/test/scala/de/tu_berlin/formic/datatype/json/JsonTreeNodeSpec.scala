@@ -362,6 +362,18 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
     node.getData should contain inOrder(firstNode, middleNode, lastNode)
   }
 
+  it should "correctly translate a JSON Path pointing below root" in {
+    val node = ObjectNode(null, List.empty)
+
+    node.translateJsonPath(JsonPath("foo")) should equal(AccessPath(0))
+  }
+
+  it should "correctly translate a JSON Path pointing below an Array" in {
+    val node = ObjectNode(null, List(ArrayNode("arr", List.empty)))
+
+    node.translateJsonPath(JsonPath("arr", "0")) should equal(AccessPath(0,0))
+  }
+
   it should "correctly translate a Json path" in {
     val secondLevel = List(NumberNode("21", 2.0), NumberNode("22", 1.0))
     val firstLevel = List(NumberNode("11", 100), ObjectNode("12", secondLevel))

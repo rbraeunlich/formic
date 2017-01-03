@@ -160,11 +160,20 @@ class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) e
   }
 
   def translatePathRecursive(node: JsonTreeNode[_], jsonPath: JsonPath): List[Int] = {
-    if(jsonPath.path.isEmpty) return List.empty
+    if (jsonPath.path.isEmpty) return List.empty
+
     val childWithIndex = node.children.zipWithIndex.find(t => t._1.key == jsonPath.path.head)
     childWithIndex match {
       case Some(c) => List(c._2) ::: translatePathRecursive(c._1, jsonPath.dropFirstElement)
-      case None => throw new IllegalArgumentException(s"Illegal JSON Path encountered: $jsonPath for node $node")
+      case None =>
+        if (jsonPath.path.length == 1 && node.isInstanceOf[ObjectNode]) {
+          //because those two might have children the path might point to non existing position for insertion
+          val keyList = jsonPath.path.head :: node.children.map(node => node.key)
+          List(keyList.sorted.zipWithIndex.find(t => t._1 == jsonPath.path.head).get._2)
+        } else if (jsonPath.path.length == 1 && node.isInstanceOf[ArrayNode]) {
+          List(jsonPath.path.head.toInt)
+        }
+        else throw new IllegalArgumentException(s"Illegal JSON Path encountered: $jsonPath for node $node")
     }
   }
 
