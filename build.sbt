@@ -1,4 +1,4 @@
-val akkaVersion = "2.4.14"
+val akkaVersion = "2.4.16"
 
 val uPickleVersion = "0.4.3"
 
@@ -50,7 +50,7 @@ lazy val common = crossProject.in(file("common")).
   ).
   jsSettings(
     libraryDependencies ++= Seq(
-      "eu.unicredit" %%% "akkajsactor" % ("0." + akkaVersion)
+      "org.akka-js" %%% "akkajsactor" % ("0." + akkaVersion)
     )
   )
 
@@ -73,7 +73,7 @@ lazy val linear = crossProject.in(file("linear")).
   ).
   jsSettings(
     libraryDependencies ++= Seq(
-      "eu.unicredit" %%% "akkajstestkit" % ("0." + akkaVersion + "-SNAPSHOT")
+      "org.akka-js" %%% "akkajstestkit" % ("0." + akkaVersion)
     )
   )
   .dependsOn(common)
@@ -97,7 +97,7 @@ lazy val tree = crossProject.in(file("tree")).
   ).
   jsSettings(
     libraryDependencies ++= Seq(
-      "eu.unicredit" %%% "akkajstestkit" % ("0." + akkaVersion + "-SNAPSHOT")
+      "org.akka-js" %%% "akkajstestkit" % ("0." + akkaVersion)
     )
   )
   .dependsOn(common)
@@ -121,7 +121,7 @@ lazy val json = crossProject.in(file("json")).
   ).
   jsSettings(
     libraryDependencies ++= Seq(
-      "eu.unicredit" %%% "akkajstestkit" % ("0." + akkaVersion + "-SNAPSHOT")
+      "org.akka-js" %%% "akkajstestkit" % ("0." + akkaVersion)
     )
   )
   .dependsOn(common, tree)
@@ -140,8 +140,8 @@ lazy val client = crossProject.in(file("client")).
   ).
   jsSettings(
     libraryDependencies ++= Seq(
-      "eu.unicredit" %%% "akkajsactor" % ("0." + akkaVersion),
-      "eu.unicredit" %%% "akkajstestkit" % ("0." + akkaVersion + "-SNAPSHOT"),
+      "org.akka-js" %%% "akkajsactor" % ("0." + akkaVersion),
+      "org.akka-js" %%% "akkajstestkit" % ("0." + akkaVersion),
       "org.scala-js" %%% "scalajs-dom" % "0.9.0"
     )
   ).
