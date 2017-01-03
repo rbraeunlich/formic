@@ -60,6 +60,7 @@ class FormicTree[T](_callback: () => Unit,
       map(tree => tree.getNode(path))
   }
 
+  @JSExport
   def getTree()(implicit ec: ExecutionContext): Future[TreeNode] = {
     ask(actor, UpdateRequest(null, dataTypeInstanceId)).
       mapTo[UpdateResponse].
