@@ -57,7 +57,7 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
     "allow two users to work on a linear structure together" in {
       server.setDaemon(true)
       server.start()
-      Thread.sleep(3000)
+      Thread.sleep(6000)
 
       implicit val materializer = ActorMaterializer()
       import system.dispatcher
