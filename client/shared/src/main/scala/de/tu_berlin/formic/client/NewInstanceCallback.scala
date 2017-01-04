@@ -8,8 +8,14 @@ import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
   */
 trait NewInstanceCallback {
 
+  /**
+    * Set a new callback interface at a data type instance that was created remotely.
+    */
   def newCallbackFor(instance: FormicDataType, dataType: DataTypeName): () => Unit
 
+  /**
+    * Perform any initializations necessary for a new, remote data type.
+    */
   def doNewInstanceCreated(instance: FormicDataType, dataType: DataTypeName)
 
   final def newInstanceCreated(instance: FormicDataType, dataType: DataTypeName) = {

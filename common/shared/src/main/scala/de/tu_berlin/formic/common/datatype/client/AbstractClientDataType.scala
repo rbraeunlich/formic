@@ -68,6 +68,7 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
       historyBuffer.history.reverse.foreach(controlAlgorithm.canLocalOperationBeApplied)
       //TODO WaveOT will actually send the same operations again here, gotta find a better way
       outgoingConnection ! OperationMessage(null, id, dataTypeName, historyBuffer.history)
+      callbackWrapper ! Invoke
       context.become(acknowledged(callbackWrapper))
 
     case ReceiveCallback(callback) =>
