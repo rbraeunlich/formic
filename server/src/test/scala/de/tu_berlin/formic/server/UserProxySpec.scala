@@ -65,11 +65,12 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
       val dataTypeInstanceId = DataTypeInstanceId()
       userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, datatype.TestClasses.dataTypeName)
       outgoingProbe.receiveOne(3 seconds)
+      val clientId: ClientId = ClientId()
       val operationMessage = OperationMessage(
-        ClientId(),
+        clientId,
         dataTypeInstanceId,
         datatype.TestClasses.dataTypeName,
-        List(datatype.TestOperation(OperationId(), OperationContext(List.empty), ClientId()))
+        List(datatype.TestOperation(OperationId(), OperationContext(List.empty), clientId))
       )
 
       userProxy ! operationMessage
