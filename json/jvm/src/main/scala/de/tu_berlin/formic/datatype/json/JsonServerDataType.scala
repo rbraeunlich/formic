@@ -2,10 +2,11 @@ package de.tu_berlin.formic.datatype.json
 
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
-import de.tu_berlin.formic.common.datatype.{AbstractServerDataType, DataTypeName, DataTypeOperation, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, OperationTransformer}
+import de.tu_berlin.formic.common.server.datatype.AbstractServerDataType
+import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
 import de.tu_berlin.formic.datatype.tree.{TreeNode, TreeStructureOperation}
 import upickle.default._
-import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
 /**
   * @author Ronny Bräunlich
   */

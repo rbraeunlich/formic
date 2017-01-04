@@ -4,7 +4,6 @@ import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.controlalgo.WaveOTServer
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.server.datatype.AbstractDataTypeFactory
-import de.tu_berlin.formic.datatype.linear.LinearServerDataType
 import upickle.default._
 
 /**

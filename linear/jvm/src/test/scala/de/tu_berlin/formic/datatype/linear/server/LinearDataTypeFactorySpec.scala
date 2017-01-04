@@ -5,7 +5,6 @@ import akka.testkit.{ImplicitSender, TestKit}
 import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse}
 import de.tu_berlin.formic.common.server.datatype.NewDataTypeCreated
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
-import de.tu_berlin.formic.datatype.linear.LinearServerDataType
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 import scala.concurrent.duration._

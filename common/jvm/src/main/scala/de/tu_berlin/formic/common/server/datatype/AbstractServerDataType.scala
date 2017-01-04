@@ -1,11 +1,12 @@
-package de.tu_berlin.formic.common.datatype
+package de.tu_berlin.formic.common.server.datatype
 
 import akka.actor.ActorLogging
 import akka.persistence.{PersistentActor, RecoveryCompleted}
-import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
-import de.tu_berlin.formic.common.datatype.AbstractServerDataType.{GetHistory, HistoricOperationsAnswer}
-import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
+import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, HistoryBuffer, OperationTransformer}
+import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
+import de.tu_berlin.formic.common.server.datatype.AbstractServerDataType._
 /**
   * @author Ronny Bräunlich
   */

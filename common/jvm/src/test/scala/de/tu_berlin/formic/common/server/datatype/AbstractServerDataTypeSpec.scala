@@ -1,14 +1,14 @@
-package de.tu_berlin.formic.common.datatype
+package de.tu_berlin.formic.common.server.datatype
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
-import de.tu_berlin.formic.common.datatype.AbstractServerDataType.HistoricOperationsAnswer
+import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
+import de.tu_berlin.formic.common.server.datatype.AbstractServerDataType.{GetHistory, HistoricOperationsAnswer}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest.Assertions._
 import org.scalatest.{Matchers, WordSpecLike}
-import de.tu_berlin.formic.common.datatype.AbstractServerDataType.GetHistory
 
 class AbstractServerDataTypeSpecTestServerDataType(override val historyBuffer: HistoryBuffer, id: DataTypeInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataType(id, controlAlgorithm) {
 

@@ -2,7 +2,7 @@ package de.tu_berlin.formic.common.server.datatype
 
 import akka.actor.{Actor, ActorLogging, Props}
 import de.tu_berlin.formic.common.DataTypeInstanceId
-import de.tu_berlin.formic.common.datatype.{AbstractServerDataType, DataTypeName}
+import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.message.CreateRequest
 
 import scala.reflect.ClassTag

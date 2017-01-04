@@ -1,8 +1,10 @@
-package de.tu_berlin.formic.datatype.linear
+package de.tu_berlin.formic.datatype.linear.server
 
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
-import de.tu_berlin.formic.common.datatype.{AbstractServerDataType, DataTypeName, DataTypeOperation, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, OperationTransformer}
+import de.tu_berlin.formic.common.server.datatype.AbstractServerDataType
+import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation, LinearNoOperation, LinearTransformer}
 import upickle.default._
 
 import scala.collection.mutable.ArrayBuffer
