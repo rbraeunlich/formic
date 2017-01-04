@@ -103,8 +103,8 @@ class Main {
     (eventObject: JQueryEventObject) => {
       val tree = trees.find(s => s.dataTypeInstanceId.id == id).get
       val toInsert = jQuery("#input" + id).value()
-      val where = jQuery("#path" + id).`val`().toString.split("/").filter(s => s.nonEmpty).map(s => s.toInt).toList
-      tree.insert(toInsert.toString.toInt, AccessPath(where))
+      val where = jQuery("#path" + id).`val`().toString.split("/").filter(s => s.nonEmpty).map(s => s.toInt)
+      tree.insert(toInsert.toString.toInt, AccessPath(where:_*))
     }
   }
 
@@ -112,8 +112,8 @@ class Main {
     (eventObject: JQueryEventObject) => {
       println("delete value from tree")
       val tree = trees.find(s => s.dataTypeInstanceId.id == id).get
-      val where = jQuery("#path" + id).`val`().toString.split("/").filter(s => s.nonEmpty).map(s => s.toInt).toList
-      tree.remove(AccessPath(where))
+      val where = jQuery("#path" + id).`val`().toString.split("/").filter(s => s.nonEmpty).map(s => s.toInt)
+      tree.remove(AccessPath(where:_*))
     }
   }
 

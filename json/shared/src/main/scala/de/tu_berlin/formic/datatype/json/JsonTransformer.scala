@@ -46,14 +46,14 @@ class JsonTransformer extends TreeTransformer {
       return JsonReplaceOperation(op1.accessPath, op1.tree, op1.id, context, op1.clientId)
     }
     val tp = transformationPoint(op1.accessPath, op2.accessPath)
-    if (op1.accessPath.list(tp) < op2.accessPath.list(tp)) {
+    if (op1.accessPath.path(tp) < op2.accessPath.path(tp)) {
       return JsonReplaceOperation(op1.accessPath, op1.tree, op1.id, context, op1.clientId)
     }
-    if (op1.accessPath.list(tp) > op2.accessPath.list(tp)) {
+    if (op1.accessPath.path(tp) > op2.accessPath.path(tp)) {
       val newPath = updatePlus(op1.accessPath, tp)
       return JsonReplaceOperation(newPath, op1.tree, op1.id, context, op1.clientId)
     }
-    if (op1.accessPath.list.size > op2.accessPath.list.size) {
+    if (op1.accessPath.path.size > op2.accessPath.path.size) {
       val newPath = updatePlus(op1.accessPath, tp)
       return JsonReplaceOperation(newPath, op1.tree, op1.id, context, op1.clientId)
     }
@@ -65,14 +65,14 @@ class JsonTransformer extends TreeTransformer {
       return JsonReplaceOperation(op1.accessPath, op1.tree, op1.id, context, op1.clientId)
     }
     val tp = transformationPoint(op1.accessPath, op2.accessPath)
-    if (op1.accessPath.list(tp) < op2.accessPath.list(tp)) {
+    if (op1.accessPath.path(tp) < op2.accessPath.path(tp)) {
       return JsonReplaceOperation(op1.accessPath, op1.tree, op1.id, context, op1.clientId)
     }
-    if (op1.accessPath.list(tp) > op2.accessPath.list(tp)) {
+    if (op1.accessPath.path(tp) > op2.accessPath.path(tp)) {
       val newPath = updateMinus(op1.accessPath, tp)
       return JsonReplaceOperation(newPath, op1.tree, op1.id, context, op1.clientId)
     }
-    if (op1.accessPath.list.size > op2.accessPath.list.size) {
+    if (op1.accessPath.path.size > op2.accessPath.path.size) {
       val newPath = updateMinus(op1.accessPath, tp)
       return JsonReplaceOperation(newPath, op1.tree, op1.id, context, op1.clientId)
     }

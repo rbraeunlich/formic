@@ -21,7 +21,7 @@ class JsonFormicJsonDataTypeProtocol(val name: DataTypeName)(implicit val reader
     val operationId = OperationId(valueMap("operationId").str)
     val operationContext = valueMap("operationContext").arr.map(v => OperationId(v.str)).toList
     val clientId = ClientId(valueMap("clientId").str)
-    val accessPath = AccessPath(valueMap("accessPath").arr.map(v => v.num.toInt).toList)
+    val accessPath = AccessPath(valueMap("accessPath").arr.map(v => v.num.toInt):_*)
     if (valueMap.contains("type")) {
       //here we unwrap the hack again, because a replace is always a single "tree"
       JsonReplaceOperation(accessPath, readJs[ObjectNode](valueMap("object")).children.head, operationId, OperationContext(operationContext), clientId)
@@ -39,7 +39,7 @@ class JsonFormicJsonDataTypeProtocol(val name: DataTypeName)(implicit val reader
       case ins: TreeInsertOperation =>
         write(
           Js.Obj(
-            ("accessPath", writeJs(ins.accessPath.list)),
+            ("accessPath", writeJs(ins.accessPath.path)),
             ("object", writeJs(ins.tree.asInstanceOf[ObjectNode])),
             ("operationId", Js.Str(op.id.id)),
             ("operationContext", Js.Arr(op.operationContext.operations.map(o => Js.Str(o.id)): _*)),
@@ -49,7 +49,7 @@ class JsonFormicJsonDataTypeProtocol(val name: DataTypeName)(implicit val reader
       case del: TreeDeleteOperation =>
         write(
           Js.Obj(
-            ("accessPath", writeJs(del.accessPath.list)),
+            ("accessPath", writeJs(del.accessPath.path)),
             ("operationId", Js.Str(op.id.id)),
             ("operationContext", Js.Arr(op.operationContext.operations.map(o => Js.Str(o.id)): _*)),
             ("clientId", Js.Str(op.clientId.id))
@@ -58,7 +58,7 @@ class JsonFormicJsonDataTypeProtocol(val name: DataTypeName)(implicit val reader
       case no: TreeNoOperation =>
         write(
           Js.Obj(
-            ("accessPath", writeJs(no.accessPath.list)),
+            ("accessPath", writeJs(no.accessPath.path)),
             ("operationId", Js.Str(op.id.id)),
             ("operationContext", Js.Arr(op.operationContext.operations.map(o => Js.Str(o.id)): _*)),
             ("clientId", Js.Str(op.clientId.id))
@@ -69,7 +69,7 @@ class JsonFormicJsonDataTypeProtocol(val name: DataTypeName)(implicit val reader
           Js.Obj(
             //to distinguish replace from inserts
             ("type", writeJs(Js.Str("replace"))),
-            ("accessPath", writeJs(repl.accessPath.list)),
+            ("accessPath", writeJs(repl.accessPath.path)),
             //this is a little hack so we don't have to distinguish every single node type
             //therefore we wrap every replace node within an object node
             ("object", writeJs(ObjectNode(null, List(repl.tree.asInstanceOf[JsonTreeNode[_]])))),

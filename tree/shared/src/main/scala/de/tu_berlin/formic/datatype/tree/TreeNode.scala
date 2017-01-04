@@ -20,12 +20,12 @@ trait TreeNode {
 
   def applyOperationRecursive(operation: TreeStructureOperation, accessPath: AccessPath): TreeNode
 
-  def getNode(path: AccessPath): TreeNode = {
+  def getNode(accessPath: AccessPath): TreeNode = {
     //in contrast to the application of an operation, we need an empty path here
-    if (path.list.isEmpty) {
+    if (accessPath.path.isEmpty) {
       this
     } else {
-      children(path.list.head).getNode(path.dropFirstElement)
+      children(accessPath.path.head).getNode(accessPath.dropFirstElement)
     }
   }
 
@@ -35,7 +35,7 @@ trait TreeNode {
 case class ValueTreeNode(value: Any, children: List[ValueTreeNode] = List.empty) extends TreeNode {
 
   private def isCorrectLevel(accessPath: AccessPath): Boolean = {
-    accessPath.list.length == 1
+    accessPath.path.length == 1
   }
 
   /**
@@ -47,11 +47,11 @@ case class ValueTreeNode(value: Any, children: List[ValueTreeNode] = List.empty)
     */
   override def applyOperationRecursive(operation: TreeStructureOperation, accessPath: AccessPath): ValueTreeNode = {
     if (isCorrectLevel(accessPath)) {
-      ValueTreeNode(value, executeOperation(operation, accessPath.list.head))
+      ValueTreeNode(value, executeOperation(operation, accessPath.path.head))
     } else {
-      val child = children(accessPath.list.head)
+      val child = children(accessPath.path.head)
       val newChild = child.applyOperationRecursive(operation, accessPath.dropFirstElement)
-      ValueTreeNode(value, children.updated(accessPath.list.head, newChild))
+      ValueTreeNode(value, children.updated(accessPath.path.head, newChild))
     }
   }
 

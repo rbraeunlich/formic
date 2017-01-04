@@ -26,7 +26,7 @@ case class BooleanNode(key: String, private val value: Boolean) extends AtomicNo
 
 
   override def applyOperationRecursive(operation: TreeStructureOperation, accessPath: AccessPath): BooleanNode = {
-    if (accessPath.list.nonEmpty) throw new IllegalArgumentException("Atomic node cannot have children")
+    if (accessPath.path.nonEmpty) throw new IllegalArgumentException("Atomic node cannot have children")
     operation match {
       case JsonReplaceOperation(_, newNode: BooleanNode, _, _, _) => newNode
       case _ => throw new IllegalArgumentException(s"Illegal operation received: $operation")
@@ -39,7 +39,7 @@ case class NumberNode(key: String, private val value: Double) extends AtomicNode
   override def getData: Double = value
 
   override def applyOperationRecursive(operation: TreeStructureOperation, accessPath: AccessPath): NumberNode = {
-    if (accessPath.list.nonEmpty) throw new IllegalArgumentException("Atomic node cannot have children")
+    if (accessPath.path.nonEmpty) throw new IllegalArgumentException("Atomic node cannot have children")
     operation match {
       case JsonReplaceOperation(_, newNode: NumberNode, _, _, _) => newNode
       case _ => throw new IllegalArgumentException(s"Illegal operation received: $operation")
@@ -51,7 +51,7 @@ case class CharacterNode(key: String, private val value: Char) extends AtomicNod
   override def getData: Char = value
 
   override def applyOperationRecursive(operation: TreeStructureOperation, accessPath: AccessPath): CharacterNode = {
-    if (accessPath.list.nonEmpty) throw new IllegalArgumentException("Atomic node cannot have children")
+    if (accessPath.path.nonEmpty) throw new IllegalArgumentException("Atomic node cannot have children")
     operation match {
       case JsonReplaceOperation(_, newNode: CharacterNode, _, _, _) => newNode
       case _ => throw new IllegalArgumentException(s"Illegal operation received: $operation")
@@ -69,7 +69,7 @@ trait JsonTreeNodeWithChildren[T <: JsonTreeNode[_], V] extends JsonTreeNode[V] 
   override val children: List[T]
 
   def executeOperation(operation: TreeStructureOperation, accessPath: AccessPath): List[T] = {
-    val index = accessPath.list.head
+    val index = accessPath.path.head
     operation match {
       case TreeInsertOperation(_, tree: T, _, _, _) =>
         if (index > children.length) throw new ArrayIndexOutOfBoundsException
@@ -90,16 +90,16 @@ case class ArrayNode(key: String, children: List[JsonTreeNode[_]]) extends JsonT
   override def getData: List[JsonTreeNode[_]] = children
 
   private def isCorrectLevel(accessPath: AccessPath): Boolean = {
-    accessPath.list.length == 1
+    accessPath.path.length == 1
   }
 
   override def applyOperationRecursive(operation: TreeStructureOperation, accessPath: AccessPath): ArrayNode = {
     if (isCorrectLevel(accessPath)) {
       ArrayNode(key, executeOperation(operation, accessPath))
     } else {
-      val child = children(accessPath.list.head)
+      val child = children(accessPath.path.head)
       val newChild = child.applyOperationRecursive(operation, accessPath.dropFirstElement)
-      ArrayNode(key, children.updated(accessPath.list.head, newChild))
+      ArrayNode(key, children.updated(accessPath.path.head, newChild))
     }
   }
 }
@@ -108,7 +108,7 @@ case class StringNode(key: String, children: List[CharacterNode]) extends JsonTr
   override def getData: String = children.map(c => c.getData).mkString
 
   private def isCorrectLevel(accessPath: AccessPath): Boolean = {
-    accessPath.list.length == 1
+    accessPath.path.length == 1
   }
 
   override def applyOperationRecursive(operation: TreeStructureOperation, accessPath: AccessPath): StringNode = {
@@ -125,21 +125,21 @@ class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) e
   override def getData: List[JsonTreeNode[_]] = children
 
   private def isCorrectLevel(accessPath: AccessPath): Boolean = {
-    accessPath.list.length == 1
+    accessPath.path.length == 1
   }
 
   override def applyOperationRecursive(operation: TreeStructureOperation, accessPath: AccessPath): JsonTreeNode[List[JsonTreeNode[_]]] = {
     if (isCorrectLevel(accessPath)) {
       ObjectNode(key, executeOperation(operation, accessPath))
     } else {
-      val child = children(accessPath.list.head)
+      val child = children(accessPath.path.head)
       val newChild = child.applyOperationRecursive(operation, accessPath.dropFirstElement)
-      ObjectNode(key, children.updated(accessPath.list.head, newChild))
+      ObjectNode(key, children.updated(accessPath.path.head, newChild))
     }
   }
 
   def executeOperation(operation: TreeStructureOperation, accessPath: AccessPath): List[JsonTreeNode[_]] = {
-    val index = accessPath.list.head
+    val index = accessPath.path.head
     operation match {
       case TreeInsertOperation(_, tree: JsonTreeNode[_], _, _, _) =>
         if (index > children.length) throw new ArrayIndexOutOfBoundsException
@@ -156,7 +156,7 @@ class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) e
   }
 
   def translateJsonPath(jsonPath: JsonPath): AccessPath = {
-    AccessPath(translatePathRecursive(this, jsonPath))
+    AccessPath(translatePathRecursive(this, jsonPath):_*)
   }
 
   def translatePathRecursive(node: JsonTreeNode[_], jsonPath: JsonPath): List[Int] = {

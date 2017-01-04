@@ -21,7 +21,7 @@ class TreeFormicJsonDataTypeProtocol[T](val name: DataTypeName)(implicit val rea
     val operationId = OperationId(valueMap("operationId").str)
     val operationContext = valueMap("operationContext").arr.map(v => OperationId(v.str)).toList
     val clientId = ClientId(valueMap("clientId").str)
-    val accessPath = AccessPath(valueMap("accessPath").arr.map(v => v.num.toInt).toList)
+    val accessPath = AccessPath(valueMap("accessPath").arr.map(v => v.num.toInt):_*)
     if (valueMap.contains("tree")) {
       TreeInsertOperation(accessPath, readJs[ValueTreeNode](valueMap("tree")), operationId, OperationContext(operationContext), clientId)
     } else if (accessPath == AccessPath(-1)) {
@@ -36,7 +36,7 @@ class TreeFormicJsonDataTypeProtocol[T](val name: DataTypeName)(implicit val rea
       case ins: TreeInsertOperation =>
         write(
           Js.Obj(
-            ("accessPath", writeJs(ins.accessPath.list)),
+            ("accessPath", writeJs(ins.accessPath.path)),
             ("tree", writeJs(ins.tree.asInstanceOf[ValueTreeNode])),
             ("operationId", Js.Str(op.id.id)),
             ("operationContext", Js.Arr(op.operationContext.operations.map(o => Js.Str(o.id)): _*)),
@@ -46,7 +46,7 @@ class TreeFormicJsonDataTypeProtocol[T](val name: DataTypeName)(implicit val rea
       case del: TreeDeleteOperation =>
         write(
           Js.Obj(
-            ("accessPath", writeJs(del.accessPath.list)),
+            ("accessPath", writeJs(del.accessPath.path)),
             ("operationId", Js.Str(op.id.id)),
             ("operationContext", Js.Arr(op.operationContext.operations.map(o => Js.Str(o.id)): _*)),
             ("clientId", Js.Str(op.clientId.id))
@@ -55,7 +55,7 @@ class TreeFormicJsonDataTypeProtocol[T](val name: DataTypeName)(implicit val rea
       case no: TreeNoOperation =>
         write(
           Js.Obj(
-            ("accessPath", writeJs(no.accessPath.list)),
+            ("accessPath", writeJs(no.accessPath.path)),
             ("operationId", Js.Str(op.id.id)),
             ("operationContext", Js.Arr(op.operationContext.operations.map(o => Js.Str(o.id)): _*)),
             ("clientId", Js.Str(op.clientId.id))
