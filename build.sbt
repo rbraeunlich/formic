@@ -44,7 +44,6 @@ lazy val common = crossProject.in(file("common")).
   ).
   jvmSettings(
     parallelExecution in Test := false,
-    fork := true,
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %%% "akka-actor" % akkaVersion,
       "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test",
@@ -181,14 +180,18 @@ lazy val websockettestsJS = websockettests.js.dependsOn(commonJS, linearJS, clie
 lazy val server = (project in file("server")).
   settings(commonSettings: _*).
   settings(
+    fork := true,
+    parallelExecution in Test := false,
     name := "formic-server",
     libraryDependencies ++= Seq(
       "org.scalatest" %%% "scalatest" % scalatestVersion % "test",
       "com.typesafe.akka" %%% "akka-actor" % akkaVersion,
       "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test",
       "com.typesafe.akka" %%% "akka-http" % akkaHttpVersion,
-      "com.typesafe.akka" %%% "akka-http-testkit" % akkaHttpVersion % "test"
-    )
+      "com.typesafe.akka" %%% "akka-http-testkit" % akkaHttpVersion % "test",
+      "org.iq80.leveldb"            % "leveldb"          % "0.7",
+      "org.fusesource.leveldbjni"   % "leveldbjni-all"   % "1.8"
+)
   ).
   dependsOn(commonJVM, linearJVM, treeJVM, jsonJVM)
 
