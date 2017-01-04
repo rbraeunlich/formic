@@ -43,10 +43,14 @@ lazy val common = crossProject.in(file("common")).
     )
   ).
   jvmSettings(
+    parallelExecution in Test := false,
+    fork := true,
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %%% "akka-actor" % akkaVersion,
-      "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test"
-    )
+      "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test",
+      "com.typesafe.akka" %%% "akka-persistence" % akkaVersion,
+      "commons-io" % "commons-io" % "2.4"
+)
   ).
   jsSettings(
     libraryDependencies ++= Seq(

@@ -1,14 +1,17 @@
 package de.tu_berlin.formic.common.datatype
 
-import akka.actor.{Actor, ActorLogging}
-import de.tu_berlin.formic.common.DataTypeInstanceId
+import akka.actor.ActorLogging
+import akka.persistence.{PersistentActor, RecoveryCompleted}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
-import de.tu_berlin.formic.common.datatype.AbstractServerDataType.HistoricOperationsAnswer
+import de.tu_berlin.formic.common.datatype.AbstractServerDataType.{GetHistory, HistoricOperationsAnswer}
 import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
+import de.tu_berlin.formic.common.DataTypeInstanceId
 /**
   * @author Ronny Bräunlich
   */
-abstract class AbstractServerDataType(val id: DataTypeInstanceId, val controlAlgorithm: ControlAlgorithm) extends Actor with ActorLogging {
+abstract class AbstractServerDataType(val id: DataTypeInstanceId, val controlAlgorithm: ControlAlgorithm) extends PersistentActor with ActorLogging {
+
+  def persistenceId = id.id
 
   val historyBuffer: HistoryBuffer = new HistoryBuffer()
 
@@ -16,30 +19,18 @@ abstract class AbstractServerDataType(val id: DataTypeInstanceId, val controlAlg
 
   val transformer: OperationTransformer
 
-  private var privateCausallyNotReadyOperations: Set[DataTypeOperation] = Set.empty
-
   override def preStart(): Unit = {
     context.system.eventStream.publish(UpdateResponse(id, dataTypeName, getDataAsJson, Option.empty))
   }
 
-  def receive = {
+  val receiveCommand: Receive = {
     case opMsg: OperationMessage =>
       log.debug(s"DataType $id received OperationMessage: $opMsg")
       //if a client sent several operations, the oldest one will be at the end, therefore we reverse the list here
       val duplicatesRemoved = opMsg.operations.reverse.filter(op => historyBuffer.findOperation(op.id).isEmpty)
-      val (applicable, nonApplicable) = duplicatesRemoved.partition(controlAlgorithm.canBeApplied(_, historyBuffer))
-      val transformed = applicable.map(controlAlgorithm.transform(_, historyBuffer, transformer))
-      transformed.
-        foreach(op => {
-          apply(op)
-          historyBuffer.addOperation(op)
-          }
-        )
-
-      privateCausallyNotReadyOperations ++= nonApplicable
-
-      context.system.eventStream.publish(OperationMessage(opMsg.clientId, opMsg.dataTypeInstanceId, opMsg.dataType, transformed))
-      applyOperationsThatBecameCausallyReady()
+      val applicable = duplicatesRemoved.filter(controlAlgorithm.canBeApplied(_, historyBuffer))
+      //FIXME this is actually not so good because apply() within a subclass could crash because of e.g. a wrong index
+      persistAll(applicable)(applyOperation)
 
     case hist: HistoricOperationRequest =>
       log.debug(s"DataType $id received HistoricOperationRequest: $hist")
@@ -48,34 +39,26 @@ abstract class AbstractServerDataType(val id: DataTypeInstanceId, val controlAlg
     case upd: UpdateRequest =>
       log.debug(s"DataType $id received UpdateRequest: $upd")
       sender ! UpdateResponse(id, dataTypeName, getDataAsJson, historyBuffer.history.headOption.map(op => op.id))
+
+    case GetHistory => sender ! new HistoryBuffer(historyBuffer.history)
   }
 
-  /**
-    * Due to new operations that were applied previously stored ones might became causally ready for
-    * application. Actually we should create an causal order between all the stored operations but
-    * to keep it simple, we'll just recursively call this method until no more operations are ready.
-    */
-  private def applyOperationsThatBecameCausallyReady(): Unit = {
-    val causallyReady = causallyNotReadyOperations.filter(op => controlAlgorithm.canBeApplied(op, historyBuffer))
-    if (causallyReady.isEmpty) {
-      return
-    }
-    privateCausallyNotReadyOperations = privateCausallyNotReadyOperations diff causallyReady
-    causallyReady.foreach(op => applyOperation(op))
-    applyOperationsThatBecameCausallyReady()
+  val receiveRecover: Receive = {
+    case operation: DataTypeOperation => applyOperation(operation)
+    case RecoveryCompleted => log.info(s"Data type ${id.id} $dataTypeName recovered")
   }
 
   private def applyOperation(dataTypeOperation: DataTypeOperation) = {
     val transformed = controlAlgorithm.transform(dataTypeOperation, historyBuffer, transformer)
     apply(transformed)
     historyBuffer.addOperation(transformed)
+    context.system.eventStream.publish(OperationMessage(transformed.clientId, id, dataTypeName, List(transformed)))
   }
 
   def apply(op: DataTypeOperation)
 
   def getDataAsJson: String
 
-  def causallyNotReadyOperations = privateCausallyNotReadyOperations
 }
 
 object AbstractServerDataType {
@@ -85,4 +68,9 @@ object AbstractServerDataType {
     * wrapper.
     */
   case class HistoricOperationsAnswer(operationMessage: OperationMessage)
+
+  /**
+    * For testing purposes only
+    */
+  case object GetHistory
 }
