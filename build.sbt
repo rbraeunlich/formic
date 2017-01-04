@@ -201,6 +201,8 @@ lazy val example = crossProject.in(file("example")).
     libraryDependencies += "org.scalatest" %%% "scalatest" % scalatestVersion % "test"
   ).
   jvmSettings(
+    fork := true,
+    parallelExecution in Test := false,
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test",
       "com.typesafe.akka" %%% "akka-http-testkit" % akkaHttpVersion % "test",
