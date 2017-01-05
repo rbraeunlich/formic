@@ -2,7 +2,7 @@ package de.tu_berlin.formic.client
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.ask
-import com.typesafe.config.{Config, ConfigFactory}
+import com.typesafe.config.{Config }
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated}
 import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
@@ -10,6 +10,7 @@ import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message.{CreateRequest, UpdateRequest}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.datatype.json.{FormicJsonObjectFactory, JsonFormicJsonDataTypeProtocol}
 import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataTypeProtocol
 import de.tu_berlin.formic.datatype.linear.client._
 import de.tu_berlin.formic.datatype.tree._
@@ -80,6 +81,7 @@ class FormicSystem(config: Config) extends DataTypeInitiator {
   def initFactories(): Unit = {
     initLinearFactories()
     initTreeFactories()
+    initJsonFactory()
   }
 
   def initLinearFactories(): Unit = {
@@ -114,5 +116,11 @@ class FormicSystem(config: Config) extends DataTypeInitiator {
     factories += (FormicDoubleTreeFactory.name -> doubleTreeFactory)
     factories += (FormicIntegerTreeFactory.name -> integerTreeFactory)
     factories += (FormicStringTreeFactory.name -> stringTreeFactory)
+  }
+
+  def initJsonFactory() = {
+    val factory = system.actorOf(Props(new FormicJsonObjectFactory), FormicJsonObjectFactory.name.name)
+    FormicJsonProtocol.registerProtocol(new JsonFormicJsonDataTypeProtocol(FormicJsonObjectFactory.name)(JsonFormicJsonDataTypeProtocol.reader, JsonFormicJsonDataTypeProtocol.writer))
+    factories += (FormicJsonObjectFactory.name -> factory)
   }
 }
