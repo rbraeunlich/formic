@@ -28,7 +28,7 @@ class Battleship {
     fireButton.click(handleFireButton _)
     //return keypress
     val guessInput = jQuery(guessInputId)
-    guessInput.keypress(handleInputKeypress _)
+    guessInput.keypress(handleInputKeypress())
     model.generateShipLocations()
   }
 
@@ -39,12 +39,13 @@ class Battleship {
     guessInput.value("")
   }
 
-  def handleInputKeypress() = {
+  def handleInputKeypress(): (JQueryEventObject) => Boolean = {
     event: JQueryEventObject => {
-      println("handleKeypress")
       if (event.which == 13) {
         jQuery(fireButtonId).trigger("click")
+        false
       }
+      else true
     }
   }
 }
