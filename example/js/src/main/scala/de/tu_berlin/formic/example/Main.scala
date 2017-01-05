@@ -27,6 +27,8 @@ class Main {
 
   val trees: ArrayBuffer[FormicIntegerTree] = collection.mutable.ArrayBuffer()
 
+  val jsons: ArrayBuffer[FormicJsonObject] = collection.mutable.ArrayBuffer()
+
   val userId = ClientId()
 
   def start() = {
@@ -147,8 +149,12 @@ class Main {
     jQuery("#startButton").prop("disabled", true)
     jQuery("#guessInput").prop("disabled", false)
     jQuery("#fireButton").prop("disabled", false)
-    val json = new FormicJsonObject(() => {}, system, DataTypeInstanceId(gameInput))
-    new Battleship(json).init()
+    //TODO the callback gotta update the UI somehow
+    val battleship = new Battleship()
+    val json: FormicJsonObject = new FormicJsonObject(() => {
+        battleship.invoke(jsons.find(j => j.dataTypeInstanceId.id == gameInput).get)
+      }, system, DataTypeInstanceId(gameInput))
+    jsons += json
   }
 }
 

@@ -12,7 +12,7 @@ import scala.util.Try
   * @author Ronny Bräunlich
   */
 @JSExport
-class Battleship(val jsonObject: FormicJsonObject)(implicit val ec: ExecutionContext) {
+class Battleship()(implicit val ec: ExecutionContext) {
 
   val fireButtonId = "#fireButton"
 
@@ -20,12 +20,29 @@ class Battleship(val jsonObject: FormicJsonObject)(implicit val ec: ExecutionCon
 
   val view = new View
 
-  val model = new BattleshipModel(view, jsonObject)
+  var model: BattleshipModel = _
 
-  val controller = new BattleshipController(model, view)
+  var controller: BattleshipController = _
+
+  var initialised = false
+
+  /**
+    * This method is a workaround to use the callback interface for initialization
+    * but to be initialized only once.
+    */
+  def invoke(jsonObject: FormicJsonObject) = {
+    if (!initialised) {
+      initialised = true
+      init(jsonObject)
+    } else {
+      //TODO
+    }
+  }
 
   @JSExport
-  def init(): Unit = {
+  def init(jsonObject: FormicJsonObject): Unit = {
+    model = new BattleshipModel(view, jsonObject)
+    controller = new BattleshipController(model, view)
     val fireButton = jQuery(fireButtonId)
     fireButton.click(handleFireButton _)
     //return keypress
@@ -87,7 +104,7 @@ class BattleshipController(val model: BattleshipModel, val view: View)(implicit 
         val row = alphabet.indexOf(firstChar)
         val columnTry = Try(Integer.valueOf(guess.charAt(1).toString))
         if (columnTry.isFailure) global.alert("Oops, the second coordinate isn't on the board.")
-          //FIXME replace the magic 7 here
+        //FIXME replace the magic 7 here
         else if (row < 0 || row >= 7 || columnTry.get < 0 || columnTry.get >= 7) {
           global.alert("Oops, that's off the board!")
         } else {

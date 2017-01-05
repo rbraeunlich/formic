@@ -34,7 +34,7 @@ class BattleshipModel(val view: View, val jsonObject: FormicJsonObject)(implicit
       }
       jsonObject.insertArray(temporalShips.toArray, JsonPath("ships"))
     })
-    jsonObject.getValueAt(JsonPath("ships")).foreach(println)
+    //jsonObject.getValueAt[List[ObjectNode]](JsonPath("ships")).foreach(s => println("Ship: " + s))
   }
 
   def generateShip(boardSize: Int, numShips: Int, shipLength: Int) = {
@@ -54,8 +54,7 @@ class BattleshipModel(val view: View, val jsonObject: FormicJsonObject)(implicit
   }
 
   def isCollision(tempLocation: List[(Int, Int)], numShips: Int, otherShips: List[Ship]): Boolean = {
-    for (i <- 0 until numShips) {
-      val ship = otherShips(i)
+    for (ship <- otherShips) {
       for (j <- tempLocation.indices) {
         if (ship != null && ship.location.contains(tempLocation(j))) return true
       }
@@ -64,7 +63,7 @@ class BattleshipModel(val view: View, val jsonObject: FormicJsonObject)(implicit
   }
 
   def fire(coordinates: (Int, Int)): Future[Boolean] = {
-    val result: Future[Boolean] = jsonObject.getValueAt[ArrayNode](JsonPath("ships")).map(array => array.getData).map(
+    val result: Future[Boolean] = jsonObject.getValueAt[List[ObjectNode]](JsonPath("ships")).map(
       ships => {
         val shipObjects: List[Ship] = ships.map(node => write[ObjectNode](node.asInstanceOf[ObjectNode])).map(json => read[Ship](json))
         val shipHit = shipObjects.find(s => s.location.contains(coordinates))
@@ -80,13 +79,13 @@ class BattleshipModel(val view: View, val jsonObject: FormicJsonObject)(implicit
               true
             } else {
               val hitShip = Ship(ship.location, ship.hits.updated(index, true))
-              jsonObject.insert(hitShip, JsonPath("ships", shipObjects.indexOf(ship).toString))
+              jsonObject.replace(hitShip, JsonPath("ships", shipObjects.indexOf(ship).toString))
               view.displayHit(coordinates._1 + "" + coordinates._2)
               view.displayMessage("HIT!")
               if (hitShip.isSunk) {
                 view.displayMessage("You sunk my battleship")
                 //TODO if two people sink a ship in parallel this will be one too much
-                jsonObject.getValueAt[Int](JsonPath("shipsSunk")).foreach(value => jsonObject.insert(value + 1, JsonPath("shipsSunk")))
+                jsonObject.getValueAt[Int](JsonPath("shipsSunk")).foreach(value => jsonObject.replace(value + 1, JsonPath("shipsSunk")))
               }
               true
             }

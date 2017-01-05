@@ -102,7 +102,7 @@ case class StringNode(key: String, children: List[CharacterNode]) extends JsonTr
   }
 }
 
-class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) extends JsonTreeNode[List[JsonTreeNode[_]]] {
+class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) extends JsonTreeNode[List[JsonTreeNode[_]]] with Serializable{
 
   override def getData: List[JsonTreeNode[_]] = children
 
