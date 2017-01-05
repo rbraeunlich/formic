@@ -10,14 +10,12 @@ import org.scalatest.{FlatSpec, Matchers}
   */
 class JsonTreeNodeSpec extends FlatSpec with Matchers {
 
-  "A boolean node" should "accept replace operation with boolean value" in {
+  "A boolean node" should "reject replace operation with boolean value" in {
     val node = BooleanNode("dull boy", value = true)
     val replacement = BooleanNode("dull boy", value = false)
     val operation = JsonReplaceOperation(AccessPath(), replacement, OperationId(), OperationContext(), ClientId())
 
-    val after = node.applyOperation(operation)
-
-    after should equal(replacement)
+    an[IllegalArgumentException] should be thrownBy node.applyOperation(operation)
   }
 
   it should "reject replace operation with different type" in {
@@ -50,14 +48,12 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
     an[IllegalArgumentException] should be thrownBy node.applyOperation(operation)
   }
 
-  "A number node" should "accept replace operation with boolean value" in {
+  "A number node" should "reject replace operation with number value" in {
     val node = NumberNode("balance", 2.0)
     val replacement = NumberNode("balance", 3.0)
     val operation = JsonReplaceOperation(AccessPath(), replacement, OperationId(), OperationContext(), ClientId())
 
-    val after = node.applyOperation(operation)
-
-    after should equal(replacement)
+    an[IllegalArgumentException] should be thrownBy node.applyOperation(operation)
   }
 
   it should "reject replace operation with different type" in {
@@ -90,14 +86,12 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
     an[IllegalArgumentException] should be thrownBy node.applyOperation(operation)
   }
 
-  "A character node" should "accept a replace operation" in {
+  "A character node" should "reject a replace operation" in {
     val node = CharacterNode("char", 'a')
     val replacement = CharacterNode("char", 'b')
     val operation = JsonReplaceOperation(AccessPath(), replacement, OperationId(), OperationContext(), ClientId())
 
-    val after = node.applyOperation(operation)
-
-    after should equal(replacement)
+    an[IllegalArgumentException] should be thrownBy node.applyOperation(operation)
   }
 
   it should "reject an insertion operation" in {
@@ -201,6 +195,14 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
     val operation = JsonReplaceOperation(AccessPath(0), NumberNode("0", 5.0), OperationId(), OperationContext(), ClientId())
 
     an[ArrayIndexOutOfBoundsException] should be thrownBy node.applyOperation(operation)
+  }
+
+  it should "replace an object node within itself" in {
+    val node = ArrayNode("bar", List(ObjectNode("toReplace", List(NumberNode("num", 1)))))
+    val replacement = ObjectNode("toReplace", List(NumberNode("num", 2)))
+    val operation = JsonReplaceOperation(AccessPath(0), replacement, OperationId(), OperationContext(), ClientId())
+
+    node.applyOperation(operation) should equal(ArrayNode(node.key, List(replacement)))
   }
 
   "A string node" should "accept insertion of character node" in {
@@ -374,7 +376,7 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
     node.translateJsonPath(JsonPath("arr", "0")) should equal(AccessPath(0,0))
   }
 
-  it should "correctly translate a Json path" in {
+  it should "correctly translate a JSON path" in {
     val secondLevel = List(NumberNode("21", 2.0), NumberNode("22", 1.0))
     val firstLevel = List(NumberNode("11", 100), ObjectNode("12", secondLevel))
     val node = ObjectNode(null, firstLevel)
@@ -382,11 +384,21 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
     node.translateJsonPath(JsonPath("12", "22")) should equal(AccessPath(1, 1))
   }
 
-  it should "correctly translate a Json path with an array in between" in {
+  it should "correctly translate a JSON path with an array in between" in {
     val secondLevel = List(ArrayNode("21", List(NumberNode("0", 2.0), NumberNode("1", 1.0))))
     val firstLevel = List(NumberNode("11", 100), ObjectNode("12", secondLevel))
     val node = ObjectNode(null, firstLevel)
 
     node.translateJsonPath(JsonPath("12", "21", "0")) should equal(AccessPath(1, 0, 0))
+  }
+
+  it should "replace and array within itself" in {
+    val node = ObjectNode(null, List(ArrayNode("foo", List.empty)))
+    val replacement = ArrayNode("foo", List(NumberNode("num", 5)))
+    val operation = JsonReplaceOperation(AccessPath(0), replacement, OperationId(), OperationContext(), ClientId())
+
+    val changed = node.applyOperation(operation)
+
+    changed should equal(ObjectNode(null, List(replacement)))
   }
 }
