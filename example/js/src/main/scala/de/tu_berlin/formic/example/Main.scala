@@ -83,7 +83,7 @@ class Main {
   }
 
   //common functions needed by Main and the callback
-  def keyPressHandler(elementId: String): (JQueryEventObject) => Unit = {
+  def keyPressHandler(elementId: String): (JQueryEventObject) => Boolean = {
     (event: JQueryEventObject) => {
       //this is quite some hack
       val index = document.getElementById(elementId).asInstanceOf[HTMLInputElement].selectionStart
@@ -95,6 +95,7 @@ class Main {
         //since a delete with backspace starts behind the character to delete
         strings.find(s => s.dataTypeInstanceId.id == elementId).get.remove(index - 1)
       }
+      false
     }
   }
 
