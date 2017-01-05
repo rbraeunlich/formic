@@ -51,6 +51,15 @@ class FormicJsonObject(callback: () => Unit,
     sendInsertOperation(toInsert, path)
   }
 
+  /**
+    * Due to collisions, this method cannot follow the simple insert() syntax
+    */
+  def insertArray[T](arr: Array[T], path: JsonPath)(implicit writer: Writer[T]) = {
+    val children = arr.map(elem => read[ObjectNode](write(elem)))
+    val toInsert = ArrayNode(path.path.last, children.toList)
+    sendInsertOperation(toInsert, path)
+  }
+
   def insert[T](obj: T, path: JsonPath)(implicit writer: Writer[T]) = {
     //here we use the fact that any arbitrary JSON object can be represented as
     //JSON tree (that is actually the intention of a JSON tree)

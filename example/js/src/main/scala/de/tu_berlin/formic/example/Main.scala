@@ -3,6 +3,7 @@ package de.tu_berlin.formic.example
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.FormicSystem
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.datatype.json.FormicJsonObject
 import de.tu_berlin.formic.datatype.linear.client.FormicString
 import de.tu_berlin.formic.datatype.tree.{AccessPath, FormicIntegerTree}
 import org.scalajs.dom.document
@@ -38,6 +39,7 @@ class Main {
     jQuery("#subscribe-button").click(subscribe _)
     jQuery("#new-string-button").click(createNewString _)
     jQuery("#new-tree-button").click(createNewTree _)
+    jQuery("#startButton").click(startBattleship _)
   }
 
   def createNewString() = {
@@ -105,7 +107,7 @@ class Main {
       val tree = trees.find(s => s.dataTypeInstanceId.id == id).get
       val toInsert = jQuery("#input" + id).value()
       val where = jQuery("#path" + id).`val`().toString.split("/").filter(s => s.nonEmpty).map(s => s.toInt)
-      tree.insert(toInsert.toString.toInt, AccessPath(where:_*))
+      tree.insert(toInsert.toString.toInt, AccessPath(where: _*))
     }
   }
 
@@ -114,7 +116,7 @@ class Main {
       println("delete value from tree")
       val tree = trees.find(s => s.dataTypeInstanceId.id == id).get
       val where = jQuery("#path" + id).`val`().toString.split("/").filter(s => s.nonEmpty).map(s => s.toInt)
-      tree.remove(AccessPath(where:_*))
+      tree.remove(AccessPath(where: _*))
     }
   }
 
@@ -133,6 +135,20 @@ class Main {
     jQuery("body").append("</div>")
     jQuery("#insert" + id).click(insertValueToTree(id))
     jQuery("#delete" + id).click(deleteFromTree(id))
+  }
+
+  def startBattleship() = {
+    var gameInput = jQuery("#gameInput").value().toString
+    if (gameInput == null || gameInput.trim.isEmpty) {
+      gameInput = DataTypeInstanceId().id
+      jQuery("#gameInput").value(DataTypeInstanceId().id)
+    }
+    jQuery("#gameInput").prop("disabled", true)
+    jQuery("#startButton").prop("disabled", true)
+    jQuery("#guessInput").prop("disabled", false)
+    jQuery("#fireButton").prop("disabled", false)
+    val json = new FormicJsonObject(() => {}, system, DataTypeInstanceId(gameInput))
+    new Battleship(json).init()
   }
 }
 

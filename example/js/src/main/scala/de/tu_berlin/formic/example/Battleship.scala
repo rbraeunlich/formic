@@ -1,16 +1,18 @@
 package de.tu_berlin.formic.example
 
+import de.tu_berlin.formic.datatype.json.{FormicJsonObject, JsonPath}
 import org.scalajs.jquery.{JQueryEventObject, _}
 
+import scala.concurrent.ExecutionContext
 import scala.scalajs.js.Dynamic.global
-import scala.scalajs.js.annotation.{JSExport, JSExportAll}
+import scala.scalajs.js.annotation.JSExport
 import scala.util.Try
 
 /**
   * @author Ronny Bräunlich
   */
 @JSExport
-class Battleship {
+class Battleship(val jsonObject: FormicJsonObject)(implicit val ec: ExecutionContext) {
 
   val fireButtonId = "#fireButton"
 
@@ -18,7 +20,7 @@ class Battleship {
 
   val view = new View
 
-  val model = new BattleshipModel(view)
+  val model = new BattleshipModel(view, jsonObject)
 
   val controller = new BattleshipController(model, view)
 
@@ -50,7 +52,7 @@ class Battleship {
   }
 }
 
-class BattleshipController(val model: BattleshipModel, val view: View) {
+class BattleshipController(val model: BattleshipModel, val view: View)(implicit val ec: ExecutionContext) {
 
   val alphabet = List('A', 'B', 'C', 'D', 'E', 'F', 'G')
 
@@ -62,10 +64,16 @@ class BattleshipController(val model: BattleshipModel, val view: View) {
       case None =>
       case Some(value) =>
         guesses += 1
-        val hit = model.fire(value)
-        if (hit && model.shipsSunk == model.numShips) {
-          view.displayMessage("You sank all my battleships, in " + this.guesses + " guesses")
-        }
+        val result = for {
+          hit <- model.fire(value)
+          numShips <- model.jsonObject.getValueAt[Int](JsonPath("numShips"))
+          sunk <- model.jsonObject.getValueAt[Int](JsonPath("shipsSunk"))
+        } yield (hit, numShips, sunk)
+        result.map(values => {
+          if (values._1 && values._2 == values._3) {
+            view.displayMessage("You sank all my battleships, in " + this.guesses + " guesses")
+          }
+        })
     }
   }
 
@@ -79,7 +87,8 @@ class BattleshipController(val model: BattleshipModel, val view: View) {
         val row = alphabet.indexOf(firstChar)
         val columnTry = Try(Integer.valueOf(guess.charAt(1).toString))
         if (columnTry.isFailure) global.alert("Oops, the second coordinate isn't on the board.")
-        else if (row < 0 || row >= model.boardSize || columnTry.get < 0 || columnTry.get >= model.boardSize) {
+          //FIXME replace the magic 7 here
+        else if (row < 0 || row >= 7 || columnTry.get < 0 || columnTry.get >= 7) {
           global.alert("Oops, that's off the board!")
         } else {
           return Some(row, columnTry.get.toInt)
