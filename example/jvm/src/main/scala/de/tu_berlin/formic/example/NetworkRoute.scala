@@ -31,6 +31,9 @@ class NetworkRoute(implicit val actorSystem: ActorSystem) {
     path("index") {
       getFromResource("index.html")
     } ~
+    path("battleship") {
+      getFromResource("battleship.html")
+    } ~
       getFromResourceDirectory("") //this route is needed to serve the JavaScript files to clients
     //seeing too many "New connection accepted" and "got -1 from read"? See https://groups.google.com/forum/#!topic/akka-user/ai5dOX8Cuco
   }

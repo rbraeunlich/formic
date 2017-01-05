@@ -1,0 +1,86 @@
+<!--
+Copyright (c) 2017 by Captain Anonymous (http://codepen.io/anon/pen/LxEGPz) and Ronny Bräunlich
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=0.5">
+    <!-- document title -->
+    <title>Battle Ship</title>
+
+    <!-- favicon -->
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <!-- Latest compiled and minified bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
+
+    <!-- battleship css -->
+    <link rel="stylesheet" type="text/css" href="battleship.css">
+    <script type="text/javascript" src="/example-jsdeps.js"></script>
+    <script type="text/javascript" src="/example-fastopt.js"></script>
+    <script type="text/javascript" src="/example-launcher.js"></script>
+</head>
+
+<body onload="startGame()">
+<!-- battleship board -->
+<div id="board">
+    <!-- battleship message display -->
+    <h1 id="messageArea">formic Cooperative Battleship</h1>
+    <!-- battleship user inputs -->
+    <form>
+        <div class="input-group">
+            <input type="text" id="guessInput" placeholder="A0" autofocus class="form-control">
+            <input type="button" id="fireButton" value="Fire!" class="btn btn-danger">
+        </div>
+    </form>
+    <!-- battleship table -->
+    <table>
+        <!-- battleship row 0 -->
+        <tr>
+            <td id="00"></td><td id="01"></td><td id="02"></td><td id="03"></td><td id="04"></td><td id="05"></td><td id="06"></td>
+        </tr>
+        <!-- battleship row 1 -->
+        <tr>
+            <td id="10"></td><td id="11"></td><td id="12"></td><td id="13"></td><td id="14"></td><td id="15"></td><td id="16"></td>
+        </tr>
+        <!-- battleship row 2 -->
+        <tr>
+            <td id="20"></td><td id="21"></td><td id="22"></td><td id="23"></td><td id="24"></td><td id="25"></td><td id="26"></td>
+        </tr>
+        <!-- battleship row 3 -->
+        <tr>
+            <td id="30"></td><td id="31"></td><td id="32"></td><td id="33"></td><td id="34"></td><td id="35"></td><td id="36"></td>
+        </tr>
+        <!-- battleship row 4 -->
+        <tr>
+            <td id="40"></td><td id="41"></td><td id="42"></td><td id="43"></td><td id="44"></td><td id="45"></td><td id="46"></td>
+        </tr>
+        <!-- battleship row 5 -->
+        <tr>
+            <td id="50"></td><td id="51"></td><td id="52"></td><td id="53"></td><td id="54"></td><td id="55"></td><td id="56"></td>
+        </tr>
+        <!-- battleship row 6 -->
+        <tr>
+            <td id="60"></td><td id="61"></td><td id="62"></td><td id="63"></td><td id="64"></td><td id="65"></td><td id="66"></td>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+    function startGame() {
+        var battleship = new de.tu_berlin.formic.example.Battleship()
+        battleship.init()
+    }
+</script>
+</body>
+
+</html>

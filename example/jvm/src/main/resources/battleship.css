@@ -1,0 +1,76 @@
+/*
+Copyright (c) 2017 by Captain Anonymous (http://codepen.io/anon/pen/LxEGPz) and Ronny Bräunlich
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+ */
+body {
+	background: black;
+}
+
+/*battleship board display*/
+div#board {
+	position: relative;
+	width: 1024px;
+	height: 863px;
+	margin: auto;
+	background: url('http://codifyacademy.com/project_battleship_demo/css/../img/board.jpg') no-repeat;
+}
+
+/*battleship message*/
+h1#messageArea {
+	position: absolute;
+	top: 0;
+	left: 0;
+	color: rgb(83, 175, 19);
+}
+
+/*battleship table*/
+table {
+	position: absolute;
+	left: 173px;
+	top: 98px;
+	border-spacing: 0;
+}
+
+/*battleship table rows*/
+tr {
+	height: 97px;
+}
+/*battleship table data cell*/
+td {
+	width: 96px;
+	height: 94px;
+}
+
+/*battleship form*/
+form {
+	position: absolute;
+	top: 25px;
+	right: 0;
+	padding: 10px;
+	background-color: rgb(83, 175, 19);
+	z-index: 100;
+}
+
+/*battleship form input*/
+form input {
+	background-color: rgb(152, 207, 113);
+	border-color: rgb(83, 175, 19);
+	font-size: 1em;
+}
+.form-control {
+	width: 70% !important;
+	margin-right: 5%;
+}
+/*hit or miss*/
+.hit {
+	background: url('http://codifyacademy.com/project_battleship_demo/css/../img/ship.png') no-repeat center center;
+}
+.miss {
+	background: url('http://codifyacademy.com/project_battleship_demo/css/../img/miss.png') no-repeat center center;
+}
