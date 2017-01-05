@@ -59,7 +59,9 @@ class WebSiteSpec extends FlatSpec
     go to host + "/index"
     click on id("new-string-button")
     val inputTextArea = textArea(className("stringInput"))
-    inputTextArea.underlying.sendKeys("abc")
+    inputTextArea.underlying.sendKeys("a")
+    inputTextArea.underlying.sendKeys("b")
+    inputTextArea.underlying.sendKeys("c")
     Thread.sleep(5000)
   }
 
@@ -68,7 +70,9 @@ class WebSiteSpec extends FlatSpec
     click on id("new-string-button")
     val inputTextArea = textArea(className("stringInput"))
     val stringId = inputTextArea.underlying.getAttribute("id")
-    inputTextArea.underlying.sendKeys("abc")
+    inputTextArea.underlying.sendKeys("a")
+    inputTextArea.underlying.sendKeys("b")
+    inputTextArea.underlying.sendKeys("c")
     Thread.sleep(5000)
     val secondUserDriver = new ChromeDriver()
     go.to(host + "/index")(secondUserDriver)
