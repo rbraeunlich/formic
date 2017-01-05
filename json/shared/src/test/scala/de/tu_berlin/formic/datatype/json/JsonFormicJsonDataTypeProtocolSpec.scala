@@ -148,7 +148,7 @@ class JsonFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
 
     val deserialized = protocol.deserializeOperation(json)
 
-    deserialized should equal(TreeInsertOperation(AccessPath(0, 1), ObjectNode(null, List(NumberNode("foo", 5.2))), operationId, OperationContext(), clientId))
+    deserialized should equal(TreeInsertOperation(AccessPath(0, 1), NumberNode("foo", 5.2), operationId, OperationContext(), clientId))
   }
 
   it should "deserialize a delete operation" in {

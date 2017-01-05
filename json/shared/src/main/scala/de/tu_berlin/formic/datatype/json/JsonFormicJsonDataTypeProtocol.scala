@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.json
 import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, OperationContext}
 import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
 import de.tu_berlin.formic.common.{ClientId, OperationId}
-import de.tu_berlin.formic.datatype.tree.{AccessPath, TreeDeleteOperation, TreeInsertOperation, TreeNoOperation}
+import de.tu_berlin.formic.datatype.tree._
 import upickle.Js
 import upickle.Js.Value
 import upickle.default._
@@ -21,12 +21,12 @@ class JsonFormicJsonDataTypeProtocol(val name: DataTypeName)(implicit val reader
     val operationId = OperationId(valueMap("operationId").str)
     val operationContext = valueMap("operationContext").arr.map(v => OperationId(v.str)).toList
     val clientId = ClientId(valueMap("clientId").str)
-    val accessPath = AccessPath(valueMap("accessPath").arr.map(v => v.num.toInt):_*)
+    val accessPath = AccessPath(valueMap("accessPath").arr.map(v => v.num.toInt): _*)
     if (valueMap.contains("type")) {
-      //here we unwrap the hack again, because a replace is always a single "tree"
-      JsonReplaceOperation(accessPath, readJs[ObjectNode](valueMap("object")).children.head, operationId, OperationContext(operationContext), clientId)
+      JsonReplaceOperation(accessPath, unwrapTreeIfItIsWrapped(readJs[ObjectNode](valueMap("object"))), operationId, OperationContext(operationContext), clientId)
     } else if (valueMap.contains("object")) {
-      TreeInsertOperation(accessPath, readJs[ObjectNode](valueMap("object")), operationId, OperationContext(operationContext), clientId)
+      //here we unwrap the hack again
+      TreeInsertOperation(accessPath, unwrapTreeIfItIsWrapped(readJs[ObjectNode](valueMap("object"))), operationId, OperationContext(operationContext), clientId)
     } else if (accessPath == AccessPath(-1)) {
       TreeNoOperation(operationId, OperationContext(operationContext), clientId)
     } else {
@@ -40,7 +40,7 @@ class JsonFormicJsonDataTypeProtocol(val name: DataTypeName)(implicit val reader
         write(
           Js.Obj(
             ("accessPath", writeJs(ins.accessPath.path)),
-            ("object", writeJs(ins.tree.asInstanceOf[ObjectNode])),
+            ("object", writeJs(wrapTreeIfItIsNotAnObjectNode(ins.tree))),
             ("operationId", Js.Str(op.id.id)),
             ("operationContext", Js.Arr(op.operationContext.operations.map(o => Js.Str(o.id)): _*)),
             ("clientId", Js.Str(op.clientId.id))
@@ -70,14 +70,39 @@ class JsonFormicJsonDataTypeProtocol(val name: DataTypeName)(implicit val reader
             //to distinguish replace from inserts
             ("type", writeJs(Js.Str("replace"))),
             ("accessPath", writeJs(repl.accessPath.path)),
-            //this is a little hack so we don't have to distinguish every single node type
-            //therefore we wrap every replace node within an object node
-            ("object", writeJs(ObjectNode(null, List(repl.tree.asInstanceOf[JsonTreeNode[_]])))),
+            ("object", writeJs(wrapTreeIfItIsNotAnObjectNode(repl.tree))),
             ("operationId", Js.Str(op.id.id)),
             ("operationContext", Js.Arr(op.operationContext.operations.map(o => Js.Str(o.id)): _*)),
             ("clientId", Js.Str(op.clientId.id))
           )
         )
+    }
+  }
+
+  /**
+    * This is a little hack so we don't have to distinguish every single node type within the reader and writer.
+    * Every tree for an insert or replace operation that is not an ObjectNode itself is wrapped in one
+    * and unwrapped later again.
+    *
+    * @param tree the three to wrap
+    * @return the original tree wrapper inside an ObjectNode
+    */
+  def wrapTreeIfItIsNotAnObjectNode(tree: TreeNode): ObjectNode = {
+    tree match {
+      case obj: ObjectNode => obj
+      case rest: TreeNode => ObjectNode(null, List(rest.asInstanceOf[JsonTreeNode[_]]))
+    }
+  }
+
+  /**
+    * Here we unwrap the hack again
+    */
+  def unwrapTreeIfItIsWrapped(tree: ObjectNode): JsonTreeNode[_] = {
+    //only the root node of a JsonTree has a key of null else it must be the wrapper
+    if (tree.children.length == 1 && tree.key == null) {
+      tree.children.head
+    } else {
+      tree
     }
   }
 }
