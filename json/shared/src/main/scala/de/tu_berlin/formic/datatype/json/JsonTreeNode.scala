@@ -155,7 +155,13 @@ class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) e
     val childWithIndex = node.children.zipWithIndex.find(t => t._1.key == jsonPath.path.head)
     childWithIndex match {
       case Some(c) => List(c._2) ::: translatePathRecursive(c._1, jsonPath.dropFirstElement)
-      case None => throw new IllegalArgumentException(s"Illegal JSON Path encountered: $jsonPath for node $node")
+      case None =>
+        //within an arraynode the no keys are present, only the indices
+        if (jsonPath.path.length == 1 && node.isInstanceOf[ArrayNode]) {
+          val index = jsonPath.path.head.toInt
+          if(index < node.asInstanceOf[ArrayNode].children.length) return List(index)
+        }
+        throw new IllegalArgumentException(s"Illegal JSON Path encountered: $jsonPath for node $node")
     }
   }
 

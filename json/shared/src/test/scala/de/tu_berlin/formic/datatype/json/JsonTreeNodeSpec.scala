@@ -109,9 +109,9 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
   }
 
   "An array node" should "accept valid insertion" in {
-    val children: List[JsonTreeNode[_]] = List(NumberNode("a", 1.0), BooleanNode("b", value = false))
+    val children: List[JsonTreeNode[_]] = List(NumberNode(null, 1.0), BooleanNode(null, value = false))
     val node = ArrayNode("bar", children)
-    val insertion = NumberNode("c", 3.0)
+    val insertion = NumberNode(null, 3.0)
     val operation = TreeInsertOperation(AccessPath(2), insertion, OperationId(), OperationContext(), ClientId())
 
     val changed = node.applyOperation(operation)
@@ -122,7 +122,6 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
   it should "accept valid deletion" in {
     val children: List[JsonTreeNode[_]] = List(NumberNode(null, 1.0), BooleanNode(null, value = false))
     val node = ArrayNode("bar", children)
-    val insertion = NumberNode("c", 3.0)
     val operation = TreeDeleteOperation(AccessPath(0), OperationId(), OperationContext(), ClientId())
 
     val changed = node.applyOperation(operation)
@@ -131,42 +130,41 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
   }
 
   it should "accept a valid replace operation" in {
-    val children: List[JsonTreeNode[_]] = List(NumberNode("a", 1.0), BooleanNode("b", value = false))
-    val replacement = BooleanNode("f", value = true)
+    val children: List[JsonTreeNode[_]] = List(NumberNode(null, 1.0), BooleanNode(null, value = false))
+    val replacement = BooleanNode(null, value = true)
     val node = ArrayNode("bar", children)
-    val insertion = NumberNode("c", 3.0)
     val operation = JsonReplaceOperation(AccessPath(1), replacement, OperationId(), OperationContext(), ClientId())
 
     val changed = node.applyOperation(operation)
 
-    changed should equal(ArrayNode(node.key, List(NumberNode("a", 1.0), replacement)))
+    changed should equal(ArrayNode(node.key, List(NumberNode(null, 1.0), replacement)))
   }
 
   it should "forward insert operations" in {
-    val children: List[JsonTreeNode[_]] = List(ArrayNode("q", List(NumberNode("a", 1.0))))
+    val children: List[JsonTreeNode[_]] = List(ArrayNode("q", List(NumberNode(null, 1.0))))
     val node = ArrayNode("bar", children)
-    val insertion = NumberNode("c", 3.0)
+    val insertion = NumberNode(null, 3.0)
     val operation = TreeInsertOperation(AccessPath(0, 1), insertion, OperationId(), OperationContext(), ClientId())
 
     val changed = node.applyOperation(operation)
 
-    changed should equal(ArrayNode(node.key, List(ArrayNode("q", List(NumberNode("a", 1.0), insertion)))))
+    changed should equal(ArrayNode(node.key, List(ArrayNode("q", List(NumberNode(null, 1.0), insertion)))))
   }
 
   it should "forward delete operations" in {
-    val children: List[JsonTreeNode[_]] = List(ArrayNode("q", List(NumberNode("a", 1.0), NumberNode("b", 2.0))))
+    val children: List[JsonTreeNode[_]] = List(ArrayNode("q", List(NumberNode(null, 1.0), NumberNode(null, 2.0))))
     val node = ArrayNode("bar", children)
     val operation = TreeDeleteOperation(AccessPath(0, 1), OperationId(), OperationContext(), ClientId())
 
     val changed = node.applyOperation(operation)
 
-    changed should equal(ArrayNode(node.key, List(ArrayNode("q", List(NumberNode("a", 1.0))))))
+    changed should equal(ArrayNode(node.key, List(ArrayNode("q", List(NumberNode(null, 1.0))))))
   }
 
   it should "forward replace operations" in {
-    val children: List[JsonTreeNode[_]] = List(ArrayNode("q", List(NumberNode("a", 1.0))))
+    val children: List[JsonTreeNode[_]] = List(ArrayNode("q", List(NumberNode(null, 1.0))))
     val node = ArrayNode("bar", children)
-    val replacement = NumberNode("c", 3.0)
+    val replacement = NumberNode(null, 3.0)
     val operation = JsonReplaceOperation(AccessPath(0, 0), replacement, OperationId(), OperationContext(), ClientId())
 
     val changed = node.applyOperation(operation)
@@ -385,7 +383,7 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
   }
 
   it should "correctly translate a JSON path with an array in between" in {
-    val secondLevel = List(ArrayNode("21", List(NumberNode("0", 2.0), NumberNode("1", 1.0))))
+    val secondLevel = List(ArrayNode("21", List(NumberNode(null, 2.0), NumberNode(null, 1.0))))
     val firstLevel = List(NumberNode("11", 100), ObjectNode("12", secondLevel))
     val node = ObjectNode(null, firstLevel)
 
@@ -394,7 +392,7 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
 
   it should "replace and array within itself" in {
     val node = ObjectNode(null, List(ArrayNode("foo", List.empty)))
-    val replacement = ArrayNode("foo", List(NumberNode("num", 5)))
+    val replacement = ArrayNode("foo", List(NumberNode(null, 5)))
     val operation = JsonReplaceOperation(AccessPath(0), replacement, OperationId(), OperationContext(), ClientId())
 
     val changed = node.applyOperation(operation)
