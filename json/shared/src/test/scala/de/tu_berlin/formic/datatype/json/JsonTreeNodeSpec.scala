@@ -364,16 +364,16 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
     node.getData should contain inOrder(firstNode, middleNode, lastNode)
   }
 
-  it should "correctly translate a JSON Path pointing below root" in {
+  it should "correctly translate a JSON Path for insertion pointing below root" in {
     val node = ObjectNode(null, List.empty)
 
-    node.translateJsonPath(JsonPath("foo")) should equal(AccessPath(0))
+    node.translateJsonPathForInsertion(JsonPath("foo")) should equal(AccessPath(0))
   }
 
-  it should "correctly translate a JSON Path pointing below an Array" in {
+  it should "correctly translate a JSON Path for insertion pointing below an Array" in {
     val node = ObjectNode(null, List(ArrayNode("arr", List.empty)))
 
-    node.translateJsonPath(JsonPath("arr", "0")) should equal(AccessPath(0,0))
+    node.translateJsonPathForInsertion(JsonPath("arr", "0")) should equal(AccessPath(0,0))
   }
 
   it should "correctly translate a JSON path" in {
@@ -400,5 +400,12 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
     val changed = node.applyOperation(operation)
 
     changed should equal(ObjectNode(null, List(replacement)))
+  }
+
+  it should "translate paths exactly" in {
+    //only because "ships" is contained in "shipsSunk" it should not match
+    val tree = ObjectNode(null, List(NumberNode("boardSize",7), NumberNode("numShips",3), NumberNode("shipLength",3), NumberNode("shipsSunk",0)))
+
+    an[IllegalArgumentException] should be thrownBy tree.translateJsonPath(JsonPath("ships"))
   }
 }

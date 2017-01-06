@@ -72,11 +72,10 @@ class JsonClientDataType(id: DataTypeInstanceId,
     * basic tree operations including the translation of the path.
     */
   def transformJsonOperationsIntoGeneralTreeOperations(jsonOp: JsonClientOperation): TreeStructureOperation = {
-    val newPath = data.translateJsonPath(jsonOp.path)
     val newOperation = jsonOp match {
-      case ins: JsonClientInsertOperation => TreeInsertOperation(newPath, ins.tree, ins.id, ins.operationContext, ins.clientId)
-      case del: JsonClientDeleteOperation => TreeDeleteOperation(newPath, del.id, del.operationContext, del.clientId)
-      case rep: JsonClientReplaceOperation => JsonReplaceOperation(newPath, rep.tree, rep.id, rep.operationContext, rep.clientId)
+      case ins: JsonClientInsertOperation => TreeInsertOperation(data.translateJsonPathForInsertion(jsonOp.path), ins.tree, ins.id, ins.operationContext, ins.clientId)
+      case del: JsonClientDeleteOperation => TreeDeleteOperation(data.translateJsonPath(jsonOp.path), del.id, del.operationContext, del.clientId)
+      case rep: JsonClientReplaceOperation => JsonReplaceOperation(data.translateJsonPath(jsonOp.path), rep.tree, rep.id, rep.operationContext, rep.clientId)
     }
     newOperation
   }
