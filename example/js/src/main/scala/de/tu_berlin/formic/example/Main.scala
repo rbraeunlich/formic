@@ -140,21 +140,31 @@ class Main {
   }
 
   def startBattleship() = {
-    var gameInput = jQuery("#gameInput").value().toString
+    val gameInput = jQuery("#gameInput").value().toString
     if (gameInput == null || gameInput.trim.isEmpty) {
-      gameInput = DataTypeInstanceId().id
-      jQuery("#gameInput").value(DataTypeInstanceId().id)
+      val newId = DataTypeInstanceId()
+      jQuery("#gameInput").value(newId.id)
+      val battleship = new Battleship()
+      val json: FormicJsonObject = new FormicJsonObject(() => {
+        battleship.invoke(jsons.find(j => j.dataTypeInstanceId == newId).get)
+      }, system, newId)
+      jsons += json
+    } else {
+      system.requestDataType(DataTypeInstanceId(gameInput))
     }
     jQuery("#gameInput").prop("disabled", true)
     jQuery("#startButton").prop("disabled", true)
     jQuery("#guessInput").prop("disabled", false)
     jQuery("#fireButton").prop("disabled", false)
-    //TODO the callback gotta update the UI somehow
+
+  }
+
+  def newCallbackForBattleship(jsonObject: FormicJsonObject): () => Unit = {
     val battleship = new Battleship()
-    val json: FormicJsonObject = new FormicJsonObject(() => {
-        battleship.invoke(jsons.find(j => j.dataTypeInstanceId.id == gameInput).get)
-      }, system, DataTypeInstanceId(gameInput))
-    jsons += json
+    battleship.init(jsonObject, withNewModel = false)
+    () => {
+      battleship.invoke(jsonObject)
+    }
   }
 }
 

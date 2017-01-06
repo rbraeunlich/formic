@@ -2,6 +2,7 @@ package de.tu_berlin.formic.example
 
 import de.tu_berlin.formic.client.NewInstanceCallback
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
+import de.tu_berlin.formic.datatype.json.FormicJsonObject
 import de.tu_berlin.formic.datatype.linear.client.FormicString
 import de.tu_berlin.formic.datatype.tree.FormicIntegerTree
 import org.scalajs.jquery.jQuery
@@ -15,6 +16,7 @@ class ExampleCallback(val main: Main) extends NewInstanceCallback {
     instance match {
       case str: FormicString => main.updateUIForString(instance.dataTypeInstanceId)
       case tree: FormicIntegerTree => main.updateUIForTree(instance.dataTypeInstanceId)
+      case json: FormicJsonObject => main.newCallbackForBattleship(json)
     }
   }
 
@@ -35,6 +37,11 @@ class ExampleCallback(val main: Main) extends NewInstanceCallback {
           main.insertBasicTreeElements(tree.dataTypeInstanceId.id)
         }
         main.updateUIForTree(tree.dataTypeInstanceId)()
+
+      case json: FormicJsonObject =>
+        main.jsons += json
+        //in order to force Battleship to update the UI we invoke the callback here manually
+        json.callback()
     }
   }
 }

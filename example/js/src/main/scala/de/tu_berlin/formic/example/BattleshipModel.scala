@@ -7,13 +7,14 @@ import upickle.default._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
-class BattleshipModel(val view: View, val jsonObject: FormicJsonObject)(implicit val ec: ExecutionContext) {
+class BattleshipModel(val view: View, val jsonObject: FormicJsonObject, withNewModel: Boolean)(implicit val ec: ExecutionContext) {
 
-  jsonObject.insert(7, JsonPath("boardSize"))
-  jsonObject.insert(3, JsonPath("numShips"))
-  jsonObject.insert(3, JsonPath("shipLength"))
-  jsonObject.insert(0, JsonPath("shipsSunk"))
-
+  if(withNewModel) {
+    jsonObject.insert(7, JsonPath("boardSize"))
+    jsonObject.insert(3, JsonPath("numShips"))
+    jsonObject.insert(3, JsonPath("shipLength"))
+    jsonObject.insert(0, JsonPath("shipsSunk"))
+  }
   val random = new Random()
 
   def generateShipLocations(): Unit = {
