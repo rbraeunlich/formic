@@ -1,7 +1,9 @@
 package de.tu_berlin.formic.example
 
-import de.tu_berlin.formic.datatype.json.{FormicJsonObject, JsonPath}
+import de.tu_berlin.formic.datatype.json.{FormicJsonObject, JsonPath, ObjectNode}
 import org.scalajs.jquery.{JQueryEventObject, _}
+import upickle.default._
+import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
 
 import scala.concurrent.ExecutionContext
 import scala.scalajs.js.Dynamic.global
@@ -35,7 +37,7 @@ class Battleship()(implicit val ec: ExecutionContext) {
       initialised = true
       init(jsonObject)
     } else {
-      //TODO
+      controller.updateUI(jsonObject)
     }
   }
 
@@ -114,6 +116,24 @@ class BattleshipController(val model: BattleshipModel, val view: View)(implicit 
     }
     Option.empty
   }
+
+  /**
+    * Update the UI by setting the appropriate CSS class to the div representing the game area.
+    * Luckily is setting a CSS class idempotent and there is no need to check anything.
+    */
+  def updateUI(jsonObject: FormicJsonObject) = {
+    val shipsAndWater = for {
+      ships <- jsonObject.getValueAt[List[ObjectNode]](JsonPath("ships"))
+      water <- jsonObject.getValueAt[List[ObjectNode]](JsonPath("water"))
+    } yield (ships, water)
+    shipsAndWater.foreach {
+      shipsAndWater =>
+        val shipObjects: List[Ship] = shipsAndWater._1.map(node => write[ObjectNode](node)).map(json => read[Ship](json))
+        val waterObjects = shipsAndWater._2.map(node => write[ObjectNode](node)).map(json => read[Water](json))
+        shipObjects.flatMap(s => s.location.zip(s.hits)).filter(t => t._2).map(t => t._1).foreach(view.displayHit)
+        waterObjects.filter(w => w.hit).map(w => w.coordinate).foreach(view.displayMiss)
+    }
+  }
 }
 
 class View {
@@ -126,12 +146,14 @@ class View {
     messageArea.text(s)
   }
 
-  def displayHit(id: String) = {
+  def displayHit(coordinate: (Int, Int)) = {
+    val id = coordinate._1 + "" + coordinate._2
     val cell = jQuery("#" + id)
     cell.attr("class", "hit")
   }
 
-  def displayMiss(id: String) = {
+  def displayMiss(coordinate: (Int, Int)) = {
+    val id = coordinate._1 + "" + coordinate._2
     val cell = jQuery("#" + id)
     cell.attr("class", "miss")
   }

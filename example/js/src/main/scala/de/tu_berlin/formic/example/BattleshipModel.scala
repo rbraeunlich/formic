@@ -1,8 +1,8 @@
 package de.tu_berlin.formic.example
 
+import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
 import de.tu_berlin.formic.datatype.json._
 import upickle.default._
-import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
@@ -22,19 +22,22 @@ class BattleshipModel(val view: View, val jsonObject: FormicJsonObject)(implicit
       sizeResult <- jsonObject.getValueAt[Int](JsonPath("boardSize"))
       numShipsResult <- jsonObject.getValueAt[Int](JsonPath("numShips"))
       shipLengthResult <- jsonObject.getValueAt[Int](JsonPath("shipLength"))
-      shipsSunkResult <- jsonObject.getValueAt[Int](JsonPath("shipsSunk"))
-    } yield (sizeResult, numShipsResult, shipLengthResult, shipsSunkResult)
+    } yield (sizeResult, numShipsResult, shipLengthResult)
     fields.foreach(results => {
-      var temporalShips: List[Ship] = List.empty
+      val boardSize = results._1
+      val numShips = results._2
+      val shipLength = results._3
+      var generatedShips: List[Ship] = List.empty
       for (x <- 0 until results._2) {
         do {
-          tempLocation = generateShip(results._1, results._2, results._3).toList
-        } while (isCollision(tempLocation, results._2, temporalShips))
-        temporalShips = temporalShips :+ Ship(tempLocation, List.fill(results._3)(false))
+          tempLocation = generateShip(boardSize, numShips, shipLength).toList
+        } while (isCollision(tempLocation, numShips, generatedShips))
+        generatedShips = generatedShips :+ Ship(tempLocation, List.fill(shipLength)(false))
       }
-      jsonObject.insertArray(temporalShips.toArray, JsonPath("ships"))
+      jsonObject.insertArray(generatedShips.toArray, JsonPath("ships"))
+      val generatedWater = generateWater(generatedShips.flatMap(s => s.location).toSet, boardSize)
+      jsonObject.insertArray(generatedWater.toArray, JsonPath("water"))
     })
-    //jsonObject.getValueAt[List[ObjectNode]](JsonPath("ships")).foreach(s => println("Ship: " + s))
   }
 
   def generateShip(boardSize: Int, numShips: Int, shipLength: Int) = {
@@ -53,6 +56,20 @@ class BattleshipModel(val view: View, val jsonObject: FormicJsonObject)(implicit
     }
   }
 
+  /**
+    * To be able to display misses for other users we need water that remembers if someone
+    * fired at it.
+    *
+    * @param shipLocations the locations of the ships, where we should not place water
+    * @param boardSize     the size of the game board
+    */
+  def generateWater(shipLocations: Set[(Int, Int)], boardSize: Int): Set[Water] = {
+    val allPossibleCoordinates = for (x <- 0.until(boardSize); y <- 0.until(boardSize)) yield (x, y)
+    val freeCoordinates = allPossibleCoordinates.diff(shipLocations.toSeq)
+    freeCoordinates.map(coord => Water(coord, hit = false)).toSet
+  }
+
+
   def isCollision(tempLocation: List[(Int, Int)], numShips: Int, otherShips: List[Ship]): Boolean = {
     for (ship <- otherShips) {
       for (j <- tempLocation.indices) {
@@ -63,13 +80,22 @@ class BattleshipModel(val view: View, val jsonObject: FormicJsonObject)(implicit
   }
 
   def fire(coordinates: (Int, Int)): Future[Boolean] = {
-    val result: Future[Boolean] = jsonObject.getValueAt[List[ObjectNode]](JsonPath("ships")).map(
-      ships => {
-        val shipObjects: List[Ship] = ships.map(node => write[ObjectNode](node.asInstanceOf[ObjectNode])).map(json => read[Ship](json))
+    val shipsAndWater = for {
+      ships <- jsonObject.getValueAt[List[ObjectNode]](JsonPath("ships"))
+      water <- jsonObject.getValueAt[List[ObjectNode]](JsonPath("water"))
+    } yield (ships, water)
+    val result: Future[Boolean] = shipsAndWater.map(
+      shipsAndWater => {
+        val ships = shipsAndWater._1
+        val water = shipsAndWater._2
+        val shipObjects: List[Ship] = ships.map(node => write[ObjectNode](node)).map(json => read[Ship](json))
         val shipHit = shipObjects.find(s => s.location.contains(coordinates))
         shipHit match {
           case None =>
-            view.displayMiss(coordinates._1 + "" + coordinates._2)
+            val waterObjects = water.map(node => write[ObjectNode](node)).map(json => read[Water](json))
+            val hitWater = waterObjects.zipWithIndex.find(t => t._1.coordinate == coordinates).get
+            jsonObject.replace(Water(hitWater._1.coordinate, hit = true), JsonPath("water", hitWater._2.toString))
+            //view.displayMiss(coordinates)
             view.displayMessage("You missed")
             false
           case Some(ship) =>
@@ -80,7 +106,7 @@ class BattleshipModel(val view: View, val jsonObject: FormicJsonObject)(implicit
             } else {
               val hitShip = Ship(ship.location, ship.hits.updated(index, true))
               jsonObject.replace(hitShip, JsonPath("ships", shipObjects.indexOf(ship).toString))
-              view.displayHit(coordinates._1 + "" + coordinates._2)
+              //view.displayHit(coordinates)
               view.displayMessage("HIT!")
               if (hitShip.isSunk) {
                 view.displayMessage("You sunk my battleship")
@@ -99,3 +125,5 @@ class BattleshipModel(val view: View, val jsonObject: FormicJsonObject)(implicit
 case class Ship(location: List[(Int, Int)], hits: List[Boolean]) {
   def isSunk: Boolean = !hits.contains(false)
 }
+
+case class Water(coordinate: (Int, Int), hit: Boolean)
