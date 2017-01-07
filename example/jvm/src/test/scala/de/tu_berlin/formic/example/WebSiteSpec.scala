@@ -51,6 +51,7 @@ class WebSiteSpec extends FlatSpec
   "The button to create a text" should "write the name and append a text area" in {
     go to host + "/index"
     click on id("new-string-button")
+    Thread.sleep(2000)
     className("stringId").element.text should include("String data type with id")
     className("stringInput").element shouldNot be(null)
   }
