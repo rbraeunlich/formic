@@ -24,13 +24,14 @@ lazy val root = project
     server,
     exampleJS,
     exampleJVM
-  )
+  ).disablePlugins(AssemblyPlugin)
 
 lazy val commonSettings = Seq(
   organization := "de.tu-berlin.formic",
   version := "0.1.0",
   scalaVersion := "2.11.8",
-  resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+  resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
+  test in assembly := {}
 )
 
 lazy val common = crossProject.in(file("common")).
@@ -57,8 +58,8 @@ lazy val common = crossProject.in(file("common")).
     )
   )
 
-lazy val commonJVM = common.jvm
-lazy val commonJS = common.js
+lazy val commonJVM = common.jvm.disablePlugins(AssemblyPlugin)
+lazy val commonJS = common.js.disablePlugins(AssemblyPlugin)
 
 lazy val linear = crossProject.in(file("linear")).
   settings(commonSettings: _*).
@@ -81,8 +82,8 @@ lazy val linear = crossProject.in(file("linear")).
   )
   .dependsOn(common)
 
-lazy val linearJVM = linear.jvm.dependsOn(commonJVM)
-lazy val linearJS = linear.js.dependsOn(commonJS)
+lazy val linearJVM = linear.jvm.dependsOn(commonJVM).disablePlugins(AssemblyPlugin)
+lazy val linearJS = linear.js.dependsOn(commonJS).disablePlugins(AssemblyPlugin)
 
 lazy val tree = crossProject.in(file("tree")).
   settings(commonSettings: _*).
@@ -105,8 +106,8 @@ lazy val tree = crossProject.in(file("tree")).
   )
   .dependsOn(common)
 
-lazy val treeJVM = tree.jvm.dependsOn(commonJVM)
-lazy val treeJS = tree.js.dependsOn(commonJS)
+lazy val treeJVM = tree.jvm.dependsOn(commonJVM).disablePlugins(AssemblyPlugin)
+lazy val treeJS = tree.js.dependsOn(commonJS).disablePlugins(AssemblyPlugin)
 
 lazy val json = crossProject.in(file("json")).
   settings(commonSettings: _*).
@@ -129,8 +130,8 @@ lazy val json = crossProject.in(file("json")).
   )
   .dependsOn(common, tree)
 
-lazy val jsonJVM = json.jvm.dependsOn(commonJVM, treeJVM)
-lazy val jsonJS = json.js.dependsOn(commonJS, treeJS)
+lazy val jsonJVM = json.jvm.dependsOn(commonJVM, treeJVM).disablePlugins(AssemblyPlugin)
+lazy val jsonJS = json.js.dependsOn(commonJS, treeJS).disablePlugins(AssemblyPlugin)
 
 lazy val client = crossProject.in(file("client")).
   settings(commonSettings: _*).
@@ -155,8 +156,8 @@ lazy val client = crossProject.in(file("client")).
   )
   .dependsOn(common, linear, tree, json)
 
-lazy val clientJS = client.js.dependsOn(commonJS, linearJS, treeJS, jsonJS)
-lazy val clientJVM = client.jvm.dependsOn(commonJVM, linearJVM, treeJVM, jsonJVM)
+lazy val clientJS = client.js.dependsOn(commonJS, linearJS, treeJS, jsonJS).disablePlugins(AssemblyPlugin)
+lazy val clientJVM = client.jvm.dependsOn(commonJVM, linearJVM, treeJVM, jsonJVM).disablePlugins(AssemblyPlugin)
 
 //PhantomJS and AkkaJSTestkit do not work together, so they have to be split
 lazy val websockettests = crossProject.in(file("websockettests")).
@@ -175,7 +176,7 @@ lazy val websockettests = crossProject.in(file("websockettests")).
   )
   .dependsOn(common, linear, client)
 
-lazy val websockettestsJS = websockettests.js.dependsOn(commonJS, linearJS, clientJS)
+lazy val websockettestsJS = websockettests.js.dependsOn(commonJS, linearJS, clientJS).disablePlugins(AssemblyPlugin)
 
 lazy val server = (project in file("server")).
   settings(commonSettings: _*).
@@ -193,7 +194,7 @@ lazy val server = (project in file("server")).
       "org.fusesource.leveldbjni"   % "leveldbjni-all"   % "1.8"
 )
   ).
-  dependsOn(commonJVM, linearJVM, treeJVM, jsonJVM)
+  dependsOn(commonJVM, linearJVM, treeJVM, jsonJVM).disablePlugins(AssemblyPlugin)
 
 lazy val example = crossProject.in(file("example")).
   settings(commonSettings: _*).
@@ -203,6 +204,7 @@ lazy val example = crossProject.in(file("example")).
   jvmSettings(
     fork := true,
     parallelExecution in Test := false,
+    mainClass in assembly := Some("de.tu_berlin.formic.example.ExampleServer"),
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test",
       "com.typesafe.akka" %%% "akka-http-testkit" % akkaHttpVersion % "test",
@@ -218,7 +220,7 @@ lazy val example = crossProject.in(file("example")).
   ).
   dependsOn(client, common)
 
-lazy val exampleJS = example.js.dependsOn(commonJS, linearJS, treeJS, clientJS)
+lazy val exampleJS = example.js.dependsOn(commonJS, linearJS, treeJS, clientJS).disablePlugins(AssemblyPlugin)
 lazy val exampleJVM = example.jvm.settings(
   (resources in Compile) += (fastOptJS in (exampleJS, Compile)).value.data,
   (resources in Compile) += (packageJSDependencies in (exampleJS, Compile)).value,
