@@ -17,9 +17,9 @@ class WebSiteSpec extends FlatSpec
   with WebBrowser
   with BeforeAndAfterAll {
 
-  //val service = new ChromeDriverService.Builder().withVerbose(true).build()
-  //implicit val webDriver = new ChromeDriver(service)
-  implicit val webDriver = new ChromeDriver()
+  val service = new ChromeDriverService.Builder().withVerbose(true).build()
+  implicit val webDriver = new ChromeDriver(service)
+  //implicit val webDriver = new ChromeDriver()
 
   val host = "http://localhost:8080"
 
