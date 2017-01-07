@@ -35,9 +35,9 @@ class BattleshipModel(val view: View, val jsonObject: FormicJsonObject, withNewM
         } while (isCollision(tempLocation, numShips, generatedShips))
         generatedShips = generatedShips :+ Ship(tempLocation, List.fill(shipLength)(false))
       }
-      jsonObject.insertArray(generatedShips.toArray, JsonPath("ships"))
+      jsonObject.insert(generatedShips.toArray, JsonPath("ships"))
       val generatedWater = generateWater(generatedShips.flatMap(s => s.location).toSet, boardSize)
-      jsonObject.insertArray(generatedWater.toArray, JsonPath("water"))
+      jsonObject.insert(generatedWater.toArray, JsonPath("water"))
     })
   }
 

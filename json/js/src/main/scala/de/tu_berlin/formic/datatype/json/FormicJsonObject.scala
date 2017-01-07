@@ -101,7 +101,7 @@ class FormicJsonObject(callback: () => Unit,
 
   private def createNodeForObject[T](obj: T, path: JsonPath)(implicit writer: Writer[T]): JsonTreeNode[_] = {
     //because of the overloaded methods, T can only be an array or any object
-    val isArray = obj.isInstanceOf[Array[_]]
+    val isArray = obj.isInstanceOf[Array[_]] || obj.isInstanceOf[Seq[_]]
     //here we use the fact that any arbitrary JSON object can be represented as
     //JSON tree (that is actually the intention of a JSON tree)
     val originalJson = write(obj)
