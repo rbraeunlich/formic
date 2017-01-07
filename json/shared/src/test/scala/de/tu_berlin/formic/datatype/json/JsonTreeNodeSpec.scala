@@ -374,6 +374,12 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
     node.translateJsonPathForInsertion(JsonPath("arr", "0")) should equal(AccessPath(0,0))
   }
 
+  it should "correctly translate a JSON Path for insertion pointing below an object" in {
+    val node = ObjectNode(null, List(ObjectNode("obj", List(NumberNode("num", 1)))))
+
+    node.translateJsonPathForInsertion(JsonPath("obj", "opq")) should equal(AccessPath(0,1))
+  }
+
   it should "correctly translate a JSON path" in {
     val secondLevel = List(NumberNode("21", 2.0), NumberNode("22", 1.0))
     val firstLevel = List(NumberNode("11", 100), ObjectNode("12", secondLevel))

@@ -102,7 +102,7 @@ case class StringNode(key: String, children: List[CharacterNode]) extends JsonTr
   }
 }
 
-class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) extends JsonTreeNode[List[JsonTreeNode[_]]] with Serializable{
+class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) extends JsonTreeNode[List[JsonTreeNode[_]]] with Serializable {
 
   override def getData: List[JsonTreeNode[_]] = children
 
@@ -138,7 +138,7 @@ class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) e
   }
 
   def translateJsonPath(jsonPath: JsonPath): AccessPath = {
-    AccessPath(translatePathRecursive(this, jsonPath):_*)
+    AccessPath(translatePathRecursive(this, jsonPath): _*)
   }
 
   /**
@@ -146,7 +146,18 @@ class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) e
     * be handled differently.
     */
   def translateJsonPathForInsertion(jsonPath: JsonPath): AccessPath = {
-    AccessPath(translatePathForInsertionRecursive(this, jsonPath):_*)
+    val placeForInsertion = jsonPath.path.last
+    val pathToParent = translateJsonPath(JsonPath(jsonPath.path.dropRight(1): _*))
+    val parent = getNode(pathToParent)
+    parent match {
+      case ArrayNode(_, _) =>
+        val newPath = pathToParent.path :+ placeForInsertion.toInt
+        AccessPath(newPath: _*)
+      case ObjectNode(_, nodes) =>
+        val keyList = placeForInsertion :: nodes.map(node => node.key)
+        val newPath = pathToParent.path :+ keyList.sorted.zipWithIndex.find(t => t._1 == placeForInsertion).get._2
+        AccessPath(newPath: _*)
+    }
   }
 
   def translatePathRecursive(node: JsonTreeNode[_], jsonPath: JsonPath): List[Int] = {
@@ -159,30 +170,11 @@ class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) e
         //within an arraynode the no keys are present, only the indices
         if (jsonPath.path.length == 1 && node.isInstanceOf[ArrayNode]) {
           val index = jsonPath.path.head.toInt
-          if(index < node.asInstanceOf[ArrayNode].children.length) return List(index)
+          if (index < node.asInstanceOf[ArrayNode].children.length) return List(index)
         }
         throw new IllegalArgumentException(s"Illegal JSON Path encountered: $jsonPath for node $node")
     }
   }
-
-  def translatePathForInsertionRecursive(node: JsonTreeNode[_], jsonPath: JsonPath): List[Int] = {
-    if (jsonPath.path.isEmpty) return List.empty
-
-    val childWithIndex = node.children.zipWithIndex.find(t => t._1.key == jsonPath.path.head)
-    childWithIndex match {
-      case Some(c) => List(c._2) ::: translatePathForInsertionRecursive(c._1, jsonPath.dropFirstElement)
-      case None =>
-        //only an ObjectNode and an ArrayNode might have children
-        if (jsonPath.path.length == 1 && node.isInstanceOf[ObjectNode]) {
-          val keyList = jsonPath.path.head :: node.children.map(node => node.key)
-          List(keyList.sorted.zipWithIndex.find(t => t._1 == jsonPath.path.head).get._2)
-        } else if (jsonPath.path.length == 1 && node.isInstanceOf[ArrayNode]) {
-          List(jsonPath.path.head.toInt)
-        }
-        else throw new IllegalArgumentException(s"Illegal JSON Path for insertion encountered: $jsonPath for node $node")
-    }
-  }
-
 
   override def toString = s"ObjectNode($key, $children)"
 
