@@ -128,8 +128,20 @@ class FormicSystem(config: Config = FormicSystem.loadReferenceConfig()) extends 
 object FormicSystem {
 
   def loadReferenceConfig() = {
-    val conf = scala.io.Source.fromInputStream(this.getClass.getResourceAsStream("/reference.conf")).getLines.mkString("\n")
-    ConfigFactory.parseString(conf)
+    ConfigFactory.parseString("""akka {
+                                |  loglevel = debug
+                                |  http.client.idle-timeout = 10 minutes
+                                |}
+                                |
+                                |formic {
+                                |  server {
+                                |    address = "127.0.0.1"
+                                |    port = 8080
+                                |  }
+                                |  client {
+                                |    buffersize = 100
+                                |  }
+                                |}""")
   }
 
 }
