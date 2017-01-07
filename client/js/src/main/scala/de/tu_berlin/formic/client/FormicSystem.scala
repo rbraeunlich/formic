@@ -2,7 +2,7 @@ package de.tu_berlin.formic.client
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.ask
-import com.typesafe.config.{Config }
+import com.typesafe.config.{Config, ConfigFactory}
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated}
 import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
@@ -23,7 +23,7 @@ import scala.util.{Failure, Success}
   * @author Ronny Bräunlich
   */
 @JSExport
-class FormicSystem(config: Config) extends DataTypeInitiator {
+class FormicSystem(config: Config = FormicSystem.loadReferenceConfig()) extends DataTypeInitiator {
 
   implicit val system = ActorSystem("FormicSystem", config)
 
@@ -123,4 +123,13 @@ class FormicSystem(config: Config) extends DataTypeInitiator {
     FormicJsonProtocol.registerProtocol(new JsonFormicJsonDataTypeProtocol(FormicJsonObjectFactory.name)(JsonFormicJsonDataTypeProtocol.reader, JsonFormicJsonDataTypeProtocol.writer))
     factories += (FormicJsonObjectFactory.name -> factory)
   }
+}
+
+object FormicSystem {
+
+  def loadReferenceConfig() = {
+    val conf = scala.io.Source.fromInputStream(this.getClass.getResourceAsStream("/reference.conf")).getLines.mkString("\n")
+    ConfigFactory.parseString(conf)
+  }
+
 }
