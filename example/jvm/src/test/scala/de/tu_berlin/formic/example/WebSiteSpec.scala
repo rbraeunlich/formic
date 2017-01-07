@@ -17,9 +17,9 @@ class WebSiteSpec extends FlatSpec
   with WebBrowser
   with BeforeAndAfterAll {
 
-  val service = new ChromeDriverService.Builder().withVerbose(true).build()
-  implicit val webDriver = new ChromeDriver(service)
-  //implicit val webDriver = new ChromeDriver()
+  //val service = new ChromeDriverService.Builder().withVerbose(true).build()
+  //implicit val webDriver = new ChromeDriver(service)
+  implicit val webDriver = new ChromeDriver()
 
   val host = "http://localhost:8080"
 
@@ -51,7 +51,6 @@ class WebSiteSpec extends FlatSpec
   "The button to create a text" should "write the name and append a text area" in {
     go to host + "/index"
     click on id("new-string-button")
-    Thread.sleep(2000)
     className("stringId").element.text should include("String data type with id")
     className("stringInput").element shouldNot be(null)
   }
