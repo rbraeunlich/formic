@@ -19,7 +19,10 @@ import scala.util.{Failure, Success}
   */
 
 class Main {
-  val system = new FormicSystem(ConfigFactory.load())
+  //do NOT inline this config with newFormicSystem(..) or else JavaScript won't be able to read it
+  val config = ConfigFactory.load()
+
+  val system = new FormicSystem(config)
 
   implicit val ec = system.system.dispatcher
 
