@@ -2,7 +2,7 @@ package de.tu_berlin.formic.client
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.ask
-import com.typesafe.config.{Config, ConfigFactory}
+import com.typesafe.config.Config
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated}
 import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
@@ -23,7 +23,7 @@ import scala.util.{Failure, Success}
   * @author Ronny Bräunlich
   */
 @JSExport
-class FormicSystem(config: Config = FormicSystem.loadReferenceConfig()) extends DataTypeInitiator {
+class FormicSystem(config: Config) extends DataTypeInitiator {
 
   implicit val system = ActorSystem("FormicSystem", config)
 
@@ -123,25 +123,4 @@ class FormicSystem(config: Config = FormicSystem.loadReferenceConfig()) extends 
     FormicJsonProtocol.registerProtocol(new JsonFormicJsonDataTypeProtocol(FormicJsonObjectFactory.name)(JsonFormicJsonDataTypeProtocol.reader, JsonFormicJsonDataTypeProtocol.writer))
     factories += (FormicJsonObjectFactory.name -> factory)
   }
-}
-
-object FormicSystem {
-
-  def loadReferenceConfig() = {
-    ConfigFactory.parseString("""akka {
-                                |  loglevel = debug
-                                |  http.client.idle-timeout = 10 minutes
-                                |}
-                                |
-                                |formic {
-                                |  server {
-                                |    address = "127.0.0.1"
-                                |    port = 8080
-                                |  }
-                                |  client {
-                                |    buffersize = 100
-                                |  }
-                                |}""")
-  }
-
 }
