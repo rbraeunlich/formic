@@ -30,6 +30,7 @@ class FormicJsonObject(callback: () => Unit,
     this(callback, initiator, dataTypeInstanceId)
     this.actor = wrapped
   }
+
   def insert(i: Double, path: JsonPath) = {
     val toInsert = NumberNode(path.path.last, i)
     sendInsertOperation(toInsert, path)
@@ -51,20 +52,8 @@ class FormicJsonObject(callback: () => Unit,
     sendInsertOperation(toInsert, path)
   }
 
-  /**
-    * Due to collisions, this method cannot follow the simple insert() syntax
-    */
-  def insertArray[T](arr: Array[T], path: JsonPath)(implicit writer: Writer[T]) = {
-    val children = arr.map(elem => read[ObjectNode](write(elem)))
-    val toInsert = ArrayNode(path.path.last, children.toList)
-    sendInsertOperation(toInsert, path)
-  }
-
   def insert[T](obj: T, path: JsonPath)(implicit writer: Writer[T]) = {
-    //here we use the fact that any arbitrary JSON object can be represented as
-    //JSON tree (that is actually the intention of a JSON tree)
-    val originalJson = write(obj)
-    val toInsert = read[ObjectNode](originalJson)
+    val toInsert: JsonTreeNode[_] = createNodeForObject(obj, path)
     sendInsertOperation(toInsert, path)
   }
 
@@ -106,11 +95,21 @@ class FormicJsonObject(callback: () => Unit,
   }
 
   def replace[T](obj: T, path: JsonPath)(implicit writer: Writer[T]) = {
+    val toInsert: JsonTreeNode[_] = createNodeForObject(obj, path)
+    sendReplaceOperation(toInsert, path)
+  }
+
+  private def createNodeForObject[T](obj: T, path: JsonPath)(implicit writer: Writer[T]): JsonTreeNode[_] = {
+    //because of the overloaded methods, T can only be an array or any object
+    val isArray = obj.isInstanceOf[Array[_]]
     //here we use the fact that any arbitrary JSON object can be represented as
     //JSON tree (that is actually the intention of a JSON tree)
     val originalJson = write(obj)
-    val toInsert = read[ObjectNode](originalJson)
-    sendReplaceOperation(toInsert, path)
+    //if we were given a simple array, we just place it inside an object so we can read it as ObjectNode
+    val intermediate = read[ObjectNode](if (isArray) s"""{"${path.path.last}":$originalJson}""" else originalJson)
+    //we have to set the key explicitely
+    val toInsert = if (isArray) intermediate.children.head else ObjectNode(path.path.last, intermediate.children)
+    toInsert
   }
 
   def sendReplaceOperation(toInsert: JsonTreeNode[_], path: JsonPath) = {
