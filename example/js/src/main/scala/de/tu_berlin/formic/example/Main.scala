@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.example
 
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{Config, ConfigFactory}
 import de.tu_berlin.formic.client.FormicSystem
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.datatype.json.FormicJsonObject
@@ -19,8 +19,8 @@ import scala.util.{Failure, Success}
   */
 
 class Main {
-  //do NOT inline this config with newFormicSystem(..) or else JavaScript won't be able to read it
-  val config = ConfigFactory.load()
+
+  val config = ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}")
 
   val system = new FormicSystem(config)
 

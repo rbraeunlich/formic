@@ -25,18 +25,23 @@ import scala.util.{Failure, Success}
 @JSExport
 class FormicSystem(config: Config) extends DataTypeInitiator {
 
+  def this() = this(null)
+
   implicit val system = ActorSystem("FormicSystem", config)
 
   implicit val ec = system.dispatcher
 
+  val serverAddressKey: String = "formic.server.address"
   @JSExport
-  var serverAddress: String = system.settings.config.getString("formic.server.address")
+  var serverAddress: String = if(system.settings.config.hasPathOrNull(serverAddressKey)) system.settings.config.getString(serverAddressKey) else null
 
+  val serverPortKey: String = "formic.server.port"
   @JSExport
-  var serverPort: String = system.settings.config.getString("formic.server.port")
+  var serverPort: String = if(system.settings.config.hasPathOrNull(serverPortKey)) system.settings.config.getString(serverPortKey) else null
 
+  val clientBuffersizeKey: String = "formic.client.buffersize"
   @JSExport
-  var bufferSize: Int = system.settings.config.getInt("formic.client.buffersize")
+  var bufferSize: Int = if(system.settings.config.hasPathOrNull(clientBuffersizeKey)) system.settings.config.getInt(clientBuffersizeKey) else null
 
   var connection: ActorRef = _
 

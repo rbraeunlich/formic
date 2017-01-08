@@ -61,6 +61,7 @@ reStart
 
 Of course a simple `run` would also do the trick. The webserver then starts on 0.0.0.0:8080, so you can access it either using your current ip or `localhost`.
 The example for strings and trees is present at the root page or `index`. If you want to play collborative battleship you have to navigate to `localhost:8080/battleship`.
+If another player wants to join the Battleship game he/she has to copy the id into the input field next to start and press it.
 ## Final thoughts
 
 Suggestions about how to improve *formic* are appreciated.
