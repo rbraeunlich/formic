@@ -41,7 +41,7 @@ class FormicSystem(config: Config) extends DataTypeInitiator {
 
   val clientBuffersizeKey: String = "formic.client.buffersize"
   @JSExport
-  var bufferSize: Int = if(system.settings.config.hasPath(clientBuffersizeKey)) system.settings.config.getInt(clientBuffersizeKey) else null
+  var bufferSize: Int = if(system.settings.config.hasPath(clientBuffersizeKey)) system.settings.config.getInt(clientBuffersizeKey) else -1
 
   var connection: ActorRef = _
 
