@@ -172,7 +172,7 @@ lazy val websockettests = crossProject.in(file("websockettests")).
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.9.0"
     ),
-    jsEnv in Test := new org.scalajs.jsenv.RetryingComJSEnv(PhantomJSEnv().value)
+    jsEnv in Test := new org.scalajs.jsenv.RetryingComJSEnv(PhantomJSEnv().value, 10)
   )
   .dependsOn(common, linear, client)
 
