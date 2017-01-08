@@ -33,15 +33,15 @@ class FormicSystem(config: Config) extends DataTypeInitiator {
 
   val serverAddressKey: String = "formic.server.address"
   @JSExport
-  var serverAddress: String = if(system.settings.config.hasPathOrNull(serverAddressKey)) system.settings.config.getString(serverAddressKey) else null
+  var serverAddress: String = if(system.settings.config.hasPath(serverAddressKey)) system.settings.config.getString(serverAddressKey) else null
 
   val serverPortKey: String = "formic.server.port"
   @JSExport
-  var serverPort: String = if(system.settings.config.hasPathOrNull(serverPortKey)) system.settings.config.getString(serverPortKey) else null
+  var serverPort: String = if(system.settings.config.hasPath(serverPortKey)) system.settings.config.getString(serverPortKey) else null
 
   val clientBuffersizeKey: String = "formic.client.buffersize"
   @JSExport
-  var bufferSize: Int = if(system.settings.config.hasPathOrNull(clientBuffersizeKey)) system.settings.config.getInt(clientBuffersizeKey) else null
+  var bufferSize: Int = if(system.settings.config.hasPath(clientBuffersizeKey)) system.settings.config.getInt(clientBuffersizeKey) else null
 
   var connection: ActorRef = _
 
