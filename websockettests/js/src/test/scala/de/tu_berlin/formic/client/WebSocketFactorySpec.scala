@@ -1,33 +1,43 @@
 package de.tu_berlin.formic.client
 
 import de.tu_berlin.formic.client.WebSocketFactorySpec.{WebSocketClosedState, WebSocketClosingState, WebSocketConnectingState, WebSocketOpenState}
+import org.scalatest.{FlatSpec, Matchers}
 
 import scala.scalajs.js.timers._
-import org.scalajs.dom._
-import org.scalajs.dom.raw.WebSocket
-import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 
 /**
   * @author Ronny Bräunlich
   */
 class WebSocketFactorySpec extends FlatSpec with Matchers {
 
-  var connection: WebSocket = _
-
   "WebSocketFactory" should "open a WebSocket connection" in {
-    connection = WebSocketFactory.createConnection("ws://echo.websocket.org")
-    connection.onopen = { event: Event => println("WebSocketFactorySpec: connected")}
-    connection.onerror = { event: ErrorEvent =>
-      fail(event.message)
-    }
-    connection.onmessage = { event: MessageEvent => println(s"WebSocketFactorySpec: message received: $event") }
-
+    val connection = WebSocketFactory.createConnection("ws://echo.websocket.org", null)
     setTimeout(500) {
-      getConnectionObject(connection.readyState) should equal(WebSocketFactorySpec.WebSocketOpenState)
+      getConnectionObject(connection.asInstanceOf[WrappedJSWebSocket].webSocket.readyState) should equal(WebSocketFactorySpec.WebSocketOpenState)
     }
     setTimeout(2000) {
-      connection.close()
+      connection.asInstanceOf[WrappedJSWebSocket].webSocket.close()
     }
+  }
+
+  it should "register for onopen events" in {
+    val connection = WebSocketFactory.createConnection("ws://echo.websocket.org", null)
+    connection.asInstanceOf[WrappedJSWebSocket].webSocket.onopen should not be null
+  }
+
+  it should "register for onerror events" in {
+    val connection = WebSocketFactory.createConnection("ws://echo.websocket.org", null)
+    connection.asInstanceOf[WrappedJSWebSocket].webSocket.onerror should not be null
+  }
+
+  it should "register for onmessage events" in {
+    val connection = WebSocketFactory.createConnection("ws://echo.websocket.org", null)
+    connection.asInstanceOf[WrappedJSWebSocket].webSocket.onmessage should not be null
+  }
+
+  it should "register for onclose events" in {
+    val connection = WebSocketFactory.createConnection("ws://echo.websocket.org", null)
+    connection.asInstanceOf[WrappedJSWebSocket].webSocket.onclose should not be null
   }
 
   /**
