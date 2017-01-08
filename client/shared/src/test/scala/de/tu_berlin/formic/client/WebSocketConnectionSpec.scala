@@ -383,34 +383,3 @@ class TestWebSocketFactory extends WebSocketFactory {
     mock
   }
 }
-
-/*class TestWebSocketFactory extends WebSocketFactory {
-  /*
-  This needs a little bit more explanation. Everything is related to the dynamic typing in JavaScript.
-  Although the WebSocketMock does not extend WebSocket it behaves like one, therefore we can cast it to WebSocket.
-  Unfortunately, we cannot directly mock the constructor. Because of that, we mock the constructor with a separate
-  JS function, that returns the mock. Because the function mocks the WebSocket constructor we cast it to WebSocket, too.
-   */
-  val mock = new WebSocketMock
-
-  override def createConnection(url: String): WebSocket = {
-    mock.asInstanceOf[WebSocket]
-  }
-}
-
-@JSExportAll
-class WebSocketMock {
-  var sent: List[String] = List.empty
-  val isInitialized = true
-
-  var readyState = 1
-
-  def send(data: String) = {
-    sent = sent :+ data
-  }
-
-  var onopen: js.Function1[Event, _] = _
-  var onmessage: js.Function1[MessageEvent, _] = _
-  var onclose: js.Function1[CloseEvent, _] = _
-  var onerror: js.Function1[ErrorEvent, _] = _
-}*/
