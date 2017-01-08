@@ -6,8 +6,6 @@ import de.tu_berlin.formic.client.WebSocketConnection._
 import de.tu_berlin.formic.common.ClientId
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message._
-import org.scalajs.dom
-import org.scalajs.dom._
 import upickle.default._
 
 import scala.concurrent.ExecutionContext
@@ -28,27 +26,26 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
     with ActorLogging {
 
   var dispatcher: ActorRef = _
-  var webSocketConnection: dom.WebSocket = _
   var connectionTry: Cancellable = _
+  var webSocketConnection: WebSocketWrapper = _
 
   def retryConnection(): Unit = {
-    val tryWebSocket = webSocketConnectionFactory.createConnection(url)
+    webSocketConnectionFactory.createConnection(url, self)
     log.debug(s"New WebSocket connection created for url: $url")
-    tryWebSocket.onopen = { event: Event => self ! OnConnect(tryWebSocket) }
-    tryWebSocket.onerror = {event: ErrorEvent => log.error(s"!!!WebSocket error: ${event.message}!!!")}
-    tryWebSocket.onclose = {event: CloseEvent => log.error(s"!!!WebSocket closed: ${event.reason}!!!")}
   }
 
   override def preStart(): Unit = {
     super.preStart()
     dispatcher = context.actorOf(Props(new Dispatcher(self, newInstanceCallback, instantiator)), "dispatcher")
-    connectionTry = context.system.scheduler.schedule(100.millis, 5.seconds) {retryConnection()}
+    connectionTry = context.system.scheduler.schedule(100.millis, 5.seconds) {
+      retryConnection()
+    }
     self ! Start
   }
 
   override def postStop(): Unit = {
     super.postStop()
-    if(connectionTry != null) connectionTry.cancel()
+    if (connectionTry != null) connectionTry.cancel()
   }
 
 
@@ -67,7 +64,9 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
       dispatcher ! read[FormicMessage](msg)
     case OnClose(code) =>
       log.warning("Became offline with code " + code)
-      connectionTry = context.system.scheduler.schedule(100.millis, 5.seconds) {retryConnection()}
+      connectionTry = context.system.scheduler.schedule(100.millis, 5.seconds) {
+        retryConnection()
+      }
       context.become(offline(scala.collection.mutable.Set.empty))
     case (ref: ActorRef, req: CreateRequest) =>
       log.debug(s"Received CreateRequest: $req")
@@ -87,15 +86,17 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
   }
 
   def offline(buffer: scala.collection.mutable.Set[FormicMessage]): Receive = {
-    case OnConnect(ws: WebSocket) =>
+    case OnConnect(ws: WebSocketWrapper) =>
       log.debug("Connecting")
       connectionTry.cancel
       webSocketConnection = ws
-      webSocketConnection.onerror = { event: ErrorEvent => self ! OnError(event.message) }
-      webSocketConnection.onmessage = { event: MessageEvent => self ! OnMessage(event.data.toString) }
-      webSocketConnection.onclose = { event: CloseEvent => self ! OnClose(event.code) }
       buffer.foreach(msg => sendMessageViaWebSocket(msg))
       context.become(online)
+    case OnError(errorMessage) =>
+      log.debug(s"Received OnError message")
+      dispatcher ! ErrorMessage(errorMessage)
+    case OnClose(code) =>
+      log.warning("Staying offline with code " + code)
     case (ref: ActorRef, req: CreateRequest) =>
       log.debug(s"Buffering $req")
       //this is a little hack because the FormicSystem does not know the dispatcher
@@ -145,11 +146,12 @@ object WebSocketConnection {
 
   case class OnClose(closeCode: Int)
 
-  case class OnConnect(openWebSocket: WebSocket)
+  case class OnConnect(webSocketWrapper: WebSocketWrapper)
 
   /**
     * An initial message to the WebSocketConnection so that it can start being offline and has the
     * cancellable.
     */
   case object Start
+
 }
