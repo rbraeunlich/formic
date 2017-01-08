@@ -1,3 +1,5 @@
+import org.scalajs.core.tools.sem.{CheckedBehavior, Semantics}
+
 val akkaVersion = "2.4.16"
 
 val uPickleVersion = "0.4.3"
@@ -176,7 +178,9 @@ lazy val websockettests = crossProject.in(file("websockettests")).
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.9.0"
     ),
-    jsEnv in Test := new org.scalajs.jsenv.RetryingComJSEnv(PhantomJSEnv().value, 10)
+    jsEnv in Test := new org.scalajs.jsenv.RetryingComJSEnv(PhantomJSEnv().value, 10),
+    //disable the cast checks so we can use anything as a mock within the test
+    scalaJSSemantics   := Semantics.Defaults.withAsInstanceOfs(CheckedBehavior.Unchecked)
   )
   .dependsOn(common, linear, client)
 

@@ -1,8 +1,12 @@
 package de.tu_berlin.formic.client
 
-import de.tu_berlin.formic.client.WebSocketFactorySpec.{WebSocketClosedState, WebSocketClosingState, WebSocketConnectingState, WebSocketOpenState}
+import akka.actor.{ActorPath, ActorRef}
+import de.tu_berlin.formic.client.WebSocketFactorySpec._
 import org.scalatest.{FlatSpec, Matchers}
 
+import scala.scalajs.js
+import scala.scalajs.js.Dynamic.global
+import scala.scalajs.js.annotation.JSExportAll
 import scala.scalajs.js.timers._
 
 /**
@@ -11,7 +15,7 @@ import scala.scalajs.js.timers._
 class WebSocketFactorySpec extends FlatSpec with Matchers {
 
   "WebSocketFactoryJS" should "open a WebSocket connection" in {
-    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", null)
+    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", new ActorRefMock().asInstanceOf[ActorRef])
     
     setTimeout(500) {
       getConnectionObject(connection.asInstanceOf[WrappedJSWebSocket].webSocket.readyState) should equal(WebSocketFactorySpec.WebSocketOpenState)
@@ -22,22 +26,22 @@ class WebSocketFactorySpec extends FlatSpec with Matchers {
   }
 
   it should "register for onopen events" in {
-    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", null)
+    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", new ActorRefMock().asInstanceOf[ActorRef])
     connection.asInstanceOf[WrappedJSWebSocket].webSocket.onopen should not be null
   }
 
   it should "register for onerror events" in {
-    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", null)
+    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", new ActorRefMock().asInstanceOf[ActorRef])
     connection.asInstanceOf[WrappedJSWebSocket].webSocket.onerror should not be null
   }
 
   it should "register for onmessage events" in {
-    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", null)
+    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", new ActorRefMock().asInstanceOf[ActorRef])
     connection.asInstanceOf[WrappedJSWebSocket].webSocket.onmessage should not be null
   }
 
   it should "register for onclose events" in {
-    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", null)
+    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", new ActorRefMock().asInstanceOf[ActorRef])
     connection.asInstanceOf[WrappedJSWebSocket].webSocket.onclose should not be null
   }
 
@@ -69,5 +73,10 @@ object WebSocketFactorySpec {
   }
   case object WebSocketClosedState extends WebSocketState {
     override val stateNr: Int = 3
+  }
+
+  @JSExportAll
+  class ActorRefMock {
+    def !(message: Any): Unit = {}
   }
 }
