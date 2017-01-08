@@ -1,11 +1,12 @@
 package de.tu_berlin.formic.example
 
-import com.typesafe.config.{Config, ConfigFactory}
-import de.tu_berlin.formic.client.FormicSystem
+import com.typesafe.config.ConfigFactory
+import de.tu_berlin.formic.client.FormicSystemFactory
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
-import de.tu_berlin.formic.datatype.json.FormicJsonObject
+import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
 import de.tu_berlin.formic.datatype.linear.client.FormicString
-import de.tu_berlin.formic.datatype.tree.{AccessPath, FormicIntegerTree}
+import de.tu_berlin.formic.datatype.tree.AccessPath
+import de.tu_berlin.formic.datatype.tree.client.FormicIntegerTree
 import org.scalajs.dom.document
 import org.scalajs.dom.raw.HTMLInputElement
 import org.scalajs.jquery.{JQueryEventObject, jQuery}
@@ -22,7 +23,7 @@ class Main {
 
   val config = ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}")
 
-  val system = new FormicSystem(config)
+  val system = FormicSystemFactory.create(config)
 
   implicit val ec = system.system.dispatcher
 

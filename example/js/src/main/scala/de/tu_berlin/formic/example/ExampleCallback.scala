@@ -2,9 +2,9 @@ package de.tu_berlin.formic.example
 
 import de.tu_berlin.formic.client.NewInstanceCallback
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
-import de.tu_berlin.formic.datatype.json.FormicJsonObject
+import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
 import de.tu_berlin.formic.datatype.linear.client.FormicString
-import de.tu_berlin.formic.datatype.tree.FormicIntegerTree
+import de.tu_berlin.formic.datatype.tree.client.FormicIntegerTree
 import org.scalajs.jquery.jQuery
 
 /**

@@ -72,7 +72,8 @@ lazy val linear = crossProject.in(file("linear")).
   ).
   jvmSettings(
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test"
+      "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test",
+      "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided"
     )
   ).
   jsSettings(
@@ -96,7 +97,8 @@ lazy val tree = crossProject.in(file("tree")).
   ).
   jvmSettings(
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test"
+      "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test",
+      "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided"
     )
   ).
   jsSettings(
@@ -120,7 +122,8 @@ lazy val json = crossProject.in(file("json")).
   ).
   jvmSettings(
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test"
+      "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test",
+      "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided"
     )
   ).
   jsSettings(
@@ -151,7 +154,8 @@ lazy val client = crossProject.in(file("client")).
   ).
   jvmSettings(
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test"
+      "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test",
+      "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided"
     )
   )
   .dependsOn(common, linear, tree, json)

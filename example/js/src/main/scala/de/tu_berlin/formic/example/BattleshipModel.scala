@@ -2,6 +2,7 @@ package de.tu_berlin.formic.example
 
 import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
 import de.tu_berlin.formic.datatype.json._
+import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
 import upickle.default._
 
 import scala.concurrent.{ExecutionContext, Future}

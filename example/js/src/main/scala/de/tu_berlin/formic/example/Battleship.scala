@@ -1,9 +1,10 @@
 package de.tu_berlin.formic.example
 
-import de.tu_berlin.formic.datatype.json.{FormicJsonObject, JsonPath, ObjectNode}
+import de.tu_berlin.formic.datatype.json.{JsonPath, ObjectNode}
 import org.scalajs.jquery.{JQueryEventObject, _}
 import upickle.default._
 import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
+import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
 
 import scala.concurrent.ExecutionContext
 import scala.scalajs.js.Dynamic.global

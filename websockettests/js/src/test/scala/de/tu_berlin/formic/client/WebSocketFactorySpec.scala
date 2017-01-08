@@ -10,8 +10,8 @@ import scala.scalajs.js.timers._
   */
 class WebSocketFactorySpec extends FlatSpec with Matchers {
 
-  "WebSocketFactory" should "open a WebSocket connection" in {
-    val connection = WebSocketFactory.createConnection("ws://echo.websocket.org", null)
+  "WebSocketFactoryJS" should "open a WebSocket connection" in {
+    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", null)
     
     setTimeout(500) {
       getConnectionObject(connection.asInstanceOf[WrappedJSWebSocket].webSocket.readyState) should equal(WebSocketFactorySpec.WebSocketOpenState)
@@ -22,22 +22,22 @@ class WebSocketFactorySpec extends FlatSpec with Matchers {
   }
 
   it should "register for onopen events" in {
-    val connection = WebSocketFactory.createConnection("ws://echo.websocket.org", null)
+    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", null)
     connection.asInstanceOf[WrappedJSWebSocket].webSocket.onopen should not be null
   }
 
   it should "register for onerror events" in {
-    val connection = WebSocketFactory.createConnection("ws://echo.websocket.org", null)
+    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", null)
     connection.asInstanceOf[WrappedJSWebSocket].webSocket.onerror should not be null
   }
 
   it should "register for onmessage events" in {
-    val connection = WebSocketFactory.createConnection("ws://echo.websocket.org", null)
+    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", null)
     connection.asInstanceOf[WrappedJSWebSocket].webSocket.onmessage should not be null
   }
 
   it should "register for onclose events" in {
-    val connection = WebSocketFactory.createConnection("ws://echo.websocket.org", null)
+    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", null)
     connection.asInstanceOf[WrappedJSWebSocket].webSocket.onclose should not be null
   }
 
