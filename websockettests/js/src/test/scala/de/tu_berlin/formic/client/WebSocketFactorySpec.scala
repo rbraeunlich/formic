@@ -12,6 +12,7 @@ class WebSocketFactorySpec extends FlatSpec with Matchers {
 
   "WebSocketFactory" should "open a WebSocket connection" in {
     val connection = WebSocketFactory.createConnection("ws://echo.websocket.org", null)
+    
     setTimeout(500) {
       getConnectionObject(connection.asInstanceOf[WrappedJSWebSocket].webSocket.readyState) should equal(WebSocketFactorySpec.WebSocketOpenState)
     }
