@@ -42,6 +42,7 @@ class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = C
     case NewDataTypeCreated(dataTypeInstanceId, ref) =>
       watchlist += (dataTypeInstanceId -> ref)
       subscriber ! NewDataTypeSubscription(dataTypeInstanceId, ref)
+      log.debug(s"Sending CreateResponse for $dataTypeInstanceId")
       outgoing ! CreateResponse(dataTypeInstanceId)
 
     case hist: HistoricOperationRequest =>
