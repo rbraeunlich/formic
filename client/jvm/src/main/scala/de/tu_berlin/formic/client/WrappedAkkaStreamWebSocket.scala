@@ -8,7 +8,7 @@ import akka.http.scaladsl.model.{StatusCodes, Uri}
 import akka.stream.scaladsl._
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.{Done, NotUsed}
-import de.tu_berlin.formic.client.WebSocketConnection.OnClose
+import de.tu_berlin.formic.client.WebSocketConnection.{OnClose, OnConnect}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message.FormicMessage
 import upickle.default._
@@ -66,7 +66,9 @@ class WrappedAkkaStreamWebSocket(val url: String, val receiver: ActorRef)(implic
     val result = Await.ready(connected, 6.seconds)
 
     result.value.get match {
-      case Success(_) => outgoing = sinkAndSource._2
+      case Success(_) =>
+        outgoing = sinkAndSource._2
+        receiver ! OnConnect(this)
       case Failure(ex) => throw ex
     }
   }

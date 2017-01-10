@@ -3,6 +3,7 @@ package de.tu_berlin.formic.client
 import akka.actor.ActorSystem
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings}
 import akka.testkit.{TestKit, TestProbe}
+import de.tu_berlin.formic.client.WebSocketConnection.OnConnect
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.common.message.UpdateRequest
 import org.scalatest.{Matchers, WordSpecLike}
@@ -21,11 +22,19 @@ class WebSocketFactoryJVMSpec extends TestKit(ActorSystem("WebSocketFactoryJVMSp
   implicit val materializer = ActorMaterializer(ActorMaterializerSettings(system))
 
   "WebSocketFactoryJVM" must {
-    "open a WebSocket connection" in {
+
+    "send OnConnect message after connecting" in {
+      val testActor = TestProbe()
+      val connection = new WebSocketFactoryJVM().createConnection("ws://foo@echo.websocket.org", testActor.ref)
+
+      testActor.expectMsg(OnConnect(connection))
+    }
+
+    "send messages" in {
       val testActor = TestProbe()
       val connection = new WebSocketFactoryJVM().createConnection("ws://foo@echo.websocket.org", testActor.ref)
       val message = UpdateRequest(ClientId(), DataTypeInstanceId())
-
+      testActor.receiveN(1)
       connection.send(write(message))
 
       testActor.expectMsg(message)
