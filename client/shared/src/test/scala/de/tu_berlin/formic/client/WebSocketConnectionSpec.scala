@@ -247,7 +247,6 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       system.scheduler.scheduleOnce(0.millis) {
         watcher watch connection
         connection ! OnConnect(factory.mock)
-
         connection ! OnClose(1)
         connection ! UpdateRequest(null, DataTypeInstanceId())
         //explicitely kill the actor or else the running job won't stop
@@ -269,6 +268,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
         connection ! OnConnect(factory.mock)
         connection ! OnClose(1)
         connection ! (probe.ref, request)
+        awaitCond(factory.mock.sent.isEmpty, timeout)
         connection ! OnConnect(factory.mock)
       }
       awaitCond(factory.mock.sent.nonEmpty, timeout)
@@ -291,8 +291,8 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       system.scheduler.scheduleOnce(0.millis) {
         connection ! OnConnect(factory.mock)
         connection ! OnClose(1)
-
         connection ! request
+        awaitCond(factory.mock.sent.isEmpty, timeout)
         connection ! OnConnect(factory.mock)
       }
       awaitCond(factory.mock.sent.nonEmpty, timeout)
@@ -316,6 +316,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
         connection ! OnConnect(factory.mock)
         connection ! OnClose(1)
         connection ! request
+        awaitCond(factory.mock.sent.isEmpty, timeout)
         connection ! OnConnect(factory.mock)
       }
       awaitCond(factory.mock.sent.nonEmpty, timeout)
@@ -339,6 +340,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
         connection ! OnConnect(factory.mock)
         connection ! OnClose(1)
         connection ! message
+        awaitCond(factory.mock.sent.isEmpty, timeout)
         connection ! OnConnect(factory.mock)
       }
       awaitCond(factory.mock.sent.nonEmpty, timeout)
