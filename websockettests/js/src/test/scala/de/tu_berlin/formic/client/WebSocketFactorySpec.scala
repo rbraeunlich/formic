@@ -1,6 +1,7 @@
 package de.tu_berlin.formic.client
 
-import akka.actor.Actor
+import akka.actor.{Actor, ActorRef}
+import akka.event.Logging.StandardOutLogger
 import de.tu_berlin.formic.client.WebSocketFactorySpec._
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -12,7 +13,8 @@ import scala.scalajs.js.timers._
 class WebSocketFactorySpec extends FlatSpec with Matchers {
 
   "WebSocketFactoryJS" should "open a WebSocket connection" in {
-    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", Actor.noSender)
+
+    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", new StandardOutLogger)
     
     setTimeout(500) {
       getConnectionObject(connection.asInstanceOf[WrappedJSWebSocket].webSocket.readyState) should equal(WebSocketFactorySpec.WebSocketOpenState)
@@ -23,22 +25,22 @@ class WebSocketFactorySpec extends FlatSpec with Matchers {
   }
 
   it should "register for onopen events" in {
-    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", Actor.noSender)
+    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", new StandardOutLogger)
     connection.asInstanceOf[WrappedJSWebSocket].webSocket.onopen should not be null
   }
 
   it should "register for onerror events" in {
-    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", Actor.noSender)
+    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", new StandardOutLogger)
     connection.asInstanceOf[WrappedJSWebSocket].webSocket.onerror should not be null
   }
 
   it should "register for onmessage events" in {
-    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", Actor.noSender)
+    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", new StandardOutLogger)
     connection.asInstanceOf[WrappedJSWebSocket].webSocket.onmessage should not be null
   }
 
   it should "register for onclose events" in {
-    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", Actor.noSender)
+    val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", new StandardOutLogger)
     connection.asInstanceOf[WrappedJSWebSocket].webSocket.onclose should not be null
   }
 
