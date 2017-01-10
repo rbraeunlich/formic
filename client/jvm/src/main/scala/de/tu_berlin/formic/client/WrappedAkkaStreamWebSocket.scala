@@ -8,13 +8,10 @@ import akka.http.scaladsl.model.{StatusCodes, Uri}
 import akka.stream.scaladsl._
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.{Done, NotUsed}
-import de.tu_berlin.formic.client.WebSocketConnection.{OnClose, OnConnect}
-import de.tu_berlin.formic.common.json.FormicJsonProtocol._
-import de.tu_berlin.formic.common.message.FormicMessage
-import upickle.default._
+import de.tu_berlin.formic.client.WebSocketConnection.{OnClose, OnConnect, OnMessage}
 
+import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.concurrent.{Await, ExecutionContext}
 import scala.util.{Failure, Success}
 /**
   * @author Ronny Bräunlich
@@ -40,7 +37,7 @@ class WrappedAkkaStreamWebSocket(val url: String, val receiver: ActorRef)(implic
           val result = Await.result(bar, 5.seconds)
           result
         case _ => throw new IllegalArgumentException("Illegal message received")
-      }.map(text => read[FormicMessage](text)).to(Sink.actorRef[FormicMessage](receiver, OnClose(1)))
+      }.map(text => OnMessage(text)).to(Sink.actorRef[OnMessage](receiver, OnClose(1)))
 
     val flow = Flow.fromSinkAndSourceMat(sink, source)(Keep.both)
 
