@@ -155,6 +155,7 @@ lazy val client = crossProject.in(file("client")).
     )
   ).
   jvmSettings(
+    parallelExecution in Test := false,
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test",
       "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided",
