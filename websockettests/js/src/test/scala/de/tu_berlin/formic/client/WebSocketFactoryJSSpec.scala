@@ -2,7 +2,7 @@ package de.tu_berlin.formic.client
 
 import akka.actor.{Actor, ActorRef}
 import akka.event.Logging.StandardOutLogger
-import de.tu_berlin.formic.client.WebSocketFactorySpec._
+import de.tu_berlin.formic.client.WebSocketFactoryJSSpec._
 import org.scalatest.{FlatSpec, Matchers}
 
 import scala.scalajs.js.timers._
@@ -10,14 +10,14 @@ import scala.scalajs.js.timers._
 /**
   * @author Ronny Bräunlich
   */
-class WebSocketFactorySpec extends FlatSpec with Matchers {
+class WebSocketFactoryJSSpec extends FlatSpec with Matchers {
 
   "WebSocketFactoryJS" should "open a WebSocket connection" in {
 
     val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", new StandardOutLogger)
-    
+
     setTimeout(500) {
-      getConnectionObject(connection.asInstanceOf[WrappedJSWebSocket].webSocket.readyState) should equal(WebSocketFactorySpec.WebSocketOpenState)
+      getConnectionObject(connection.asInstanceOf[WrappedJSWebSocket].webSocket.readyState) should equal(WebSocketFactoryJSSpec.WebSocketOpenState)
     }
     setTimeout(2000) {
       connection.asInstanceOf[WrappedJSWebSocket].webSocket.close()
@@ -57,7 +57,7 @@ class WebSocketFactorySpec extends FlatSpec with Matchers {
   }
 }
 
-object WebSocketFactorySpec {
+object WebSocketFactoryJSSpec {
   sealed trait WebSocketState {
     val stateNr: Int
   }
