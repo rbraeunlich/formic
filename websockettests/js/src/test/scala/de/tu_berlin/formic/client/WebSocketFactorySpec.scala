@@ -1,11 +1,9 @@
 package de.tu_berlin.formic.client
 
-import akka.actor.{ActorPath, ActorRef}
+import akka.actor.{Actor, ActorRef}
 import de.tu_berlin.formic.client.WebSocketFactorySpec._
 import org.scalatest.{FlatSpec, Matchers}
 
-import scala.scalajs.js
-import scala.scalajs.js.Dynamic.global
 import scala.scalajs.js.annotation.JSExportAll
 import scala.scalajs.js.timers._
 
@@ -77,6 +75,8 @@ object WebSocketFactorySpec {
 
   @JSExportAll
   class ActorRefMock {
-    def !(message: Any): Unit = {}
+    def !(message: Any)(implicit sender: ActorRef = Actor.noSender): Unit = {
+      println("Mock should send message " + message)
+    }
   }
 }
