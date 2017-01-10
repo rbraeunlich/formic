@@ -24,6 +24,7 @@ import scala.util.{Failure, Success}
 class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSpec", ConfigFactory.parseString(
   """
   akka.loggers = ["akka.testkit.TestEventListener"]
+  akka.loglevel = debug
   """)))
   with WordSpecLike
   with OneInstancePerTest
