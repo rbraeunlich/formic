@@ -269,11 +269,8 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
         connection ! OnConnect(factory.mock)
         connection ! OnClose(1)
         connection ! (probe.ref, request)
+        connection ! OnConnect(factory.mock)
       }
-      awaitAssert(factory.mock.sent shouldBe empty, timeout)
-
-      connection ! OnConnect(factory.mock)
-
       awaitCond(factory.mock.sent.nonEmpty, timeout)
       //explicitely kill the actor or else the running job won't stop
       connection ! PoisonPill
@@ -296,11 +293,8 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
         connection ! OnClose(1)
 
         connection ! request
+        connection ! OnConnect(factory.mock)
       }
-      awaitAssert(factory.mock.sent shouldBe empty, timeout)
-
-      connection ! OnConnect(factory.mock)
-
       awaitCond(factory.mock.sent.nonEmpty, timeout)
       //explicitely kill the actor or else the running job won't stop
       connection ! PoisonPill
@@ -322,11 +316,8 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
         connection ! OnConnect(factory.mock)
         connection ! OnClose(1)
         connection ! request
+        connection ! OnConnect(factory.mock)
       }
-      awaitAssert(factory.mock.sent shouldBe empty, timeout)
-
-      connection ! OnConnect(factory.mock)
-
       awaitCond(factory.mock.sent.nonEmpty, timeout)
       //explicitely kill the actor or else the running job won't stop
       connection ! PoisonPill
@@ -348,11 +339,8 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
         connection ! OnConnect(factory.mock)
         connection ! OnClose(1)
         connection ! message
+        connection ! OnConnect(factory.mock)
       }
-      awaitAssert(factory.mock.sent shouldBe empty, timeout)
-
-      connection ! OnConnect(factory.mock)
-
       awaitCond(factory.mock.sent.nonEmpty, timeout)
       //explicitely kill the actor or else the running job won't stop
       connection ! PoisonPill
