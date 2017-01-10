@@ -2,9 +2,7 @@ package de.tu_berlin.formic.example
 
 import java.time.Instant
 
-import akka.http.scaladsl.model.DateTime
-import org.openqa.selenium.chrome.{ChromeDriver, ChromeDriverService, ChromeOptions}
-import org.scalactic.source
+import org.openqa.selenium.chrome.ChromeDriver
 import org.scalatest.selenium.WebBrowser
 import org.scalatest.time.{Seconds, Span}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
@@ -100,7 +98,7 @@ class WebSiteSpec extends FlatSpec
     id("insert" + treeId).findElement should not be empty
     id("delete" + treeId).findElement should not be empty
     id("input" + treeId).findElement should not be empty
-    Thread.sleep(20000)
+    Thread.sleep(10000)
     id(treeId).findElement should not be empty
     val treeTag = id(treeId).findElement.get
     treeTag.text should include("Tree data type with id " + treeId)
