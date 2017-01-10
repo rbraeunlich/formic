@@ -196,13 +196,3 @@ class WebSiteSpec extends FlatSpec
 }
 
 
-class ServerThread extends Thread {
-
-  override def run() {
-    ExampleServer.main(Array.empty)
-  }
-
-  def terminate(): Unit = {
-    ExampleServer.shutdown
-  }
-}
