@@ -157,7 +157,8 @@ lazy val client = crossProject.in(file("client")).
   jvmSettings(
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %%% "akka-testkit" % akkaVersion % "test",
-      "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided"
+      "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided",
+      "com.typesafe.akka" %%% "akka-http" % akkaHttpVersion
     )
   )
   .dependsOn(common, linear, tree, json)
