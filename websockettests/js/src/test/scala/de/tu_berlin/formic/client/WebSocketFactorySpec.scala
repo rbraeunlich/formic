@@ -13,6 +13,9 @@ import scala.scalajs.js.timers._
 class WebSocketFactorySpec extends FlatSpec with Matchers {
 
   "WebSocketFactoryJS" should "open a WebSocket connection" in {
+    //little hack: Phantom (or whoever) will not add the method if it never gets called and no,
+    //the place in WebSocketFactoryJS does not count as being called, therefore we add the invocation here
+    new ActorRefMock() ! "foo"
     val connection = WebSocketFactoryJS.createConnection("ws://echo.websocket.org", new ActorRefMock().asInstanceOf[ActorRef])
     
     setTimeout(500) {
@@ -72,11 +75,11 @@ object WebSocketFactorySpec {
   case object WebSocketClosedState extends WebSocketState {
     override val stateNr: Int = 3
   }
+}
 
-  @JSExportAll
-  class ActorRefMock {
-    def !(message: Any)(implicit sender: ActorRef = Actor.noSender): Unit = {
-      println("Mock should send message " + message)
-    }
+@JSExportAll
+class ActorRefMock {
+  def !(message: Any)(implicit sender: ActorRef = Actor.noSender): Unit = {
+    println("Mock should send message " + message)
   }
 }
