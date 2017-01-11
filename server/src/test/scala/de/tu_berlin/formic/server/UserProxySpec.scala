@@ -161,6 +161,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
       val dataTypeInstanceId = DataTypeInstanceId()
       val factory = system.actorOf(Props[TestDataTypeFactory])
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName)
+      Thread.sleep(500) //give the server time to create the data type
       val userProxy: TestActorRef[UserProxy] = TestActorRef(Props(new UserProxy(Map.empty)))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
