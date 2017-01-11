@@ -7,6 +7,8 @@ import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.{FormicSystemFactory, NewInstanceCallback}
 import de.tu_berlin.formic.common.ClientId
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
+import de.tu_berlin.formic.datatype.json._
+import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
 import de.tu_berlin.formic.datatype.linear.client.FormicString
 import de.tu_berlin.formic.datatype.tree.client.FormicIntegerTree
 import de.tu_berlin.formic.datatype.tree.{AccessPath, TreeNode, ValueTreeNode}
@@ -188,14 +190,14 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       checkBothTrees(treeUser1, treeUser2, ValueTreeNode(1, List(ValueTreeNode(200), ValueTreeNode(10), ValueTreeNode(13), ValueTreeNode(11))))
 
       //one operation with several ones parallel
-      treeUser1.insert(5000, AccessPath(3,0))
-      treeUser1.insert(6000, AccessPath(3,0))
-      treeUser1.insert(7000, AccessPath(3,0))
-      treeUser1.insert(8000, AccessPath(3,0))
+      treeUser1.insert(5000, AccessPath(3, 0))
+      treeUser1.insert(6000, AccessPath(3, 0))
+      treeUser1.insert(7000, AccessPath(3, 0))
+      treeUser1.insert(8000, AccessPath(3, 0))
       treeUser2.remove(AccessPath(0))
       Thread.sleep(1000)
 
-      checkBothTrees(treeUser1, treeUser2, ValueTreeNode(1, List(ValueTreeNode(10), ValueTreeNode(13), ValueTreeNode(11, List(ValueTreeNode(8000),ValueTreeNode(7000),ValueTreeNode(6000),ValueTreeNode(5000))))))
+      checkBothTrees(treeUser1, treeUser2, ValueTreeNode(1, List(ValueTreeNode(10), ValueTreeNode(13), ValueTreeNode(11, List(ValueTreeNode(8000), ValueTreeNode(7000), ValueTreeNode(6000), ValueTreeNode(5000))))))
     }
 
     def checkBothTrees(treeUser1: FormicIntegerTree, treeUser2: FormicIntegerTree, expected: TreeNode): Any = {
@@ -203,6 +205,160 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       val user2Tree = treeUser2.getTree()
       val user1Result = Await.result(user1Tree, 3.seconds)
       val user2Result = Await.result(user2Tree, 3.seconds)
+      user1Result should equal(expected)
+      user2Result should equal(expected)
+    }
+
+    "result in a consistent JSON when parallel edits happen" in {
+      val user1Id = ClientId("6")
+      val user2Id = ClientId("5") //important user1 > user2
+      val user1 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+      val user2 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+      val user1Callback = new CollectingCallback
+      val user2Callback = new CollectingCallback
+      user1.init(user1Callback, user1Id)
+      user2.init(user2Callback, user2Id)
+      Thread.sleep(3000)
+      val jsonUser1 = new FormicJsonObject(() => {}, user1)
+      Thread.sleep(1000) //send the CreateRequest to the server
+      user2.requestDataType(jsonUser1.dataTypeInstanceId)
+      awaitCond(user2Callback.dataTypes.nonEmpty, 7.seconds)
+      val jsonUser2 = user2Callback.dataTypes.head.asInstanceOf[FormicJsonObject]
+
+      //parallel insertion
+      jsonUser1.insert(1.23, JsonPath("num1"))
+      jsonUser2.insert(2.34, JsonPath("num2"))
+      Thread.sleep(1000)
+      jsonUser2.insert(b = true, JsonPath("bool1"))
+      jsonUser1.insert(b = false, JsonPath("bool2"))
+      Thread.sleep(1000)
+      checkBothJsons(jsonUser1, jsonUser2,
+        ObjectNode(null, List(
+          NumberNode("num1", 1.23),
+          NumberNode("num2", 2.34),
+          BooleanNode("bool1", value = true),
+          BooleanNode("bool2", value = false))))
+
+      //parallel replace
+      jsonUser1.replace(3.45, JsonPath("num1"))
+      jsonUser2.replace(4.56, JsonPath("num1"))
+      Thread.sleep(2000)
+      checkBothJsons(jsonUser1, jsonUser2,
+        ObjectNode(null, List(
+          NumberNode("num1", 3.45),
+          NumberNode("num2", 2.34),
+          BooleanNode("bool1", value = true),
+          BooleanNode("bool2", value = false))))
+
+      //deletion
+      jsonUser1.remove(JsonPath("bool2"))
+      jsonUser1.remove(JsonPath("bool1"))
+      jsonUser2.remove(JsonPath("bool1"))
+      Thread.sleep(2000)
+      checkBothJsons(jsonUser1, jsonUser2,
+        ObjectNode(null, List(
+          NumberNode("num1", 3.45),
+          NumberNode("num2", 2.34))))
+
+      //deletion on different level
+      jsonUser2.insert(Array("text1", "text2"), JsonPath("string"))
+      Thread.sleep(2000)
+      jsonUser1.remove(JsonPath("string", "1"))
+      jsonUser2.remove(JsonPath("num1"))
+      Thread.sleep(2000)
+      checkBothJsons(jsonUser1, jsonUser2,
+        ObjectNode(null, List(
+          NumberNode("num2", 2.34),
+          ArrayNode("string", List(
+            StringNode(null, List(
+              CharacterNode(null, 't'),
+              CharacterNode(null, 'e'),
+              CharacterNode(null, 'x'),
+              CharacterNode(null, 't'),
+              CharacterNode(null, '1')))
+          )))))
+
+      //an operation parallel to a no-op
+      jsonUser1.remove(JsonPath("string"))
+      jsonUser2.remove(JsonPath("string"))
+      jsonUser2.insert(b = false, JsonPath("bool"))
+      Thread.sleep(2000)
+      checkBothJsons(jsonUser1, jsonUser2,
+        ObjectNode(null, List(
+          BooleanNode("bool", value = false),
+          NumberNode("num2", 2.34))))
+
+      //one operation with several ones parallel
+      jsonUser1.insert(Array(1.0), JsonPath("arr"))
+      jsonUser1.insert(2.0, JsonPath("arr", "0"))
+      jsonUser1.insert(3.0, JsonPath("arr", "0"))
+      jsonUser1.insert(4.0, JsonPath("arr", "0"))
+      jsonUser2.remove(JsonPath("bool"))
+      Thread.sleep(3000)
+      checkBothJsons(jsonUser1, jsonUser2,
+        ObjectNode(null, List(
+          ArrayNode("arr", List(
+            NumberNode(null, 4.0),
+            NumberNode(null, 3.0),
+            NumberNode(null, 2.0),
+            NumberNode(null, 1.0))),
+          NumberNode("num2", 2.34)
+        )))
+
+      //effect independence
+      jsonUser1.remove(JsonPath("arr"))
+      jsonUser1.insert(Array(1), JsonPath("a"))
+      jsonUser1.insert(Array(10), JsonPath("z"))
+      Thread.sleep(3000)
+      jsonUser1.insert(2, JsonPath("a", "1"))
+      jsonUser2.insert(20, JsonPath("z", "1"))
+      Thread.sleep(1000)
+      checkBothJsons(jsonUser1, jsonUser2,
+        ObjectNode(null, List(
+          ArrayNode("a", List(
+            NumberNode(null, 1),
+            NumberNode(null, 2)
+          )),
+          NumberNode("num2", 2.34),
+          ArrayNode("z", List(
+            NumberNode(null, 10),
+            NumberNode(null, 20)
+          )))))
+
+      jsonUser2.replace(3.45, JsonPath("num2"))
+      jsonUser1.remove(JsonPath("z", "1"))
+      Thread.sleep(1000)
+      checkBothJsons(jsonUser1, jsonUser2,
+        ObjectNode(null, List(
+          ArrayNode("a", List(
+            NumberNode(null, 1),
+            NumberNode(null, 2)
+          )),
+          NumberNode("num2", 3.45),
+          ArrayNode("z", List(
+            NumberNode(null, 10)
+          )))))
+
+      jsonUser1.remove(JsonPath("a", "0"))
+      jsonUser2.insert(30, JsonPath("z", "0"))
+      Thread.sleep(1000)
+      checkBothJsons(jsonUser1, jsonUser2,
+        ObjectNode(null, List(
+          ArrayNode("a", List(
+            NumberNode(null, 2)
+          )),
+          NumberNode("num2", 3.45),
+          ArrayNode("z", List(
+            NumberNode(null, 30),
+            NumberNode(null, 10)
+          )))))
+    }
+
+    def checkBothJsons(jsonUser1: FormicJsonObject, jsonUser2: FormicJsonObject, expected: ObjectNode): Any = {
+      val user1Json = jsonUser1.getNodeAt(JsonPath())
+      val user2Json = jsonUser2.getNodeAt(JsonPath())
+      val user1Result = Await.result(user1Json, 3.seconds)
+      val user2Result = Await.result(user2Json, 3.seconds)
       user1Result should equal(expected)
       user2Result should equal(expected)
     }
