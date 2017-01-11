@@ -23,7 +23,8 @@ import scala.scalajs.js.annotation.JSExportAll
 @JSExportAll
 class FormicJsonObject(callback: () => Unit,
                        initiator: DataTypeInitiator,
-                       dataTypeInstanceId: DataTypeInstanceId) extends FormicDataType(callback, FormicJsonObjectFactory.name, dataTypeInstanceId = dataTypeInstanceId, initiator = initiator) {
+                       dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId())
+  extends FormicDataType(callback, FormicJsonObjectFactory.name, dataTypeInstanceId = dataTypeInstanceId, initiator = initiator) {
 
   implicit val timeout: Timeout = 1.seconds
 
