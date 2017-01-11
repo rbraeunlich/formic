@@ -70,6 +70,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       Thread.sleep(3000)
 
       checkTextOfBothStrings(stringUser1, stringUser2, "abcd")
+
       //deletion
       stringUser1.add(4, 'e')
       stringUser1.add(5, 'e')
@@ -80,6 +81,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       Thread.sleep(3000)
 
       checkTextOfBothStrings(stringUser1, stringUser2, "abcd")
+
       //deletion and insertion
       stringUser1.add(4, 'e')
       stringUser2.remove(3)
@@ -89,6 +91,23 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       Thread.sleep(3000)
 
       checkTextOfBothStrings(stringUser1, stringUser2, "abcd")
+
+      //one operation with several ones parallel
+      stringUser1.add(4, 'e')
+      stringUser1.add(5, 'f')
+      stringUser1.add(6, 'g')
+      stringUser1.add(7, 'h')
+      stringUser2.add(1, 'ä')
+      Thread.sleep(3000)
+
+      checkTextOfBothStrings(stringUser1, stringUser2, "aäbcdefgh")
+
+      //an operation parallel to a no-op
+      stringUser1.remove(1)
+      stringUser2.remove(1)
+      stringUser1.add(8, 'i')
+
+      checkTextOfBothStrings(stringUser1, stringUser2, "abcdefghi")
     }
   }
 
@@ -102,8 +121,8 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
   }
 
   "result in a consistent tree when parallel edits happen" in {
-    val user1Id = ClientId("2")
-    val user2Id = ClientId("1") //important user1 > user2
+    val user1Id = ClientId("4")
+    val user2Id = ClientId("3") //important user1 > user2
     val user1 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
     val user2 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
     val user1Callback = new CollectingCallback
