@@ -9,7 +9,7 @@ import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
   */
 class FormicDoubleTree(callback: () => Unit,
                        initiator: DataTypeInitiator,
-                       dataTypeInstanceId: DataTypeInstanceId)
+                       dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId())
   extends FormicTree[Double](callback, initiator, dataTypeInstanceId, FormicDoubleTreeFactory.name) {
 
   def this(callback: () => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataTypeInstanceId, wrapped: ActorRef) {

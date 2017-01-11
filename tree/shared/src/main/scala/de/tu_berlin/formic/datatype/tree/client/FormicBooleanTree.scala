@@ -9,7 +9,7 @@ import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
   */
 class FormicBooleanTree(callback: () => Unit,
                         initiator: DataTypeInitiator,
-                        dataTypeInstanceId: DataTypeInstanceId)
+                        dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId())
   extends FormicTree[Boolean](callback, initiator, dataTypeInstanceId, FormicBooleanTreeFactory.name) {
 
   def this(callback: () => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataTypeInstanceId, wrapped: ActorRef) {
