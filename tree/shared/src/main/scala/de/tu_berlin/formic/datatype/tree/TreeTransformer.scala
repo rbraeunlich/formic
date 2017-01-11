@@ -150,11 +150,11 @@ class TreeTransformer extends OperationTransformer {
       val newPath = updatePlus(op1.accessPath, tp)
       return TreeDeleteOperation(newPath, op1.id, context, op1.clientId)
     }
-    if (op1.accessPath.path.size > op2.accessPath.path.size) {
-      val newPath = updatePlus(op1.accessPath, tp)
-      return TreeDeleteOperation(newPath, op1.id, context, op1.clientId)
+    if (op1.accessPath.path.size < op2.accessPath.path.size) {
+      return TreeDeleteOperation(op1.accessPath, op1.id, context, op1.clientId)
     }
-    TreeDeleteOperation(op1.accessPath, op1.id, context, op1.clientId)
+    val newPath = updatePlus(op1.accessPath, tp)
+    TreeDeleteOperation(newPath, op1.id, context, op1.clientId)
   }
 }
 
