@@ -154,4 +154,31 @@ class LinearTransformerSpec extends FlatSpec with Matchers {
 
     transformed should equal(LinearInsertOperation(op1.index, op1.o, op1.id, OperationContext(List(op2.id)), op1.clientId))
   }
+
+  it should "not change an insert when its transformed against a no-op" in {
+    val op1 = LinearInsertOperation(0, "a", OperationId(), OperationContext(), ClientId())
+    val op2 = LinearNoOperation(OperationId(), OperationContext(), ClientId())
+
+    val transformed = LinearTransformer.transform(op1, op2)
+
+    transformed should equal(LinearInsertOperation(op1.index, op1.o, op1.id, OperationContext(List(op2.id)), op1.clientId))
+  }
+
+  it should "not change a delete when its transformed against a no-op" in {
+    val op1 = LinearDeleteOperation(0, OperationId(), OperationContext(), ClientId())
+    val op2 = LinearNoOperation(OperationId(), OperationContext(), ClientId())
+
+    val transformed = LinearTransformer.transform(op1, op2)
+
+    transformed should equal(LinearDeleteOperation(op1.index, op1.id, OperationContext(List(op2.id)), op1.clientId))
+  }
+
+  it should "not change a no-op when its transformed against an operation" in {
+    val op1 = LinearNoOperation(OperationId(), OperationContext(), ClientId())
+    val op2 = LinearInsertOperation(0, "a", OperationId(), OperationContext(), ClientId())
+
+    val transformed = LinearTransformer.transform(op1, op2)
+
+    transformed should equal(LinearNoOperation(op1.id, OperationContext(List(op2.id)), op1.clientId))
+  }
 }
