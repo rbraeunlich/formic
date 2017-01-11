@@ -59,6 +59,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       awaitCond(user2Callback.dataTypes.nonEmpty, 5.seconds)
       val stringUser2 = user2Callback.dataTypes.head.asInstanceOf[FormicString]
 
+      //parallel insertion
       stringUser2.add(0, 'b')
       stringUser1.add(0, 'a')
       Thread.sleep(3000)
@@ -66,13 +67,36 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       stringUser2.add(2, 'd')
       Thread.sleep(3000)
 
-      val user1Text = stringUser1.getAll()
-      val user2Text = stringUser2.getAll()
-      val user1Result = Await.result(user1Text, 3.seconds)
-      val user2Result = Await.result(user2Text, 3.seconds)
-      user1Result.mkString should equal("abcd")
-      user2Result.mkString should equal("abcd")
+      checkTextOfBothStrings(stringUser1, stringUser2, "abcd")
+      //deletion
+      stringUser1.add(4, 'e')
+      stringUser1.add(5, 'e')
+      Thread.sleep(3000)
+      stringUser2.remove(5)
+      stringUser2.remove(4)
+      stringUser1.remove(4)
+      Thread.sleep(3000)
+
+      checkTextOfBothStrings(stringUser1, stringUser2, "abcd")
+      //deletion and insertion
+      stringUser1.add(4, 'e')
+      stringUser2.remove(3)
+      Thread.sleep(3000)
+      stringUser1.add(3, 'd')
+      stringUser2.remove(3)
+      Thread.sleep(3000)
+
+      checkTextOfBothStrings(stringUser1, stringUser2, "abcd")
     }
+  }
+
+  def checkTextOfBothStrings(stringUser1: FormicString, stringUser2: FormicString, expected: String) = {
+    val user1Text = stringUser1.getAll()
+    val user2Text = stringUser2.getAll()
+    val user1Result = Await.result(user1Text, 3.seconds)
+    val user2Result = Await.result(user2Text, 3.seconds)
+    user1Result.mkString should equal(expected)
+    user2Result.mkString should equal(expected)
   }
 }
 
