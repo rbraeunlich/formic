@@ -146,6 +146,20 @@ class LinearTransformerSpec extends FlatSpec with Matchers {
       LinearDeleteOperation(1, op1.id, OperationContext(List(op.id)), op1.clientId))
   }
 
+  it should "bulk transform complete bridge against the continuously transformed operations" in {
+    val op = LinearDeleteOperation(1, OperationId(), OperationContext(List.empty), ClientId("124"))
+    val op1 = LinearInsertOperation(0, "a", OperationId(), OperationContext(List.empty), ClientId())
+    val op2 = LinearInsertOperation(2, "b", OperationId(), OperationContext(List(op1.id)), ClientId())
+    val op3 = LinearInsertOperation(2, "c", OperationId(), OperationContext(List(op1.id)), ClientId())
+
+    val transformed = LinearTransformer.bulkTransform(op, List(op3, op2, op1))
+
+    transformed should contain inOrder(
+      LinearInsertOperation(2, "c", op3.id, op3.operationContext, op3.clientId),
+      LinearInsertOperation(2, "b", op2.id, op2.operationContext, op2.clientId),
+      LinearInsertOperation(0, "a", op1.id, OperationContext(List(op.id)), op1.clientId))
+  }
+
   it should "not change the insert operation when it has the same index as the delete operation" in {
     val op1 = LinearInsertOperation(0, "a", OperationId(), OperationContext(), ClientId())
     val op2 = LinearDeleteOperation(0, OperationId(), OperationContext(), ClientId())

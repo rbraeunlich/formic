@@ -351,6 +351,20 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
       TreeDeleteOperation(AccessPath(0, 0), op1.id, OperationContext(List(op.id)), op1.clientId))
   }
 
+  it should "bulk transform complete bridge against the continuously transformed operations" in {
+    val op = TreeDeleteOperation(AccessPath(0), OperationId(), OperationContext(List.empty), ClientId("124"))
+    val op1 = TreeInsertOperation(AccessPath(0), ValueTreeNode("abc"), OperationId(), OperationContext(), ClientId())
+    val op2 = TreeInsertOperation(AccessPath(0, 0), ValueTreeNode("a"), OperationId(), OperationContext(List(op1.id)), ClientId())
+    val op3 = TreeInsertOperation(AccessPath(0, 1), ValueTreeNode("b"), OperationId(), OperationContext(List(op2.id)), ClientId())
+
+    val transformed = new TreeTransformer().bulkTransform(op, List(op3, op2, op1))
+
+    transformed should contain inOrder(
+      TreeInsertOperation(AccessPath(0, 1), op3.tree, op3.id, op3.operationContext, op3.clientId),
+      TreeInsertOperation(AccessPath(0, 0), op2.tree, op2.id, op2.operationContext, op2.clientId),
+      TreeInsertOperation(AccessPath(0), op1.tree, op1.id, OperationContext(List(op.id)), op1.clientId))
+  }
+
   it should "not change an insert when its transformed against a no-op" in {
     val op1 = TreeInsertOperation(AccessPath(0), ValueTreeNode("abc"), OperationId(), OperationContext(), ClientId())
     val op2 = TreeNoOperation(OperationId(), OperationContext(), ClientId())

@@ -38,15 +38,6 @@ class TreeTransformer extends OperationTransformer {
     transformInternal(pair, withNewContext = true)
   }
 
-  override def bulkTransform(operation: DataTypeOperation, bridge: List[DataTypeOperation]): List[DataTypeOperation] = {
-    if (bridge.isEmpty) return bridge
-    val operationToChangeContext = bridge.last
-    val others = bridge.take(bridge.size - 1)
-    val transformedOperation = transform((operationToChangeContext, operation))
-    val transformedOthers = others.map(op => transformInternal((op, operation), withNewContext = false))
-    transformedOthers :+ transformedOperation
-  }
-
   protected def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = {
     val context = if (withNewContext) OperationContext(List(pair._2.id)) else pair._1.operationContext
     pair match {

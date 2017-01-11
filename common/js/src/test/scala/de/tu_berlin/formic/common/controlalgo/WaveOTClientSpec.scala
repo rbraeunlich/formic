@@ -170,4 +170,6 @@ object WaveOTClientTestTransformer extends OperationTransformer {
     val transformed = bridge.take(bridge.size - 1).map(op => WaveOTClientTestOperation(op.id, op.operationContext, op.clientId, op.asInstanceOf[WaveOTClientTestOperation].transformations + 1))
     transformed :+ last
   }
+
+  override protected def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = pair._1
 }

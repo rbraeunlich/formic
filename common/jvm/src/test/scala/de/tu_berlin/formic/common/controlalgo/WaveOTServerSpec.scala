@@ -106,4 +106,6 @@ object WaveOTTestTransformer extends OperationTransformer {
   }
 
   override def bulkTransform(operation: DataTypeOperation, bridge: List[DataTypeOperation]): List[DataTypeOperation] = bridge
+
+  override protected def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = pair._1
 }

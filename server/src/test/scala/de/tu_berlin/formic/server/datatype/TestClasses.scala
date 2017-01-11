@@ -74,6 +74,8 @@ object TestTransformer extends OperationTransformer {
   override def transform(pair: (DataTypeOperation, DataTypeOperation)): DataTypeOperation = pair._1
 
   override def bulkTransform(operation: DataTypeOperation, bridge: List[DataTypeOperation]): List[DataTypeOperation] = bridge
+
+  override protected def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = pair._1
 }
 
 object TestClasses {

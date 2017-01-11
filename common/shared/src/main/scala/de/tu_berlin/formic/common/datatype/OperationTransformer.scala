@@ -25,6 +25,22 @@ trait OperationTransformer {
     * @param operation the operation that is transformed against the bridge
     * @param bridge    the operations that have to be transformed
     */
-  def bulkTransform(operation: DataTypeOperation, bridge: List[DataTypeOperation]): List[DataTypeOperation]
+  def bulkTransform(operation: DataTypeOperation, bridge: List[DataTypeOperation]): List[DataTypeOperation] = {
+    if (bridge.isEmpty) return bridge
+    val operationToChangeContext = bridge.last
+    val others = bridge.take(bridge.size - 1)
+    val transformedOperation = transform((operationToChangeContext, operation))
+    val transformedIncomingOperation = transform((operation, operationToChangeContext))
+
+    val transformedOthers = others.reverse.foldLeft((transformedIncomingOperation, List.empty[DataTypeOperation]))((t, op) => {
+      val opPrime = transformInternal((op, t._1), withNewContext = false)
+      val incomingPrime = transformInternal((t._1, op), withNewContext = false)
+      (incomingPrime, opPrime +: t._2)
+    })
+    transformedOthers._2 :+ transformedOperation
+  }
+
+
+  protected def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation
 
 }

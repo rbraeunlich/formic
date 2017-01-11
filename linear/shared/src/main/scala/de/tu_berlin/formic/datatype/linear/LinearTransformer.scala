@@ -33,7 +33,7 @@ object LinearTransformer extends OperationTransformer {
     transformInternal(pair, withNewContext = true)
   }
 
-  private def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = {
+  protected def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = {
     val context = if (withNewContext) OperationContext(List(pair._2.id)) else pair._1.operationContext
     pair match {
       case (op1: LinearDeleteOperation, op2: LinearDeleteOperation) => transform(op1, op2, context)
@@ -68,22 +68,5 @@ object LinearTransformer extends OperationTransformer {
   private def transform(o1: LinearInsertOperation, o2: LinearDeleteOperation, newContext: OperationContext): LinearStructureOperation = {
     if (o1.index <= o2.index) LinearInsertOperation(o1.index, o1.o, o1.id, newContext, o1.clientId)
     else LinearInsertOperation(o1.index - 1, o1.o, o1.id, newContext, o1.clientId)
-  }
-
-  /**
-    * Performs a bulk transformation against all operations present in the bridge.
-    * Only the first operation in the bridge receives a new context, the others retain
-    * their original one.
-    *
-    * @param operation the operation that is transformed against the bridge
-    * @param bridge    the operations that have to be transformed
-    */
-  override def bulkTransform(operation: DataTypeOperation, bridge: List[DataTypeOperation]): List[DataTypeOperation] = {
-    if (bridge.isEmpty) return bridge
-    val operationToChangeContext = bridge.last
-    val others = bridge.take(bridge.size - 1)
-    val transformedOperation = transform((operationToChangeContext, operation))
-    val transformedOthers = others.map(op => transformInternal((op, operation), withNewContext = false))
-    transformedOthers :+ transformedOperation
   }
 }
