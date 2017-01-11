@@ -186,6 +186,16 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       treeUser2.insert(200, AccessPath(0))
       Thread.sleep(1000)
       checkBothTrees(treeUser1, treeUser2, ValueTreeNode(1, List(ValueTreeNode(200), ValueTreeNode(10), ValueTreeNode(13), ValueTreeNode(11))))
+
+      //one operation with several ones parallel
+      treeUser1.insert(5000, AccessPath(3,0))
+      treeUser1.insert(6000, AccessPath(3,0))
+      treeUser1.insert(7000, AccessPath(3,0))
+      treeUser1.insert(8000, AccessPath(3,0))
+      treeUser2.remove(AccessPath(0))
+      Thread.sleep(1000)
+
+      checkBothTrees(treeUser1, treeUser2, ValueTreeNode(1, List(ValueTreeNode(10), ValueTreeNode(13), ValueTreeNode(11, List(ValueTreeNode(8000),ValueTreeNode(7000),ValueTreeNode(6000),ValueTreeNode(5000))))))
     }
 
     def checkBothTrees(treeUser1: FormicIntegerTree, treeUser2: FormicIntegerTree, expected: TreeNode): Any = {
