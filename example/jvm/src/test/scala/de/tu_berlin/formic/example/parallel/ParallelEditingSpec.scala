@@ -8,6 +8,8 @@ import de.tu_berlin.formic.client.{FormicSystemFactory, NewInstanceCallback}
 import de.tu_berlin.formic.common.ClientId
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
 import de.tu_berlin.formic.datatype.linear.client.FormicString
+import de.tu_berlin.formic.datatype.tree.{AccessPath, TreeNode, ValueTreeNode}
+import de.tu_berlin.formic.datatype.tree.client.FormicIntegerTree
 import de.tu_berlin.formic.example.ServerThread
 import de.tu_berlin.formic.example.parallel.ParallelEditingSpec.CollectingCallback
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
@@ -97,6 +99,76 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
     val user2Result = Await.result(user2Text, 3.seconds)
     user1Result.mkString should equal(expected)
     user2Result.mkString should equal(expected)
+  }
+
+  "result in a consistent tree when parallel edits happen" in {
+    val user1Id = ClientId("2")
+    val user2Id = ClientId("1") //important user1 > user2
+    val user1 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+    val user2 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+    val user1Callback = new CollectingCallback
+    val user2Callback = new CollectingCallback
+    user1.init(user1Callback, user1Id)
+    user2.init(user2Callback, user2Id)
+    Thread.sleep(3000)
+    val treeUser1 = new FormicIntegerTree(() => {}, user1)
+    Thread.sleep(1000)
+    //insert root node
+    treeUser1.insert(1, AccessPath())
+    Thread.sleep(1000) //send the CreateRequest to the server
+    user2.requestDataType(treeUser1.dataTypeInstanceId)
+    awaitCond(user2Callback.dataTypes.nonEmpty, 5.seconds)
+    val treeUser2 = user2Callback.dataTypes.head.asInstanceOf[FormicIntegerTree]
+
+    //parallel insertion
+    treeUser2.insert(20, AccessPath(0))
+    treeUser1.insert(10, AccessPath(0))
+    Thread.sleep(1000)
+    treeUser1.insert(11, AccessPath(1))
+    treeUser2.insert(21, AccessPath(2))
+    Thread.sleep(1000)
+    checkBothTrees(treeUser1, treeUser2, ValueTreeNode(1, List(ValueTreeNode(10), ValueTreeNode(11), ValueTreeNode(20), ValueTreeNode(21))))
+
+    //deletion
+    treeUser1.remove(AccessPath(2))
+    treeUser1.remove(AccessPath(3))
+    treeUser2.remove(AccessPath(3))
+    Thread.sleep(1000)
+    checkBothTrees(treeUser1, treeUser2, ValueTreeNode(1, List(ValueTreeNode(10), ValueTreeNode(11))))
+
+    //deletion on different level
+    treeUser1.insert(12, AccessPath(2))
+    treeUser1.insert(110, AccessPath(2,0))
+    Thread.sleep(1000)
+    treeUser2.remove(AccessPath(2))
+    treeUser1.remove(AccessPath(2,0))
+    Thread.sleep(1000)
+    checkBothTrees(treeUser1, treeUser2, ValueTreeNode(1, List(ValueTreeNode(10), ValueTreeNode(11))))
+
+    //effect independence
+    treeUser1.insert(110, AccessPath(0,0))
+    treeUser2.insert(220, AccessPath(1,0))
+    Thread.sleep(1000)
+    checkBothTrees(treeUser1, treeUser2, ValueTreeNode(1, List(ValueTreeNode(10, List(ValueTreeNode(110))), ValueTreeNode(11, List(ValueTreeNode(220))))))
+
+    treeUser2.remove(AccessPath(0,0))
+    treeUser1.insert(13, AccessPath(1))
+    Thread.sleep(1000)
+    checkBothTrees(treeUser1, treeUser2, ValueTreeNode(1, List(ValueTreeNode(10),ValueTreeNode(13), ValueTreeNode(11, List(ValueTreeNode(220))))))
+
+    treeUser1.remove(AccessPath(2,0))
+    treeUser2.insert(23, AccessPath(0))
+    Thread.sleep(1000)
+    checkBothTrees(treeUser1, treeUser2, ValueTreeNode(1, List(ValueTreeNode(23), ValueTreeNode(10),ValueTreeNode(13), ValueTreeNode(11))))
+  }
+
+  def checkBothTrees(treeUser1: FormicIntegerTree, treeUser2: FormicIntegerTree, expected: TreeNode): Any = {
+    val user1Tree = treeUser1.getTree()
+    val user2Tree = treeUser2.getTree()
+    val user1Result = Await.result(user1Tree, 3.seconds)
+    val user2Result = Await.result(user2Tree, 3.seconds)
+    user1Result should equal(expected)
+    user2Result should equal(expected)
   }
 }
 
