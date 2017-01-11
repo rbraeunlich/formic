@@ -90,15 +90,6 @@ class LinearTransformerSpec extends FlatSpec with Matchers {
     transformed should equal(LinearInsertOperation(1, "A", op1.id, OperationContext(List(op2.id)), op1.clientId))
   }
 
-  it should "decrease the index of the first insert operation by one if it has the same index like the delete operation" in {
-    val op1 = LinearInsertOperation(1, "A", OperationId(), OperationContext(List.empty), ClientId("125"))
-    val op2 = LinearDeleteOperation(1, OperationId(), OperationContext(List.empty), ClientId("124"))
-
-    val transformed = LinearTransformer.transform((op1, op2))
-
-    transformed should equal(LinearInsertOperation(0, "A", op1.id, OperationContext(List(op2.id)), op1.clientId))
-  }
-
   it should "decrease the index of the first insert operation by one if it has a higher index than the delete operation" in {
     val op1 = LinearInsertOperation(2, "A", OperationId(), OperationContext(List.empty), ClientId("125"))
     val op2 = LinearDeleteOperation(1, OperationId(), OperationContext(List.empty), ClientId("124"))
@@ -117,13 +108,13 @@ class LinearTransformerSpec extends FlatSpec with Matchers {
     transformed should equal(LinearDeleteOperation(1, op1.id, OperationContext(List(op2.id)), op1.clientId))
   }
 
-  it should "not change the first delete operation if it has the same index than the insert operation" in {
+  it should "increase the index of the first delete operation if it has the same index than the insert operation" in {
     val op1 = LinearDeleteOperation(1, OperationId(), OperationContext(List.empty), ClientId("124"))
     val op2 = LinearInsertOperation(1, "A", OperationId(), OperationContext(List.empty), ClientId("125"))
 
     val transformed = LinearTransformer.transform((op1, op2))
 
-    transformed should equal(LinearDeleteOperation(1, op1.id, OperationContext(List(op2.id)), op1.clientId))
+    transformed should equal(LinearDeleteOperation(2, op1.id, OperationContext(List(op2.id)), op1.clientId))
   }
 
   it should "increase the index of the first delete operation if it has a higher index than the insert operation" in {
@@ -153,5 +144,14 @@ class LinearTransformerSpec extends FlatSpec with Matchers {
     transformed should contain inOrder(
       LinearDeleteOperation(2, op2.id, op2.operationContext, op2.clientId),
       LinearDeleteOperation(1, op1.id, OperationContext(List(op.id)), op1.clientId))
+  }
+
+  it should "not change the insert operation when it has the same index as the delete operation" in {
+    val op1 = LinearInsertOperation(0, "a", OperationId(), OperationContext(), ClientId())
+    val op2 = LinearDeleteOperation(0, OperationId(), OperationContext(), ClientId())
+
+    val transformed = LinearTransformer.transform((op1, op2))
+
+    transformed should equal(LinearInsertOperation(op1.index, op1.o, op1.id, OperationContext(List(op2.id)), op1.clientId))
   }
 }

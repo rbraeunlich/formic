@@ -50,7 +50,7 @@ object LinearTransformer extends OperationTransformer {
   }
 
   private def transform(o1: LinearDeleteOperation, o2: LinearInsertOperation, newContext: OperationContext): LinearStructureOperation = {
-    if (o1.index <= o2.index) LinearDeleteOperation(o1.index, o1.id, newContext, o1.clientId)
+    if (o1.index < o2.index) LinearDeleteOperation(o1.index, o1.id, newContext, o1.clientId)
     else LinearDeleteOperation(o1.index + 1, o1.id, newContext, o1.clientId)
   }
 
@@ -63,7 +63,7 @@ object LinearTransformer extends OperationTransformer {
   }
 
   private def transform(o1: LinearInsertOperation, o2: LinearDeleteOperation, newContext: OperationContext): LinearStructureOperation = {
-    if (o1.index < o2.index) LinearInsertOperation(o1.index, o1.o, o1.id, newContext, o1.clientId)
+    if (o1.index <= o2.index) LinearInsertOperation(o1.index, o1.o, o1.id, newContext, o1.clientId)
     else LinearInsertOperation(o1.index - 1, o1.o, o1.id, newContext, o1.clientId)
   }
 
