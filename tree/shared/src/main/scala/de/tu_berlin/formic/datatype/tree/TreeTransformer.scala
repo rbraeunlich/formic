@@ -54,6 +54,9 @@ class TreeTransformer extends OperationTransformer {
       case (op1: TreeDeleteOperation, op2: TreeDeleteOperation) => transform(op1, op2, context)
       case (op1: TreeInsertOperation, op2: TreeDeleteOperation) => transform(op1, op2, context)
       case (op1: TreeDeleteOperation, op2: TreeInsertOperation) => transform(op1, op2, context)
+      case (op1: TreeInsertOperation, op2: TreeNoOperation) => TreeInsertOperation(op1.accessPath, op1.tree, op1.id, context, op1.clientId)
+      case (op1: TreeDeleteOperation, op2: TreeNoOperation) => TreeDeleteOperation(op1.accessPath, op1.id, context, op1.clientId)
+      case (op1: TreeNoOperation, op2: TreeStructureOperation) => TreeNoOperation(op1.id, context, op1.clientId)
     }
   }
 

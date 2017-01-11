@@ -4,8 +4,6 @@ import de.tu_berlin.formic.common.datatype.OperationContext
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import org.scalatest.{FlatSpec, Matchers}
 
-import scala.collection.mutable.ArrayBuffer
-
 /**
   * @author Ronny Bräunlich
   */
@@ -351,5 +349,32 @@ class TreeTransformerSpec extends FlatSpec with Matchers {
     transformed should contain inOrder(
       TreeDeleteOperation(AccessPath(0,1), op2.id, op2.operationContext, op2.clientId),
       TreeDeleteOperation(AccessPath(0,0), op1.id, OperationContext(List(op.id)), op1.clientId))
+  }
+
+  it should "not change an insert when its transformed against a no-op" in {
+    val op1 = TreeInsertOperation(AccessPath(0), ValueTreeNode("abc"), OperationId(), OperationContext(), ClientId())
+    val op2 = TreeNoOperation(OperationId(), OperationContext(), ClientId())
+
+    val transformed = new TreeTransformer().transform(op1, op2)
+
+    transformed should equal(TreeInsertOperation(op1.accessPath, op1.tree, op1.id, OperationContext(List(op2.id)), op1.clientId))
+  }
+
+  it should "not change a delete when its transformed against a no-op" in {
+    val op1 = TreeDeleteOperation(AccessPath(0,2), OperationId(), OperationContext(), ClientId())
+    val op2 = TreeNoOperation(OperationId(), OperationContext(), ClientId())
+
+    val transformed = new TreeTransformer().transform(op1, op2)
+
+    transformed should equal(TreeDeleteOperation(op1.accessPath, op1.id, OperationContext(List(op2.id)), op1.clientId))
+  }
+
+  it should "not change a no-op when its transformed against an operation" in {
+    val op1 = TreeNoOperation(OperationId(), OperationContext(), ClientId())
+    val op2 = TreeInsertOperation(AccessPath(0), ValueTreeNode("abc"), OperationId(), OperationContext(), ClientId())
+
+    val transformed = new TreeTransformer().transform(op1, op2)
+
+    transformed should equal(TreeNoOperation(op1.id, OperationContext(List(op2.id)), op1.clientId))
   }
 }
