@@ -5,7 +5,7 @@ import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype._
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.{InitialOperation, ReceiveCallback, RemoteInstantiation}
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.{ReceiveCallback, RemoteInstantiation}
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest.Assertions._
@@ -281,14 +281,6 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       expectMsg(UpdateResponse(dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, data, Option(operationId)))
     }
 
-    "be initialized with lastOperationId if present" in {
-      val lastOperationId = OperationId()
-      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
-        Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
-
-      dataType.underlyingActor.historyBuffer.history.head.id should equal(lastOperationId)
-    }
-
     "send an HistoricOperationRequest after it receives a remote OperationMessage whose parent it does no know" in {
       val dataTypeInstanceId = DataTypeInstanceId()
       val data = "{foo}"
@@ -527,38 +519,6 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       expectNoMsg()
 
       dataType.underlyingActor.historyBuffer.history shouldBe empty
-    }
-
-    "should not try to transform a remote operation against the InitialOperation placeholder" in {
-      val lastOperationId = OperationId()
-      val controlAlgorithm = new ControlAlgorithmClient {
-
-        var wasInitialOperationPlaceholderPresent = false
-
-        override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = true
-
-        override def currentOperationContext: OperationContext = OperationContext()
-
-        override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = {
-          if (history.history.exists(op => op.isInstanceOf[InitialOperation])) {
-            wasInitialOperationPlaceholderPresent = true
-          }
-          op
-        }
-
-        override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = true
-      }
-      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
-        Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), controlAlgorithm, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
-      val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "")
-      val operationMessage = OperationMessage(ClientId(), DataTypeInstanceId(), AbstractClientDataTypeSpec.dataTypeName, List(operation))
-      dataType ! ReceiveCallback(() => {})
-      dataType ! CreateResponse(DataTypeInstanceId())
-
-      dataType ! operationMessage
-
-      controlAlgorithm.wasInitialOperationPlaceholderPresent should be(false)
     }
   }
 }

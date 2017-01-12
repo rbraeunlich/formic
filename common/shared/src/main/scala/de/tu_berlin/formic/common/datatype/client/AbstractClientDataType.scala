@@ -17,7 +17,7 @@ import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
   */
 abstract class AbstractClientDataType(val id: DataTypeInstanceId,
                                       val controlAlgorithm: ControlAlgorithmClient,
-                                      lastOperationId: Option[OperationId],
+                                      val lastOperationId: Option[OperationId],
                                       val outgoingConnection: ActorRef) extends Actor with ActorLogging {
 
   val dataTypeName: DataTypeName
@@ -25,7 +25,6 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
   val transformer: OperationTransformer
 
   val historyBuffer: HistoryBuffer = new HistoryBuffer()
-  if (lastOperationId.isDefined) historyBuffer.addOperation(InitialOperation(lastOperationId.get))
 
   def receive = {
     case ReceiveCallback(callback) =>
@@ -56,7 +55,10 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
       val operation = msg.op.operations.head
       val clonedOperation = cloneOperationWithNewContext(
         operation,
-        OperationContext(historyBuffer.history.headOption.map(op => op.id).toList)
+      if(historyBuffer.history.isEmpty && lastOperationId.isDefined){
+        OperationContext(List(lastOperationId.get))
+      }
+      else OperationContext(historyBuffer.history.headOption.map(op => op.id).toList)
       )
       apply(operation)
       historyBuffer.addOperation(clonedOperation)
@@ -93,9 +95,8 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
         operation,
         //a data type that results from a remote instantiation never told the control algo about
         //the initial operation, therefore we have to distinguish that here
-        //TODO gotta find a better way
-        if(historyBuffer.history.headOption.nonEmpty && historyBuffer.history.head.isInstanceOf[InitialOperation]){
-          OperationContext(List(historyBuffer.history.head.id))
+        if(historyBuffer.history.isEmpty && lastOperationId.isDefined){
+          OperationContext(List(lastOperationId.get))
         }
         else controlAlgorithm.currentOperationContext
       )
@@ -132,11 +133,7 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
   }
 
   private def applyOperation(dataTypeOperation: DataTypeOperation) = {
-    //the control algorithm shall not try to transform against an initial operation
-    //we know that if an InitialOperation is present it must be the first one
-    val transformed = if(historyBuffer.history.lastOption.exists(op => op.isInstanceOf[InitialOperation])){
-      controlAlgorithm.transform(dataTypeOperation, new HistoryBuffer(historyBuffer.history.dropRight(1)), transformer)
-    } else controlAlgorithm.transform(dataTypeOperation, historyBuffer, transformer)
+    val transformed = controlAlgorithm.transform(dataTypeOperation, historyBuffer, transformer)
     apply(transformed)
     historyBuffer.addOperation(transformed)
   }
@@ -197,17 +194,5 @@ object AbstractClientDataType {
   case object RemoteInstantiation
 
   case class ReceiveCallback(callback: () => Unit)
-
-  /**
-    * Data types on the client might have been created based on an UpdateResponse.
-    * To have a "first" operation in the history, this class exists. It is more like a
-    * placeholder for the missing history.
-    *
-    * @param id the initial operation id
-    */
-  private[client] case class InitialOperation(id: OperationId) extends DataTypeOperation {
-    override val operationContext: OperationContext = OperationContext(List.empty)
-    override var clientId: ClientId = _
-  }
 
 }
