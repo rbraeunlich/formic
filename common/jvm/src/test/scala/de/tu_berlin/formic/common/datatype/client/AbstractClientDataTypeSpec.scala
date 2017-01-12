@@ -545,6 +545,21 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
 
       dataType.underlyingActor.historyBuffer.history shouldBe empty
     }
+
+    "should consider the initial operation id when searching for context dependency" in {
+      val lastOperationId = OperationId()
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+        Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
+      dataType ! ReceiveCallback(() => {})
+      dataType ! CreateResponse(DataTypeInstanceId())
+      val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List(lastOperationId)), ClientId(), "")
+      val operationMessage = OperationMessage(ClientId(), DataTypeInstanceId(), AbstractClientDataTypeSpec.dataTypeName, List(operation))
+
+      dataType ! operationMessage
+
+      //if the data type ignores the lastOperationId as context of the OperationMessage it'll send a HistoricOperationRequest
+      expectNoMsg()
+    }
   }
 }
 

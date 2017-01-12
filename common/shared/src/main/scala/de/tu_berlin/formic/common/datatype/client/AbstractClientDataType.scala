@@ -170,6 +170,7 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
     */
   def isPreviousOperationPresent(op: DataTypeOperation, historyBuffer: HistoryBuffer): Boolean = {
     if (op.operationContext.operations.isEmpty) true
+    else if(lastOperationId.contains(op.operationContext.operations.head)) true
     else historyBuffer.findOperation(op.operationContext.operations.head).isDefined
   }
 
