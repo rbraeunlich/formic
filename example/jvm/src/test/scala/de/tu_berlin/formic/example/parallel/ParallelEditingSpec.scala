@@ -436,6 +436,41 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
 
       checkBothTrees(treeUser1, treeUser2, expected)
     }
+
+    "handle many parallel edits on json structure" in {
+      val iterations = 1000
+      val user1Id = ClientId("13")
+      val user2Id = ClientId("11") //important user1 > user2
+      val user1 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+      val user2 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+      val user1Callback = new CollectingCallback
+      val user2Callback = new CollectingCallback
+      val latch = new CountDownLatch((iterations * 2 + iterations) * 2) //every local operation results in two callback invocations, every remote one in one and that for two users
+      user1.init(user1Callback, user1Id)
+      user2.init(user2Callback, user2Id)
+      Thread.sleep(3000)
+      val jsonUser1 = new FormicJsonObject(() => {}, user1)
+      Thread.sleep(1000) //send the CreateRequest to the server
+      user2.requestDataType(jsonUser1.dataTypeInstanceId)
+      awaitCond(user2Callback.dataTypes.nonEmpty, 5.seconds)
+      val jsonUser2 = user2Callback.dataTypes.head.asInstanceOf[FormicJsonObject]
+      //because we add the root node, we set the correct callbacks here
+      jsonUser1.callback = () => latch.countDown()
+      jsonUser2.callback = () => latch.countDown()
+
+      for(x <- 0.until(iterations)) {
+        jsonUser1.insert(1, JsonPath(s"a$x"))
+        jsonUser2.insert(2, JsonPath(s"z$x"))
+      }
+
+      val firstHalf = (for(x <- 0.until(iterations)) yield NumberNode(s"a$x", 1)).toList
+      val secondHalf = (for(x <- 0.until(iterations)) yield NumberNode(s"z$x", 2)).toList
+      val expected = ObjectNode(null, firstHalf ++ secondHalf)
+
+      latch.await(60, TimeUnit.SECONDS)
+
+      checkBothJsons(jsonUser1, jsonUser2, expected)
+    }
   }
 }
 
