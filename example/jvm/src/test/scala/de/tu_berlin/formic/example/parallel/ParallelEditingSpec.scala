@@ -1,5 +1,7 @@
 package de.tu_berlin.formic.example.parallel
 
+import java.util.concurrent.{CountDownLatch, TimeUnit}
+
 import akka.actor.ActorSystem
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings}
 import akka.testkit.TestKit
@@ -10,7 +12,7 @@ import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
 import de.tu_berlin.formic.datatype.json._
 import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
 import de.tu_berlin.formic.datatype.linear.client.FormicString
-import de.tu_berlin.formic.datatype.tree.client.FormicIntegerTree
+import de.tu_berlin.formic.datatype.tree.client.{FormicIntegerTree, FormicStringTree, FormicTree}
 import de.tu_berlin.formic.datatype.tree.{AccessPath, TreeNode, ValueTreeNode}
 import de.tu_berlin.formic.example.ServerThread
 import de.tu_berlin.formic.example.parallel.ParallelEditingSpec.CollectingCallback
@@ -200,7 +202,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       checkBothTrees(treeUser1, treeUser2, ValueTreeNode(1, List(ValueTreeNode(10), ValueTreeNode(13), ValueTreeNode(11, List(ValueTreeNode(8000), ValueTreeNode(7000), ValueTreeNode(6000), ValueTreeNode(5000))))))
     }
 
-    def checkBothTrees(treeUser1: FormicIntegerTree, treeUser2: FormicIntegerTree, expected: TreeNode): Any = {
+    def checkBothTrees[T](treeUser1: FormicTree[T], treeUser2: FormicTree[T], expected: TreeNode): Any = {
       val user1Tree = treeUser1.getTree()
       val user2Tree = treeUser2.getTree()
       val user1Result = Await.result(user1Tree, 3.seconds)
@@ -361,6 +363,78 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       val user2Result = Await.result(user2Json, 3.seconds)
       user1Result should equal(expected)
       user2Result should equal(expected)
+    }
+
+    "handle many parallel edits on linear structure" in {
+      val iterations = 1000
+      val user1Id = ClientId("8")
+      val user2Id = ClientId("7") //important user1 > user2
+      val user1 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+      val user2 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+      val user1Callback = new CollectingCallback
+      val user2Callback = new CollectingCallback
+      val latch = new CountDownLatch((iterations * 2 + iterations) * 2) //every local operation results in two callback invocations, every remote one in one and that for two users
+      user1.init(user1Callback, user1Id)
+      user2.init(user2Callback, user2Id)
+      Thread.sleep(3000)
+      val stringUser1 = new FormicString(() => {
+        latch.countDown()
+      }, user1)
+      Thread.sleep(1000) //send the CreateRequest to the server
+      user2.requestDataType(stringUser1.dataTypeInstanceId)
+      awaitCond(user2Callback.dataTypes.nonEmpty, 5.seconds)
+      val stringUser2 = user2Callback.dataTypes.head.asInstanceOf[FormicString]
+      stringUser2.callback = () => latch.countDown()
+
+      for (x <- 0.until(iterations)) {
+        stringUser1.add(0, 'a')
+        stringUser2.add(x, 'z')
+      }
+      val firstHalf = for (x <- 0.until(iterations)) yield 'a'
+      val secondHalf = for (x <- 0.until(iterations)) yield 'z'
+      val expected = firstHalf.mkString + secondHalf.mkString
+
+      latch.await(60, TimeUnit.SECONDS)
+
+      checkTextOfBothStrings(stringUser1, stringUser2, expected)
+    }
+
+    "handle many parallel edits on tree structure" in {
+      val iterations = 1000
+      val user1Id = ClientId("11")
+      val user2Id = ClientId("10") //important user1 > user2
+      val user1 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+      val user2 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+      val user1Callback = new CollectingCallback
+      val user2Callback = new CollectingCallback
+      val latch = new CountDownLatch((iterations * 2 + iterations) * 2) //every local operation results in two callback invocations, every remote one in one and that for two users
+      user1.init(user1Callback, user1Id)
+      user2.init(user2Callback, user2Id)
+      Thread.sleep(3000)
+      val treeUser1 = new FormicStringTree(() => {}, user1)
+      Thread.sleep(1000)
+      //insert root node
+      treeUser1.insert("1", AccessPath())
+      Thread.sleep(1000) //send the CreateRequest to the server
+      user2.requestDataType(treeUser1.dataTypeInstanceId)
+      awaitCond(user2Callback.dataTypes.nonEmpty, 5.seconds)
+      val treeUser2 = user2Callback.dataTypes.head.asInstanceOf[FormicStringTree]
+      //because we add the root node, we set the correct callbacks here
+      treeUser1.callback = () => latch.countDown()
+      treeUser2.callback = () => latch.countDown()
+
+      for(x <- 0.until(iterations)) {
+        treeUser1.insert("a", AccessPath(0))
+        treeUser2.insert("z", AccessPath(x))
+      }
+
+      val firstHalf = (for(x <- 0.until(iterations)) yield ValueTreeNode("a")).toList
+      val secondHalf = (for(x <- 0.until(iterations)) yield ValueTreeNode("z")).toList
+      val expected = ValueTreeNode("1", firstHalf ++ secondHalf)
+
+      latch.await(60, TimeUnit.SECONDS)
+
+      checkBothTrees(treeUser1, treeUser2, expected)
     }
   }
 }
