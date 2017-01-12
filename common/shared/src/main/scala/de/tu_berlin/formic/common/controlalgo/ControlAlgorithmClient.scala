@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.controlalgo
 
-import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, OperationContext}
+import de.tu_berlin.formic.common.datatype.{DataTypeOperation, OperationContext}
 
 /**
   * Client and server control algorithms may be different. Therefore we have this interface.
