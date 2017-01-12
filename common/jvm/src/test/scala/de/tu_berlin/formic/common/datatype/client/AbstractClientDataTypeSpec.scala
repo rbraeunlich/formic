@@ -281,6 +281,31 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       expectMsg(UpdateResponse(dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, data, Option(operationId)))
     }
 
+    "answer UpdateRequests with the initial operation id when no operations were executed yet when being unacknowledged" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val operationId = OperationId()
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+        Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, Option(operationId), outgoingConnection = TestProbe().ref)))
+      dataType ! ReceiveCallback(() => {})
+
+      dataType ! UpdateRequest(ClientId(), dataTypeInstanceId)
+
+      expectMsg(UpdateResponse(dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, "{test}", Option(operationId)))
+    }
+
+    "answer UpdateRequests with the initial operation id when no operations were executed yet when being acknowledged" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val operationId = OperationId()
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+        Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, Option(operationId), outgoingConnection = TestProbe().ref)))
+      dataType ! ReceiveCallback(() => {})
+      dataType ! CreateResponse(dataTypeInstanceId)
+
+      dataType ! UpdateRequest(ClientId(), dataTypeInstanceId)
+
+      expectMsg(UpdateResponse(dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, "{test}", Option(operationId)))
+    }
+
     "send an HistoricOperationRequest after it receives a remote OperationMessage whose parent it does no know" in {
       val dataTypeInstanceId = DataTypeInstanceId()
       val data = "{foo}"

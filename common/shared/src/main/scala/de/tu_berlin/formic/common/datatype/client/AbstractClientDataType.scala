@@ -7,7 +7,7 @@ import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType._
 import de.tu_berlin.formic.common.datatype.client.CallbackWrapper.Invoke
 import de.tu_berlin.formic.common.message._
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
 
 /**
   * The data types on the client basically receive only operation messages. Also, they need another
@@ -82,7 +82,8 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
     case req: UpdateRequest =>
       //this is only called locally from the wrappers
       log.debug(s"DataType $id received UpdateRequest: $req")
-      sender ! UpdateResponse(id, dataTypeName, getDataAsJson, historyBuffer.history.headOption.map(op => op.id))
+      val operationId = if(historyBuffer.history.isEmpty) lastOperationId else historyBuffer.history.headOption.map(op => op.id)
+      sender ! UpdateResponse(id, dataTypeName, getDataAsJson, operationId)
   }
 
   def acknowledged(callbackWrapper: ActorRef): Receive = {
@@ -129,7 +130,8 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
     case req: UpdateRequest =>
       //this is only called locally from the wrappers
       log.debug(s"DataType $id received UpdateRequest: $req")
-      sender ! UpdateResponse(id, dataTypeName, getDataAsJson, historyBuffer.history.headOption.map(op => op.id))
+      val operationId = if(historyBuffer.history.isEmpty) lastOperationId else historyBuffer.history.headOption.map(op => op.id)
+      sender ! UpdateResponse(id, dataTypeName, getDataAsJson, operationId)
   }
 
   private def applyOperation(dataTypeOperation: DataTypeOperation) = {
