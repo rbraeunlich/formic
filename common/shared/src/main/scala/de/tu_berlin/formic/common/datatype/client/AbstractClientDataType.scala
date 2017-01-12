@@ -132,7 +132,11 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
   }
 
   private def applyOperation(dataTypeOperation: DataTypeOperation) = {
-    val transformed = controlAlgorithm.transform(dataTypeOperation, historyBuffer, transformer)
+    //the control algorithm shall not try to transform against an initial operation
+    //we know that if an InitialOperation is present it must be the first one
+    val transformed = if(historyBuffer.history.lastOption.exists(op => op.isInstanceOf[InitialOperation])){
+      controlAlgorithm.transform(dataTypeOperation, new HistoryBuffer(historyBuffer.history.dropRight(1)), transformer)
+    } else controlAlgorithm.transform(dataTypeOperation, historyBuffer, transformer)
     apply(transformed)
     historyBuffer.addOperation(transformed)
   }
@@ -201,7 +205,7 @@ object AbstractClientDataType {
     *
     * @param id the initial operation id
     */
-  private case class InitialOperation(id: OperationId) extends DataTypeOperation {
+  private[client] case class InitialOperation(id: OperationId) extends DataTypeOperation {
     override val operationContext: OperationContext = OperationContext(List.empty)
     override var clientId: ClientId = _
   }
