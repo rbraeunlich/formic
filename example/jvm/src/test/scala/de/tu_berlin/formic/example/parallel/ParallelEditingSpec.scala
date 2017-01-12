@@ -440,7 +440,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
     "handle many parallel edits on json structure" in {
       val iterations = 1000
       val user1Id = ClientId("13")
-      val user2Id = ClientId("11") //important user1 > user2
+      val user2Id = ClientId("12") //important user1 > user2
       val user1 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
       val user2 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
       val user1Callback = new CollectingCallback
