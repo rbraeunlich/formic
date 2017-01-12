@@ -123,11 +123,11 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
   def sendMessageViaWebSocket(msg: FormicMessage) = {
     msg match {
       case req: CreateRequest =>
-        webSocketConnection.send(write(req))
+        webSocketConnection.send(write(CreateRequest(clientId, req.dataTypeInstanceId, req.dataType)))
       case hist: HistoricOperationRequest =>
-        webSocketConnection.send(write(hist))
+        webSocketConnection.send(write(HistoricOperationRequest(clientId, hist.dataTypeInstanceId, hist.sinceId)))
       case upd: UpdateRequest =>
-        webSocketConnection.send(write(upd))
+        webSocketConnection.send(write(UpdateRequest(clientId, upd.dataTypeInstanceId)))
       case op: OperationMessage =>
         webSocketConnection.send(write(OperationMessage(clientId, op.dataTypeInstanceId, op.dataType, op.operations)))
       case other => throw new IllegalArgumentException(s"Client should not send this type of message: $other")
