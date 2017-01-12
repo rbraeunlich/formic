@@ -31,10 +31,11 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       val factory = system.actorOf(Props(new FormicBooleanListDataTypeFactory()))
       val outgoing = TestProbe()
       val dataTypeInstanceId = DataTypeInstanceId()
+      val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "[false]", Option.empty, CreateRequest(
         ClientId(), dataTypeInstanceId, FormicBooleanListDataTypeFactory.dataTypeName
-      ))
+      ), clientId)
 
       val answer = expectMsgClass(classOf[NewDataTypeCreated])
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
@@ -43,6 +44,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       wrapper.dataTypeInstanceId should equal(dataTypeInstanceId)
       wrapper.actor should equal(answer.dataTypeActor)
       wrapper.dataTypeName should equal(FormicBooleanListDataTypeFactory.dataTypeName)
+      wrapper.clientId should equal(clientId)
       answer.dataTypeActor should not be null
     }
   }
@@ -58,10 +60,11 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       val factory = system.actorOf(Props(new FormicDoubleListDataTypeFactory()))
       val outgoing = TestProbe()
       val dataTypeInstanceId = DataTypeInstanceId()
+      val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "[1.0]", Option.empty, CreateRequest(
         ClientId(), dataTypeInstanceId, FormicDoubleListDataTypeFactory.dataTypeName
-      ))
+      ), clientId)
 
       val answer = expectMsgClass(classOf[NewDataTypeCreated])
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
@@ -70,6 +73,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       wrapper.dataTypeInstanceId should equal(dataTypeInstanceId)
       wrapper.actor should equal(answer.dataTypeActor)
       wrapper.dataTypeName should equal(FormicDoubleListDataTypeFactory.dataTypeName)
+      wrapper.clientId should equal(clientId)
       answer.dataTypeActor should not be null
     }
   }
@@ -85,10 +89,11 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       val factory = system.actorOf(Props(new FormicIntegerListDataTypeFactory()))
       val outgoing = TestProbe()
       val dataTypeInstanceId = DataTypeInstanceId()
+      val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "[2]", Option.empty, CreateRequest(
         ClientId(), dataTypeInstanceId, FormicBooleanListDataTypeFactory.dataTypeName
-      ))
+      ), clientId)
 
       val answer = expectMsgClass(classOf[NewDataTypeCreated])
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
@@ -97,6 +102,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       wrapper.dataTypeInstanceId should equal(dataTypeInstanceId)
       wrapper.actor should equal(answer.dataTypeActor)
       wrapper.dataTypeName should equal(FormicIntegerListDataTypeFactory.dataTypeName)
+      wrapper.clientId should equal(clientId)
       answer.dataTypeActor should not be null
     }
   }
@@ -112,10 +118,11 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       val factory = system.actorOf(Props(new FormicStringDataTypeFactory()))
       val outgoing = TestProbe()
       val dataTypeInstanceId = DataTypeInstanceId()
+      val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "[\"b\"]", Option.empty, CreateRequest(
         ClientId(), dataTypeInstanceId, FormicStringDataTypeFactory.dataTypeName
-      ))
+      ), clientId)
 
       val answer = expectMsgClass(classOf[NewDataTypeCreated])
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
@@ -124,6 +131,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       wrapper.dataTypeInstanceId should equal(dataTypeInstanceId)
       wrapper.actor should equal(answer.dataTypeActor)
       wrapper.dataTypeName should equal(FormicStringDataTypeFactory.dataTypeName)
+      wrapper.clientId should equal(clientId)
       answer.dataTypeActor should not be null
     }
   }

@@ -2,10 +2,10 @@ package de.tu_berlin.formic.common.datatype.client
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.RemoteInstantiation
-import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
-import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse}
+import de.tu_berlin.formic.common.message.CreateRequest
+import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 
 import scala.reflect.ClassTag
 
@@ -16,12 +16,12 @@ import scala.reflect.ClassTag
 abstract class AbstractClientDataTypeFactory[T <: AbstractClientDataType : ClassTag, S <: FormicDataType : ClassTag] extends Actor with ActorLogging {
 
   override def receive: Receive = {
-    case WrappedCreateRequest(outgoingConnection, data, lastOperationId, req) =>
+    case WrappedCreateRequest(outgoingConnection, data, lastOperationId, req, localClientId) =>
       log.debug(s"Factory for $name received CreateRequest: $req from sender: $sender")
       val id: DataTypeInstanceId = req.dataTypeInstanceId
       val initialData = if(data == null || data.isEmpty) Option.empty else Option(data)
       val actor = context.actorOf(Props(createDataType(id, outgoingConnection, initialData, lastOperationId)), id.id)
-      val wrapper = createWrapperType(id, actor)
+      val wrapper = createWrapperType(id, actor, localClientId)
       actor ! RemoteInstantiation
       sender ! NewDataTypeCreated(id, actor, wrapper)
 
@@ -43,7 +43,7 @@ abstract class AbstractClientDataTypeFactory[T <: AbstractClientDataType : Class
     */
   def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): T
 
-  def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef): S
+  def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef, localClientId: ClientId): S
 
   val name: DataTypeName
 }
@@ -61,7 +61,7 @@ object AbstractClientDataTypeFactory {
   /**
     * To be able to pass the outgoing connection and the initial data to the factory, the CreateRequest has to be wrapped.
     */
-  case class WrappedCreateRequest(outgoingConnection: ActorRef, data: String, lastOperationId: Option[OperationId], createRequest: CreateRequest)
+  case class WrappedCreateRequest(outgoingConnection: ActorRef, data: String, lastOperationId: Option[OperationId], createRequest: CreateRequest, localClientId: ClientId)
 
 }
 

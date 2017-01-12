@@ -43,7 +43,6 @@ class JsonClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val dataType: TestActorRef[JsonClientDataType] = TestActorRef(Props(JsonClientDataType(DataTypeInstanceId(), new JsonClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Some(write(initial)), Option(initialOperationId), outgoing.ref)))
 
       dataType.underlyingActor.data should equal(initial)
-      dataType.underlyingActor.historyBuffer.history.head.id should equal(initialOperationId)
     }
 
     "return its data as correct JSON" in {

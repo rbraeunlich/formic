@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.datatype.linear.client
 
 import akka.actor.ActorRef
-import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import upickle.default._
 
@@ -10,8 +10,8 @@ import upickle.default._
   */
 class FormicIntegerListDataTypeFactory extends FormicLinearDataTypeFactory[Int] {
 
-  override def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef): FormicList[Int] = {
-    new FormicIntegerList(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType)
+  override def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef, localClientId: ClientId): FormicList[Int] = {
+    new FormicIntegerList(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 
   override val name: DataTypeName = FormicIntegerListDataTypeFactory.dataTypeName

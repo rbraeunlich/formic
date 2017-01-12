@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.linear.client
 
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
-import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
 import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
@@ -142,16 +142,19 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
   "FormicBooleanList" must {
     "work with boolean values" in {
       val dataTypeInstanceId = DataTypeInstanceId()
+      val clientId = ClientId()
+
       val dataTypeActor = new TestProbe(system){
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF(){
             case up:UpdateRequest =>
               up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              up.clientId should equal(clientId)
               sender ! UpdateResponse(dataTypeInstanceId, FormicBooleanListDataTypeFactory.dataTypeName, "[false, true]", Option.empty)
           }
         }
       }
-      val list = new FormicBooleanList(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref)
+      val list = new FormicBooleanList(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
 
       list.add(0, true)
       dataTypeActor.receiveN(1)
@@ -173,16 +176,19 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
   "FormicDoubleList" must {
     "work with double values" in {
       val dataTypeInstanceId = DataTypeInstanceId()
+      val clientId = ClientId()
+
       val dataTypeActor = new TestProbe(system){
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF(){
             case up:UpdateRequest =>
               up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              up.clientId should equal(clientId)
               sender ! UpdateResponse(dataTypeInstanceId, FormicDoubleListDataTypeFactory.dataTypeName, "[0.5, 1.2]", Option.empty)
           }
         }
       }
-      val list = new FormicDoubleList(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref)
+      val list = new FormicDoubleList(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
 
       list.add(0, 0.456)
       dataTypeActor.receiveN(1)
@@ -204,16 +210,19 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
   "FormicIntegerList" must {
     "work with integer values" in {
       val dataTypeInstanceId = DataTypeInstanceId()
+      val clientId = ClientId()
+
       val dataTypeActor = new TestProbe(system){
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF(){
             case up:UpdateRequest =>
               up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              up.clientId should equal(clientId)
               sender ! UpdateResponse(dataTypeInstanceId, FormicIntegerListDataTypeFactory.dataTypeName, "[4, 5]", Option.empty)
           }
         }
       }
-      val list = new FormicIntegerList(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref)
+      val list = new FormicIntegerList(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
 
       list.add(0, 4)
       dataTypeActor.receiveN(1)
@@ -235,16 +244,19 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
   "FormicString" must {
     "work with char values" in {
       val dataTypeInstanceId = DataTypeInstanceId()
+      val clientId = ClientId()
+
       val dataTypeActor = new TestProbe(system){
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF(){
             case up:UpdateRequest =>
               up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              up.clientId should equal(clientId)
               sender ! UpdateResponse(dataTypeInstanceId, FormicStringDataTypeFactory.dataTypeName, "[\"a\", \"b\"]", Option.empty)
           }
         }
       }
-      val list = new FormicString(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref)
+      val list = new FormicString(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
 
       list.add(0, 'a')
       dataTypeActor.receiveN(1)

@@ -26,9 +26,10 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
   "DataTypeInstantiator" must {
 
     "create a new data type instance upon receiving an UpdateResponse" in {
+      val clientId = ClientId()
       val testFactory = TestActorRef(Props(new TestDataTypeFactory))
       val testFactories: Map[DataTypeName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
-      val instantiator = system.actorOf(Props(new DataTypeInstantiator(testFactories)))
+      val instantiator = system.actorOf(Props(new DataTypeInstantiator(testFactories, clientId)))
       val outgoingConnection = TestProbe()
       val dataTypeInstanceId = DataTypeInstanceId()
       val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "", Option.empty)
@@ -41,9 +42,10 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
     }
 
     "create a new data type instance upon receiving an UpdateResponse with the contained data" in {
+      val clientId = ClientId()
       val testFactory = TestActorRef(Props(new TestDataTypeFactory))
       val testFactories: Map[DataTypeName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
-      val instantiator = system.actorOf(Props(new DataTypeInstantiator(testFactories)))
+      val instantiator = system.actorOf(Props(new DataTypeInstantiator(testFactories, clientId)))
       val outgoingConnection = TestProbe()
       val dataTypeInstanceId = DataTypeInstanceId()
       val lastOperationId = OperationId()
@@ -63,7 +65,8 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
     }
 
     "throw an exception when receiving an UpdateResponse with unknown data type name" in {
-      val instantiator: TestActorRef[DataTypeInstantiator] = TestActorRef(Props(new DataTypeInstantiator(Map.empty)))
+      val clientId = ClientId()
+      val instantiator: TestActorRef[DataTypeInstantiator] = TestActorRef(Props(new DataTypeInstantiator(Map.empty, clientId)))
       val dataTypeInstanceId = DataTypeInstanceId()
       val outgoingConnection = TestProbe()
       val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "", Option.empty)

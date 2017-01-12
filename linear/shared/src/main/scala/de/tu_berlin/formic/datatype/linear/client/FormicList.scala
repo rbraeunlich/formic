@@ -31,7 +31,7 @@ abstract class FormicList[T](_callback: () => Unit,
   @JSExport
   def add(index: Int, o: T) = {
     val op = LocalOperationMessage(
-      OperationMessage(null, dataTypeInstanceId, dataTypeName, List(LinearInsertOperation(index, o, OperationId(), OperationContext(List.empty), null)))
+      OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(LinearInsertOperation(index, o, OperationId(), OperationContext(List.empty), clientId)))
     )
     actor ! op
   }
@@ -39,14 +39,14 @@ abstract class FormicList[T](_callback: () => Unit,
   @JSExport
   def remove(index: Int) = {
     val op = LocalOperationMessage(
-      OperationMessage(null, dataTypeInstanceId, dataTypeName, List(LinearDeleteOperation(index, OperationId(), OperationContext(List.empty), null)))
+      OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(LinearDeleteOperation(index, OperationId(), OperationContext(List.empty), clientId)))
     )
     actor ! op
   }
 
   @JSExport
   def get(index: Int)(implicit ec: ExecutionContext): Future[T] = {
-    ask(actor, UpdateRequest(null, dataTypeInstanceId)).
+    ask(actor, UpdateRequest(clientId, dataTypeInstanceId)).
       mapTo[UpdateResponse].
       map(rep => {
         rep.data
@@ -59,7 +59,7 @@ abstract class FormicList[T](_callback: () => Unit,
 
   @JSExport
   def getAll()(implicit ec: ExecutionContext): Future[ArrayBuffer[T]] = {
-    val updateRequest = UpdateRequest(null, dataTypeInstanceId)
+    val updateRequest = UpdateRequest(clientId, dataTypeInstanceId)
     ask(actor, updateRequest).
       mapTo[UpdateResponse].
       map(rep => rep.data).

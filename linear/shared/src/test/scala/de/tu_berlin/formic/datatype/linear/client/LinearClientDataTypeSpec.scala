@@ -46,7 +46,6 @@ class LinearClientDataTypeSpec extends TestKit(ActorSystem("LinearClientDataType
         TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option(initialDataJson), Option(initialOperationId), outgoing.ref)))
 
       dataType.underlyingActor.data should equal(initialData)
-      dataType.underlyingActor.historyBuffer.history.headOption.map(op => op.id).get should equal(initialOperationId)
     }
 
     "apply a linear insert operation correctly" in {

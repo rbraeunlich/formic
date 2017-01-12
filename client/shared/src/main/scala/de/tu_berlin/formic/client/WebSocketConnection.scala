@@ -116,23 +116,20 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
 
   /**
     *
-    * Uses the webSocketConnection to send the specific message after inserting the clientId into
-    * a copy.
+    * Uses the webSocketConnection to send the specific message.
     *
     * @param msg the message to send to the server
     */
   def sendMessageViaWebSocket(msg: FormicMessage) = {
     msg match {
       case req: CreateRequest =>
-        webSocketConnection.send(write(CreateRequest(clientId, req.dataTypeInstanceId, req.dataType)))
+        webSocketConnection.send(write(req))
       case hist: HistoricOperationRequest =>
-        webSocketConnection.send(write(HistoricOperationRequest(clientId, hist.dataTypeInstanceId, hist.sinceId)))
+        webSocketConnection.send(write(hist))
       case upd: UpdateRequest =>
-        webSocketConnection.send(write(UpdateRequest(clientId, upd.dataTypeInstanceId)))
+        webSocketConnection.send(write(upd))
       case op: OperationMessage =>
-        val operations = op.operations
-        operations.foreach(operation => operation.clientId = clientId)
-        webSocketConnection.send(write(OperationMessage(clientId, op.dataTypeInstanceId, op.dataType, operations)))
+        webSocketConnection.send(write(op))
       case other => throw new IllegalArgumentException(s"Client should not send this type of message: $other")
     }
   }

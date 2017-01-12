@@ -32,8 +32,8 @@ class FormicTree[T](_callback: () => Unit,
   @JSExport
   def insert(value: T, path: AccessPath): Unit = {
     actor ! LocalOperationMessage(
-      OperationMessage(null, dataTypeInstanceId, dataTypeName, List(
-        TreeInsertOperation(path, ValueTreeNode(value), OperationId(), OperationContext(), null)
+      OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(
+        TreeInsertOperation(path, ValueTreeNode(value), OperationId(), OperationContext(), clientId)
       ))
     )
   }
@@ -41,15 +41,15 @@ class FormicTree[T](_callback: () => Unit,
   @JSExport
   def remove(path: AccessPath): Unit = {
     actor ! LocalOperationMessage(
-      OperationMessage(null, dataTypeInstanceId, dataTypeName, List(
-        TreeDeleteOperation(path, OperationId(), OperationContext(), null)
+      OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(
+        TreeDeleteOperation(path, OperationId(), OperationContext(), clientId)
       ))
     )
   }
 
   @JSExport
   def getSubTree(path: AccessPath)(implicit ec: ExecutionContext): Future[TreeNode] = {
-    ask(actor, UpdateRequest(null, dataTypeInstanceId)).
+    ask(actor, UpdateRequest(clientId, dataTypeInstanceId)).
       mapTo[UpdateResponse].
       map(rep => {
         rep.data
@@ -63,7 +63,7 @@ class FormicTree[T](_callback: () => Unit,
 
   @JSExport
   def getTree()(implicit ec: ExecutionContext): Future[TreeNode] = {
-    ask(actor, UpdateRequest(null, dataTypeInstanceId)).
+    ask(actor, UpdateRequest(clientId, dataTypeInstanceId)).
       mapTo[UpdateResponse].
       map(rep => {
         rep.data

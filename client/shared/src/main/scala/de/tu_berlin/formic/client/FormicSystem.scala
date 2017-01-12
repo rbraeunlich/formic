@@ -54,8 +54,9 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
 
   @JSExport
   def init(callback: NewInstanceCallback, username: ClientId = ClientId()) = {
+    id = username
     initFactories()
-    val instantiator = system.actorOf(Props(new DataTypeInstantiator(factories)), "Instantiator")
+    val instantiator = system.actorOf(Props(new DataTypeInstantiator(factories, id)), "Instantiator")
     val wrappedCallback = system.actorOf(Props(new NewInstanceCallbackActorWrapper(callback)), "CallbackActor")
     val url = s"ws://${username.id}@$serverAddress:$serverPort/formic"
     connection = system.actorOf(Props(new WebSocketConnection(wrappedCallback, instantiator, username, webSocketFactory, url)), "WebSocketConnection")
@@ -77,6 +78,7 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
           .onComplete {
             case Success(actor) =>
               dataType.actor = actor
+              dataType.clientId = id
               actor ! ReceiveCallback(dataType.callback)
               connection ! (actor, request)
             case Failure(ex) => throw ex

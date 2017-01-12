@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.datatype.linear.client
 
 import akka.actor.ActorRef
-import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import upickle.default._
 /**
@@ -9,8 +9,8 @@ import upickle.default._
   */
 class FormicBooleanListDataTypeFactory extends FormicLinearDataTypeFactory[Boolean] {
 
-  override def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef): FormicList[Boolean] = {
-    new FormicBooleanList(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType)
+  override def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef, localClientId: ClientId): FormicList[Boolean] = {
+    new FormicBooleanList(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 
   override val name: DataTypeName = FormicBooleanListDataTypeFactory.dataTypeName

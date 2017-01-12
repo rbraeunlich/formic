@@ -32,10 +32,11 @@ class FormicJsonObjectFactorySpec extends TestKit(ActorSystem("FormicJsonFactory
       val factory = system.actorOf(Props(new FormicJsonObjectFactory()))
       val outgoing = TestProbe()
       val dataTypeInstanceId = DataTypeInstanceId()
+      val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "{\"value\":1.5, \"children\": []}", Option.empty, CreateRequest(
         ClientId(), dataTypeInstanceId, FormicJsonObjectFactory.name
-      ))
+      ), clientId)
 
       val answer = expectMsgClass(classOf[NewDataTypeCreated])
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
@@ -44,6 +45,7 @@ class FormicJsonObjectFactorySpec extends TestKit(ActorSystem("FormicJsonFactory
       wrapper.dataTypeInstanceId should equal(dataTypeInstanceId)
       wrapper.actor should equal(answer.dataTypeActor)
       wrapper.dataTypeName should equal(FormicJsonObjectFactory.name)
+      wrapper.clientId should equal(clientId)
       answer.dataTypeActor should not be null
     }
   }

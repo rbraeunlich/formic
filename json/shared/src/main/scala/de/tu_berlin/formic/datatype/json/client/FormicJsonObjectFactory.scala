@@ -5,7 +5,7 @@ import de.tu_berlin.formic.common.controlalgo.WaveOTClient
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory
 import de.tu_berlin.formic.common.message.OperationMessage
-import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.tree.client.RemoteDataTypeInitiator
 
 /**
@@ -24,8 +24,8 @@ class FormicJsonObjectFactory extends AbstractClientDataTypeFactory[JsonClientDa
     )
   }
 
-  override def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef): FormicJsonObject = {
-    new FormicJsonObject(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType)
+  override def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef, localClientId: ClientId): FormicJsonObject = {
+    new FormicJsonObject(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 
   override val name: DataTypeName = FormicJsonObjectFactory.name

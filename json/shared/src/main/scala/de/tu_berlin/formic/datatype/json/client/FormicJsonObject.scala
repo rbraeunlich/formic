@@ -7,7 +7,7 @@ import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
 import de.tu_berlin.formic.common.datatype.{FormicDataType, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
-import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
 import de.tu_berlin.formic.datatype.json._
 import de.tu_berlin.formic.datatype.json.client.JsonClientDataType._
@@ -28,9 +28,10 @@ class FormicJsonObject(callback: () => Unit,
 
   implicit val timeout: Timeout = 1.seconds
 
-  def this(callback: () => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataTypeInstanceId, wrapped: ActorRef) {
+  def this(callback: () => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataTypeInstanceId, wrapped: ActorRef, localClientId: ClientId) {
     this(callback, initiator, dataTypeInstanceId)
     this.actor = wrapped
+    this.clientId = localClientId
   }
 
   def insert(i: Double, path: JsonPath) = {
@@ -61,16 +62,16 @@ class FormicJsonObject(callback: () => Unit,
 
   def sendInsertOperation(toInsert: JsonTreeNode[_], path: JsonPath) = {
     actor ! LocalOperationMessage(
-      OperationMessage(null, dataTypeInstanceId, dataTypeName, List(
-        JsonClientInsertOperation(path, toInsert, OperationId(), OperationContext(), null)
+      OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(
+        JsonClientInsertOperation(path, toInsert, OperationId(), OperationContext(), clientId)
       ))
     )
   }
 
   def remove(path: JsonPath) = {
     actor ! LocalOperationMessage(
-      OperationMessage(null, dataTypeInstanceId, dataTypeName, List(
-        JsonClientDeleteOperation(path, OperationId(), OperationContext(), null)
+      OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(
+        JsonClientDeleteOperation(path, OperationId(), OperationContext(), clientId)
       ))
     )
   }
@@ -116,14 +117,14 @@ class FormicJsonObject(callback: () => Unit,
 
   def sendReplaceOperation(toInsert: JsonTreeNode[_], path: JsonPath) = {
     actor ! LocalOperationMessage(
-      OperationMessage(null, dataTypeInstanceId, dataTypeName, List(
-        JsonClientReplaceOperation(path, toInsert, OperationId(), OperationContext(), null)
+      OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(
+        JsonClientReplaceOperation(path, toInsert, OperationId(), OperationContext(), clientId)
       ))
     )
   }
 
   def getNodeAt(path: JsonPath)(implicit ec: ExecutionContext): Future[JsonTreeNode[_]] = {
-    ask(actor, UpdateRequest(null, dataTypeInstanceId)).
+    ask(actor, UpdateRequest(clientId, dataTypeInstanceId)).
       mapTo[UpdateResponse].
       map(rep => {
         rep.data
@@ -137,7 +138,7 @@ class FormicJsonObject(callback: () => Unit,
   }
 
   def getValueAt[T](path: JsonPath)(implicit ec: ExecutionContext): Future[T] = {
-    ask(actor, UpdateRequest(null, dataTypeInstanceId)).
+    ask(actor, UpdateRequest(clientId, dataTypeInstanceId)).
       mapTo[UpdateResponse].
       map(rep => {
         rep.data

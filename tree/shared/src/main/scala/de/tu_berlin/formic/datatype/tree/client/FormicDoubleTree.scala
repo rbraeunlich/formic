@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.datatype.tree.client
 
 import akka.actor.ActorRef
-import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
 
 /**
@@ -12,9 +12,10 @@ class FormicDoubleTree(callback: () => Unit,
                        dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId())
   extends FormicTree[Double](callback, initiator, dataTypeInstanceId, FormicDoubleTreeFactory.name) {
 
-  def this(callback: () => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataTypeInstanceId, wrapped: ActorRef) {
+  def this(callback: () => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataTypeInstanceId, wrapped: ActorRef, localClientId: ClientId) {
     this(callback, initiator, dataTypeInstanceId)
     this.actor = wrapped
+    this.clientId = localClientId
   }
 
 }

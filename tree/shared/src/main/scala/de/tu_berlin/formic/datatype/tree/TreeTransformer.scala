@@ -35,6 +35,7 @@ class TreeTransformer extends OperationTransformer {
   }
 
   override def transform(pair: (DataTypeOperation, DataTypeOperation)): DataTypeOperation = {
+    println("transform: " + pair)
     transformInternal(pair, withNewContext = true)
   }
 
