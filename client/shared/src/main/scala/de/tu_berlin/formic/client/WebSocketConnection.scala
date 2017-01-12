@@ -129,7 +129,7 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
       case upd: UpdateRequest =>
         webSocketConnection.send(write(upd))
       case op: OperationMessage =>
-        webSocketConnection.send(write(op))
+        webSocketConnection.send(write(OperationMessage(clientId, op.dataTypeInstanceId, op.dataType, op.operations)))
       case other => throw new IllegalArgumentException(s"Client should not send this type of message: $other")
     }
   }

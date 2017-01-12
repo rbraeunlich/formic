@@ -271,6 +271,30 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
         case None => fail("No message sent via WebSocket")
       }
     }
+
+    "add the ClientId to OperationMessages and send them over the WebSocket" in {
+      val factory = new TestWebSocketFactory
+      val clientId = ClientId()
+      val message = OperationMessage(null, DataTypeInstanceId(), TestClasses.dataTypeName, List(TestOperation(OperationId(), OperationContext(List.empty), clientId)))
+      val newInstanceCallback = TestProbe()
+      val instantiator = TestProbe()
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(newInstanceCallback.ref, instantiator.ref, clientId, factory, "11")))
+      system.scheduler.scheduleOnce(0.millis) {
+        connection ! OnConnect(factory.mock)
+
+        connection ! message
+      }
+      awaitCond(factory.mock.sent.nonEmpty, timeout)
+      val sentMessages = factory.mock.sent
+      sentMessages.headOption match {
+        case Some(msg) =>
+          val sentOperation = message.operations.head
+          read[FormicMessage](msg.asInstanceOf[String]) should equal(
+            OperationMessage(clientId, message.dataTypeInstanceId, message.dataType, List(TestOperation(sentOperation.id, sentOperation.operationContext, clientId)))
+          )
+        case None => fail("No message sent via WebSocket")
+      }
+    }
   }
 }
 
