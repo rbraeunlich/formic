@@ -23,7 +23,7 @@ object FormicJsonProtocol {
   def remove(dataTypeName: DataTypeName) = dataTypeOperationJsonProtocols -= dataTypeName
 
   implicit val writer = upickle.default.Writer[OperationMessage] {
-    case message =>
+    message =>
       val protocol = dataTypeOperationJsonProtocols.find(t => t._1 == message.dataType) match {
         case Some(prot) => prot
         case None => throw new IllegalArgumentException(s"No JSON Protocol for ${message.dataType} registered")
