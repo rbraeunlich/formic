@@ -113,6 +113,9 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       stringUser1.add(8, 'i')
       Thread.sleep(1000)
       checkTextOfBothStrings(stringUser1, stringUser2, "abcdefghi")
+
+      user1.system.terminate()
+      user2.system.terminate()
     }
 
     def checkTextOfBothStrings(stringUser1: FormicString, stringUser2: FormicString, expected: String) = {
@@ -200,6 +203,9 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       Thread.sleep(1000)
 
       checkBothTrees(treeUser1, treeUser2, ValueTreeNode(1, List(ValueTreeNode(10), ValueTreeNode(13), ValueTreeNode(11, List(ValueTreeNode(8000), ValueTreeNode(7000), ValueTreeNode(6000), ValueTreeNode(5000))))))
+
+      user1.system.terminate()
+      user2.system.terminate()
     }
 
     def checkBothTrees[T](treeUser1: FormicTree[T], treeUser2: FormicTree[T], expected: TreeNode): Any = {
@@ -354,6 +360,9 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
             NumberNode(null, 30),
             NumberNode(null, 10)
           )))))
+
+      user1.system.terminate()
+      user2.system.terminate()
     }
 
     def checkBothJsons(jsonUser1: FormicJsonObject, jsonUser2: FormicJsonObject, expected: ObjectNode): Any = {
@@ -397,6 +406,9 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       latch.await(60, TimeUnit.SECONDS)
 
       checkTextOfBothStrings(stringUser1, stringUser2, expected)
+
+      user1.system.terminate()
+      user2.system.terminate()
     }
 
     "handle many parallel edits on tree structure" in {
@@ -435,6 +447,9 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       latch.await(60, TimeUnit.SECONDS)
 
       checkBothTrees(treeUser1, treeUser2, expected)
+
+      user1.system.terminate()
+      user2.system.terminate()
     }
 
     "handle many parallel edits on json structure" in {
@@ -470,6 +485,9 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       latch.await(60, TimeUnit.SECONDS)
 
       checkBothJsons(jsonUser1, jsonUser2, expected)
+
+      user1.system.terminate()
+      user2.system.terminate()
     }
   }
 }
