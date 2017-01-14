@@ -30,6 +30,7 @@ class AbstractServerDataTypeFactoryPersistenceSpec extends PersistenceSpec(Actor
       killActors(factory)
 
       val recoveredFactory = system.actorOf(Props(new AbstractServerDataTypeFactoryPersistenceSpecFactory), AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName.name)
+      Thread.sleep(2000)
       val dataType = system.actorSelection(recoveredFactory.path.child(dataTypeInstanceId.id)).resolveOne(5.seconds)
       Await.result(dataType, 5.seconds) shouldNot be(null)
       val dataType2 = system.actorSelection(recoveredFactory.path.child(dataTypeInstanceId2.id)).resolveOne(5.seconds)
