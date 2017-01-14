@@ -8,6 +8,7 @@ import de.tu_berlin.formic.common.server.datatype.NewDataTypeCreated
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.server.UserProxy.NewDataTypeSubscription
 
+import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.{Failure, Success}
@@ -55,14 +56,18 @@ class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = C
 
     case req: UpdateRequest =>
       log.debug(s"Incoming UpdateRequest from user $id: $req")
-      context.actorSelection(s"../*/${req.dataTypeInstanceId.id}").resolveOne(3 seconds).onComplete {
-        case Success(ref) => ref ! req
+      val actorSelection = context.actorSelection(s"../*/${req.dataTypeInstanceId.id}").resolveOne(3 seconds)
+      actorSelection.onComplete {
+        case Success(ref) =>
+          watchlist += (req.dataTypeInstanceId -> ref)
+          ref ! req
         case Failure(ex) => throw new IllegalArgumentException(s"Data type instance with id ${req.dataTypeInstanceId.id} not found. Exception: $ex")
       }
+      //blocking here is necessary to ensure no messages for a data type are received while we look it up
+      Await.ready(actorSelection, 3.seconds)
 
     case rep: UpdateResponse =>
       log.debug(s"Sending UpdateResponse to user $id: $rep")
-      watchlist += (rep.dataTypeInstanceId -> sender)
       subscriber ! NewDataTypeSubscription(rep.dataTypeInstanceId, sender)
       outgoing ! rep
 
