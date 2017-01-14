@@ -382,7 +382,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       //explicitely kill the actor or else the running job won't stop
       connection ! PoisonPill
       val sentMessages = factory.mock.sent
-      sentMessages should contain allOf(write(createRequest1), write(createRequest2), write(UpdateRequest(clientId, dataType1Id)), write(UpdateRequest(clientId, dataType2Id)))
+      awaitAssert(sentMessages should contain allOf(write(createRequest1), write(createRequest2), write(UpdateRequest(clientId, dataType1Id)), write(UpdateRequest(clientId, dataType2Id))))
     }
   }
 }
