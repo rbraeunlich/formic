@@ -23,8 +23,11 @@ class OfflineCapabilitySpec extends TestKit(ActorSystem("ParallelEditingSpec"))
 
   implicit val ec = system.dispatcher
 
+  var serverThread: ServerThread = _
+
   override def afterAll(): Unit = {
     system.terminate()
+    if(serverThread != null) serverThread.terminate()
   }
 
   implicit val materializer = ActorMaterializer(ActorMaterializerSettings(system))
@@ -50,7 +53,7 @@ class OfflineCapabilitySpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       val textFuture = string.getAll()
       Await.result(textFuture, 2.seconds).mkString should equal("abc")
 
-      var serverThread = new ServerThread
+      serverThread = new ServerThread
       serverThread.setDaemon(true)
       serverThread.run()
       Thread.sleep(10000) //retry for websocket is 5 seconds
