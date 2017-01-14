@@ -380,7 +380,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
         connection ! (dataType2.ref, createRequest2)
         connection ! OnConnect(factory.mock)
       }
-      awaitCond(factory.mock.sent.nonEmpty, timeout)
+      awaitCond(factory.mock.sent.length == 3, timeout)
       //explicitely kill the actor or else the running job won't stop
       connection ! PoisonPill
       val sentMessages = factory.mock.sent
