@@ -16,7 +16,7 @@ import scala.language.postfixOps
   * @author Ronny Bräunlich
   */
 
-class AbstractDataTypeFactorySpec extends TestKit(ActorSystem("AbstractDataTypeFactorySpec"))
+class AbstractServerDataTypeFactorySpec extends TestKit(ActorSystem("AbstractServerDataTypeFactorySpec"))
   with WordSpecLike
   with ImplicitSender
   with StopSystemAfterAll
