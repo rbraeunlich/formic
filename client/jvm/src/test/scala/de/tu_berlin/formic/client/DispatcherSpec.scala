@@ -3,7 +3,7 @@ package de.tu_berlin.formic.client
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{EventFilter, ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
-import de.tu_berlin.formic.client.Dispatcher.{ErrorMessage, WrappedUpdateResponse}
+import de.tu_berlin.formic.client.Dispatcher.{ErrorMessage, KnownDataTypeIds, RequestKnownDataTypeIds, WrappedUpdateResponse}
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message._
@@ -145,6 +145,32 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
 
       dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
       instantiator.expectNoMsg()
+    }
+
+    "answer the RequestKnownDataTypeIds message" in {
+      val testFactory: TestActorRef[TestDataTypeFactory] = TestActorRef(Props(new TestDataTypeFactory))
+      val instantiator = new TestProbe(system){
+        def answerWrappedUpdateResponse() = {
+          expectMsgPF(){
+            case WrappedUpdateResponse(outgoing, rep) =>
+            forward(testFactory, WrappedCreateRequest(outgoing, rep.data, rep.lastOperationId, CreateRequest(null, rep.dataTypeInstanceId, TestClasses.dataTypeName), ClientId()))
+          }
+        }
+      }
+      val newInstanceCallback = TestProbe()
+
+      val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(null, newInstanceCallback.ref, instantiator.ref)))
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId2 = DataTypeInstanceId()
+
+      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
+      instantiator.answerWrappedUpdateResponse()
+      dispatcher ! UpdateResponse(dataTypeInstanceId2, TestClasses.dataTypeName, "a", Option.empty)
+      instantiator.answerWrappedUpdateResponse()
+
+      dispatcher ! RequestKnownDataTypeIds
+
+      expectMsg(KnownDataTypeIds(Set(dataTypeInstanceId, dataTypeInstanceId2)))
     }
   }
 }

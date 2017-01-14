@@ -1,14 +1,17 @@
 package de.tu_berlin.formic.client
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, _}
+import akka.pattern.ask
+import akka.util.Timeout
 import de.tu_berlin.formic.client.Dispatcher._
 import de.tu_berlin.formic.client.WebSocketConnection._
-import de.tu_berlin.formic.common.ClientId
+import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message._
 import upickle.default._
+import akka.util.Timeout._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{Await, ExecutionContext}
 import scala.concurrent.duration._
 
 /**
@@ -90,6 +93,12 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
       log.debug("Connecting")
       connectionTry.cancel
       webSocketConnection = ws
+      implicit val timeout: Timeout = 3.seconds
+      val knownDataTypeIdsFuture = dispatcher ? RequestKnownDataTypeIds
+      //gotta block here before the buffered messages are being sent
+      Await.result(knownDataTypeIdsFuture, timeout.duration).asInstanceOf[KnownDataTypeIds].ids.foreach{
+        id => sendMessageViaWebSocket(UpdateRequest(clientId, id))
+      }
       buffer.foreach(msg => sendMessageViaWebSocket(msg))
       context.become(online)
     case OnError(errorMessage) =>

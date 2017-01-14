@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.client
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import de.tu_berlin.formic.client.Dispatcher.{ErrorMessage, WrappedUpdateResponse}
+import de.tu_berlin.formic.client.Dispatcher._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.message._
@@ -44,6 +44,8 @@ class Dispatcher(val outgoingConnection: ActorRef, val newInstanceCallback: Acto
       instances += (req.dataTypeInstanceId -> ref)
 
     case hist: HistoricOperationRequest => outgoingConnection ! hist
+
+    case RequestKnownDataTypeIds => sender ! KnownDataTypeIds(instances.keySet)
   }
 }
 
@@ -56,4 +58,13 @@ object Dispatcher {
     */
   case class WrappedUpdateResponse(outgoingConnection: ActorRef, updateResponse: UpdateResponse)
 
+  /**
+    * Message to enable the WebSocketConnection to ask the Dispatcher for all the data types that exist on the client.
+    */
+  case object RequestKnownDataTypeIds
+
+  /**
+    * Answer to the RequestKnownDataTypeId message
+    */
+  case class KnownDataTypeIds(ids: Set[DataTypeInstanceId])
 }

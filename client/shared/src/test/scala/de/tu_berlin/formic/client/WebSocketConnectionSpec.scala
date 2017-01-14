@@ -190,7 +190,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       //explicitely kill the actor or else the running job won't stop
       connection ! PoisonPill
       val sentMessages = factory.mock.sent
-      sentMessages.headOption match {
+      sentMessages.lastOption match {
         case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(CreateRequest(clientId, request.dataTypeInstanceId, TestClasses.dataTypeName))
         case None => fail("No message sent via WebSocket")
       }
@@ -355,6 +355,34 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
         case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(UpdateRequest(clientId, request.dataTypeInstanceId))
         case None => fail("No message sent via WebSocket")
       }
+    }
+
+    "send UpdateRequests for all data type instances the dispatcher knows about when becoming online again" in {
+      val clientId = ClientId()
+      val factory = new TestWebSocketFactory
+      val newInstanceCallback = TestProbe()
+      val instantiator = TestProbe()
+      val dataType1 = TestProbe()
+      val dataType1Id = DataTypeInstanceId()
+      val dataType2 = TestProbe()
+      val dataType2Id = DataTypeInstanceId()
+      val createRequest1 = CreateRequest(clientId, dataType1Id, TestClasses.dataTypeName)
+      val createRequest2 = CreateRequest(clientId, dataType2Id, TestClasses.dataTypeName)
+      val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(newInstanceCallback.ref, instantiator.ref, clientId, factory, "14")))
+      val probe = TestProbe()
+      system.scheduler.scheduleOnce(0.millis) {
+        connection ! OnConnect(factory.mock)
+        //create two data types
+        connection ! (dataType1.ref, createRequest1)
+        connection ! (dataType2.ref, createRequest2)
+        connection ! OnClose(1)
+        connection ! OnConnect(factory.mock)
+      }
+      awaitCond(factory.mock.sent.nonEmpty, timeout)
+      //explicitely kill the actor or else the running job won't stop
+      connection ! PoisonPill
+      val sentMessages = factory.mock.sent
+      sentMessages should contain allOf(write(createRequest1), write(createRequest2), write(UpdateRequest(clientId, dataType1Id)), write(UpdateRequest(clientId, dataType2Id)))
     }
   }
 }
