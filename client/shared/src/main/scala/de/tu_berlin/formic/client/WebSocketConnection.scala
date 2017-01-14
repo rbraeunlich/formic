@@ -137,13 +137,15 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
 
 object WebSocketConnection {
 
-  case class OnError(message: String)
+  sealed trait WebSocketConnectionMessage
 
-  case class OnMessage(message: String)
+  case class OnError(message: String) extends WebSocketConnectionMessage
 
-  case class OnClose(closeCode: Int)
+  case class OnMessage(message: String) extends WebSocketConnectionMessage
 
-  case class OnConnect(webSocketWrapper: WebSocketWrapper)
+  case class OnClose(closeCode: Int) extends WebSocketConnectionMessage
+
+  case class OnConnect(webSocketWrapper: WebSocketWrapper) extends WebSocketConnectionMessage
 
   /**
     * An initial message to the WebSocketConnection so that it can start being offline and has the
