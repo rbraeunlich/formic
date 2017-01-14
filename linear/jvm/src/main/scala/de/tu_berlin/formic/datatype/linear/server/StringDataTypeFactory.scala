@@ -6,7 +6,7 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-class StringDataTypeFactory extends LinearDataTypeFactory[Char] {
+class StringDataTypeFactory extends LinearServerDataTypeFactory[Char] {
   override val name: DataTypeName = StringDataTypeFactory.name
 }
 

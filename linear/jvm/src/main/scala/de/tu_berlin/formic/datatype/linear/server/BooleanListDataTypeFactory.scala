@@ -6,7 +6,7 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-class BooleanListDataTypeFactory extends LinearDataTypeFactory[Boolean] {
+class BooleanListDataTypeFactory extends LinearServerDataTypeFactory[Boolean] {
   override val name: DataTypeName = BooleanListDataTypeFactory.name
 }
 

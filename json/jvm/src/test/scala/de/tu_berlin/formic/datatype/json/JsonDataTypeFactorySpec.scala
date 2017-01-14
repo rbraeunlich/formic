@@ -24,9 +24,9 @@ class JsonDataTypeFactorySpec extends TestKit(ActorSystem("JsonDataTypeFactorySp
 
   "A JsonDataTypeFactory" must {
     "create Json data types" in {
-      val factory = system.actorOf(Props(new JsonDataTypeFactory()), "jsonFactory")
+      val factory = system.actorOf(Props(new JsonServerDataTypeFactory()), "jsonFactory")
       val dataTypeInstanceId = DataTypeInstanceId()
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, JsonDataTypeFactory.name)
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, JsonServerDataTypeFactory.name)
 
       val response = expectMsgClass(classOf[NewDataTypeCreated])
 

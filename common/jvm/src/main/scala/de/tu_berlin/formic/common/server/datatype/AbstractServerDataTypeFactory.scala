@@ -11,7 +11,7 @@ import scala.reflect.ClassTag
   * @author Ronny Bräunlich
   */
 //Why the ClassTag? See http://stackoverflow.com/questions/18692265/no-classtag-available-for-t-not-for-array
-abstract class AbstractDataTypeFactory[T <: AbstractServerDataType : ClassTag] extends Actor with ActorLogging{
+abstract class AbstractServerDataTypeFactory[T <: AbstractServerDataType : ClassTag] extends Actor with ActorLogging{
 
   override def receive: Receive = {
     case req:CreateRequest =>

@@ -11,7 +11,7 @@ import upickle.Js
   * @author Ronny Bräunlich
   */
 
-class TestDataTypeFactory extends AbstractDataTypeFactory[TestServerDataType] {
+class TestDataTypeFactory extends AbstractServerDataTypeFactory[TestServerDataType] {
 
   override def create(dataTypeInstanceId: DataTypeInstanceId): TestServerDataType = new TestServerDataType(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm)
 

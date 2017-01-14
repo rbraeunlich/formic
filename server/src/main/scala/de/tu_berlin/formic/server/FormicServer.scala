@@ -16,7 +16,7 @@ import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message.FormicMessage
-import de.tu_berlin.formic.datatype.json.{JsonDataTypeFactory, JsonFormicJsonDataTypeProtocol}
+import de.tu_berlin.formic.datatype.json.{JsonServerDataTypeFactory, JsonFormicJsonDataTypeProtocol}
 import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataTypeProtocol
 import de.tu_berlin.formic.datatype.linear.server._
 import de.tu_berlin.formic.datatype.tree._
@@ -87,9 +87,9 @@ class FormicServer {
   }
 
   def initJsonFactory() = {
-    val factory = system.actorOf(Props[JsonDataTypeFactory], JsonDataTypeFactory.name.name)
-    FormicJsonProtocol.registerProtocol(new JsonFormicJsonDataTypeProtocol(JsonDataTypeFactory.name)(JsonFormicJsonDataTypeProtocol.reader, JsonFormicJsonDataTypeProtocol.writer))
-    factories += (JsonDataTypeFactory.name -> factory)
+    val factory = system.actorOf(Props[JsonServerDataTypeFactory], JsonServerDataTypeFactory.name.name)
+    FormicJsonProtocol.registerProtocol(new JsonFormicJsonDataTypeProtocol(JsonServerDataTypeFactory.name)(JsonFormicJsonDataTypeProtocol.reader, JsonFormicJsonDataTypeProtocol.writer))
+    factories += (JsonServerDataTypeFactory.name -> factory)
   }
 
   def start(route: server.Route): Http.ServerBinding = {
