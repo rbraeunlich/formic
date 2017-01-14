@@ -34,7 +34,7 @@ class AbstractDataTypeFactorySpec extends TestKit(ActorSystem("AbstractDataTypeF
     }
 
     "give a new data type instance the actor name of its datatypeinstance id" in {
-      val factory = system.actorOf(Props[TestDataTypeFactory])
+      val factory = system.actorOf(Props[TestDataTypeFactory], TestClasses.dataTypeName.name)
       val dataTypeInstanceId = DataTypeInstanceId()
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, DataTypeName("Test"))
 
