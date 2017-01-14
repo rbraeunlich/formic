@@ -37,6 +37,7 @@ class AbstractDataTypeFactorySpec extends TestKit(ActorSystem("AbstractDataTypeF
       val factory = system.actorOf(Props[TestDataTypeFactory], TestClasses.dataTypeName.name)
       val dataTypeInstanceId = DataTypeInstanceId()
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, DataTypeName("Test"))
+      receiveN(1)
 
       val selection = system.actorSelection(factory.path.child(dataTypeInstanceId.id)).resolveOne(3 seconds)
       ScalaFutures.whenReady(selection) { ref =>
