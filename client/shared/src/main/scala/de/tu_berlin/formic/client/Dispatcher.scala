@@ -21,7 +21,10 @@ class Dispatcher(val outgoingConnection: ActorRef, val newInstanceCallback: Acto
       }
 
     case rep: UpdateResponse =>
-      instantiator ! WrappedUpdateResponse(outgoingConnection, rep)
+      instances.find(t => t._1 == rep.dataTypeInstanceId) match {
+        case Some(_) => log.debug(s"Ignoring $rep because data type already exists")
+        case None => instantiator ! WrappedUpdateResponse(outgoingConnection, rep)
+      }
 
     case created: NewDataTypeCreated =>
       instances += (created.dataTypeInstanceId -> created.dataTypeActor)

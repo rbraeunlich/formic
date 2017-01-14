@@ -3,7 +3,7 @@ package de.tu_berlin.formic.client
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{EventFilter, ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
-import de.tu_berlin.formic.client.Dispatcher.ErrorMessage
+import de.tu_berlin.formic.client.Dispatcher.{ErrorMessage, WrappedUpdateResponse}
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message._
@@ -126,6 +126,25 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       dispatcher ! response
 
       testDataType2.expectMsg(response)
+    }
+
+    "ignore UpdateResponses for data types it already knows about" in {
+      val testFactory: TestActorRef[TestDataTypeFactory] = TestActorRef(Props(new TestDataTypeFactory))
+      val instantiator = new TestProbe(system)
+      val newInstanceCallback = TestProbe()
+
+      val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(null, newInstanceCallback.ref, instantiator.ref)))
+      val dataTypeInstanceId = DataTypeInstanceId()
+
+      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
+      instantiator.expectMsgPF(){
+        case WrappedUpdateResponse(outgoing, rep) =>
+          instantiator.forward(testFactory, WrappedCreateRequest(outgoing, rep.data, rep.lastOperationId, CreateRequest(null, rep.dataTypeInstanceId, TestClasses.dataTypeName), ClientId()))
+      }
+      dispatcher.underlyingActor.instances should contain key dataTypeInstanceId
+
+      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
+      instantiator.expectNoMsg()
     }
   }
 }
