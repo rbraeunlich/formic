@@ -357,7 +357,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       }
     }
 
-    "send UpdateRequests for all data type instances the dispatcher knows about when becoming online again" in {
+    "send UpdateRequests for all acknowledged data type instances the dispatcher knows about when becoming online again" in {
       val clientId = ClientId()
       val factory = new TestWebSocketFactory
       val newInstanceCallback = TestProbe()
@@ -372,17 +372,19 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       val probe = TestProbe()
       system.scheduler.scheduleOnce(0.millis) {
         connection ! OnConnect(factory.mock)
-        //create two data types
+        //create acknowledged data type
         connection ! (dataType1.ref, createRequest1)
-        connection ! (dataType2.ref, createRequest2)
+        connection ! CreateResponse(dataType1Id)
         connection ! OnClose(1)
+        //create unacknowledged data type
+        connection ! (dataType2.ref, createRequest2)
         connection ! OnConnect(factory.mock)
       }
       awaitCond(factory.mock.sent.nonEmpty, timeout)
       //explicitely kill the actor or else the running job won't stop
       connection ! PoisonPill
       val sentMessages = factory.mock.sent
-      awaitAssert(sentMessages should contain allOf(write(createRequest1), write(createRequest2), write(UpdateRequest(clientId, dataType1Id)), write(UpdateRequest(clientId, dataType2Id))))
+      awaitAssert(sentMessages should contain allOf(write(createRequest1), write(createRequest2), write(UpdateRequest(clientId, dataType1Id))), 2.seconds)
     }
   }
 }

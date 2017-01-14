@@ -98,7 +98,9 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
       val knownDataTypeIdsFuture = dispatcher ? RequestKnownDataTypeIds
       knownDataTypeIdsFuture.onComplete{
         case Success(msg) =>
-          msg.asInstanceOf[KnownDataTypeIds].ids.foreach{
+          val ids = msg.asInstanceOf[KnownDataTypeIds].ids
+          ids.filterNot(id => buffer.exists(msg => msg.isInstanceOf[CreateRequest] && msg.asInstanceOf[CreateRequest].dataTypeInstanceId == id))
+            .foreach{
             id => sendMessageViaWebSocket(UpdateRequest(clientId, id))
           }
           buffer.foreach(msg => sendMessageViaWebSocket(msg))
