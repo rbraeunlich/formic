@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.client
 
-import akka.actor.{ActorRef, ActorSystem}
+import akka.actor.{Actor, ActorRef, ActorSystem, PoisonPill, Props}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.headers.{Authorization, BasicHttpCredentials}
 import akka.http.scaladsl.model.ws.{Message, TextMessage, WebSocketRequest}
@@ -9,6 +9,7 @@ import akka.stream.scaladsl._
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.{Done, NotUsed}
 import de.tu_berlin.formic.client.WebSocketConnection.{OnClose, OnConnect, OnMessage}
+import de.tu_berlin.formic.client.WrappedAkkaStreamWebSocket.ReceiverWrapper
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -24,6 +25,7 @@ class WrappedAkkaStreamWebSocket(val url: String, val receiver: ActorRef)(implic
 
   def establishConnection()(implicit materializer: ActorMaterializer, actorSystem: ActorSystem) = {
     implicit val ec = actorSystem.dispatcher
+    val wrappedReceiver = actorSystem.actorOf(Props(new ReceiverWrapper(receiver)))
     val source = Source.queue[Message](10, OverflowStrategy.fail)
     val sink: Sink[Message, NotUsed] =
       Flow[Message].map {
@@ -37,7 +39,7 @@ class WrappedAkkaStreamWebSocket(val url: String, val receiver: ActorRef)(implic
           val result = Await.result(bar, 5.seconds)
           result
         case _ => throw new IllegalArgumentException("Illegal message received")
-      }.map(text => OnMessage(text)).to(Sink.actorRef[OnMessage](receiver, OnClose(1)))
+      }.map(text => OnMessage(text)).to(Sink.actorRef[OnMessage](wrappedReceiver, OnClose(1)))
 
     val flow = Flow.fromSinkAndSourceMat(sink, source)(Keep.both)
 
@@ -66,11 +68,31 @@ class WrappedAkkaStreamWebSocket(val url: String, val receiver: ActorRef)(implic
       case Success(_) =>
         outgoing = sinkAndSource._2
         receiver ! OnConnect(this)
-      case Failure(ex) => throw ex
+      case Failure(ex) => actorSystem.log.warning(ex.getMessage)
     }
   }
 
   override def send(message: String): Unit = {
     outgoing.offer(TextMessage(message))
+  }
+}
+
+object WrappedAkkaStreamWebSocket {
+  import akka.actor.Status.Failure
+
+  /**
+    * This wrapper is needed so the Failure message can be translated into an OnClose message
+    * @param wrapped the actual receiver of the messages
+    */
+  class ReceiverWrapper(val wrapped: ActorRef) extends Actor {
+    override def receive: Receive = {
+      case fail:Failure =>
+        wrapped.forward(OnClose(2))
+        self ! PoisonPill
+      case close:OnClose =>
+        wrapped.forward(close)
+        self ! PoisonPill
+      case rest => wrapped.forward(rest)
+    }
   }
 }
