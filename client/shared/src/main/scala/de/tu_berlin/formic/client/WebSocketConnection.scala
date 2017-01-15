@@ -69,7 +69,7 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
       log.debug(s"User $clientId received WebSocket message: $msg")
       dispatcher ! read[FormicMessage](msg)
     case OnClose(code) =>
-      log.warning("User $clientId became offline with code " + code)
+      log.warning(s"User $clientId became offline with code " + code)
       connectionTry = context.system.scheduler.schedule(100.millis, 5.seconds) {
         retryConnection()
       }
