@@ -5,8 +5,8 @@ import akka.stream.{ActorMaterializer, ActorMaterializerSettings}
 import akka.testkit.TestKit
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client._
-import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
-import de.tu_berlin.formic.datatype.linear.client.FormicString
+import de.tu_berlin.formic.common.datatype.{ClientDataTypeProvider, DataTypeName, FormicDataType}
+import de.tu_berlin.formic.datatype.linear.client.{FormicString, LinearClientDataTypeProvider}
 import de.tu_berlin.formic.example.OfflineCapabilitySpec.{CollectingCallback, DropNextNMessages, TestWebSocketFactoryJVM}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
@@ -32,12 +32,14 @@ class OfflineCapabilitySpec extends TestKit(ActorSystem("ParallelEditingSpec"))
 
   implicit val materializer = ActorMaterializer(ActorMaterializerSettings(system))
 
+  val config = ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}")
+
   "A FormicClient" must {
     "be able to handle disconnection from the server" in {
-      val user = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+      val user = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
       //the online possibility to check the exchange with the server is to use a second user,
       // else we cannot distinguish between online and offline, which is intentional
-      val userForCheck = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+      val userForCheck = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
       val userCallback = new CollectingCallback
       user.init(userCallback)
       val checkUserCallback = new CollectingCallback
@@ -87,11 +89,12 @@ class OfflineCapabilitySpec extends TestKit(ActorSystem("ParallelEditingSpec"))
         serverThread.run()
         Thread.sleep(5000)
       }
-      val user1 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+      val user1 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
       //we need a special wrapper for user2 so we can intentionally drop messages
-      val user2Config = ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}")
       val user2WebSocketFactory = new TestWebSocketFactoryJVM()
-      val user2 = new FormicSystem(user2Config, user2WebSocketFactory)
+      val user2 = new FormicSystem(config, user2WebSocketFactory) with ClientDataTypes {
+        override val dataTypeProvider: Set[ClientDataTypeProvider] = Set(LinearClientDataTypeProvider())
+      }
       val user1Callback = new CollectingCallback
       user1.init(user1Callback)
       val user2Callback = new CollectingCallback

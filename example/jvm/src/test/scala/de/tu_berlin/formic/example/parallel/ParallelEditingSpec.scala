@@ -10,9 +10,9 @@ import de.tu_berlin.formic.client.{FormicSystemFactory, NewInstanceCallback}
 import de.tu_berlin.formic.common.ClientId
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
 import de.tu_berlin.formic.datatype.json._
-import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
-import de.tu_berlin.formic.datatype.linear.client.FormicString
-import de.tu_berlin.formic.datatype.tree.client.{FormicIntegerTree, FormicStringTree, FormicTree}
+import de.tu_berlin.formic.datatype.json.client.{FormicJsonObject, JsonClientDataTypeProvider}
+import de.tu_berlin.formic.datatype.linear.client.{FormicString, LinearClientDataTypeProvider}
+import de.tu_berlin.formic.datatype.tree.client.{FormicIntegerTree, FormicStringTree, FormicTree, TreeClientDataTypeProvider}
 import de.tu_berlin.formic.datatype.tree.{AccessPath, TreeNode, ValueTreeNode}
 import de.tu_berlin.formic.example.ServerThread
 import de.tu_berlin.formic.example.parallel.ParallelEditingSpec.CollectingCallback
@@ -49,12 +49,14 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
 
   implicit val materializer = ActorMaterializer(ActorMaterializerSettings(system))
 
+  val config = ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}")
+
   "The formic system" must {
     "result in a consistent linear structure when parallel edits happen" in {
       val user1Id = ClientId("2")
       val user2Id = ClientId("1") //important user1 > user2
-      val user1 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
-      val user2 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+      val user1 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
+      val user2 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
       val user1Callback = new CollectingCallback
       val user2Callback = new CollectingCallback
       user1.init(user1Callback, user1Id)
@@ -130,8 +132,8 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
     "result in a consistent tree when parallel edits happen" in {
       val user1Id = ClientId("4")
       val user2Id = ClientId("3") //important user1 > user2
-      val user1 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
-      val user2 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+      val user1 = FormicSystemFactory.create(config, Set(TreeClientDataTypeProvider()))
+      val user2 = FormicSystemFactory.create(config, Set(TreeClientDataTypeProvider()))
       val user1Callback = new CollectingCallback
       val user2Callback = new CollectingCallback
       user1.init(user1Callback, user1Id)
@@ -220,8 +222,8 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
     "result in a consistent JSON when parallel edits happen" in {
       val user1Id = ClientId("6")
       val user2Id = ClientId("5") //important user1 > user2
-      val user1 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
-      val user2 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+      val user1 = FormicSystemFactory.create(config, Set(JsonClientDataTypeProvider()))
+      val user2 = FormicSystemFactory.create(config, Set(JsonClientDataTypeProvider()))
       val user1Callback = new CollectingCallback
       val user2Callback = new CollectingCallback
       user1.init(user1Callback, user1Id)
@@ -378,8 +380,8 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       val iterations = 1000
       val user1Id = ClientId("8")
       val user2Id = ClientId("7") //important user1 > user2
-      val user1 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = info\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
-      val user2 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = info\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+      val user1 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
+      val user2 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
       val user1Callback = new CollectingCallback
       val user2Callback = new CollectingCallback
       val latch = new CountDownLatch((iterations * 2 + iterations) * 2) //every local operation results in two callback invocations, every remote one in one and that for two users
@@ -415,8 +417,8 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       val iterations = 1000
       val user1Id = ClientId("11")
       val user2Id = ClientId("10") //important user1 > user2
-      val user1 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = info\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
-      val user2 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = info\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+      val user1 = FormicSystemFactory.create(config, Set(TreeClientDataTypeProvider()))
+      val user2 = FormicSystemFactory.create(config, Set(TreeClientDataTypeProvider()))
       val user1Callback = new CollectingCallback
       val user2Callback = new CollectingCallback
       val latch = new CountDownLatch((iterations * 2 + iterations) * 2) //every local operation results in two callback invocations, every remote one in one and that for two users
@@ -456,8 +458,8 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       val iterations = 1000
       val user1Id = ClientId("13")
       val user2Id = ClientId("12") //important user1 > user2
-      val user1 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = info\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
-      val user2 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = info\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+      val user1 = FormicSystemFactory.create(config, Set(JsonClientDataTypeProvider()))
+      val user2 = FormicSystemFactory.create(config, Set(JsonClientDataTypeProvider()))
       val user1Callback = new CollectingCallback
       val user2Callback = new CollectingCallback
       val latch = new CountDownLatch((iterations * 2 + iterations) * 2) //every local operation results in two callback invocations, every remote one in one and that for two users
