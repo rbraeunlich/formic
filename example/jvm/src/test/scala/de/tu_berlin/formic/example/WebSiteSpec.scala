@@ -2,6 +2,7 @@ package de.tu_berlin.formic.example
 
 import java.time.Instant
 
+import akka.actor.ActorSystem
 import org.openqa.selenium.chrome.ChromeDriver
 import org.scalatest.selenium.WebBrowser
 import org.scalatest.time.{Seconds, Span}
@@ -13,7 +14,8 @@ import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 class WebSiteSpec extends FlatSpec
   with Matchers
   with WebBrowser
-  with BeforeAndAfterAll {
+  with BeforeAndAfterAll
+  with PersistenceCleanup {
 
   //val service = new ChromeDriverService.Builder().withVerbose(true).build()
   //implicit val webDriver = new ChromeDriver(service)
@@ -32,6 +34,7 @@ class WebSiteSpec extends FlatSpec
   }
 
   override def afterAll(): Unit = {
+    deleteStorageLocations(serverThread.exampleServer.server.system)
     serverThread.terminate()
     close()
   }
@@ -191,6 +194,7 @@ class WebSiteSpec extends FlatSpec
 
     secondUserDriver.quit()
   }
+
 }
 
 

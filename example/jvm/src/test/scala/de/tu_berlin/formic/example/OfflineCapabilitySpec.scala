@@ -19,7 +19,8 @@ import scala.concurrent.duration._
 class OfflineCapabilitySpec extends TestKit(ActorSystem("ParallelEditingSpec"))
   with WordSpecLike
   with Matchers
-  with BeforeAndAfterAll {
+  with BeforeAndAfterAll
+  with PersistenceCleanup {
 
   implicit val ec = system.dispatcher
 
@@ -28,6 +29,7 @@ class OfflineCapabilitySpec extends TestKit(ActorSystem("ParallelEditingSpec"))
   override def afterAll(): Unit = {
     system.terminate()
     if(serverThread != null) serverThread.terminate()
+    deleteStorageLocations(serverThread.exampleServer.server.system)
   }
 
   implicit val materializer = ActorMaterializer(ActorMaterializerSettings(system))

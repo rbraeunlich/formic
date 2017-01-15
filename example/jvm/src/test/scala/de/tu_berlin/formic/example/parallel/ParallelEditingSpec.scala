@@ -14,7 +14,7 @@ import de.tu_berlin.formic.datatype.json.client.{FormicJsonObject, JsonClientDat
 import de.tu_berlin.formic.datatype.linear.client.{FormicString, LinearClientDataTypeProvider}
 import de.tu_berlin.formic.datatype.tree.client.{FormicIntegerTree, FormicStringTree, FormicTree, TreeClientDataTypeProvider}
 import de.tu_berlin.formic.datatype.tree.{AccessPath, TreeNode, ValueTreeNode}
-import de.tu_berlin.formic.example.ServerThread
+import de.tu_berlin.formic.example.{PersistenceCleanup, ServerThread}
 import de.tu_berlin.formic.example.parallel.ParallelEditingSpec.CollectingCallback
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
@@ -27,7 +27,8 @@ import scala.concurrent.duration._
 class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
   with WordSpecLike
   with Matchers
-  with BeforeAndAfterAll {
+  with BeforeAndAfterAll
+  with PersistenceCleanup{
 
   val host = "http://localhost:8080"
 
@@ -43,6 +44,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
   }
 
   override def afterAll(): Unit = {
+    deleteStorageLocations(serverThread.exampleServer.server.system)
     serverThread.terminate()
     system.terminate()
   }
