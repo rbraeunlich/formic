@@ -49,7 +49,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
 
   implicit val materializer = ActorMaterializer(ActorMaterializerSettings(system))
 
-  val config = ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}")
+  val config = ConfigFactory.parseString("akka {\n  loglevel = info\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}")
 
   "The formic system" must {
     "result in a consistent linear structure when parallel edits happen" in {
