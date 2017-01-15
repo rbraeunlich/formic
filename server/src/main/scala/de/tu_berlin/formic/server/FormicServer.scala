@@ -29,6 +29,8 @@ import scala.language.postfixOps
   */
 class FormicServer {
 
+  this: ServerDataTypes =>
+
   var factories: Map[DataTypeName, ActorRef] = Map.empty
 
   val decider: Supervision.Decider = {
@@ -48,35 +50,18 @@ class FormicServer {
   implicit val writer = jsonProtocol.writer
   implicit val reader = jsonProtocol.reader
 
-  def initFactories() = {
-    initLinearFactories()
-    initTreeFactories()
-    initJsonFactory()
-  }
-
-  def initLinearFactories(): Unit = {
-    val linearServerDataTypeProvider = LinearServerDataTypeProvider()
-    factories ++= linearServerDataTypeProvider.initFactories(system)
-    linearServerDataTypeProvider.registerFormicJsonDataTypeProtocols(jsonProtocol)
-  }
-
-  def initTreeFactories(): Unit = {
-    val treeServerDataTypeProvider = TreeServerDataTypeProvider()
-    factories ++= treeServerDataTypeProvider.initFactories(system)
-    treeServerDataTypeProvider.registerFormicJsonDataTypeProtocols(jsonProtocol)
-  }
-
-  def initJsonFactory() = {
-    val jsonServerDataTypeProvider = JsonServerDataTypeProvider()
-    factories ++= jsonServerDataTypeProvider.initFactories(system)
-    jsonServerDataTypeProvider.registerFormicJsonDataTypeProtocols(jsonProtocol)
+  def initDataTypes() = {
+    dataTypeProvider.foreach{ provider =>
+      factories ++= provider.initFactories(system)
+      provider.registerFormicJsonDataTypeProtocols(jsonProtocol)
+    }
   }
 
   def start(route: server.Route): Http.ServerBinding = {
     val myExceptionHandler: ExceptionHandler = ExceptionHandler {
       case iae: IllegalArgumentException => complete(HttpResponse(NotFound, entity = iae.getMessage))
     }
-    initFactories()
+    initDataTypes()
     val serverAddress = system.settings.config.getString("formic.server.address")
     val serverPort = system.settings.config.getInt("formic.server.port")
     val binding = Http().bindAndHandle(

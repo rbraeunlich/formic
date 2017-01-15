@@ -1,7 +1,6 @@
 package de.tu_berlin.formic.example
 
 import akka.http.scaladsl.Http
-import akka.stream.{ActorMaterializer, ActorMaterializerSettings}
 import de.tu_berlin.formic.server.FormicServer
 
 /**
@@ -9,7 +8,7 @@ import de.tu_berlin.formic.server.FormicServer
   */
 class ExampleServer {
 
-  val server = new FormicServer
+  val server = new FormicServer with ExampleServerDataTypes
 
   def start(): Http.ServerBinding = {
     implicit val system = server.system

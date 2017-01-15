@@ -10,12 +10,11 @@ import akka.http.scaladsl.server.Directives._
 import akka.stream.scaladsl.{Flow, Keep, Sink, SinkQueueWithCancel, Source, SourceQueueWithComplete}
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.testkit.TestKit
-import de.tu_berlin.formic.common.datatype.OperationContext
-import de.tu_berlin.formic.common.json.FormicJsonProtocol._
+import de.tu_berlin.formic.common.datatype.{OperationContext, ServerDataTypeProvider}
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.linear.LinearInsertOperation
-import de.tu_berlin.formic.datatype.linear.server.StringDataTypeFactory
+import de.tu_berlin.formic.datatype.linear.server.{LinearServerDataTypeProvider, StringDataTypeFactory}
 import org.scalatest.{BeforeAndAfterAll, Matchers, OneInstancePerTest, WordSpecLike}
 import upickle.default._
 
@@ -33,7 +32,12 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
   with OneInstancePerTest
   with BeforeAndAfterAll {
 
-  val formicServer = new FormicServer
+  val formicServer = new FormicServer with ServerDataTypes {
+    override val dataTypeProvider: Set[ServerDataTypeProvider] = Set(LinearServerDataTypeProvider())
+  }
+
+  implicit val writer = formicServer.jsonProtocol.writer
+  implicit val reader = formicServer.jsonProtocol.reader
 
   val testRoute = path("formic") {
     extractCredentials {
@@ -52,8 +56,6 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
   }
 
   val server = new ServerThread(formicServer, testRoute)
-  implicit val writer = formicServer.jsonProtocol.writer
-  implicit val reader = formicServer.jsonProtocol.reader
 
   "Formic server" must {
     "allow two users to work on a linear structure together" in {
