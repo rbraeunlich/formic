@@ -386,7 +386,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       val user2 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
       val user1Callback = new CollectingCallback
       val user2Callback = new CollectingCallback
-      val latch = new CountDownLatch((iterations * 2 + iterations) * 2) //every local operation results in two callback invocations, every remote one in one and that for two users
+      val latch = new CountDownLatch((iterations * 2 + iterations) * 2 + 1) //every local operation results in two callback invocations, every remote one in one and that for two users and one CreateResponse
       user1.init(user1Callback, user1Id)
       user2.init(user2Callback, user2Id)
       Thread.sleep(3000)
@@ -423,7 +423,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       val user2 = FormicSystemFactory.create(config, Set(TreeClientDataTypeProvider()))
       val user1Callback = new CollectingCallback
       val user2Callback = new CollectingCallback
-      val latch = new CountDownLatch((iterations * 2 + iterations) * 2) //every local operation results in two callback invocations, every remote one in one and that for two users
+      val latch = new CountDownLatch((iterations * 2 + iterations) * 2 + 1) //every local operation results in two callback invocations, every remote one in one and that for two users and one CreateResponse
       user1.init(user1Callback, user1Id)
       user2.init(user2Callback, user2Id)
       Thread.sleep(3000)
