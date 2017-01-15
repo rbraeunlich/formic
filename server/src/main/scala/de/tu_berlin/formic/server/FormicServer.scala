@@ -14,10 +14,8 @@ import akka.stream.{ActorMaterializer, ActorMaterializerSettings, OverflowStrate
 import de.tu_berlin.formic.common.ClientId
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
-import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message.FormicMessage
-import de.tu_berlin.formic.datatype.json.{JsonServerDataTypeFactory, JsonFormicJsonDataTypeProtocol}
-import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataTypeProtocol
+import de.tu_berlin.formic.datatype.json.JsonServerDataTypeProvider
 import de.tu_berlin.formic.datatype.linear.server._
 import de.tu_berlin.formic.datatype.tree._
 import upickle.default._
@@ -57,43 +55,21 @@ class FormicServer {
   }
 
   def initLinearFactories(): Unit = {
-    val booleanListFactory = system.actorOf(Props[BooleanListDataTypeFactory], BooleanListDataTypeFactory.name.name)
-    val doubleListFactory = system.actorOf(Props[DoubleListDataTypeFactory], DoubleListDataTypeFactory.name.name)
-    val integerListFactory = system.actorOf(Props[IntegerListDataTypeFactory], IntegerListDataTypeFactory.name.name)
-    val stringFactory = system.actorOf(Props[StringDataTypeFactory], StringDataTypeFactory.name.name)
-
-    jsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Boolean](BooleanListDataTypeFactory.name))
-    jsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Double](DoubleListDataTypeFactory.name))
-    jsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Int](IntegerListDataTypeFactory.name))
-    jsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Char](StringDataTypeFactory.name))
-
-    factories += (BooleanListDataTypeFactory.name -> booleanListFactory)
-    factories += (DoubleListDataTypeFactory.name -> doubleListFactory)
-    factories += (IntegerListDataTypeFactory.name -> integerListFactory)
-    factories += (StringDataTypeFactory.name -> stringFactory)
+    val linearServerDataTypeProvider = LinearServerDataTypeProvider()
+    factories ++= linearServerDataTypeProvider.initFactories(system)
+    linearServerDataTypeProvider.registerFormicJsonDataTypeProtocols(jsonProtocol)
   }
 
   def initTreeFactories(): Unit = {
-    val booleanTreeFactory = system.actorOf(Props[BooleanTreeDataTypeFactory], BooleanTreeDataTypeFactory.name.name)
-    val doubleTreeFactory = system.actorOf(Props[DoubleTreeDataTypeFactory], DoubleTreeDataTypeFactory.name.name)
-    val integerTreeFactory = system.actorOf(Props[IntegerTreeDataTypeFactory], IntegerTreeDataTypeFactory.name.name)
-    val stringTreeFactory = system.actorOf(Props[StringTreeDataTypeFactory], StringTreeDataTypeFactory.name.name)
-
-    jsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Boolean](BooleanTreeDataTypeFactory.name))
-    jsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Double](DoubleTreeDataTypeFactory.name))
-    jsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Int](IntegerTreeDataTypeFactory.name))
-    jsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[String](StringTreeDataTypeFactory.name))
-
-    factories += (BooleanTreeDataTypeFactory.name -> booleanTreeFactory)
-    factories += (DoubleTreeDataTypeFactory.name -> doubleTreeFactory)
-    factories += (IntegerTreeDataTypeFactory.name -> integerTreeFactory)
-    factories += (StringTreeDataTypeFactory.name -> stringTreeFactory)
+    val treeServerDataTypeProvider = TreeServerDataTypeProvider()
+    factories ++= treeServerDataTypeProvider.initFactories(system)
+    treeServerDataTypeProvider.registerFormicJsonDataTypeProtocols(jsonProtocol)
   }
 
   def initJsonFactory() = {
-    val factory = system.actorOf(Props[JsonServerDataTypeFactory], JsonServerDataTypeFactory.name.name)
-    jsonProtocol.registerProtocol(new JsonFormicJsonDataTypeProtocol(JsonServerDataTypeFactory.name)(JsonFormicJsonDataTypeProtocol.reader, JsonFormicJsonDataTypeProtocol.writer))
-    factories += (JsonServerDataTypeFactory.name -> factory)
+    val jsonServerDataTypeProvider = JsonServerDataTypeProvider()
+    factories ++= jsonServerDataTypeProvider.initFactories(system)
+    jsonServerDataTypeProvider.registerFormicJsonDataTypeProtocols(jsonProtocol)
   }
 
   def start(route: server.Route): Http.ServerBinding = {
