@@ -81,13 +81,10 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
       dispatcher ! (ref, req)
       sendMessageViaWebSocket(req)
     case hist: HistoricOperationRequest =>
-      log.debug(s"Sending $hist")
       sendMessageViaWebSocket(hist)
     case upd: UpdateRequest =>
-      log.debug(s"Sending $upd")
       sendMessageViaWebSocket(upd)
     case op: OperationMessage =>
-      log.debug(s"Sending $op")
       sendMessageViaWebSocket(op)
   }
 
@@ -142,10 +139,13 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
       case req: CreateRequest =>
         webSocketConnection.send(write(CreateRequest(clientId, req.dataTypeInstanceId, req.dataType)))
       case hist: HistoricOperationRequest =>
+        log.debug(s"Sending $hist")
         webSocketConnection.send(write(HistoricOperationRequest(clientId, hist.dataTypeInstanceId, hist.sinceId)))
       case upd: UpdateRequest =>
+        log.debug(s"Sending $upd")
         webSocketConnection.send(write(UpdateRequest(clientId, upd.dataTypeInstanceId)))
       case op: OperationMessage =>
+        log.debug(s"Sending $op")
         webSocketConnection.send(write(OperationMessage(clientId, op.dataTypeInstanceId, op.dataType, op.operations)))
       case other => throw new IllegalArgumentException(s"Client should not send this type of message: $other")
     }
