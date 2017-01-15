@@ -63,19 +63,19 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
 
   def online: Receive = {
     case OnError(errorMessage) =>
-      log.debug(s"Received OnError message")
+      log.debug(s"User $clientId received OnError message")
       dispatcher ! ErrorMessage(errorMessage)
     case OnMessage(msg) =>
-      log.debug(s"Received WebSocket message: $msg")
+      log.debug(s"User $clientId received WebSocket message: $msg")
       dispatcher ! read[FormicMessage](msg)
     case OnClose(code) =>
-      log.warning("Became offline with code " + code)
+      log.warning("User $clientId became offline with code " + code)
       connectionTry = context.system.scheduler.schedule(100.millis, 5.seconds) {
         retryConnection()
       }
       context.become(offline(scala.collection.mutable.Queue.empty))
     case (ref: ActorRef, req: CreateRequest) =>
-      log.debug(s"Received CreateRequest: $req")
+      log.debug(s"User $clientId received CreateRequest: $req")
       //this is a little hack because the FormicSystem does not know the dispatcher
       //create requests can only be from the local client because remote ones arrive as FormicMsgs
       dispatcher ! (ref, req)
@@ -107,24 +107,24 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
       }
       context.become(online)
     case OnError(errorMessage) =>
-      log.debug(s"Received OnError message")
+      log.debug(s"User $clientId received OnError message")
       dispatcher ! ErrorMessage(errorMessage)
     case OnClose(code) =>
-      log.warning("Staying offline with code " + code)
+      log.warning(s"User $clientId staying offline with code $code")
     case (ref: ActorRef, req: CreateRequest) =>
-      log.debug(s"Buffering $req")
+      log.debug(s"User $clientId buffering $req")
       //this is a little hack because the FormicSystem does not know the dispatcher
       //create requests can only be from the local client because remote ones arrive as FormicMsgs
       dispatcher ! (ref, req)
       buffer.enqueueFinite(req, bufferSize)
     case hist: HistoricOperationRequest =>
-      log.debug(s"Buffering $hist")
+      log.debug(s"User $clientId buffering $hist")
       buffer.enqueueFinite(hist, bufferSize)
     case upd: UpdateRequest =>
-      log.debug(s"Buffering $upd")
+      log.debug(s"User $clientId buffering $upd")
       buffer.enqueueFinite(upd, bufferSize)
     case op: OperationMessage =>
-      log.debug(s"Buffering $op")
+      log.debug(s"User $clientId buffering $op")
       buffer.enqueueFinite(op, bufferSize)
   }
 
@@ -139,13 +139,13 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
       case req: CreateRequest =>
         webSocketConnection.send(write(CreateRequest(clientId, req.dataTypeInstanceId, req.dataType)))
       case hist: HistoricOperationRequest =>
-        log.debug(s"Sending $hist")
+        log.debug(s"User $clientId sending $hist")
         webSocketConnection.send(write(HistoricOperationRequest(clientId, hist.dataTypeInstanceId, hist.sinceId)))
       case upd: UpdateRequest =>
-        log.debug(s"Sending $upd")
+        log.debug(s"User $clientId sending $upd")
         webSocketConnection.send(write(UpdateRequest(clientId, upd.dataTypeInstanceId)))
       case op: OperationMessage =>
-        log.debug(s"Sending $op")
+        log.debug(s"User $clientId sending $op")
         webSocketConnection.send(write(OperationMessage(clientId, op.dataTypeInstanceId, op.dataType, op.operations)))
       case other => throw new IllegalArgumentException(s"Client should not send this type of message: $other")
     }
