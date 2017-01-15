@@ -10,6 +10,7 @@ import de.tu_berlin.formic.common.ClientId
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message._
 import upickle.default._
+import de.tu_berlin.formic.client.collection.FiniteQueue._
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
@@ -22,7 +23,8 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
                           val instantiator: ActorRef,
                           val clientId: ClientId,
                           val webSocketConnectionFactory: WebSocketFactory,
-                          val url: String)
+                          val url: String,
+                          val bufferSize: Int)
                          (implicit val ec: ExecutionContext)
   extends Actor
     with Connection
@@ -56,7 +58,7 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
   def receive = {
     case Start =>
       log.debug("Starting")
-      context.become(offline(scala.collection.mutable.Set.empty))
+      context.become(offline(scala.collection.mutable.Queue.empty))
   }
 
   def online: Receive = {
@@ -71,7 +73,7 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
       connectionTry = context.system.scheduler.schedule(100.millis, 5.seconds) {
         retryConnection()
       }
-      context.become(offline(scala.collection.mutable.Set.empty))
+      context.become(offline(scala.collection.mutable.Queue.empty))
     case (ref: ActorRef, req: CreateRequest) =>
       log.debug(s"Received CreateRequest: $req")
       //this is a little hack because the FormicSystem does not know the dispatcher
@@ -89,7 +91,7 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
       sendMessageViaWebSocket(op)
   }
 
-  def offline(buffer: scala.collection.mutable.Set[FormicMessage]): Receive = {
+  def offline(buffer: scala.collection.mutable.Queue[FormicMessage]): Receive = {
     case OnConnect(ws: WebSocketWrapper) =>
       log.debug("Connecting")
       connectionTry.cancel
@@ -117,16 +119,16 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
       //this is a little hack because the FormicSystem does not know the dispatcher
       //create requests can only be from the local client because remote ones arrive as FormicMsgs
       dispatcher ! (ref, req)
-      buffer += req
+      buffer.enqueueFinite(req, bufferSize)
     case hist: HistoricOperationRequest =>
       log.debug(s"Buffering $hist")
-      buffer += hist
+      buffer.enqueueFinite(hist, bufferSize)
     case upd: UpdateRequest =>
       log.debug(s"Buffering $upd")
-      buffer += upd
+      buffer.enqueueFinite(upd, bufferSize)
     case op: OperationMessage =>
       log.debug(s"Buffering $op")
-      buffer += op
+      buffer.enqueueFinite(op, bufferSize)
   }
 
   /**

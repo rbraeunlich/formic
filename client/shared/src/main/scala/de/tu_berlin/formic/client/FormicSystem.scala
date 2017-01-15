@@ -43,7 +43,7 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
 
   val clientBuffersizeKey: String = "formic.client.buffersize"
   @JSExport
-  var bufferSize: Int = if(system.settings.config.hasPath(clientBuffersizeKey)) system.settings.config.getInt(clientBuffersizeKey) else -1
+  var bufferSize: Int = if(system.settings.config.hasPath(clientBuffersizeKey)) system.settings.config.getInt(clientBuffersizeKey) else 0
 
   var connection: ActorRef = _
 
@@ -59,7 +59,7 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
     val instantiator = system.actorOf(Props(new DataTypeInstantiator(factories, id)), "Instantiator")
     val wrappedCallback = system.actorOf(Props(new NewInstanceCallbackActorWrapper(callback)), "CallbackActor")
     val url = s"ws://${username.id}@$serverAddress:$serverPort/formic"
-    connection = system.actorOf(Props(new WebSocketConnection(wrappedCallback, instantiator, username, webSocketFactory, url)), "WebSocketConnection")
+    connection = system.actorOf(Props(new WebSocketConnection(wrappedCallback, instantiator, username, webSocketFactory, url, bufferSize)), "WebSocketConnection")
   }
 
   @JSExport
