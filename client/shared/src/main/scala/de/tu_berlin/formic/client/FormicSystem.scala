@@ -33,6 +33,8 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
 
   implicit val ec = system.dispatcher
 
+  val jsonProtocol = FormicJsonProtocol()
+
   val serverAddressKey: String = "formic.server.address"
   @JSExport
   var serverAddress: String = if(system.settings.config.hasPath(serverAddressKey)) system.settings.config.getString(serverAddressKey) else null
@@ -59,7 +61,7 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
     val instantiator = system.actorOf(Props(new DataTypeInstantiator(factories, id)), "Instantiator")
     val wrappedCallback = system.actorOf(Props(new NewInstanceCallbackActorWrapper(callback)), "CallbackActor")
     val url = s"ws://${username.id}@$serverAddress:$serverPort/formic"
-    connection = system.actorOf(Props(new WebSocketConnection(wrappedCallback, instantiator, username, webSocketFactory, url, bufferSize)), "WebSocketConnection")
+    connection = system.actorOf(Props(new WebSocketConnection(wrappedCallback, instantiator, username, webSocketFactory, url, bufferSize, jsonProtocol)), "WebSocketConnection")
   }
 
   @JSExport
@@ -99,10 +101,10 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
     val formicIntegerListFactory = system.actorOf(Props(new FormicIntegerListDataTypeFactory), FormicIntegerListDataTypeFactory.dataTypeName.name)
     val formicStringFactory = system.actorOf(Props(new FormicStringDataTypeFactory), FormicStringDataTypeFactory.dataTypeName.name)
 
-    FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Boolean](FormicBooleanListDataTypeFactory.dataTypeName))
-    FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Double](FormicDoubleListDataTypeFactory.dataTypeName))
-    FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Int](FormicIntegerListDataTypeFactory.dataTypeName))
-    FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Char](FormicStringDataTypeFactory.dataTypeName))
+    jsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Boolean](FormicBooleanListDataTypeFactory.dataTypeName))
+    jsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Double](FormicDoubleListDataTypeFactory.dataTypeName))
+    jsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Int](FormicIntegerListDataTypeFactory.dataTypeName))
+    jsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Char](FormicStringDataTypeFactory.dataTypeName))
 
     factories += (FormicBooleanListDataTypeFactory.dataTypeName -> formicBooleanListFactory)
     factories += (FormicDoubleListDataTypeFactory.dataTypeName -> formicDoubleListFactory)
@@ -116,10 +118,10 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
     val integerTreeFactory = system.actorOf(Props(new FormicIntegerTreeFactory), FormicIntegerTreeFactory.name.name)
     val stringTreeFactory = system.actorOf(Props(new FormicStringTreeFactory), FormicStringTreeFactory.name.name)
 
-    FormicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Boolean](FormicBooleanTreeFactory.name))
-    FormicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Double](FormicDoubleTreeFactory.name))
-    FormicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Int](FormicIntegerTreeFactory.name))
-    FormicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[String](FormicStringTreeFactory.name))
+    jsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Boolean](FormicBooleanTreeFactory.name))
+    jsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Double](FormicDoubleTreeFactory.name))
+    jsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Int](FormicIntegerTreeFactory.name))
+    jsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[String](FormicStringTreeFactory.name))
 
     factories += (FormicBooleanTreeFactory.name -> booleanTreeFactory)
     factories += (FormicDoubleTreeFactory.name -> doubleTreeFactory)
@@ -129,7 +131,7 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
 
   def initJsonFactory() = {
     val factory = system.actorOf(Props(new FormicJsonObjectFactory), FormicJsonObjectFactory.name.name)
-    FormicJsonProtocol.registerProtocol(new JsonFormicJsonDataTypeProtocol(FormicJsonObjectFactory.name)(JsonFormicJsonDataTypeProtocol.reader, JsonFormicJsonDataTypeProtocol.writer))
+    jsonProtocol.registerProtocol(new JsonFormicJsonDataTypeProtocol(FormicJsonObjectFactory.name)(JsonFormicJsonDataTypeProtocol.reader, JsonFormicJsonDataTypeProtocol.writer))
     factories += (FormicJsonObjectFactory.name -> factory)
   }
 }

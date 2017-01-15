@@ -52,6 +52,8 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
   }
 
   val server = new ServerThread(formicServer, testRoute)
+  implicit val writer = formicServer.jsonProtocol.writer
+  implicit val reader = formicServer.jsonProtocol.reader
 
   "Formic server" must {
     "allow two users to work on a linear structure together" in {

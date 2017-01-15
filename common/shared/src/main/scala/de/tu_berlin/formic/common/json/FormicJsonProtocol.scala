@@ -9,11 +9,11 @@ import upickle.Js
   * Due to the many possible DataTypeOperation subclasses that might exists this object is needed to handle
   * the correct de-/serialization. Data type implementations have to register their FormicJsonDataTypeProtocols
   * here. Those protocols are then used to properly serialize their operations. Code that wants to use
-  * the serialization of an operation message has to import this object.
+  * the serialization of an operation message has to import the writer and reader vals.
   *
   * @author Ronny Bräunlich
   */
-object FormicJsonProtocol {
+class FormicJsonProtocol {
   private var dataTypeOperationJsonProtocols: Map[DataTypeName, FormicJsonDataTypeProtocol] = Map.empty
 
   def registerProtocol(protocol: FormicJsonDataTypeProtocol) = {
@@ -83,4 +83,8 @@ object FormicJsonProtocol {
             operations)
       }
   }
+}
+
+object FormicJsonProtocol {
+  def apply(): FormicJsonProtocol = new FormicJsonProtocol()
 }

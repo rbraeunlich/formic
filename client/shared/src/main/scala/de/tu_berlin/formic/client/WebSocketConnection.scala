@@ -11,6 +11,7 @@ import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.message._
 import upickle.default._
 import de.tu_berlin.formic.client.collection.FiniteQueue._
+import de.tu_berlin.formic.common.json.FormicJsonProtocol
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
@@ -24,7 +25,8 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
                           val clientId: ClientId,
                           val webSocketConnectionFactory: WebSocketFactory,
                           val url: String,
-                          val bufferSize: Int)
+                          val bufferSize: Int,
+                          val jsonProtocol: FormicJsonProtocol)
                          (implicit val ec: ExecutionContext)
   extends Actor
     with Connection
@@ -34,6 +36,9 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
   var dispatcher: ActorRef = _
   var connectionTry: Cancellable = _
   var webSocketConnection: WebSocketWrapper = _
+
+  implicit val writer = jsonProtocol.writer
+  implicit val reader = jsonProtocol.reader
 
   def retryConnection(): Unit = {
     webSocketConnectionFactory.createConnection(url, self)

@@ -23,15 +23,11 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
   with Matchers
   with BeforeAndAfterAll {
 
-  override def beforeAll(): Unit = {
-    FormicJsonProtocol.registerProtocol(new TestFormicJsonDataTypeProtocol())
-    super.beforeAll()
-  }
+  val jsonProtocol = FormicJsonProtocol()
+  jsonProtocol.registerProtocol(new TestFormicJsonDataTypeProtocol())
 
-  override def afterAll(): Unit = {
-    super.afterAll()
-    FormicJsonProtocol.remove(TestClasses.dataTypeName)
-  }
+  implicit val writer = jsonProtocol.writer
+  implicit val reader = jsonProtocol.reader
 
   "User proxy" must {
 

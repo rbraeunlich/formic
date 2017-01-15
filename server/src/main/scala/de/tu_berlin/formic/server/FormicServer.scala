@@ -46,6 +46,10 @@ class FormicServer {
 
   implicit val ec = system.dispatcher
 
+  val jsonProtocol = FormicJsonProtocol()
+  implicit val writer = jsonProtocol.writer
+  implicit val reader = jsonProtocol.reader
+
   def initFactories() = {
     initLinearFactories()
     initTreeFactories()
@@ -58,10 +62,10 @@ class FormicServer {
     val integerListFactory = system.actorOf(Props[IntegerListDataTypeFactory], IntegerListDataTypeFactory.name.name)
     val stringFactory = system.actorOf(Props[StringDataTypeFactory], StringDataTypeFactory.name.name)
 
-    FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Boolean](BooleanListDataTypeFactory.name))
-    FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Double](DoubleListDataTypeFactory.name))
-    FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Int](IntegerListDataTypeFactory.name))
-    FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Char](StringDataTypeFactory.name))
+    jsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Boolean](BooleanListDataTypeFactory.name))
+    jsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Double](DoubleListDataTypeFactory.name))
+    jsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Int](IntegerListDataTypeFactory.name))
+    jsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Char](StringDataTypeFactory.name))
 
     factories += (BooleanListDataTypeFactory.name -> booleanListFactory)
     factories += (DoubleListDataTypeFactory.name -> doubleListFactory)
@@ -75,10 +79,10 @@ class FormicServer {
     val integerTreeFactory = system.actorOf(Props[IntegerTreeDataTypeFactory], IntegerTreeDataTypeFactory.name.name)
     val stringTreeFactory = system.actorOf(Props[StringTreeDataTypeFactory], StringTreeDataTypeFactory.name.name)
 
-    FormicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Boolean](BooleanTreeDataTypeFactory.name))
-    FormicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Double](DoubleTreeDataTypeFactory.name))
-    FormicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Int](IntegerTreeDataTypeFactory.name))
-    FormicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[String](StringTreeDataTypeFactory.name))
+    jsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Boolean](BooleanTreeDataTypeFactory.name))
+    jsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Double](DoubleTreeDataTypeFactory.name))
+    jsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Int](IntegerTreeDataTypeFactory.name))
+    jsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[String](StringTreeDataTypeFactory.name))
 
     factories += (BooleanTreeDataTypeFactory.name -> booleanTreeFactory)
     factories += (DoubleTreeDataTypeFactory.name -> doubleTreeFactory)
@@ -88,7 +92,7 @@ class FormicServer {
 
   def initJsonFactory() = {
     val factory = system.actorOf(Props[JsonServerDataTypeFactory], JsonServerDataTypeFactory.name.name)
-    FormicJsonProtocol.registerProtocol(new JsonFormicJsonDataTypeProtocol(JsonServerDataTypeFactory.name)(JsonFormicJsonDataTypeProtocol.reader, JsonFormicJsonDataTypeProtocol.writer))
+    jsonProtocol.registerProtocol(new JsonFormicJsonDataTypeProtocol(JsonServerDataTypeFactory.name)(JsonFormicJsonDataTypeProtocol.reader, JsonFormicJsonDataTypeProtocol.writer))
     factories += (JsonServerDataTypeFactory.name -> factory)
   }
 

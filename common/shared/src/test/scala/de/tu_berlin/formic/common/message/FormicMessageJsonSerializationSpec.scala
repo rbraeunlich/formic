@@ -13,7 +13,7 @@ import upickle.default._
   *
   * @author Ronny Bräunlich
   */
-  class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
+class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
 
   case class TestOperation(id: OperationId, operationContext: OperationContext,var clientId: ClientId) extends DataTypeOperation
 
@@ -36,6 +36,10 @@ import upickle.default._
         ClientId(valueMap("clientId").str))
     }
   }
+
+  val jsonProtocol = FormicJsonProtocol()
+  implicit val writer = jsonProtocol.writer
+  implicit val reader = jsonProtocol.reader
 
   "JSON library" should "serialize a CreateResponse to JSON" in {
     val serialized = write(CreateResponse(DataTypeInstanceId.valueOf("123")))
@@ -74,13 +78,13 @@ import upickle.default._
   }
 
   it should "serialize a OperationMessage to JSON" in {
-    FormicJsonProtocol.registerProtocol(testProtocol)
+    jsonProtocol.registerProtocol(testProtocol)
 
     val serialized = write(OperationMessage(ClientId.valueOf("1"), DataTypeInstanceId.valueOf("1"), DataTypeName("test"), List(TestOperation(OperationId("2"), OperationContext(List(OperationId("1"))), ClientId("1")))))
 
     serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.OperationMessage\",\"clientId\":\"1\",\"dataTypeInstanceId\":\"1\",\"dataTypeName\":\"test\",\"operations\":[{\"operationId\":\"2\",\"operationContext\":[\"1\"],\"clientId\":\"1\"}]}")
 
-    FormicJsonProtocol.remove(testProtocol.name)
+    jsonProtocol.remove(testProtocol.name)
   }
 
   it should "deserialize a CreateResponse" in {
@@ -146,7 +150,7 @@ import upickle.default._
   }
 
   it should "deserialize an OperationMessage" in {
-    FormicJsonProtocol.registerProtocol(testProtocol)
+    jsonProtocol.registerProtocol(testProtocol)
 
     val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.OperationMessage\",\"clientId\":\"1\",\"dataTypeInstanceId\":\"1\",\"dataTypeName\":\"test\",\"operations\":[{\"operationId\":\"2\",\"operationContext\":[\"1\"],\"clientId\":\"1\"}]}")
 
@@ -156,6 +160,6 @@ import upickle.default._
     deserialized.asInstanceOf[OperationMessage].dataType should be(DataTypeName("test"))
     deserialized.asInstanceOf[OperationMessage].operations should contain(TestOperation(OperationId("2"), OperationContext(List(OperationId("1"))), ClientId("1")))
 
-    FormicJsonProtocol.remove(testProtocol.name)
+    jsonProtocol.remove(testProtocol.name)
   }
 }
