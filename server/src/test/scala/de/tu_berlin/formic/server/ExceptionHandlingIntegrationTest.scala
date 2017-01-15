@@ -15,9 +15,10 @@ import de.tu_berlin.formic.common.datatype.ServerDataTypeProvider
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse, FormicMessage}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
-import de.tu_berlin.formic.datatype.linear.server.StringDataTypeFactory
+import de.tu_berlin.formic.datatype.linear.server.{LinearServerDataTypeProvider, StringDataTypeFactory}
 import org.scalatest.{path => _, _}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
+import de.tu_berlin.formic.datatype.linear.client.LinearClientDataTypeProvider
 import upickle.default._
 
 import scala.concurrent.duration._
@@ -48,7 +49,7 @@ class ExceptionHandlingIntegrationTest extends TestKit(ActorSystem("ExceptionHan
 
   before {
     val server = new FormicServer() with ServerDataTypes{
-      override val dataTypeProvider: Set[ServerDataTypeProvider] = Set.empty
+      override val dataTypeProvider: Set[ServerDataTypeProvider] = Set(LinearServerDataTypeProvider())
     }
     val testRoute = path("formic") {
       extractCredentials {
