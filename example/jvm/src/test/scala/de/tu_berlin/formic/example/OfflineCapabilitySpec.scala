@@ -74,7 +74,7 @@ class OfflineCapabilitySpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       serverThread = new ServerThread
       serverThread.setDaemon(true)
       serverThread.run()
-      Thread.sleep(10000)
+      Thread.sleep(12000)
 
       Await.result(string.getAll(), 2.seconds).mkString should equal("ad")
       Await.result(checkUserString.getAll(), 2.seconds).mkString should equal("ad")
