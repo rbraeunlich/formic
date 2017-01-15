@@ -1,13 +1,13 @@
 package de.tu_berlin.formic.example
 
-import akka.actor.ActorSystem
+import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings}
 import akka.testkit.TestKit
 import com.typesafe.config.ConfigFactory
-import de.tu_berlin.formic.client.{FormicSystemFactory, NewInstanceCallback}
+import de.tu_berlin.formic.client._
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
 import de.tu_berlin.formic.datatype.linear.client.FormicString
-import de.tu_berlin.formic.example.OfflineCapabilitySpec.CollectingCallback
+import de.tu_berlin.formic.example.OfflineCapabilitySpec.{CollectingCallback, DropNextNMessages, TestWebSocketFactoryJVM}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 import scala.concurrent.Await
@@ -79,8 +79,45 @@ class OfflineCapabilitySpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       Await.result(string.getAll(), 2.seconds).mkString should equal("ad")
       Await.result(checkUserString.getAll(), 2.seconds).mkString should equal("ad")
     }
-  }
 
+    "request historic operations if it missed some because of being offline" in {
+      if(serverThread == null){
+        serverThread = new ServerThread
+        serverThread.setDaemon(true)
+        serverThread.run()
+        Thread.sleep(5000)
+      }
+      val user1 = FormicSystemFactory.create(ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}"))
+      //we need a special wrapper for user2 so we can intentionally drop messages
+      val user2Config = ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}")
+      val user2WebSocketFactory = new TestWebSocketFactoryJVM()
+      val user2 = new FormicSystem(user2Config, user2WebSocketFactory)
+      val user1Callback = new CollectingCallback
+      user1.init(user1Callback)
+      val user2Callback = new CollectingCallback
+      user2.init(user2Callback)
+      Thread.sleep(2000)
+      val string = new FormicString(() => {}, user1)
+      Thread.sleep(1000)
+      user2.requestDataType(string.dataTypeInstanceId)
+      Thread.sleep(1000)
+      user2Callback.dataTypes shouldNot be(empty)
+      val user2String = user2Callback.dataTypes.head.asInstanceOf[FormicString]
+
+      //tell the wrapper to drop the next three messages
+      user2WebSocketFactory.dropMessageActor ! DropNextNMessages(3)
+      //apply some changes
+      string.add(0, 'a')
+      string.add(1, 'b')
+      string.add(2, 'c')
+      //perform a change so user2 receives an operation whose predecessor it does not know
+      string.add(3, 'd')
+      //wait for user 2 to apply historic operations
+      Thread.sleep(3000)
+      Await.result(string.getAll(), 2.seconds).mkString should equal("abcd")
+      Await.result(user2String.getAll(), 2.seconds).mkString should equal("abcd")
+    }
+  }
 }
 
 object OfflineCapabilitySpec {
@@ -100,4 +137,29 @@ object OfflineCapabilitySpec {
       dataTypes = instance :: dataTypes
     }
   }
+
+  class TestWebSocketFactoryJVM()(implicit val materializer: ActorMaterializer, val actorSystem: ActorSystem) extends WebSocketFactory {
+    var dropMessageActor:ActorRef = _
+
+    override def createConnection(url: String, connection: ActorRef): WebSocketWrapper = {
+      dropMessageActor = actorSystem.actorOf(Props(new MessageDroppingConnectionWrapper(connection)))
+      new WrappedAkkaStreamWebSocket(url, dropMessageActor)(materializer, actorSystem)
+    }
+  }
+  class MessageDroppingConnectionWrapper(val wrapped: ActorRef) extends Actor with ActorLogging {
+
+    var dropMsgCounter = 0
+
+    def receive = {
+      case DropNextNMessages(n) => dropMsgCounter = n
+      case rest =>
+        if(dropMsgCounter > 0) {
+          dropMsgCounter -= 1
+          log.debug(s"Dropping message $rest")
+        }
+        else wrapped forward rest
+    }
+  }
+
+  case class DropNextNMessages(n: Int)
 }
