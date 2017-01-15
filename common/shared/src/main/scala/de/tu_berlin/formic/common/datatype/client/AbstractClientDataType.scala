@@ -26,6 +26,12 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
 
   val historyBuffer: HistoryBuffer = new HistoryBuffer()
 
+  /**
+    * This is needed to know which is the last operation id we received from the server in order
+    * to avoid placing a local operation id into a HistoricOperationsRequest.
+    */
+  var lastRemoteOperationId: OperationId = lastOperationId.orNull
+
   def receive = {
     case ReceiveCallback(callback) =>
       val wrapper = context.actorOf(Props(new CallbackWrapper(callback)))
@@ -113,7 +119,7 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
       //we do not filter here for duplicates because that would remove acknowledgements
       //the control algorithm has to do that
       if (existsOperationWithDirectContextDependencyMissing(opMsg.operations, historyBuffer)) {
-        sender ! HistoricOperationRequest(null, id, historyBuffer.history.headOption.map(op => op.id).orNull)
+        sender ! HistoricOperationRequest(null, id, lastRemoteOperationId)
       } else {
         opMsg.operations.
           reverse.
@@ -138,6 +144,7 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
     val transformed = controlAlgorithm.transform(dataTypeOperation, historyBuffer, transformer)
     apply(transformed)
     historyBuffer.addOperation(transformed)
+    lastRemoteOperationId = transformed.id
   }
 
   def apply(op: DataTypeOperation)

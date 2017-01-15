@@ -325,6 +325,52 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
     }
 
+    "must use the initial operation id for HistoricOperationsRequest if no other operation is present" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val data = "{foo}"
+      val initialOperationId = OperationId()
+      val operationId = OperationId()
+      val previousOperation = OperationId()
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+        Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, Some(initialOperationId), outgoingConnection = TestProbe().ref)))
+      dataType ! ReceiveCallback(() => {})
+      dataType ! CreateResponse(dataTypeInstanceId)
+      val operation = AbstractClientDataTypeSpecTestOperation(operationId, OperationContext(List(previousOperation)), ClientId(), data)
+      val operationMessage = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(operation))
+
+      dataType ! operationMessage
+
+      val answer = expectMsgClass(classOf[HistoricOperationRequest])
+      answer.sinceId should equal(initialOperationId)
+      answer.dataTypeInstanceId should equal(dataTypeInstanceId)
+    }
+
+    "must use the last operation id from a remote operation for a HistoricOperationsRequest if local operations happened in between" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val data = "{foo}"
+      val lastArrivedRemoteOperationId = OperationId()
+      val remoteOperationId = OperationId()
+      val previousRemoteOperationId = OperationId()
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+        Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
+      dataType ! ReceiveCallback(() => {})
+      dataType ! CreateResponse(dataTypeInstanceId)
+      val arrivedRemoteOperation = AbstractClientDataTypeSpecTestOperation(lastArrivedRemoteOperationId, OperationContext(), ClientId(), data)
+      val arrivedRemoteOperationMessage = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(arrivedRemoteOperation))
+      val localOperation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List(arrivedRemoteOperation.id)), ClientId(), data)
+      val localOperationMessage = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(localOperation))
+      val operationWithMissingPredecessor = AbstractClientDataTypeSpecTestOperation(remoteOperationId, OperationContext(List(previousRemoteOperationId)), ClientId(), data)
+      val operationMessageWithMissingPredecessor = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(operationWithMissingPredecessor))
+
+      dataType ! arrivedRemoteOperationMessage
+      dataType ! LocalOperationMessage(localOperationMessage)
+      dataType ! operationMessageWithMissingPredecessor
+
+      val answer = expectMsgClass(classOf[HistoricOperationRequest])
+      answer.sinceId should equal(lastArrivedRemoteOperationId)
+      answer.dataTypeInstanceId should equal(dataTypeInstanceId)
+    }
+
     "apply the operations of an HistoricOperationRequest that have not been applied" in {
       val dataTypeInstanceId = DataTypeInstanceId()
       val data = "{foo}"
