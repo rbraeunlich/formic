@@ -95,7 +95,7 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
 
   def initLinearFactories(): Unit = {
     val formicBooleanListFactory = system.actorOf(Props(new FormicBooleanListDataTypeFactory), FormicBooleanListDataTypeFactory.dataTypeName.name)
-    val formicDoubleListFactroy = system.actorOf(Props(new FormicDoubleListDataTypeFactory), FormicDoubleListDataTypeFactory.dataTypeName.name)
+    val formicDoubleListFactory = system.actorOf(Props(new FormicDoubleListDataTypeFactory), FormicDoubleListDataTypeFactory.dataTypeName.name)
     val formicIntegerListFactory = system.actorOf(Props(new FormicIntegerListDataTypeFactory), FormicIntegerListDataTypeFactory.dataTypeName.name)
     val formicStringFactory = system.actorOf(Props(new FormicStringDataTypeFactory), FormicStringDataTypeFactory.dataTypeName.name)
 
@@ -105,7 +105,7 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
     FormicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Char](FormicStringDataTypeFactory.dataTypeName))
 
     factories += (FormicBooleanListDataTypeFactory.dataTypeName -> formicBooleanListFactory)
-    factories += (FormicDoubleListDataTypeFactory.dataTypeName -> formicDoubleListFactroy)
+    factories += (FormicDoubleListDataTypeFactory.dataTypeName -> formicDoubleListFactory)
     factories += (FormicIntegerListDataTypeFactory.dataTypeName -> formicIntegerListFactory)
     factories += (FormicStringDataTypeFactory.dataTypeName -> formicStringFactory)
   }
