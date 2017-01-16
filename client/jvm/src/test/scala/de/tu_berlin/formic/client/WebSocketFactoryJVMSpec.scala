@@ -8,7 +8,6 @@ import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.common.message.UpdateRequest
 import org.scalatest.{Matchers, WordSpecLike}
 import upickle.default._
-import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 
 /**
   * @author Ronny Bräunlich

@@ -1,6 +1,5 @@
 package de.tu_berlin.formic.client
 
-import akka.actor.{Actor, ActorRef}
 import akka.event.Logging.StandardOutLogger
 import de.tu_berlin.formic.client.WebSocketFactoryJSSpec._
 import org.scalatest.{FlatSpec, Matchers}

@@ -15,10 +15,8 @@ import de.tu_berlin.formic.common.datatype.ServerDataTypeProvider
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse, FormicMessage}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
-import de.tu_berlin.formic.datatype.linear.server.{LinearServerDataTypeProvider, StringDataTypeFactory}
 import org.scalatest.{path => _, _}
-import de.tu_berlin.formic.common.json.FormicJsonProtocol._
-import de.tu_berlin.formic.datatype.linear.client.LinearClientDataTypeProvider
+import de.tu_berlin.formic.server.datatype.{TestClassProvider, TestClasses}
 import upickle.default._
 
 import scala.concurrent.duration._
@@ -49,7 +47,7 @@ class ExceptionHandlingIntegrationTest extends TestKit(ActorSystem("ExceptionHan
 
   before {
     val server = new FormicServer() with ServerDataTypes{
-      override val dataTypeProvider: Set[ServerDataTypeProvider] = Set(LinearServerDataTypeProvider())
+      override val dataTypeProvider: Set[ServerDataTypeProvider] = Set(TestClassProvider)
     }
     val testRoute = path("formic") {
       extractCredentials {
@@ -63,7 +61,7 @@ class ExceptionHandlingIntegrationTest extends TestKit(ActorSystem("ExceptionHan
     serverThread = new ServerThread(server, testRoute)
     serverThread.setDaemon(true)
     serverThread.start()
-    Thread.sleep(3000)
+    Thread.sleep(5000)
 
   }
 
@@ -86,7 +84,7 @@ class ExceptionHandlingIntegrationTest extends TestKit(ActorSystem("ExceptionHan
 
       //if the stream did not crash, this should work
       val dataTypeInstanceId = DataTypeInstanceId()
-      userOutgoing.offer(TextMessage(write(CreateRequest(userId, dataTypeInstanceId, StringDataTypeFactory.name))))
+      userOutgoing.offer(TextMessage(write(CreateRequest(userId, dataTypeInstanceId, TestClasses.dataTypeName))))
 
       val incomingCreateResponse = userIncoming.pull()
       Await.ready(incomingCreateResponse, 3.seconds)

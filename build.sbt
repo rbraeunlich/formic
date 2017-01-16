@@ -162,10 +162,10 @@ lazy val client = crossProject.in(file("client")).
       "com.typesafe.akka" %%% "akka-http" % akkaHttpVersion
     )
   )
-  .dependsOn(common, linear, tree, json)
+  .dependsOn(common)
 
-lazy val clientJS = client.js.dependsOn(commonJS, linearJS, treeJS, jsonJS).disablePlugins(AssemblyPlugin)
-lazy val clientJVM = client.jvm.dependsOn(commonJVM, linearJVM, treeJVM, jsonJVM).disablePlugins(AssemblyPlugin)
+lazy val clientJS = client.js.dependsOn(commonJS).disablePlugins(AssemblyPlugin)
+lazy val clientJVM = client.jvm.dependsOn(commonJVM).disablePlugins(AssemblyPlugin)
 
 //PhantomJS and AkkaJSTestkit do not work together, so they have to be split
 lazy val websockettests = crossProject.in(file("websockettests")).
@@ -184,9 +184,9 @@ lazy val websockettests = crossProject.in(file("websockettests")).
     //disable the cast checks so we can use anything as a mock within the test
     scalaJSSemantics   := Semantics.Defaults.withAsInstanceOfs(CheckedBehavior.Unchecked)
   )
-  .dependsOn(common, linear, client)
+  .dependsOn(client)
 
-lazy val websockettestsJS = websockettests.js.dependsOn(commonJS, linearJS, clientJS).disablePlugins(AssemblyPlugin)
+lazy val websockettestsJS = websockettests.js.dependsOn(clientJS).disablePlugins(AssemblyPlugin)
 
 lazy val server = (project in file("server")).
   settings(commonSettings: _*).
@@ -204,7 +204,7 @@ lazy val server = (project in file("server")).
       "org.fusesource.leveldbjni"   % "leveldbjni-all"   % "1.8"
 )
   ).
-  dependsOn(commonJVM, linearJVM, treeJVM, jsonJVM).disablePlugins(AssemblyPlugin)
+  dependsOn(commonJVM, linearJVM % "test->compile").disablePlugins(AssemblyPlugin)
 
 lazy val example = crossProject.in(file("example")).
   settings(commonSettings: _*).
@@ -228,9 +228,9 @@ lazy val example = crossProject.in(file("example")).
     persistLauncher := true,
     skip in packageJSDependencies := false
   ).
-  dependsOn(client, common)
+  dependsOn(client, common, linear, tree, json)
 
-lazy val exampleJS = example.js.dependsOn(commonJS, linearJS, treeJS, clientJS).disablePlugins(AssemblyPlugin)
+lazy val exampleJS = example.js.dependsOn(commonJS, linearJS, treeJS, jsonJS, clientJS).disablePlugins(AssemblyPlugin)
 lazy val exampleJVM = example.jvm.settings(
   (resources in Compile) += (fastOptJS in (exampleJS, Compile)).value.data,
   (resources in Compile) += (packageJSDependencies in (exampleJS, Compile)).value,

@@ -1,9 +1,10 @@
 package de.tu_berlin.formic.server.datatype
 
+import akka.actor.{ActorRef, ActorSystem, Props}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype._
-import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
-import de.tu_berlin.formic.common.server.datatype.{AbstractServerDataTypeFactory, AbstractServerDataType}
+import de.tu_berlin.formic.common.json.{FormicJsonDataTypeProtocol, FormicJsonProtocol}
+import de.tu_berlin.formic.common.server.datatype.{AbstractServerDataType, AbstractServerDataTypeFactory}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
 import org.scalatest.Assertions._
 import upickle.Js
@@ -80,4 +81,15 @@ object TestTransformer extends OperationTransformer {
 
 object TestClasses {
   val dataTypeName = DataTypeName("Test")
+}
+
+object TestClassProvider extends ServerDataTypeProvider {
+  override def initFactories(actorSystem: ActorSystem): Map[DataTypeName, ActorRef] = {
+    val actor = actorSystem.actorOf(Props(new TestDataTypeFactory), TestClasses.dataTypeName.name)
+    Map(TestClasses.dataTypeName -> actor)
+  }
+
+  override def registerFormicJsonDataTypeProtocols(formicJsonProtocol: FormicJsonProtocol): Unit = {
+    formicJsonProtocol.registerProtocol(new TestFormicJsonDataTypeProtocol)
+  }
 }

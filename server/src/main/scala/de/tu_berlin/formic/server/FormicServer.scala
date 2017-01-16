@@ -15,9 +15,6 @@ import de.tu_berlin.formic.common.ClientId
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message.FormicMessage
-import de.tu_berlin.formic.datatype.json.JsonServerDataTypeProvider
-import de.tu_berlin.formic.datatype.linear.server._
-import de.tu_berlin.formic.datatype.tree._
 import upickle.default._
 
 import scala.concurrent.Await
