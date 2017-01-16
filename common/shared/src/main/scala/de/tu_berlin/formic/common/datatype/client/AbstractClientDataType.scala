@@ -116,14 +116,16 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
 
     case opMsg: OperationMessage =>
       log.debug(s"DataType $id received operation message $opMsg")
-      //we do not filter here for duplicates because that would remove acknowledgements
-      //the control algorithm has to do that
+
       if (existsOperationWithDirectContextDependencyMissing(opMsg.operations, historyBuffer)) {
         sender ! HistoricOperationRequest(null, id, lastRemoteOperationId)
       } else {
         opMsg.operations.
           reverse.
+          //we do not filter here for duplicates because that would remove acknowledgements
           filter(op => controlAlgorithm.canBeApplied(op, historyBuffer)).
+          //we filter after the control algorithm saw all operations
+          filter(op => historyBuffer.findOperation(op.id).isEmpty).
           foreach(applyOperation)
         callbackWrapper ! Invoke
       }
