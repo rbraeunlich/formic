@@ -63,7 +63,7 @@ class OfflineCapabilitySpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       Thread.sleep(10000) //retry for websocket is 5 seconds
       //Client should now exchange operations
       userForCheck.requestDataType(string.dataTypeInstanceId)
-      Thread.sleep(2000)
+      Thread.sleep(3000)
       checkUserCallback.dataTypes shouldNot be(empty)
       val checkUserString = checkUserCallback.dataTypes.head.asInstanceOf[FormicString]
       val checkTextFuture = checkUserString.getAll()

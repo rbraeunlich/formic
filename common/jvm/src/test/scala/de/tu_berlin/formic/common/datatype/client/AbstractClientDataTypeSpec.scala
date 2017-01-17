@@ -2,7 +2,7 @@ package de.tu_berlin.formic.common.datatype.client
 
 import akka.actor.{ActorRef, ActorSystem, Props, Terminated}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
-import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
+import de.tu_berlin.formic.common.controlalgo.{ControlAlgorithmClient, WaveOTClient}
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.{ReceiveCallback, RemoteInstantiation}
@@ -371,6 +371,29 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
     }
 
+    "must use the operation id of an acknowledged local operation for a HistoricOperationsRequest if that was the last remote operation with WaveOT" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val data = "{foo}"
+      val remoteOperationId = OperationId()
+      val previousRemoteOperationId = OperationId()
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+        Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new WaveOTClient((op)=>{}), outgoingConnection = TestProbe().ref)))
+      dataType ! ReceiveCallback(() => {})
+      dataType ! CreateResponse(dataTypeInstanceId)
+      val localOperation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List()), ClientId(), data)
+      val localOperationMessage = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(localOperation))
+      val operationWithMissingPredecessor = AbstractClientDataTypeSpecTestOperation(remoteOperationId, OperationContext(List(previousRemoteOperationId)), ClientId(), data)
+      val operationMessageWithMissingPredecessor = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(operationWithMissingPredecessor))
+
+      dataType ! LocalOperationMessage(localOperationMessage)
+      dataType ! localOperationMessage //the acknowledgement
+      dataType ! operationMessageWithMissingPredecessor
+
+      val answer = expectMsgClass(classOf[HistoricOperationRequest])
+      answer.sinceId should equal(localOperation.id)
+      answer.dataTypeInstanceId should equal(dataTypeInstanceId)
+    }
+
     "apply the operations of an HistoricOperationRequest that have not been applied" in {
       val dataTypeInstanceId = DataTypeInstanceId()
       val data = "{foo}"
@@ -412,6 +435,28 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       }
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, controlAlgorithm, outgoingConnection = TestProbe().ref)))
+      dataType ! ReceiveCallback(() => {})
+      dataType ! CreateResponse(dataTypeInstanceId)
+      val data = "{foo}"
+      val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+      val operationMessage = OperationMessage(
+        ClientId(),
+        dataTypeInstanceId,
+        AbstractClientDataTypeSpec.dataTypeName,
+        List(operation)
+      )
+
+      dataType ! operationMessage
+      dataType ! operationMessage
+
+      dataType.underlyingActor.historyBuffer.history should equal(List(operation))
+    }
+
+    "must not apply duplicated received operations with WaveOT" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      //because the control algorithm has to check for duplicates, we have to make sure the data type listens to it
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+        Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new WaveOTClient((op) => {}), outgoingConnection = TestProbe().ref)))
       dataType ! ReceiveCallback(() => {})
       dataType ! CreateResponse(dataTypeInstanceId)
       val data = "{foo}"
@@ -592,7 +637,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
       dataType.underlyingActor.historyBuffer.history shouldBe empty
     }
 
-    "should consider the initial operation id when searching for context dependency" in {
+    "consider the initial operation id when searching for context dependency" in {
       val lastOperationId = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
@@ -605,6 +650,36 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSp
 
       //if the data type ignores the lastOperationId as context of the OperationMessage it'll send a HistoricOperationRequest
       expectNoMsg()
+    }
+
+    "not remove the inFlightOperation if it is the second operation within the message before transforming the first one against it with WaveOT" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val data = "{foo}"
+      //create own transformer so the context update happens
+      val testTransformer = new OperationTransformer {
+        override def transform(pair: (DataTypeOperation, DataTypeOperation)): DataTypeOperation = {
+          val operation = pair._1.asInstanceOf[AbstractClientDataTypeSpecTestOperation]
+          AbstractClientDataTypeSpecTestOperation(operation.id, OperationContext(List(pair._2.id)), operation.clientId, operation.data)
+        }
+        override protected def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = {
+          pair._1
+        }
+      }
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new WaveOTClient((op) => {}), outgoingConnection = TestProbe().ref){
+        override val transformer = testTransformer
+      }))
+      dataType ! ReceiveCallback(() => {})
+      dataType ! CreateResponse(dataTypeInstanceId)
+      val localOperation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+      val localOperationMsg = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(localOperation))
+      val additionalOperation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+      val localOperationWithChangedContext = AbstractClientDataTypeSpecTestOperation(localOperation.id, OperationContext(List(additionalOperation.id)), localOperation.clientId, localOperation.data)
+
+      dataType ! LocalOperationMessage(localOperationMsg)
+
+      dataType ! OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(localOperationWithChangedContext, additionalOperation))
+
+      dataType.underlyingActor.historyBuffer.history.find(op => op.id == additionalOperation.id).get.operationContext should equal(OperationContext(List(localOperation.id)))
     }
   }
 }

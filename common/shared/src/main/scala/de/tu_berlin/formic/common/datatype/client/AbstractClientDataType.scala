@@ -120,13 +120,21 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
       if (existsOperationWithDirectContextDependencyMissing(opMsg.operations, historyBuffer)) {
         sender ! HistoricOperationRequest(null, id, lastRemoteOperationId)
       } else {
+        //simply take the last operation as last one seen
+        lastRemoteOperationId = opMsg.operations.headOption.map(op => op.id).orNull
         opMsg.operations.
-          reverse.
+          reverse.foreach{ op =>
+          //perform the steps for one operation completely and then for the next one
+          //by using filter, map, etc. it could happen that canBeApplied removes the inFlightOp
+          //that is needed for transformation within applyOperation()
           //we do not filter here for duplicates because that would remove acknowledgements
-          filter(op => controlAlgorithm.canBeApplied(op, historyBuffer)).
-          //we filter after the control algorithm saw all operations
-          filter(op => historyBuffer.findOperation(op.id).isEmpty).
-          foreach(applyOperation)
+          if(controlAlgorithm.canBeApplied(op, historyBuffer)){
+            //we filter after the control algorithm saw all operations
+            if(historyBuffer.findOperation(op.id).isEmpty){
+              applyOperation(op)
+            }
+          }
+        }
         callbackWrapper ! Invoke
       }
 
