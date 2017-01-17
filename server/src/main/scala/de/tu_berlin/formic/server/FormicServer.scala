@@ -81,7 +81,7 @@ class FormicServer {
   def newUserProxy(username: String)(implicit actorSystem: ActorSystem, materializer: ActorMaterializer): Flow[Message, Message, NotUsed] = {
     // new connection - new UserProxy actor
     val userProxy = actorSystem.actorOf(Props(new UserProxy(factories, ClientId(username))), username)
-
+    val outBufferSize = system.settings.config.getInt("formic.server.outgoingBufferSize")
     val incomingMessages: Sink[Message, NotUsed] =
       Flow[Message].map {
         // transform websocket message to domain message
@@ -97,7 +97,7 @@ class FormicServer {
       }.map(text => read[FormicMessage](text)).to(Sink.actorRef[FormicMessage](userProxy, PoisonPill))
 
     val outgoingMessages: Source[Message, NotUsed] =
-      Source.actorRef[FormicMessage](10, OverflowStrategy.fail)
+      Source.actorRef[FormicMessage](outBufferSize, OverflowStrategy.fail)
         .mapMaterializedValue { outActor =>
           // give the UserProxy actor a way to send messages out
           userProxy ! Connected(outActor)
