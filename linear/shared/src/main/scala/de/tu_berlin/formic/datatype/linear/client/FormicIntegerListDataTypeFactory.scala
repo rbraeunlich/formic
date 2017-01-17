@@ -14,9 +14,9 @@ class FormicIntegerListDataTypeFactory extends FormicLinearDataTypeFactory[Int] 
     new FormicIntegerList(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 
-  override val name: DataTypeName = FormicIntegerListDataTypeFactory.dataTypeName
+  override val name: DataTypeName = FormicIntegerListDataTypeFactory.name
 }
 
 object FormicIntegerListDataTypeFactory {
-  val dataTypeName = DataTypeName("IntegerList")
+  val name = DataTypeName("IntegerList")
 }

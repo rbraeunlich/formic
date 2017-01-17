@@ -12,23 +12,23 @@ class LinearClientDataTypeProvider extends ClientDataTypeProvider {
 
   override def initFactories(actorSystem: ActorSystem): Map[DataTypeName, ActorRef] = {
     var factories: Map[DataTypeName, ActorRef] = Map.empty
-    val formicBooleanListFactory = actorSystem.actorOf(Props(new FormicBooleanListDataTypeFactory), FormicBooleanListDataTypeFactory.dataTypeName.name)
-    val formicDoubleListFactory = actorSystem.actorOf(Props(new FormicDoubleListDataTypeFactory), FormicDoubleListDataTypeFactory.dataTypeName.name)
-    val formicIntegerListFactory = actorSystem.actorOf(Props(new FormicIntegerListDataTypeFactory), FormicIntegerListDataTypeFactory.dataTypeName.name)
-    val formicStringFactory = actorSystem.actorOf(Props(new FormicStringDataTypeFactory), FormicStringDataTypeFactory.dataTypeName.name)
-    factories += (FormicBooleanListDataTypeFactory.dataTypeName -> formicBooleanListFactory)
-    factories += (FormicDoubleListDataTypeFactory.dataTypeName -> formicDoubleListFactory)
-    factories += (FormicIntegerListDataTypeFactory.dataTypeName -> formicIntegerListFactory)
-    factories += (FormicStringDataTypeFactory.dataTypeName -> formicStringFactory)
+    val formicBooleanListFactory = actorSystem.actorOf(Props(new FormicBooleanListDataTypeFactory), FormicBooleanListDataTypeFactory.name.name)
+    val formicDoubleListFactory = actorSystem.actorOf(Props(new FormicDoubleListDataTypeFactory), FormicDoubleListDataTypeFactory.name.name)
+    val formicIntegerListFactory = actorSystem.actorOf(Props(new FormicIntegerListDataTypeFactory), FormicIntegerListDataTypeFactory.name.name)
+    val formicStringFactory = actorSystem.actorOf(Props(new FormicStringDataTypeFactory), FormicStringDataTypeFactory.name.name)
+    factories += (FormicBooleanListDataTypeFactory.name -> formicBooleanListFactory)
+    factories += (FormicDoubleListDataTypeFactory.name -> formicDoubleListFactory)
+    factories += (FormicIntegerListDataTypeFactory.name -> formicIntegerListFactory)
+    factories += (FormicStringDataTypeFactory.name -> formicStringFactory)
 
     factories
   }
 
   override def registerFormicJsonDataTypeProtocols(formicJsonProtocol: FormicJsonProtocol): Unit = {
-    formicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Boolean](FormicBooleanListDataTypeFactory.dataTypeName))
-    formicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Double](FormicDoubleListDataTypeFactory.dataTypeName))
-    formicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Int](FormicIntegerListDataTypeFactory.dataTypeName))
-    formicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Char](FormicStringDataTypeFactory.dataTypeName))
+    formicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Boolean](FormicBooleanListDataTypeFactory.name))
+    formicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Double](FormicDoubleListDataTypeFactory.name))
+    formicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Int](FormicIntegerListDataTypeFactory.name))
+    formicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Char](FormicStringDataTypeFactory.name))
   }
 }
 

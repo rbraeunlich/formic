@@ -14,17 +14,19 @@ import upickle.Js
   * @author Ronny Bräunlich
   */
 class FormicJsonProtocol {
-  private var dataTypeOperationJsonProtocols: Map[DataTypeName, FormicJsonDataTypeProtocol] = Map.empty
+  private var _dataTypeOperationJsonProtocols: Map[DataTypeName, FormicJsonDataTypeProtocol] = Map.empty
+
+  def dataTypeOperationJsonProtocols: Map[DataTypeName, FormicJsonDataTypeProtocol] = Map(_dataTypeOperationJsonProtocols.toList:_*)
 
   def registerProtocol(protocol: FormicJsonDataTypeProtocol) = {
-    dataTypeOperationJsonProtocols += (protocol.name -> protocol)
+    _dataTypeOperationJsonProtocols += (protocol.name -> protocol)
   }
 
-  def remove(dataTypeName: DataTypeName) = dataTypeOperationJsonProtocols -= dataTypeName
+  def remove(dataTypeName: DataTypeName) = _dataTypeOperationJsonProtocols -= dataTypeName
 
   implicit val writer = upickle.default.Writer[OperationMessage] {
     message =>
-      val protocol = dataTypeOperationJsonProtocols.find(t => t._1 == message.dataType) match {
+      val protocol = _dataTypeOperationJsonProtocols.find(t => t._1 == message.dataType) match {
         case Some(prot) => prot
         case None => throw new IllegalArgumentException(s"No JSON Protocol for ${message.dataType} registered")
       }
@@ -74,7 +76,7 @@ class FormicJsonProtocol {
             DataTypeInstanceId(map("dataTypeInstanceId").obj("id").str)
           )
         case "de.tu_berlin.formic.common.message.OperationMessage" =>
-          val protocol = dataTypeOperationJsonProtocols.find(t => t._1 == DataTypeName(map("dataTypeName").str)).get
+          val protocol = _dataTypeOperationJsonProtocols.find(t => t._1 == DataTypeName(map("dataTypeName").str)).get
           val operations = map("operations").arr.map(v => v.toString()).map(json => protocol._2.deserializeOperation(json)).toList
           OperationMessage(
             ClientId(map("clientId").str),

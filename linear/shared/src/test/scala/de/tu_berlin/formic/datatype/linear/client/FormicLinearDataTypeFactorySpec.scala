@@ -24,7 +24,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
     "have correct data type name" in {
       val factory: TestActorRef[FormicBooleanListDataTypeFactory] = TestActorRef(Props(new FormicBooleanListDataTypeFactory()))
 
-      factory.underlyingActor.name should equal(FormicBooleanListDataTypeFactory.dataTypeName)
+      factory.underlyingActor.name should equal(FormicBooleanListDataTypeFactory.name)
     }
 
     "create FormicBooleanList and LinearClientDataType" in {
@@ -34,7 +34,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "[false]", Option.empty, CreateRequest(
-        ClientId(), dataTypeInstanceId, FormicBooleanListDataTypeFactory.dataTypeName
+        ClientId(), dataTypeInstanceId, FormicBooleanListDataTypeFactory.name
       ), clientId)
 
       val answer = expectMsgClass(classOf[NewDataTypeCreated])
@@ -43,7 +43,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       wrapper shouldBe a[FormicBooleanList]
       wrapper.dataTypeInstanceId should equal(dataTypeInstanceId)
       wrapper.actor should equal(answer.dataTypeActor)
-      wrapper.dataTypeName should equal(FormicBooleanListDataTypeFactory.dataTypeName)
+      wrapper.dataTypeName should equal(FormicBooleanListDataTypeFactory.name)
       wrapper.clientId should equal(clientId)
       answer.dataTypeActor should not be null
     }
@@ -53,7 +53,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
     "have correct data type name" in {
       val factory: TestActorRef[FormicDoubleListDataTypeFactory] = TestActorRef(Props(new FormicDoubleListDataTypeFactory()))
 
-      factory.underlyingActor.name should equal(FormicDoubleListDataTypeFactory.dataTypeName)
+      factory.underlyingActor.name should equal(FormicDoubleListDataTypeFactory.name)
     }
 
     "create FormicDoubleList and LinearClientDataType" in {
@@ -63,7 +63,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "[1.0]", Option.empty, CreateRequest(
-        ClientId(), dataTypeInstanceId, FormicDoubleListDataTypeFactory.dataTypeName
+        ClientId(), dataTypeInstanceId, FormicDoubleListDataTypeFactory.name
       ), clientId)
 
       val answer = expectMsgClass(classOf[NewDataTypeCreated])
@@ -72,7 +72,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       wrapper shouldBe a[FormicDoubleList]
       wrapper.dataTypeInstanceId should equal(dataTypeInstanceId)
       wrapper.actor should equal(answer.dataTypeActor)
-      wrapper.dataTypeName should equal(FormicDoubleListDataTypeFactory.dataTypeName)
+      wrapper.dataTypeName should equal(FormicDoubleListDataTypeFactory.name)
       wrapper.clientId should equal(clientId)
       answer.dataTypeActor should not be null
     }
@@ -82,7 +82,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
     "have correct data type name" in {
       val factory: TestActorRef[FormicIntegerListDataTypeFactory] = TestActorRef(Props(new FormicIntegerListDataTypeFactory()))
 
-      factory.underlyingActor.name should equal(FormicIntegerListDataTypeFactory.dataTypeName)
+      factory.underlyingActor.name should equal(FormicIntegerListDataTypeFactory.name)
     }
 
     "create FormicIntegerList and LinearClientDataType" in {
@@ -92,7 +92,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "[2]", Option.empty, CreateRequest(
-        ClientId(), dataTypeInstanceId, FormicBooleanListDataTypeFactory.dataTypeName
+        ClientId(), dataTypeInstanceId, FormicBooleanListDataTypeFactory.name
       ), clientId)
 
       val answer = expectMsgClass(classOf[NewDataTypeCreated])
@@ -101,7 +101,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       wrapper shouldBe a[FormicIntegerList]
       wrapper.dataTypeInstanceId should equal(dataTypeInstanceId)
       wrapper.actor should equal(answer.dataTypeActor)
-      wrapper.dataTypeName should equal(FormicIntegerListDataTypeFactory.dataTypeName)
+      wrapper.dataTypeName should equal(FormicIntegerListDataTypeFactory.name)
       wrapper.clientId should equal(clientId)
       answer.dataTypeActor should not be null
     }
@@ -111,7 +111,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
     "have correct data type name" in {
       val factory: TestActorRef[FormicStringDataTypeFactory] = TestActorRef(Props(new FormicStringDataTypeFactory()))
 
-      factory.underlyingActor.name should equal(FormicStringDataTypeFactory.dataTypeName)
+      factory.underlyingActor.name should equal(FormicStringDataTypeFactory.name)
     }
 
     "create FormicString and LinearClientDataType" in {
@@ -121,7 +121,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "[\"b\"]", Option.empty, CreateRequest(
-        ClientId(), dataTypeInstanceId, FormicStringDataTypeFactory.dataTypeName
+        ClientId(), dataTypeInstanceId, FormicStringDataTypeFactory.name
       ), clientId)
 
       val answer = expectMsgClass(classOf[NewDataTypeCreated])
@@ -130,7 +130,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       wrapper shouldBe a[FormicString]
       wrapper.dataTypeInstanceId should equal(dataTypeInstanceId)
       wrapper.actor should equal(answer.dataTypeActor)
-      wrapper.dataTypeName should equal(FormicStringDataTypeFactory.dataTypeName)
+      wrapper.dataTypeName should equal(FormicStringDataTypeFactory.name)
       wrapper.clientId should equal(clientId)
       answer.dataTypeActor should not be null
     }

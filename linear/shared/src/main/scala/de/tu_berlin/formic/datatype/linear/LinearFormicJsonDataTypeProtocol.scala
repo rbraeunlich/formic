@@ -9,7 +9,7 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-class LinearFormicJsonDataTypeProtocol[T](val name: DataTypeName)(implicit val reader: Reader[T], val writer: Writer[T]) extends FormicJsonDataTypeProtocol {
+case class LinearFormicJsonDataTypeProtocol[T](name: DataTypeName)(implicit val reader: Reader[T], val writer: Writer[T]) extends FormicJsonDataTypeProtocol {
 
   override def deserializeOperation(json: String): DataTypeOperation = {
     val valueMap = upickle.json.read(json).obj

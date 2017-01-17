@@ -13,9 +13,9 @@ class FormicBooleanListDataTypeFactory extends FormicLinearDataTypeFactory[Boole
     new FormicBooleanList(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 
-  override val name: DataTypeName = FormicBooleanListDataTypeFactory.dataTypeName
+  override val name: DataTypeName = FormicBooleanListDataTypeFactory.name
 }
 
 object FormicBooleanListDataTypeFactory {
-  val dataTypeName = DataTypeName("BooleanList")
+  val name = DataTypeName("BooleanList")
 }

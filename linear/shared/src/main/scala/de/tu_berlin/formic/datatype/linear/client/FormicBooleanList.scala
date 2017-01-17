@@ -12,7 +12,7 @@ import scala.scalajs.js.annotation.JSExport
   */
 @JSExport
 class FormicBooleanList(callback: () => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId())
-  extends FormicList[Boolean](callback, initiator, dataTypeInstanceId, FormicBooleanListDataTypeFactory.dataTypeName) {
+  extends FormicList[Boolean](callback, initiator, dataTypeInstanceId, FormicBooleanListDataTypeFactory.name) {
 
   def this(callback: () => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataTypeInstanceId, wrapped: ActorRef, localClientId: ClientId) {
     this(callback, initiator, dataTypeInstanceId)

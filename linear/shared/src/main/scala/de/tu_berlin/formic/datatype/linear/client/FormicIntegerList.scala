@@ -12,7 +12,7 @@ import scala.scalajs.js.annotation.JSExport
   */
 @JSExport
 class FormicIntegerList(callback: () => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId())
-  extends FormicList[Int](callback, initiator, dataTypeInstanceId, FormicIntegerListDataTypeFactory.dataTypeName) {
+  extends FormicList[Int](callback, initiator, dataTypeInstanceId, FormicIntegerListDataTypeFactory.name) {
 
   def this(callback: () => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataTypeInstanceId, wrapped: ActorRef, localClientId: ClientId) {
     this(callback, initiator, dataTypeInstanceId)

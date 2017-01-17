@@ -10,7 +10,7 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-class TreeFormicJsonDataTypeProtocol[T](val name: DataTypeName)(implicit val reader: Reader[T], val writer: Writer[T]) extends FormicJsonDataTypeProtocol {
+case class TreeFormicJsonDataTypeProtocol[T](name: DataTypeName)(implicit val reader: Reader[T], val writer: Writer[T]) extends FormicJsonDataTypeProtocol {
 
   implicit val treeNodeWriter = new ValueTreeNodeWriter[T]
 

@@ -14,9 +14,9 @@ class FormicDoubleListDataTypeFactory extends FormicLinearDataTypeFactory[Double
     new FormicDoubleList(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 
-  override val name: DataTypeName = FormicDoubleListDataTypeFactory.dataTypeName
+  override val name: DataTypeName = FormicDoubleListDataTypeFactory.name
 }
 
 object FormicDoubleListDataTypeFactory {
-  val dataTypeName = DataTypeName("DoubleList")
+  val name = DataTypeName("DoubleList")
 }

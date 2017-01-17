@@ -11,7 +11,7 @@ import scala.scalajs.js.annotation.JSExport
   */
 @JSExport
 class FormicDoubleList(callback: () => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId())
-  extends FormicList[Double](callback, initiator, dataTypeInstanceId, FormicDoubleListDataTypeFactory.dataTypeName) {
+  extends FormicList[Double](callback, initiator, dataTypeInstanceId, FormicDoubleListDataTypeFactory.name) {
 
   def this(callback: () => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataTypeInstanceId, wrapped: ActorRef, localClientId: ClientId) {
     this(callback, initiator, dataTypeInstanceId)

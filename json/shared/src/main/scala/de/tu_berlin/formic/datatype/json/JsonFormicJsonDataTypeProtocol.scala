@@ -14,7 +14,7 @@ import upickle.default._
   *
   * @author Ronny Bräunlich
   */
-class JsonFormicJsonDataTypeProtocol(val name: DataTypeName)(implicit val reader: Reader[ObjectNode], val writer: Writer[ObjectNode]) extends FormicJsonDataTypeProtocol {
+case class JsonFormicJsonDataTypeProtocol(name: DataTypeName)(implicit val reader: Reader[ObjectNode], val writer: Writer[ObjectNode]) extends FormicJsonDataTypeProtocol {
 
   override def deserializeOperation(json: String): DataTypeOperation = {
     val valueMap = upickle.json.read(json).obj

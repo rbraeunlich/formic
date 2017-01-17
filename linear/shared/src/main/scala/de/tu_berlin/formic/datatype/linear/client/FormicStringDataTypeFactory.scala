@@ -14,9 +14,9 @@ class FormicStringDataTypeFactory extends FormicLinearDataTypeFactory[Char] {
     new FormicString(() => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 
-  override val name: DataTypeName = FormicStringDataTypeFactory.dataTypeName
+  override val name: DataTypeName = FormicStringDataTypeFactory.name
 }
 
 object FormicStringDataTypeFactory {
-  val dataTypeName = DataTypeName("string")
+  val name = DataTypeName("string")
 }
