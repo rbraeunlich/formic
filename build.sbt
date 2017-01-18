@@ -30,7 +30,7 @@ lazy val root = project
 
 lazy val commonSettings = Seq(
   organization := "de.tu-berlin.formic",
-  version := "0.1.0",
+  version := "1.0.0",
   scalaVersion := "2.11.8",
   resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
   test in assembly := {}
