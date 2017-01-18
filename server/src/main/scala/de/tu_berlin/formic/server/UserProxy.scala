@@ -57,14 +57,15 @@ class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = C
     case req: UpdateRequest =>
       log.debug(s"Incoming UpdateRequest from user $id: $req")
       val actorSelection = context.actorSelection(s"../*/${req.dataTypeInstanceId.id}").resolveOne(3 seconds)
-      actorSelection.onComplete {
+      //blocking here is necessary to ensure no messages for a data type are received while we look it up
+      Await.ready(actorSelection, 3.seconds)
+      //onComplete might be executed async, but we need to be sync here
+      actorSelection.value.get match {
         case Success(ref) =>
           watchlist += (req.dataTypeInstanceId -> ref)
           ref ! req
         case Failure(ex) => throw new IllegalArgumentException(s"Data type instance with id ${req.dataTypeInstanceId.id} not found. Exception: $ex")
       }
-      //blocking here is necessary to ensure no messages for a data type are received while we look it up
-      Await.ready(actorSelection, 3.seconds)
 
     case rep: UpdateResponse =>
       log.debug(s"Sending UpdateResponse to user $id: $rep")
