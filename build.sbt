@@ -25,7 +25,8 @@ lazy val root = project
     websockettestsJS,
     server,
     exampleJS,
-    exampleJVM
+    exampleJVM,
+    formicGatling
   ).disablePlugins(AssemblyPlugin)
 
 lazy val commonSettings = Seq(
@@ -236,3 +237,14 @@ lazy val exampleJVM = example.jvm.settings(
   (resources in Compile) += (packageJSDependencies in (exampleJS, Compile)).value,
   (resources in Compile) += (packageScalaJSLauncher in (exampleJS, Compile)).value.data
 ).dependsOn(commonJVM, linearJVM, clientJVM, treeJVM, jsonJVM, server)
+
+lazy val formicGatling = (project in file("formic-gatling")).
+  settings(commonSettings: _*).
+  settings(
+    name := "formic-gatling",
+    libraryDependencies ++= Seq(
+      "io.gatling.highcharts" % "gatling-charts-highcharts" % "2.2.1",
+      "io.gatling" % "gatling-test-framework" % "2.2.1" % "test"
+    )
+  ).enablePlugins(GatlingPlugin).
+  dependsOn(clientJVM, commonJVM, linearJVM, treeJVM, jsonJVM)
