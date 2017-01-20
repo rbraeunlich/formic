@@ -15,8 +15,21 @@ class FormicSimulation extends Simulation {
     .bufferSize(100)
     .logLevel("info")
 
+  val dataTypeInstanceId = DataTypeInstanceId()
+
   val scn = scenario("FormicSimulation")
-    .exec(formic("Creation").create().linear(DataTypeInstanceId())).pause(1)
+    .exec(formic("Creation")
+      .create()
+      .linear(dataTypeInstanceId))
+    .pause(5)
+      .repeat(10, "n") {
+        exec(formic("LinearInsertion")
+          .linear(dataTypeInstanceId)
+          .insert('a')
+          .index(0))
+      }
+    .pause(1)
+
 
   setUp(scn.inject(atOnceUsers(1))).protocols(formicConfig)
 
