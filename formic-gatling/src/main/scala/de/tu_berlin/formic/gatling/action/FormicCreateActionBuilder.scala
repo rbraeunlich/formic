@@ -1,6 +1,7 @@
 package de.tu_berlin.formic.gatling.action
 
 import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.gatling.action.linear.CreateLinearDataType
 import io.gatling.core.action.Action
 import io.gatling.core.structure.ScenarioContext
 

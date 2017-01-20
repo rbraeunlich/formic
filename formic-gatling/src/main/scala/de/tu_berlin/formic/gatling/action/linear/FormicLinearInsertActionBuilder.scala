@@ -1,6 +1,7 @@
-package de.tu_berlin.formic.gatling.action
+package de.tu_berlin.formic.gatling.action.linear
 
 import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.gatling.action.FormicActionBuilder
 import io.gatling.core.action.Action
 import io.gatling.core.session.Expression
 import io.gatling.core.structure.ScenarioContext
@@ -12,7 +13,6 @@ case class FormicLinearInsertActionBuilder(dataTypeInstanceId: DataTypeInstanceI
 
   override def build(ctx: ScenarioContext, next: Action): Action = {
     val statsEngine = ctx.coreComponents.statsEngine
-    val components = formicComponents(ctx)
     new LinearInsertion(dataTypeInstanceId, toInsert, index, statsEngine, next)
   }
 }

@@ -1,6 +1,5 @@
 package de.tu_berlin.formic.gatling.action
 
-import akka.actor.ActorRef
 import de.tu_berlin.formic.client.FormicSystem
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.datatype.linear.client.{FormicList, FormicString}
@@ -22,42 +21,8 @@ object FormicActions {
   }
 }
 
-class CreateLinearDataType(formicSystem: FormicSystem, val statsEngine: StatsEngine, val dataTypeInstanceId: DataTypeInstanceId, val next: Action) extends ChainableAction {
-
-  override def name: String = "CreateDataType action"
-
-  override def execute(session: Session): Unit = {
-    val start = TimeHelper.nowMillis
-    val string = new FormicString(() => {}, formicSystem, dataTypeInstanceId)
-    val end = TimeHelper.nowMillis
-    val modifiedSession = session.set(dataTypeInstanceId.id, string)
-    FormicActions.logTimingValues(start, end, session, statsEngine, name)
-    next ! modifiedSession
-  }
 
 
-}
 
-class LinearInsertion(val dataTypeInstanceId: DataTypeInstanceId, val toInsert: Any, val index: Expression[Int], val statsEngine: StatsEngine, val next: Action) extends ChainableAction {
 
-  override def name: String = "LinearInsert action"
 
-  override def execute(session: Session): Unit = {
-    val start = TimeHelper.nowMillis
-    val dataTypeAttribute = session(dataTypeInstanceId.id)
-    val validatedIndex = index.apply(session)
-    validatedIndex.foreach(i =>
-      dataTypeAttribute.asOption[FormicList[Any]] match {
-        case None => throw new IllegalArgumentException("Data type with id " + dataTypeInstanceId.id + " not found. Make to to create it first!")
-        case Some(dataType) => dataType.add(i, toInsert)
-      })
-    val end = TimeHelper.nowMillis
-    FormicActions.logTimingValues(start, end, session, statsEngine, name)
-    next ! session
-  }
-
-}
-
-class LinearDeletion(val next: ActorRef) {
-
-}

@@ -29,6 +29,10 @@ class FormicSimulation extends Simulation {
           .index("${n}"))
       }
     .pause(1)
+    .exec(formic("LinearDeletion")
+      .linear(dataTypeInstanceId)
+      .remove(0))
+    .pause(1)
 
 
   setUp(scn.inject(atOnceUsers(1))).protocols(formicConfig)
