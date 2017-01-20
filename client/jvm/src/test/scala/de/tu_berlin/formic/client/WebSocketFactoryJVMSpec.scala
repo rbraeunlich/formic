@@ -24,16 +24,24 @@ class WebSocketFactoryJVMSpec extends TestKit(ActorSystem("WebSocketFactoryJVMSp
 
     "send OnConnect message after connecting" in {
       val testActor = TestProbe()
-      val connection = new WebSocketFactoryJVM().createConnection("ws://foo@echo.websocket.org", testActor.ref)
+      val factory = new WebSocketFactoryJVM()
+      factory.actorSystem = actorSystem
+      factory.materializer = materializer
+
+      val connection = factory.createConnection("ws://foo@echo.websocket.org", testActor.ref)
 
       testActor.expectMsg(OnConnect(connection))
     }
 
     "send messages" in {
       val testActor = TestProbe()
-      val connection = new WebSocketFactoryJVM().createConnection("ws://foo@echo.websocket.org", testActor.ref)
+      val factory = new WebSocketFactoryJVM()
+      factory.actorSystem = actorSystem
+      factory.materializer = materializer
+      val connection = factory.createConnection("ws://foo@echo.websocket.org", testActor.ref)
       val message = write(UpdateRequest(ClientId(), DataTypeInstanceId()))
       testActor.receiveN(1)
+
       connection.send(message)
 
       testActor.expectMsg(OnMessage(message))
