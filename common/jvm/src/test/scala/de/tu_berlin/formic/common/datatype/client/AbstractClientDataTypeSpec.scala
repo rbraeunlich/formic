@@ -16,7 +16,7 @@ import scala.concurrent.duration._
 /**
   * @author Ronny Bräunlich
   */
-class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractDataTypeSpec"))
+class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientDataTypeSpec"))
   with WordSpecLike
   with ImplicitSender
   with StopSystemAfterAll
