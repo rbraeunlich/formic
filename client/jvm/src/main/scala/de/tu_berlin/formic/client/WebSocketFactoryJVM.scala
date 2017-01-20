@@ -7,7 +7,11 @@ import scala.concurrent.ExecutionContext
 /**
   * @author Ronny Bräunlich
   */
-class WebSocketFactoryJVM()(implicit val materializer: ActorMaterializer, val actorSystem: ActorSystem) extends WebSocketFactory {
+class WebSocketFactoryJVM() extends WebSocketFactory {
+
+  var actorSystem: ActorSystem = _
+  var materializer: ActorMaterializer = _
+
   override def createConnection(url: String, connection: ActorRef): WebSocketWrapper = {
     new WrappedAkkaStreamWebSocket(url, connection)(materializer, actorSystem)
   }
