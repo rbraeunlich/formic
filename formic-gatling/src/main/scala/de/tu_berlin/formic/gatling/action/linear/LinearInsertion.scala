@@ -1,8 +1,7 @@
 package de.tu_berlin.formic.gatling.action.linear
 
-import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.datatype.linear.client.FormicList
-import de.tu_berlin.formic.gatling.action.FormicActions
+import de.tu_berlin.formic.gatling.action.{FormicActions, SessionVariables}
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.action.{Action, ChainableAction}
 import io.gatling.core.session.{Session, _}
@@ -17,7 +16,7 @@ case class LinearInsertion(toInsert: Any, index: Expression[Int], statsEngine: S
 
   override def execute(session: Session): Unit = {
     val start = TimeHelper.nowMillis
-    val dataTypeAttribute = session("linear")
+    val dataTypeAttribute = session(SessionVariables.LINEAR_DATA_TYPE)
     val validatedIndex = index.apply(session)
     validatedIndex.foreach(i =>
       dataTypeAttribute.asOption[FormicList[Any]] match {

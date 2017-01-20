@@ -24,7 +24,7 @@ case class FormicConnectAction(config: Config, statsEngine: StatsEngine, next: A
     val formicSystem = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider(), TreeClientDataTypeProvider(), JsonClientDataTypeProvider()))
     formicSystem.init(MockCallback)
     val end = TimeHelper.nowMillis
-    val modifiedSession = session.set("FormicSystem", formicSystem)
+    val modifiedSession = session.set(SessionVariables.FORMIC_SYSTEM, formicSystem)
     FormicActions.logTimingValues(start, end, session, statsEngine, name)
     next ! modifiedSession
   }
