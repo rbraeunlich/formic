@@ -12,15 +12,15 @@ import io.gatling.core.stats.StatsEngine
 /**
   * @author Ronny Bräunlich
   */
-class CreateLinearDataType(formicSystem: FormicSystem, val statsEngine: StatsEngine, val dataTypeInstanceId: DataTypeInstanceId, val next: Action) extends ChainableAction {
+class CreateLinearDataType(formicSystem: FormicSystem, val statsEngine: StatsEngine, val next: Action) extends ChainableAction {
 
   override def name: String = "CreateDataType action"
 
   override def execute(session: Session): Unit = {
     val start = TimeHelper.nowMillis
-    val string = new FormicString(() => {}, formicSystem, dataTypeInstanceId)
+    val string = new FormicString(() => {}, formicSystem)
     val end = TimeHelper.nowMillis
-    val modifiedSession = session.set(dataTypeInstanceId.id, string)
+    val modifiedSession = session.set("linear", string)
     FormicActions.logTimingValues(start, end, session, statsEngine, name)
     next ! modifiedSession
   }

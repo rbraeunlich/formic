@@ -11,17 +11,17 @@ import io.gatling.core.stats.StatsEngine
 /**
   * @author Ronny Bräunlich
   */
-class LinearDeletion(val dataTypeInstanceId: DataTypeInstanceId, val index: Expression[Int], val statsEngine: StatsEngine, val next: Action) extends ChainableAction {
+class LinearDeletion(val index: Expression[Int], val statsEngine: StatsEngine, val next: Action) extends ChainableAction {
 
   override def name: String = "LinearDelete action"
 
   override def execute(session: Session): Unit = {
     val start = TimeHelper.nowMillis
-    val dataTypeAttribute = session(dataTypeInstanceId.id)
+    val dataTypeAttribute = session("linear")
     val validatedIndex = index.apply(session)
     validatedIndex.foreach(i =>
       dataTypeAttribute.asOption[FormicList[Any]] match {
-        case None => throw new IllegalArgumentException("Data type with id " + dataTypeInstanceId.id + " not found. Make to to create it first!")
+        case None => throw new IllegalArgumentException("Data type not found. Make to to create it first!")
         case Some(dataType) => dataType.remove(i)
       })
     val end = TimeHelper.nowMillis

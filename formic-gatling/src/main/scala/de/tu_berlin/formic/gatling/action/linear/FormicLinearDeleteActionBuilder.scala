@@ -9,10 +9,10 @@ import io.gatling.core.structure.ScenarioContext
 /**
   * @author Ronny Bräunlich
   */
-case class FormicLinearDeleteActionBuilder(dataTypeInstanceId: DataTypeInstanceId, index: Expression[Int]) extends FormicActionBuilder {
+case class FormicLinearDeleteActionBuilder(index: Expression[Int]) extends FormicActionBuilder {
 
   override def build(ctx: ScenarioContext, next: Action): Action = {
     val statsEngine = ctx.coreComponents.statsEngine
-    new LinearDeletion(dataTypeInstanceId, index, statsEngine, next)
+    new LinearDeletion(index, statsEngine, next)
   }
 }

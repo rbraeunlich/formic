@@ -7,16 +7,16 @@ import io.gatling.core.session.Expression
 /**
   * @author Ronny Bräunlich
   */
-case class FormicLinearBuilderBase(dataTypeInstanceId: DataTypeInstanceId) {
+case class FormicLinearBuilderBase() {
 
-  def insert[T](toInsert: T) = FormicLinearBuilderInsertIndexStep(dataTypeInstanceId, toInsert)
+  def insert[T](toInsert: T) = FormicLinearBuilderInsertIndexStep(toInsert)
 
-  def remove(index: Expression[Int]) = FormicLinearDeleteActionBuilder(dataTypeInstanceId, index)
+  def remove(index: Expression[Int]) = FormicLinearDeleteActionBuilder(index)
 
 }
 
-case class FormicLinearBuilderInsertIndexStep(dataTypeInstanceId: DataTypeInstanceId, toInsert: Any) {
+case class FormicLinearBuilderInsertIndexStep(toInsert: Any) {
 
-  def index(index: Expression[Int]) = FormicLinearInsertActionBuilder(dataTypeInstanceId, toInsert, index)
+  def index(index: Expression[Int]) = FormicLinearInsertActionBuilder(toInsert, index)
 
 }

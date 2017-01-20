@@ -8,14 +8,14 @@ import io.gatling.core.structure.ScenarioContext
 /**
   * @author Ronny Bräunlich
   */
-case class FormicCreateActionBuilder(dataTypeInstanceId: DataTypeInstanceId, dataType: String) extends FormicActionBuilder {
+case class FormicCreateActionBuilder(dataType: String) extends FormicActionBuilder {
 
   override def build(ctx: ScenarioContext, next: Action): Action = {
     val statsEngine = ctx.coreComponents.statsEngine
     val components = formicComponents(ctx)
 
     dataType match {
-      case "linear" => new CreateLinearDataType(components.formicGatlingProtocol.formicSystem, statsEngine, dataTypeInstanceId, next)
+      case "linear" => new CreateLinearDataType(components.formicGatlingProtocol.formicSystem, statsEngine, next)
     }
   }
 

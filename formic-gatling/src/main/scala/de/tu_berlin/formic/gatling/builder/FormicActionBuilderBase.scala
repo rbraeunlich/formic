@@ -10,6 +10,6 @@ case class FormicActionBuilderBase(requestName: String) {
 
   def create()(implicit configuration: GatlingConfiguration) = FormicCreationBuilder(requestName)
 
-  def linear(dataTypeInstanceId: DataTypeInstanceId)(implicit configuration: GatlingConfiguration) = FormicLinearBuilderBase(dataTypeInstanceId)
+  def linear()(implicit configuration: GatlingConfiguration) = FormicLinearBuilderBase()
 
 }

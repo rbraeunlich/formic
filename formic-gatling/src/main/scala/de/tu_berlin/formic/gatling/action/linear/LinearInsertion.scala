@@ -11,17 +11,17 @@ import io.gatling.core.stats.StatsEngine
 /**
   * @author Ronny Bräunlich
   */
-class LinearInsertion(val dataTypeInstanceId: DataTypeInstanceId, val toInsert: Any, val index: Expression[Int], val statsEngine: StatsEngine, val next: Action) extends ChainableAction {
+class LinearInsertion(val toInsert: Any, val index: Expression[Int], val statsEngine: StatsEngine, val next: Action) extends ChainableAction {
 
   override def name: String = "LinearInsert action"
 
   override def execute(session: Session): Unit = {
     val start = TimeHelper.nowMillis
-    val dataTypeAttribute = session(dataTypeInstanceId.id)
+    val dataTypeAttribute = session("linear")
     val validatedIndex = index.apply(session)
     validatedIndex.foreach(i =>
       dataTypeAttribute.asOption[FormicList[Any]] match {
-        case None => throw new IllegalArgumentException("Data type with id " + dataTypeInstanceId.id + " not found. Make to to create it first!")
+        case None => throw new IllegalArgumentException("Data type not found. Create it first!")
         case Some(dataType) => dataType.add(i, toInsert)
       })
     val end = TimeHelper.nowMillis

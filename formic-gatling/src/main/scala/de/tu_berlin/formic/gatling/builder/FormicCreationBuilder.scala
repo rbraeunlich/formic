@@ -8,6 +8,6 @@ import de.tu_berlin.formic.gatling.action.FormicCreateActionBuilder
   */
 case class FormicCreationBuilder(requestName: String) {
 
-  def linear(dataTypeInstanceId: DataTypeInstanceId) = FormicCreateActionBuilder(dataTypeInstanceId, "linear")
+  def linear() = FormicCreateActionBuilder("linear")
 
 }
