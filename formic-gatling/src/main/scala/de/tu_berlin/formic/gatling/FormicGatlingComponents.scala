@@ -1,5 +1,6 @@
 package de.tu_berlin.formic.gatling
 
+import de.tu_berlin.formic.gatling.protocol.FormicGatlingProtocol
 import io.gatling.core.protocol.ProtocolComponents
 import io.gatling.core.session.Session
 
