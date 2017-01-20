@@ -1,19 +1,18 @@
 package de.tu_berlin.formic.gatling.action
 
-import de.tu_berlin.formic.gatling.action.linear.CreateLinearDataType
 import io.gatling.core.action.Action
 import io.gatling.core.structure.ScenarioContext
 
 /**
   * @author Ronny Bräunlich
   */
-case class FormicCreateActionBuilder(dataType: String) extends FormicActionBuilder {
+case class FormicConnectActionBuilder() extends FormicActionBuilder {
 
   override def build(ctx: ScenarioContext, next: Action): Action = {
     val statsEngine = ctx.coreComponents.statsEngine
-    dataType match {
-      case "linear" => CreateLinearDataType(statsEngine, next)
-    }
+    val components = formicComponents(ctx)
+    val protocol = components.formicGatlingProtocol
+    FormicConnectAction(protocol.config, statsEngine, next)
   }
 
 }

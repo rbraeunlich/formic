@@ -22,8 +22,7 @@ case class FormicGatlingProtocol(serverUrl: String, username: ClientId, bufferSi
 
   val url = new URL(serverUrl)
   val config = ConfigFactory.parseString(s"""akka {\n  loglevel = $logLevel\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"${url.getHost}\"\n    port = ${url.getPort}\n  }\n  client {\n    buffersize = $bufferSize\n  }\n}""")
-  val formicSystem = FormicSystemFactory.create(config,Set(LinearClientDataTypeProvider(), TreeClientDataTypeProvider(), JsonClientDataTypeProvider()))
-  formicSystem.init(MockCallback, username)
+
 }
 
 object FormicGatlingProtocol {
@@ -41,16 +40,4 @@ object FormicGatlingProtocol {
     override type Components = FormicGatlingComponents
     override type Protocol = FormicGatlingProtocol
   }
-}
-
-object MockCallback extends NewInstanceCallback {
-  /**
-    * Set a new callback interface at a data type instance that was created remotely.
-    */
-  override def newCallbackFor(instance: FormicDataType, dataType: DataTypeName): () => Unit = () => {}
-
-  /**
-    * Perform any initializations necessary for a new, remote data type.
-    */
-  override def doNewInstanceCreated(instance: FormicDataType, dataType: DataTypeName): Unit = {}
 }

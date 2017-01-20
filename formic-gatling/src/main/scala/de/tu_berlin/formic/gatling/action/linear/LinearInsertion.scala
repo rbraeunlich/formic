@@ -11,7 +11,7 @@ import io.gatling.core.stats.StatsEngine
 /**
   * @author Ronny Bräunlich
   */
-class LinearInsertion(val toInsert: Any, val index: Expression[Int], val statsEngine: StatsEngine, val next: Action) extends ChainableAction {
+case class LinearInsertion(toInsert: Any, index: Expression[Int], statsEngine: StatsEngine, next: Action) extends ChainableAction {
 
   override def name: String = "LinearInsert action"
 

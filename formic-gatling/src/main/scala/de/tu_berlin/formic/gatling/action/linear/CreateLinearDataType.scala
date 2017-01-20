@@ -12,17 +12,24 @@ import io.gatling.core.stats.StatsEngine
 /**
   * @author Ronny Bräunlich
   */
-class CreateLinearDataType(formicSystem: FormicSystem, val statsEngine: StatsEngine, val next: Action) extends ChainableAction {
+case class CreateLinearDataType(statsEngine: StatsEngine, next: Action) extends ChainableAction {
 
   override def name: String = "CreateDataType action"
 
   override def execute(session: Session): Unit = {
     val start = TimeHelper.nowMillis
-    val string = new FormicString(() => {}, formicSystem)
-    val end = TimeHelper.nowMillis
-    val modifiedSession = session.set("linear", string)
-    FormicActions.logTimingValues(start, end, session, statsEngine, name)
-    next ! modifiedSession
+    val formicSystemOption = session("FormicSystem").asOption[FormicSystem]
+    formicSystemOption match {
+
+      case Some(formicSystem) =>
+        val string = new FormicString(() => {}, formicSystem)
+        val end = TimeHelper.nowMillis
+        val modifiedSession = session.set("linear", string)
+        FormicActions.logTimingValues(start, end, session, statsEngine, name)
+        next ! modifiedSession
+
+      case None => throw new IllegalArgumentException("Users have to connect first!")
+    }
   }
 
 

@@ -16,6 +16,7 @@ class FormicSimulation extends Simulation {
     .logLevel("info")
 
   val scn = scenario("FormicSimulation")
+    .exec(formic("Connection").connect())
     .exec(formic("Creation")
       .create()
       .linear())
