@@ -26,7 +26,7 @@ class FormicSimulation extends Simulation {
         exec(formic("LinearInsertion")
           .linear(dataTypeInstanceId)
           .insert('a')
-          .index(0))
+          .index("${n}"))
       }
     .pause(1)
 

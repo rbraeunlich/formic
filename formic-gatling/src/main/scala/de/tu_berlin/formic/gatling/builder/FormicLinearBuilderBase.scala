@@ -15,9 +15,6 @@ case class FormicLinearBuilderBase(dataTypeInstanceId: DataTypeInstanceId) {
 
 case class FormicLinearBuilderIndexStep(dataTypeInstanceId: DataTypeInstanceId, toInsert: Any) {
 
-  def index(index: Int) = FormicLinearInsertActionBuilder(dataTypeInstanceId, toInsert, index)
-
-  //TODO
-  //def index(index: Expression[Int]) = FormicLinearInsertActionBuilder(dataTypeInstanceId, toInsert, index.))
+  def index(index: Expression[Int]) = FormicLinearInsertActionBuilder(dataTypeInstanceId, toInsert, index)
 
 }

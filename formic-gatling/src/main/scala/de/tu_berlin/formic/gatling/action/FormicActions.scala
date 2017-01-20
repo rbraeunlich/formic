@@ -7,7 +7,7 @@ import de.tu_berlin.formic.datatype.linear.client.{FormicList, FormicString}
 import io.gatling.commons.stats.OK
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.action.{Action, ChainableAction}
-import io.gatling.core.session.Session
+import io.gatling.core.session.{Expression, Session}
 import io.gatling.core.stats.StatsEngine
 import io.gatling.core.stats.message.ResponseTimings
 
@@ -38,17 +38,19 @@ class CreateLinearDataType(formicSystem: FormicSystem, val statsEngine: StatsEng
 
 }
 
-class LinearInsertion(val dataTypeInstanceId: DataTypeInstanceId, val toInsert: Any, val index: Int, val statsEngine: StatsEngine, val next: Action) extends ChainableAction {
+class LinearInsertion(val dataTypeInstanceId: DataTypeInstanceId, val toInsert: Any, val index: Expression[Int], val statsEngine: StatsEngine, val next: Action) extends ChainableAction {
 
   override def name: String = "LinearInsert action"
 
   override def execute(session: Session): Unit = {
     val start = TimeHelper.nowMillis
     val dataTypeAttribute = session(dataTypeInstanceId.id)
-    dataTypeAttribute.asOption[FormicList[Any]] match {
-      case None => throw new IllegalArgumentException("Data type with id " + dataTypeInstanceId.id + " not found. Make to to create it first!")
-      case Some(dataType) => dataType.add(index, toInsert)
-    }
+    val validatedIndex = index.apply(session)
+    validatedIndex.foreach(i =>
+      dataTypeAttribute.asOption[FormicList[Any]] match {
+        case None => throw new IllegalArgumentException("Data type with id " + dataTypeInstanceId.id + " not found. Make to to create it first!")
+        case Some(dataType) => dataType.add(i, toInsert)
+      })
     val end = TimeHelper.nowMillis
     FormicActions.logTimingValues(start, end, session, statsEngine, name)
     next ! session
