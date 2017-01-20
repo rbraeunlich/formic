@@ -15,6 +15,8 @@ case class FormicProtocolBuilderUsernameStep(url: String) {
 
   def username(name : String) = FormicProtocolBuilderBufferSizeStep(url, ClientId(name))
 
+  def username(clientId: ClientId) = FormicProtocolBuilderBufferSizeStep(url, clientId)
+
 }
 
 case class FormicProtocolBuilderBufferSizeStep(url: String, username: ClientId) {
