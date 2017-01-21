@@ -29,18 +29,20 @@ class FormicSimulation extends Simulation {
 
   val edit = //feed(dataTypeInstanceIdFeeder.iterator.toArray.random)
     repeat(10, "n") {
-    exec(formic("LinearInsertion")
-      .linear("${dataTypeInstanceId}")
-      .insert('a')
-      .index("${n}"))
-  }
-    .pause(1)
-    .exec(formic("LinearDeletion")
-      .linear("${dataTypeInstanceId}")
-      .remove(0))
-    .pause(1)
+      exec(formic("LinearInsertion")
+        .linear("${dataTypeInstanceId}")
+        .insert('a')
+        .index("${n}"))
+    }
+      .pause(1)
+      .repeat(4, "n") {
+        exec(formic("LinearDeletion")
+          .linear("${dataTypeInstanceId}")
+          .remove("${n}"))
+      }
+      .pause(1)
 
-  val subscribe = feed(dataTypeInstanceIdFeeder.iterator)
+  val subscribe = feed(dataTypeInstanceIdFeeder.iterator.toArray.random)
     .exec(formic("Subscription")
       .linear("${dataTypeInstanceId}")
       .subscribe())
