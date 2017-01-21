@@ -55,7 +55,7 @@ class FormicSimulation extends Simulation {
 
   setUp(
     creators.inject(atOnceUsers(2)),
-    editors.inject(atOnceUsers(2))
+    editors.inject(rampUsers(5) over 5)
   ).protocols(formicConfig)
 
 }
