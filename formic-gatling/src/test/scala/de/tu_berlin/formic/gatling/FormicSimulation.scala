@@ -16,7 +16,7 @@ class FormicSimulation extends Simulation {
     .logLevel("info")
 
   //to have a feeder for all scenarios, we create the ids up front and use them
-  val dataTypeInstanceIdFeeder = for (x <- 0.until(2)) yield Map("dataTypeInstanceId" -> DataTypeInstanceId().id)
+  val dataTypeInstanceIdFeeder = for (x <- 0.until(5)) yield Map("dataTypeInstanceId" -> DataTypeInstanceId().id)
 
   val connect = exec(formic("Connection").connect())
     .pause(2)
@@ -27,8 +27,7 @@ class FormicSimulation extends Simulation {
     .linear("${dataTypeInstanceId}"))
     .pause(5)
 
-  val edit = //feed(dataTypeInstanceIdFeeder.iterator.toArray.random)
-    repeat(10, "n") {
+  val edit = repeat(10, "n") {
       exec(formic("LinearInsertion")
         .linear("${dataTypeInstanceId}")
         .insert('a')
@@ -54,8 +53,8 @@ class FormicSimulation extends Simulation {
     .exec(connect, subscribe, edit)
 
   setUp(
-    creators.inject(atOnceUsers(2)),
-    editors.inject(rampUsers(20) over 5)
+    creators.inject(atOnceUsers(5)),
+    editors.inject(rampUsers(100) over 30)
   ).protocols(formicConfig)
 
 }
