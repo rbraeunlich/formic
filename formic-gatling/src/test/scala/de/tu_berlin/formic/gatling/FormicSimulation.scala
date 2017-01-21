@@ -18,41 +18,41 @@ class FormicSimulation extends Simulation {
   //to have a feeder for all scenarios, we create the ids up front and use them
   val dataTypeInstanceIdFeeder = for (x <- 0.until(1)) yield Map("dataTypeInstanceId" -> DataTypeInstanceId().id)
 
-  println("Bananarama: " + dataTypeInstanceIdFeeder)
+  val connect = exec(formic("Connection").connect())
+    .pause(2)
 
-  val scn = scenario("FormicSimulation")
-    .exec(formic("Connection").connect())
-    .pause(1)
-    .feed(dataTypeInstanceIdFeeder.iterator) //IMPORTANT, use an iterator or both scenarios will share one, which results in Exceptions
+  val createDataTypes = feed(dataTypeInstanceIdFeeder.iterator) //IMPORTANT, use an iterator or both scenarios will share one, which results in Exceptions
     .exec(formic("Creation")
-      .create()
-      .linear("${dataTypeInstanceId}"))
+    .create()
+    .linear("${dataTypeInstanceId}"))
     .pause(5)
-    .repeat(10, "n") {
-      exec(formic("LinearInsertion")
-        .linear("${dataTypeInstanceId}")
-        .insert('a')
-        .index("${n}"))
-    }
+
+  val edit = repeat(10, "n") {
+    exec(formic("LinearInsertion")
+      .linear("${dataTypeInstanceId}")
+      .insert('a')
+      .index("${n}"))
+  }
     .pause(1)
     .exec(formic("LinearDeletion")
       .linear("${dataTypeInstanceId}")
       .remove(0))
     .pause(1)
 
-  val subscription = scenario("Subscription")
-    .pause(7)
-    .exec(formic("Connection").connect())
-    .pause(1)
-    .feed(dataTypeInstanceIdFeeder.iterator)
+  val subscribe = feed(dataTypeInstanceIdFeeder.iterator)
     .exec(formic("Subscription")
       .linear("${dataTypeInstanceId}")
       .subscribe())
     .pause(1)
 
+  val creators = scenario("Creators").exec(connect, createDataTypes)
+
+  val editors = scenario("Editors").pause(7)
+    .exec(connect, subscribe, edit)
+
   setUp(
-    scn.inject(atOnceUsers(1)),
-    subscription.inject(atOnceUsers(1))
+    creators.inject(atOnceUsers(1)),
+    editors.inject(atOnceUsers(1))
   ).protocols(formicConfig)
 
 }
