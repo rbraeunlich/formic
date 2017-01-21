@@ -58,7 +58,7 @@ class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = C
       log.debug(s"Incoming UpdateRequest from user $id: $req")
       val actorSelection = context.actorSelection(s"../*/${req.dataTypeInstanceId.id}").resolveOne(3 seconds)
       //blocking here is necessary to ensure no messages for a data type are received while we look it up
-      Await.ready(actorSelection, 3.seconds)
+      Await.ready(actorSelection, 6.seconds)
       //onComplete might be executed async, but we need to be sync here
       actorSelection.value.get match {
         case Success(ref) =>
