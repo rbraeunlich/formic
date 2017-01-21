@@ -30,13 +30,13 @@ class FormicSimulation extends Simulation {
     .pause(5)
     .repeat(10, "n") {
       exec(formic("LinearInsertion")
-        .linear()
+        .linear("${dataTypeInstanceId}")
         .insert('a')
         .index("${n}"))
     }
     .pause(1)
     .exec(formic("LinearDeletion")
-      .linear()
+      .linear("${dataTypeInstanceId}")
       .remove(0))
     .pause(1)
 
@@ -46,8 +46,8 @@ class FormicSimulation extends Simulation {
     .pause(1)
     .feed(dataTypeInstanceIdFeeder.iterator)
     .exec(formic("Subscription")
-      .linear()
-      .subscribe("${dataTypeInstanceId}"))
+      .linear("${dataTypeInstanceId}")
+      .subscribe())
     .pause(1)
 
   setUp(

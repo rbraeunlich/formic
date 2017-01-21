@@ -9,5 +9,4 @@ object SessionVariables {
 
   val FORMIC_SYSTEM = "FormicSystem"
 
-  val LINEAR_DATA_TYPE = "linear"
 }

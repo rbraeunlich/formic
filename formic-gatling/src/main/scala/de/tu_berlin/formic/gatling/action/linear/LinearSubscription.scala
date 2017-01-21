@@ -46,7 +46,7 @@ case class LinearSubscription(dataTypeInstanceId: Expression[String], statsEngin
           latch.await(5, TimeUnit.SECONDS)
           val string = promise.future.value.get.get
           val end = TimeHelper.nowMillis
-          val modifiedSession = session.set(SessionVariables.LINEAR_DATA_TYPE, string)
+          val modifiedSession = session.set(id, string)
           FormicActions.logTimingValues(start, end, session, statsEngine, name)
           next ! modifiedSession
 

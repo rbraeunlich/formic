@@ -3,6 +3,7 @@ package de.tu_berlin.formic.gatling.builder
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.gatling.action.FormicConnectActionBuilder
 import io.gatling.core.config.GatlingConfiguration
+import io.gatling.core.session.Expression
 
 /**
   * @author Ronny Bräunlich
@@ -13,6 +14,6 @@ case class FormicActionBuilderBase(requestName: String) {
 
   def create()(implicit configuration: GatlingConfiguration) = FormicCreationBuilder(requestName)
 
-  def linear()(implicit configuration: GatlingConfiguration) = FormicLinearBuilderBase()
+  def linear(dataTypeInstanceId: Expression[String])(implicit configuration: GatlingConfiguration) = FormicLinearBuilderBase(dataTypeInstanceId)
 
 }
