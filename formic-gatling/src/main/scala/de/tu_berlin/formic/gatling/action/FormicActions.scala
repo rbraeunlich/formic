@@ -1,12 +1,7 @@
 package de.tu_berlin.formic.gatling.action
 
-import de.tu_berlin.formic.client.FormicSystem
-import de.tu_berlin.formic.common.DataTypeInstanceId
-import de.tu_berlin.formic.datatype.linear.client.{FormicList, FormicString}
 import io.gatling.commons.stats.OK
-import io.gatling.commons.util.TimeHelper
-import io.gatling.core.action.{Action, ChainableAction}
-import io.gatling.core.session.{Expression, Session}
+import io.gatling.core.session.Session
 import io.gatling.core.stats.StatsEngine
 import io.gatling.core.stats.message.ResponseTimings
 

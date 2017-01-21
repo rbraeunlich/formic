@@ -12,7 +12,7 @@ import io.gatling.core.stats.StatsEngine
 /**
   * @author Ronny Bräunlich
   */
-case class CreateLinearDataType(statsEngine: StatsEngine, next: Action) extends ChainableAction {
+case class LinearCreation(statsEngine: StatsEngine, next: Action) extends ChainableAction {
 
   override def name: String = "CreateDataType action"
 

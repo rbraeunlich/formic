@@ -9,10 +9,10 @@ import io.gatling.core.structure.ScenarioContext
 /**
   * @author Ronny Bräunlich
   */
-case class FormicLinearInsertActionBuilder(toInsert: Any, index: Expression[Int]) extends FormicActionBuilder {
+case class FormicLinearSubscriptionActionBuilder(dataTypeInstanceId: Expression[String]) extends FormicActionBuilder {
 
   override def build(ctx: ScenarioContext, next: Action): Action = {
     val statsEngine = ctx.coreComponents.statsEngine
-    LinearInsertion(toInsert, index, statsEngine, next)
+    LinearSubscription(dataTypeInstanceId, statsEngine, next)
   }
 }
