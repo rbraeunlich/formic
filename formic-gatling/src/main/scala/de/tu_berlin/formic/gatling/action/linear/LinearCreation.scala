@@ -6,31 +6,32 @@ import de.tu_berlin.formic.datatype.linear.client.FormicString
 import de.tu_berlin.formic.gatling.action.{FormicActions, SessionVariables}
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.action.{Action, ChainableAction}
-import io.gatling.core.session.Session
+import io.gatling.core.session.{Expression, Session}
 import io.gatling.core.stats.StatsEngine
 
 /**
   * @author Ronny Bräunlich
   */
-case class LinearCreation(statsEngine: StatsEngine, next: Action) extends ChainableAction {
+case class LinearCreation(dataTypeInstanceId: Expression[String], statsEngine: StatsEngine, next: Action) extends ChainableAction {
 
   override def name: String = "CreateDataType action"
 
   override def execute(session: Session): Unit = {
     val start = TimeHelper.nowMillis
     val formicSystemOption = session(SessionVariables.FORMIC_SYSTEM).asOption[FormicSystem]
-    formicSystemOption match {
+    val validatedDataTypeInstanceId = dataTypeInstanceId.apply(session)
+    validatedDataTypeInstanceId.foreach { id =>
+      formicSystemOption match {
 
-      case Some(formicSystem) =>
-        val string = new FormicString(() => {}, formicSystem)
-        val end = TimeHelper.nowMillis
-        val modifiedSession = session.set(SessionVariables.LINEAR_DATA_TYPE, string)
-        FormicActions.logTimingValues(start, end, session, statsEngine, name)
-        next ! modifiedSession
+        case Some(formicSystem) =>
+          val string = new FormicString(() => {}, formicSystem, DataTypeInstanceId.valueOf(id))
+          val end = TimeHelper.nowMillis
+          val modifiedSession = session.set(SessionVariables.LINEAR_DATA_TYPE, string)
+          FormicActions.logTimingValues(start, end, session, statsEngine, name)
+          next ! modifiedSession
 
-      case None => throw new IllegalArgumentException("Users have to connect first!")
+        case None => throw new IllegalArgumentException("Users have to connect first!")
+      }
     }
   }
-
-
 }

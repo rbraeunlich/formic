@@ -1,7 +1,6 @@
 package de.tu_berlin.formic.gatling
 
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
-import de.tu_berlin.formic.datatype.linear.client.FormicString
 import de.tu_berlin.formic.gatling.Predef._
 import io.gatling.core.Predef._
 
@@ -16,20 +15,19 @@ class FormicSimulation extends Simulation {
     .bufferSize(100)
     .logLevel("info")
 
-  //TODO make this a list and transform it to feeder
-  var dataTypeInstanceId: DataTypeInstanceId = _
+  //to have a feeder for all scenarios, we create the ids up front and use them
+  val dataTypeInstanceIdFeeder = for (x <- 0.until(1)) yield Map("dataTypeInstanceId" -> DataTypeInstanceId().id)
+
+  println("Bananarama: " + dataTypeInstanceIdFeeder)
 
   val scn = scenario("FormicSimulation")
     .exec(formic("Connection").connect())
+    .pause(1)
+    .feed(dataTypeInstanceIdFeeder.iterator) //IMPORTANT, use an iterator or both scenarios will share one, which results in Exceptions
     .exec(formic("Creation")
       .create()
-      .linear())
+      .linear("${dataTypeInstanceId}"))
     .pause(5)
-    //hack to transfer the id to the next scenario
-    .exec(session => {
-    dataTypeInstanceId = session("linear").as[FormicString].dataTypeInstanceId
-    session
-  })
     .repeat(10, "n") {
       exec(formic("LinearInsertion")
         .linear()
@@ -43,10 +41,10 @@ class FormicSimulation extends Simulation {
     .pause(1)
 
   val subscription = scenario("Subscription")
-    .pause(5)
+    .pause(7)
     .exec(formic("Connection").connect())
     .pause(1)
-    .exec(_.set("dataTypeInstanceId", dataTypeInstanceId.id))
+    .feed(dataTypeInstanceIdFeeder.iterator)
     .exec(formic("Subscription")
       .linear()
       .subscribe("${dataTypeInstanceId}"))
