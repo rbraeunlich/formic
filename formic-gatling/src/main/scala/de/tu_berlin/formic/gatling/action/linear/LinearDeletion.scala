@@ -22,7 +22,7 @@ case class LinearDeletion(dataTypeInstanceId: Expression[String], index: Express
       val validatedIndex = index.apply(session)
       validatedIndex.foreach(i =>
         dataTypeAttribute.asOption[FormicList[Any]] match {
-          case None => throw new IllegalArgumentException("Data type not found. Make to to create it first!")
+          case None => throw new IllegalArgumentException("Data type not found. Create it first!")
           case Some(dataType) => dataType.remove(i)
         })
       val end = TimeHelper.nowMillis
