@@ -25,7 +25,7 @@ case class LinearInsertion(dataTypeInstanceId: Expression[String], toInsert: Any
           case Some(dataType) => dataType.add(i, toInsert)
         })
       val end = TimeHelper.nowMillis
-      FormicActions.logTimingValues(start, end, session, statsEngine, name)
+      FormicActions.logOkTimingValues(start, end, session, statsEngine, name)
       next ! session
     }
   }

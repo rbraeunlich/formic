@@ -13,7 +13,7 @@ import io.gatling.core.session.{Expression, Session}
 import io.gatling.core.stats.StatsEngine
 
 import scala.concurrent.Promise
-import scala.util.Success
+import scala.util.{Failure, Success}
 
 /**
   * @author Ronny Bräunlich
@@ -43,13 +43,17 @@ case class LinearSubscription(dataTypeInstanceId: Expression[String], statsEngin
           val callbackCondition = (d: FormicDataType) => d.dataTypeInstanceId == DataTypeInstanceId.valueOf(id)
           callback.addListener(callbackCondition, callbackMethod)
           //gotta block here, because the session is immutable
-          latch.await(5, TimeUnit.SECONDS)
-          val string = promise.future.value.get.get
-          val end = TimeHelper.nowMillis
-          val modifiedSession = session.set(id, string)
-          FormicActions.logTimingValues(start, end, session, statsEngine, name)
-          next ! modifiedSession
-
+          latch.await(10, TimeUnit.SECONDS)
+          promise.future.value match {
+            case None => FormicActions.logKoTimingValues(start, TimeHelper.nowMillis, session, statsEngine, name)
+            case Some(Failure(ex)) =>
+              FormicActions.logKoTimingValues(start, TimeHelper.nowMillis, session, statsEngine, name)
+              throw ex
+            case Some(Success(string)) =>
+              val modifiedSession = session.set(id, string)
+              FormicActions.logOkTimingValues(start, TimeHelper.nowMillis, session, statsEngine, name)
+              next ! modifiedSession
+          }
         case None => throw new IllegalArgumentException("Users have to connect first!")
       }
     }

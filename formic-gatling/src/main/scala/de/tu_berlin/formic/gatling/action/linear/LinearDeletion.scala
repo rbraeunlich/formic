@@ -26,7 +26,7 @@ case class LinearDeletion(dataTypeInstanceId: Expression[String], index: Express
           case Some(dataType) => dataType.remove(i)
         })
       val end = TimeHelper.nowMillis
-      FormicActions.logTimingValues(start, end, session, statsEngine, name)
+      FormicActions.logOkTimingValues(start, end, session, statsEngine, name)
       next ! session
     }
   }

@@ -24,7 +24,7 @@ case class FormicConnectAction(config: Config, statsEngine: StatsEngine, next: A
     formicSystem.init(callback)
     val end = TimeHelper.nowMillis
     val modifiedSession = session.set(SessionVariables.FORMIC_SYSTEM, formicSystem).set(SessionVariables.CALLBACK, callback)
-    FormicActions.logTimingValues(start, end, session, statsEngine, name)
+    FormicActions.logOkTimingValues(start, end, session, statsEngine, name)
     next ! modifiedSession
   }
 }

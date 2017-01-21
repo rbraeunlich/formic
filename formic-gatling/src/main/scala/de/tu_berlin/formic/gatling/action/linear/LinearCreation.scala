@@ -27,7 +27,7 @@ case class LinearCreation(dataTypeInstanceId: Expression[String], statsEngine: S
           val string = new FormicString(() => {}, formicSystem, DataTypeInstanceId.valueOf(id))
           val end = TimeHelper.nowMillis
           val modifiedSession = session.set(id, string)
-          FormicActions.logTimingValues(start, end, session, statsEngine, name)
+          FormicActions.logOkTimingValues(start, end, session, statsEngine, name)
           next ! modifiedSession
 
         case None => throw new IllegalArgumentException("Users have to connect first!")
