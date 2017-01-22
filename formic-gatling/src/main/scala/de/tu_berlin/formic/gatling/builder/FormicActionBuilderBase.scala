@@ -19,4 +19,6 @@ case class FormicActionBuilderBase(requestName: String) {
 
   def tree(dataTypeInstanceId: Expression[String])(implicit configuration: GatlingConfiguration) = FormicTreeBuilderBase(dataTypeInstanceId)
 
+  def json(dataTypeInstanceId: Expression[String])(implicit configuration: GatlingConfiguration) = FormicJsonBuilderBase(dataTypeInstanceId)
+
 }

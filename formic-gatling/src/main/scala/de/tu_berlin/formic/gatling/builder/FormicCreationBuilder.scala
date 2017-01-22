@@ -12,4 +12,6 @@ case class FormicCreationBuilder(requestName: String) {
 
   def tree(dataTypeInstanceId: Expression[String]) = FormicCreateActionBuilder("tree", dataTypeInstanceId)
 
+  def json(dataTypeInstanceId: Expression[String]) = FormicCreateActionBuilder("json", dataTypeInstanceId)
+
 }

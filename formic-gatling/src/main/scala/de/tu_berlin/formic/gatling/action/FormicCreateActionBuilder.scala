@@ -1,5 +1,6 @@
 package de.tu_berlin.formic.gatling.action
 
+import de.tu_berlin.formic.gatling.action.json.JsonCreation
 import de.tu_berlin.formic.gatling.action.linear.LinearCreation
 import de.tu_berlin.formic.gatling.action.tree.TreeCreation
 import io.gatling.core.action.Action
@@ -16,6 +17,7 @@ case class FormicCreateActionBuilder(dataType: String, dataTypeInstanceId: Expre
     dataType match {
       case "linear" => LinearCreation(dataTypeInstanceId, statsEngine, next)
       case "tree" => TreeCreation(dataTypeInstanceId, statsEngine, next)
+      case "json" => JsonCreation(dataTypeInstanceId, statsEngine, next)
     }
   }
 
