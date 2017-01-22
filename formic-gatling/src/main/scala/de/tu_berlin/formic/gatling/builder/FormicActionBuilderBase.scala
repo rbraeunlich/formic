@@ -17,4 +17,6 @@ case class FormicActionBuilderBase(requestName: String) {
 
   def subscribe(dataTypeInstanceId: Expression[String]) = FormicSubscriptionActionBuilder(dataTypeInstanceId)
 
+  def tree(dataTypeInstanceId: Expression[String])(implicit configuration: GatlingConfiguration) = FormicTreeBuilderBase(dataTypeInstanceId)
+
 }

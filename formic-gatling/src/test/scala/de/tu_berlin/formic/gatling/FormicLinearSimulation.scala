@@ -7,7 +7,7 @@ import io.gatling.core.Predef._
 /**
   * @author Ronny Bräunlich
   */
-class FormicSimulation extends Simulation {
+class FormicLinearSimulation extends Simulation {
 
   val formicConfig = formic
     .url("http://localhost:8080")
@@ -43,8 +43,7 @@ class FormicSimulation extends Simulation {
 
   val subscribe = feed(dataTypeInstanceIdFeeder.iterator.toArray.random)
     .exec(formic("Subscription")
-      .linear("${dataTypeInstanceId}")
-      .subscribe())
+      .subscribe("${dataTypeInstanceId}"))
     .pause(1)
 
   val creators = scenario("Creators").exec(connect, createDataTypes)

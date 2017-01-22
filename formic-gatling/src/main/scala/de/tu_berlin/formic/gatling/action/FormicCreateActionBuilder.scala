@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.gatling.action
 
-import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.gatling.action.linear.LinearCreation
+import de.tu_berlin.formic.gatling.action.tree.TreeCreation
 import io.gatling.core.action.Action
 import io.gatling.core.session.Expression
 import io.gatling.core.structure.ScenarioContext
@@ -15,6 +15,7 @@ case class FormicCreateActionBuilder(dataType: String, dataTypeInstanceId: Expre
     val statsEngine = ctx.coreComponents.statsEngine
     dataType match {
       case "linear" => LinearCreation(dataTypeInstanceId, statsEngine, next)
+      case "tree" => TreeCreation(dataTypeInstanceId, statsEngine, next)
     }
   }
 

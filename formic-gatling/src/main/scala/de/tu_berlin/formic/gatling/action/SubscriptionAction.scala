@@ -43,7 +43,9 @@ case class SubscriptionAction(dataTypeInstanceId: Expression[String], statsEngin
           //gotta block here, because the session is immutable
           latch.await(10, TimeUnit.SECONDS)
           promise.future.value match {
-            case None => FormicActions.logKoTimingValues(start, TimeHelper.nowMillis, session, statsEngine, name)
+            case None =>
+              FormicActions.logKoTimingValues(start, TimeHelper.nowMillis, session, statsEngine, name)
+              next ! session
             case Some(Failure(ex)) =>
               FormicActions.logKoTimingValues(start, TimeHelper.nowMillis, session, statsEngine, name)
               throw ex
