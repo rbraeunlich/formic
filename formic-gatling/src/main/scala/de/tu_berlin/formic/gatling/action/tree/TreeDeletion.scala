@@ -12,7 +12,8 @@ import io.gatling.core.stats.StatsEngine
   * @author Ronny Bräunlich
   */
 case class TreeDeletion(dataTypeInstanceId: Expression[String], statsEngine: StatsEngine, next: Action, pathElements: Seq[Expression[Int]]) extends ChainableAction {
-  override def name: String = "TreeInsert action"
+
+  override def name: String = "TreeDelete action"
 
   override def execute(session: Session): Unit = {
     val start = TimeHelper.nowMillis
