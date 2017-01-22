@@ -48,12 +48,12 @@ class FormicLinearSimulation extends Simulation {
 
   val creators = scenario("Creators").exec(connect, createDataTypes)
 
-  val editors = scenario("Editors").pause(7)
-    .exec(connect, subscribe, edit)
+  val editors = scenario("Editors")
+    .exec(connect).pause(7).exec(subscribe, edit)
 
   setUp(
     creators.inject(atOnceUsers(5)),
-    editors.inject(rampUsers(100) over 30)
+    editors.inject(rampUsers(20) over 20)
   ).protocols(formicConfig)
 
 }
