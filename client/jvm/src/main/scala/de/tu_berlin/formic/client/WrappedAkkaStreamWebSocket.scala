@@ -26,7 +26,7 @@ class WrappedAkkaStreamWebSocket(val url: String, val receiver: ActorRef)(implic
   def establishConnection()(implicit materializer: ActorMaterializer, actorSystem: ActorSystem) = {
     implicit val ec = actorSystem.dispatcher
     val wrappedReceiver = actorSystem.actorOf(Props(new ReceiverWrapper(receiver)))
-    val source = Source.queue[Message](10, OverflowStrategy.fail)
+    val source = Source.queue[Message](30, OverflowStrategy.fail)
     val sink: Sink[Message, NotUsed] =
       Flow[Message].map {
         // transform websocket message to domain message
