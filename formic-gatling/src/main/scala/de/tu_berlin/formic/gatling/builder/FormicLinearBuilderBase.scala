@@ -1,6 +1,5 @@
 package de.tu_berlin.formic.gatling.builder
 
-import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.gatling.action.linear._
 import io.gatling.core.session.Expression
 
@@ -9,11 +8,9 @@ import io.gatling.core.session.Expression
   */
 case class FormicLinearBuilderBase(dataTypeInstanceId: Expression[String]) {
 
-  def insert[T](toInsert: T) = FormicLinearBuilderInsertIndexStep(dataTypeInstanceId ,toInsert)
+  def insert[T](toInsert: T) = FormicLinearBuilderInsertIndexStep(dataTypeInstanceId, toInsert)
 
   def remove(index: Expression[Int]) = FormicLinearDeleteActionBuilder(dataTypeInstanceId, index)
-
-  def subscribe() = FormicLinearSubscriptionActionBuilder(dataTypeInstanceId)
 
 }
 
