@@ -54,7 +54,7 @@ class LinearClientDataTypeSpec extends TestKit(ActorSystem("LinearClientDataType
         TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty, outgoing.ref)))
       val op = LinearInsertOperation(0, 213, OperationId(), OperationContext(List.empty), ClientId())
       val opMsg = OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(op))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
 
       dataType ! opMsg
@@ -70,7 +70,7 @@ class LinearClientDataTypeSpec extends TestKit(ActorSystem("LinearClientDataType
       val opInsMsg = OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(opIns))
       val opDel = LinearDeleteOperation(0, OperationId(), OperationContext(List.empty), ClientId())
       val opDelMsg = OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(opDel))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
       dataType ! opInsMsg
 
@@ -92,7 +92,7 @@ class LinearClientDataTypeSpec extends TestKit(ActorSystem("LinearClientDataType
       val noop = LinearNoOperation(OperationId(), OperationContext(List.empty), ClientId())
       val opMsg = OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(op2, op))
       val noopMsg = OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(noop))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
       dataType ! opMsg
 
@@ -112,7 +112,7 @@ class LinearClientDataTypeSpec extends TestKit(ActorSystem("LinearClientDataType
       val opInsMsg = OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(opIns))
       val opInsLocal = LinearInsertOperation(0, 23, OperationId(), OperationContext(List.empty), ClientId())
       val opInsMsgLocal = LocalOperationMessage(OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(opInsLocal)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
       dataType ! opInsMsg
 
@@ -133,7 +133,7 @@ class LinearClientDataTypeSpec extends TestKit(ActorSystem("LinearClientDataType
       val opInsMsg = OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(opIns))
       val opDelLocal = LinearDeleteOperation(0, OperationId(), OperationContext(List.empty), ClientId())
       val opDelMsgLocal = LocalOperationMessage(OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(opDelLocal)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
       dataType ! opInsMsg
 
@@ -150,7 +150,7 @@ class LinearClientDataTypeSpec extends TestKit(ActorSystem("LinearClientDataType
         TestActorRef(Props(new LinearClientDataType[Int](DataTypeInstanceId(), new LinearClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty, outgoing.ref)))
       val opIns = LinearInsertOperation(0, 213, OperationId(), OperationContext(List.empty), ClientId())
       val opInsMsg = OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(opIns))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
 
       dataType ! opInsMsg

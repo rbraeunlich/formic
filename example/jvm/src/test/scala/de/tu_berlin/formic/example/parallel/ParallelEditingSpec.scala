@@ -8,6 +8,7 @@ import akka.testkit.TestKit
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.{FormicSystemFactory, NewInstanceCallback}
 import de.tu_berlin.formic.common.ClientId
+import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
 import de.tu_berlin.formic.datatype.json._
 import de.tu_berlin.formic.datatype.json.client.{FormicJsonObject, JsonClientDataTypeProvider}
@@ -64,7 +65,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       user1.init(user1Callback, user1Id)
       user2.init(user2Callback, user2Id)
       Thread.sleep(3000)
-      val stringUser1 = new FormicString(() => {}, user1)
+      val stringUser1 = new FormicString((_) => {}, user1)
       Thread.sleep(1000) //send the CreateRequest to the server
       user2.requestDataType(stringUser1.dataTypeInstanceId)
       awaitCond(user2Callback.dataTypes.nonEmpty, 5.seconds)
@@ -141,7 +142,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       user1.init(user1Callback, user1Id)
       user2.init(user2Callback, user2Id)
       Thread.sleep(3000)
-      val treeUser1 = new FormicIntegerTree(() => {}, user1)
+      val treeUser1 = new FormicIntegerTree((_) => {}, user1)
       Thread.sleep(1000)
       //insert root node
       treeUser1.insert(1, AccessPath())
@@ -231,7 +232,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       user1.init(user1Callback, user1Id)
       user2.init(user2Callback, user2Id)
       Thread.sleep(3000)
-      val jsonUser1 = new FormicJsonObject(() => {}, user1)
+      val jsonUser1 = new FormicJsonObject((_) => {}, user1)
       Thread.sleep(1000) //send the CreateRequest to the server
       user2.requestDataType(jsonUser1.dataTypeInstanceId)
       awaitCond(user2Callback.dataTypes.nonEmpty, 7.seconds)
@@ -390,14 +391,14 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       user1.init(user1Callback, user1Id)
       user2.init(user2Callback, user2Id)
       Thread.sleep(3000)
-      val stringUser1 = new FormicString(() => {
+      val stringUser1 = new FormicString((_) => {
         latch.countDown()
       }, user1)
       Thread.sleep(1000) //send the CreateRequest to the server
       user2.requestDataType(stringUser1.dataTypeInstanceId)
       awaitCond(user2Callback.dataTypes.nonEmpty, 5.seconds)
       val stringUser2 = user2Callback.dataTypes.head.asInstanceOf[FormicString]
-      stringUser2.callback = () => latch.countDown()
+      stringUser2.callback = (_) => latch.countDown()
 
       for (x <- 0.until(iterations)) {
         stringUser1.add(0, 'a')
@@ -427,7 +428,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       user1.init(user1Callback, user1Id)
       user2.init(user2Callback, user2Id)
       Thread.sleep(3000)
-      val treeUser1 = new FormicStringTree(() => {}, user1)
+      val treeUser1 = new FormicStringTree((_) => {}, user1)
       Thread.sleep(1000)
       //insert root node
       treeUser1.insert("1", AccessPath())
@@ -436,8 +437,8 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       awaitCond(user2Callback.dataTypes.nonEmpty, 5.seconds)
       val treeUser2 = user2Callback.dataTypes.head.asInstanceOf[FormicStringTree]
       //because we add the root node, we set the correct callbacks here
-      treeUser1.callback = () => latch.countDown()
-      treeUser2.callback = () => latch.countDown()
+      treeUser1.callback = (_) => latch.countDown()
+      treeUser2.callback = (_) => latch.countDown()
 
       for(x <- 0.until(iterations)) {
         treeUser1.insert("a", AccessPath(0))
@@ -468,14 +469,14 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       user1.init(user1Callback, user1Id)
       user2.init(user2Callback, user2Id)
       Thread.sleep(3000)
-      val jsonUser1 = new FormicJsonObject(() => {}, user1)
+      val jsonUser1 = new FormicJsonObject((_) => {}, user1)
       Thread.sleep(1000) //send the CreateRequest to the server
       user2.requestDataType(jsonUser1.dataTypeInstanceId)
       awaitCond(user2Callback.dataTypes.nonEmpty, 5.seconds)
       val jsonUser2 = user2Callback.dataTypes.head.asInstanceOf[FormicJsonObject]
       //because we add the root node, we set the correct callbacks here
-      jsonUser1.callback = () => latch.countDown()
-      jsonUser2.callback = () => latch.countDown()
+      jsonUser1.callback = (_) => latch.countDown()
+      jsonUser2.callback = (_) => latch.countDown()
 
       for(x <- 0.until(iterations)) {
         jsonUser1.insert(1, JsonPath(s"a$x"))
@@ -505,7 +506,7 @@ object ParallelEditingSpec {
     /**
       * Set a new callback interface at a data type instance that was created remotely.
       */
-    override def newCallbackFor(instance: FormicDataType, dataType: DataTypeName): () => Unit = () => Unit
+    override def newCallbackFor(instance: FormicDataType, dataType: DataTypeName): (ClientDataTypeEvent) => Unit = (_) => Unit
 
     /**
       * Perform any initializations necessary for a new, remote data type.

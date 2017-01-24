@@ -1,5 +1,7 @@
 package de.tu_berlin.formic.common.datatype.client
 
+import java.util.concurrent.{CountDownLatch, TimeUnit}
+
 import akka.actor.{ActorRef, ActorSystem, Props, Terminated}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import de.tu_berlin.formic.common.controlalgo.{ControlAlgorithmClient, WaveOTClient}
@@ -51,7 +53,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val data = "{foo}"
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       val operationMessage = OperationMessage(
         ClientId(),
         dataTypeInstanceId,
@@ -72,7 +74,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val controlAlgo = new AbstractClientDataTypeSpecControlAlgorithmClient
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, controlAlgo, outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       val operationMessage = OperationMessage(
         ClientId(),
         dataTypeInstanceId,
@@ -92,7 +94,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val data = "{foo}"
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val operationMessage = OperationMessage(
         ClientId(),
@@ -111,7 +113,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val data = "{foo}"
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val operation2 = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val operationMessage = OperationMessage(
@@ -138,7 +140,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val data = "{foo}"
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(dataTypeInstanceId)
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val operation2 = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
@@ -166,7 +168,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val data = "{foo}"
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(dataTypeInstanceId)
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val operationMessage = OperationMessage(
@@ -185,7 +187,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val dataTypeInstanceId = DataTypeInstanceId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       val data = "{foo}"
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val operationMessage = OperationMessage(
@@ -204,7 +206,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val dataTypeInstanceId = DataTypeInstanceId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient(false), outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(dataTypeInstanceId)
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "{}")
       val message = OperationMessage(
@@ -237,7 +239,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
 
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), controlAlgo, outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "{1}")
       val message = OperationMessage(
@@ -255,12 +257,12 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     "replace a callback when receiving a new one and kill the old one" in {
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient(false), outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       val oldCallback = dataType.children.head
       val watcher = TestProbe()
       watcher.watch(oldCallback)
 
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
 
       watcher.expectMsgPF(2.seconds) { case Terminated(ref) => ref should equal(oldCallback) }
     }
@@ -271,7 +273,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val operationId = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       val operation = AbstractClientDataTypeSpecTestOperation(operationId, OperationContext(List.empty), ClientId(), data)
       val operationMessage = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(operation))
 
@@ -286,7 +288,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val operationId = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, Option(operationId), outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
 
       dataType ! UpdateRequest(ClientId(), dataTypeInstanceId)
 
@@ -298,7 +300,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val operationId = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, Option(operationId), outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(dataTypeInstanceId)
 
       dataType ! UpdateRequest(ClientId(), dataTypeInstanceId)
@@ -313,7 +315,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val previousOperation = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(dataTypeInstanceId)
       val operation = AbstractClientDataTypeSpecTestOperation(operationId, OperationContext(List(previousOperation)), ClientId(), data)
       val operationMessage = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(operation))
@@ -333,7 +335,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val previousOperation = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, Some(initialOperationId), outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(dataTypeInstanceId)
       val operation = AbstractClientDataTypeSpecTestOperation(operationId, OperationContext(List(previousOperation)), ClientId(), data)
       val operationMessage = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(operation))
@@ -353,7 +355,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val previousRemoteOperationId = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(dataTypeInstanceId)
       val arrivedRemoteOperation = AbstractClientDataTypeSpecTestOperation(lastArrivedRemoteOperationId, OperationContext(), ClientId(), data)
       val arrivedRemoteOperationMessage = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(arrivedRemoteOperation))
@@ -378,7 +380,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val previousRemoteOperationId = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new WaveOTClient((op)=>{}), outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(dataTypeInstanceId)
       val localOperation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List()), ClientId(), data)
       val localOperationMessage = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(localOperation))
@@ -400,7 +402,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val operationId = OperationId()
       val previousOperation = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(dataTypeInstanceId)
       val normalOperation = AbstractClientDataTypeSpecTestOperation(operationId, OperationContext(List.empty), ClientId(), data)
       val missingParentOperation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List(previousOperation)), ClientId(), data)
@@ -435,7 +437,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       }
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, controlAlgorithm, outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(dataTypeInstanceId)
       val data = "{foo}"
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
@@ -457,7 +459,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       //because the control algorithm has to check for duplicates, we have to make sure the data type listens to it
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new WaveOTClient((op) => {}), outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(dataTypeInstanceId)
       val data = "{foo}"
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
@@ -479,7 +481,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val data = "{foo}"
       val outgoing = TestProbe()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = outgoing.ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val operation2 = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val operationMessage = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(operation))
@@ -519,7 +521,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       }
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, controlAlgorithm, outgoingConnection = outgoing.ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(dataTypeInstanceId)
 
       dataType ! LocalOperationMessage(operationMessage)
@@ -564,7 +566,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       }
 
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, controlAlgorithm, outgoingConnection = outgoing.ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
 
       dataType ! LocalOperationMessage(operationMessage)
       dataType ! LocalOperationMessage(operationMessage2)
@@ -577,7 +579,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val lastOperationId = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "")
       val operationMessage = OperationMessage(ClientId(), DataTypeInstanceId(), AbstractClientDataTypeSpec.dataTypeName, List(operation))
 
@@ -590,7 +592,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val lastOperationId = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "")
       val operationMessage = OperationMessage(ClientId(), DataTypeInstanceId(), AbstractClientDataTypeSpec.dataTypeName, List(operation))
@@ -605,7 +607,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
       dataType ! RemoteInstantiation
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "")
       val operationMessage = OperationMessage(ClientId(), DataTypeInstanceId(), AbstractClientDataTypeSpec.dataTypeName, List(operation))
 
@@ -641,7 +643,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val lastOperationId = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List(lastOperationId)), ClientId(), "")
       val operationMessage = OperationMessage(ClientId(), DataTypeInstanceId(), AbstractClientDataTypeSpec.dataTypeName, List(operation))
@@ -668,7 +670,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new WaveOTClient((op) => {}), outgoingConnection = TestProbe().ref){
         override val transformer = testTransformer
       }))
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(dataTypeInstanceId)
       val localOperation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val localOperationMsg = OperationMessage(ClientId(), dataTypeInstanceId, AbstractClientDataTypeSpec.dataTypeName, List(localOperation))
@@ -681,6 +683,97 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
 
       dataType.underlyingActor.historyBuffer.history.find(op => op.id == additionalOperation.id).get.operationContext should equal(OperationContext(List(localOperation.id)))
     }
+  }
+
+  "generate a LocalOperationEvent after applying a local operation when unacknowledged" in {
+    val dataTypeInstanceId = DataTypeInstanceId()
+    val data = "{foo}"
+    val latch = new CountDownLatch(1)
+    val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+    val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+      Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
+    dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
+      event.asInstanceOf[LocalOperationEvent].operation should equal(operation)
+      latch.countDown()
+    })
+    val operationMessage = OperationMessage(
+      ClientId(),
+      dataTypeInstanceId,
+      AbstractClientDataTypeSpec.dataTypeName,
+      List(operation)
+    )
+
+    dataType ! LocalOperationMessage(operationMessage)
+
+    val awaiting = latch.await(5, TimeUnit.SECONDS)
+    awaiting should equal(true)
+  }
+
+  "generate a LocalOperationEvent after applying a local operation when acknowledged" in {
+    val dataTypeInstanceId = DataTypeInstanceId()
+    val data = "{foo}"
+    val latch = new CountDownLatch(1)
+    val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+    val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+      Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
+    dataType ! RemoteInstantiation
+    dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
+      event.asInstanceOf[LocalOperationEvent].operation should equal(operation)
+      latch.countDown()
+    })
+    val operationMessage = OperationMessage(
+      ClientId(),
+      dataTypeInstanceId,
+      AbstractClientDataTypeSpec.dataTypeName,
+      List(operation)
+    )
+
+    dataType ! LocalOperationMessage(operationMessage)
+
+    val awaiting = latch.await(5, TimeUnit.SECONDS)
+    awaiting should equal(true)
+  }
+
+  "generate a RemoteOperationEvent after applying a remote operation when acknowledged" in {
+    val dataTypeInstanceId = DataTypeInstanceId()
+    val data = "{foo}"
+    val latch = new CountDownLatch(1)
+    val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+    val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+      Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
+    dataType ! RemoteInstantiation
+    dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
+      event.asInstanceOf[RemoteOperationEvent].operation should equal(operation)
+      latch.countDown()
+    })
+    val operationMessage = OperationMessage(
+      ClientId(),
+      dataTypeInstanceId,
+      AbstractClientDataTypeSpec.dataTypeName,
+      List(operation)
+    )
+
+    dataType ! operationMessage
+
+    val awaiting = latch.await(5, TimeUnit.SECONDS)
+    awaiting should equal(true)
+  }
+
+  "generate a CreateResponseEvent after receiving a CreateResponse" in {
+    val dataTypeInstanceId = DataTypeInstanceId()
+    val data = "{foo}"
+    val latch = new CountDownLatch(1)
+    val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+      Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
+    dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
+      event should be(CreateResponseEvent)
+      latch.countDown()
+    })
+
+    dataType ! CreateResponse(dataTypeInstanceId)
+
+    val awaiting = latch.await(5, TimeUnit.SECONDS)
+    awaiting should equal(true)
   }
 }
 

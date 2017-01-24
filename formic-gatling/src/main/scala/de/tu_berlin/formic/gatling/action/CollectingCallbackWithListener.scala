@@ -1,6 +1,7 @@
 package de.tu_berlin.formic.gatling.action
 
 import de.tu_berlin.formic.client.NewInstanceCallback
+import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
 
 import scala.concurrent.Promise
@@ -17,7 +18,7 @@ class CollectingCallbackWithListener extends NewInstanceCallback {
   /**
     * Set a new callback interface at a data type instance that was created remotely.
     */
-  override def newCallbackFor(instance: FormicDataType, dataType: DataTypeName): () => Unit = () => Unit
+  override def newCallbackFor(instance: FormicDataType, dataType: DataTypeName): (ClientDataTypeEvent) => Unit = (_) => Unit
 
   /**
     * Perform any initializations necessary for a new, remote data type.

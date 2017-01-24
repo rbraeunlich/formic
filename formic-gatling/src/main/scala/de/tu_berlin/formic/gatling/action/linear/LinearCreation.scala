@@ -24,7 +24,7 @@ case class LinearCreation(dataTypeInstanceId: Expression[String], statsEngine: S
       formicSystemOption match {
 
         case Some(formicSystem) =>
-          val string = new FormicString(() => {}, formicSystem, DataTypeInstanceId.valueOf(id))
+          val string = new FormicString((_) => {}, formicSystem, DataTypeInstanceId.valueOf(id))
           val end = TimeHelper.nowMillis
           val modifiedSession = session.set(id, string)
           FormicActions.logOkTimingValues(start, end, session, statsEngine, name)

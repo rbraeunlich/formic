@@ -2,6 +2,7 @@ package de.tu_berlin.formic.example
 
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.FormicSystemFactory
+import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
 import de.tu_berlin.formic.datatype.linear.client.FormicString
@@ -65,7 +66,7 @@ class Main extends ExampleClientDataTypes {
     insertBasicTreeElements(id.id)
   }
 
-  def updateUIForString(id: DataTypeInstanceId): () => Unit = () => {
+  def updateUIForString(id: DataTypeInstanceId): (ClientDataTypeEvent) => Unit = (_) => {
     strings.find(s => s.dataTypeInstanceId == id).get.getAll.foreach {
       buff =>
         val textInput = jQuery("#" + id.id)
@@ -73,7 +74,7 @@ class Main extends ExampleClientDataTypes {
     }
   }
 
-  def updateUIForTree(id: DataTypeInstanceId): () => Unit = () => {
+  def updateUIForTree(id: DataTypeInstanceId): (ClientDataTypeEvent) => Unit = (_) => {
     trees.find(s => s.dataTypeInstanceId == id).get.getTree().onComplete {
       case Success(rootNode) =>
         val treeDiv = jQuery("#" + id.id)
@@ -149,7 +150,7 @@ class Main extends ExampleClientDataTypes {
       val newId = DataTypeInstanceId()
       jQuery("#gameInput").value(newId.id)
       val battleship = new Battleship()
-      val json: FormicJsonObject = new FormicJsonObject(() => {
+      val json: FormicJsonObject = new FormicJsonObject((_) => {
         battleship.invoke(jsons.find(j => j.dataTypeInstanceId == newId).get)
       }, system, newId)
       jsons += json
@@ -163,10 +164,10 @@ class Main extends ExampleClientDataTypes {
 
   }
 
-  def newCallbackForBattleship(jsonObject: FormicJsonObject): () => Unit = {
+  def newCallbackForBattleship(jsonObject: FormicJsonObject): (ClientDataTypeEvent) => Unit = {
     val battleship = new Battleship()
     battleship.init(jsonObject, withNewModel = false)
-    () => {
+    (_) => {
       battleship.invoke(jsonObject)
     }
   }

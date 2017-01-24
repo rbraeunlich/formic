@@ -24,7 +24,7 @@ case class JsonCreation(dataTypeInstanceId: Expression[String], statsEngine: Sta
       formicSystemOption match {
 
         case Some(formicSystem) =>
-          val json = new FormicJsonObject(() => {}, formicSystem, DataTypeInstanceId.valueOf(id))
+          val json = new FormicJsonObject((_) => {}, formicSystem, DataTypeInstanceId.valueOf(id))
           val end = TimeHelper.nowMillis
           val modifiedSession = session.set(id, json)
           FormicActions.logOkTimingValues(start, end, session, statsEngine, name)

@@ -68,7 +68,7 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
       )
       apply(operation)
       historyBuffer.addOperation(clonedOperation)
-      callbackWrapper ! Invoke
+      callbackWrapper ! Invoke(LocalOperationEvent(operation))
 
     case rep: CreateResponse =>
       log.debug(s"DataType $id received CreateResponse $rep")
@@ -76,7 +76,7 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
       historyBuffer.history.reverse.foreach(controlAlgorithm.canLocalOperationBeApplied)
       //TODO WaveOT will actually send the same operations again here, gotta find a better way
       outgoingConnection ! OperationMessage(null, id, dataTypeName, historyBuffer.history)
-      callbackWrapper ! Invoke
+      callbackWrapper ! Invoke(CreateResponseEvent)
       context.become(acknowledged(callbackWrapper))
 
     case ReceiveCallback(callback) =>
@@ -112,7 +112,7 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
         apply(operation)
         historyBuffer.addOperation(clonedOperation)
       }
-      callbackWrapper ! Invoke
+      callbackWrapper ! Invoke(LocalOperationEvent(clonedOperation))
 
     case opMsg: OperationMessage =>
       log.debug(s"DataType $id received operation message $opMsg")
@@ -132,10 +132,10 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
             //we filter after the control algorithm saw all operations
             if(historyBuffer.findOperation(op.id).isEmpty){
               applyOperation(op)
+              callbackWrapper ! Invoke(RemoteOperationEvent(op))
             }
           }
         }
-        callbackWrapper ! Invoke
       }
 
     case ReceiveCallback(callback) =>
@@ -213,6 +213,6 @@ object AbstractClientDataType {
     */
   case object RemoteInstantiation
 
-  case class ReceiveCallback(callback: () => Unit)
+  case class ReceiveCallback(callback: (ClientDataTypeEvent) => Unit)
 
 }

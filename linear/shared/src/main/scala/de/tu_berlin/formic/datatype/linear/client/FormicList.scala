@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.linear.client
 import akka.pattern._
 import akka.util.Timeout
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
-import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
+import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, DataTypeInitiator}
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
@@ -19,7 +19,7 @@ import scala.scalajs.js.annotation.{JSExport, JSExportDescendentClasses}
   * @author Ronny Bräunlich
   */
 @JSExportDescendentClasses
-abstract class FormicList[T](_callback: () => Unit,
+abstract class FormicList[T](_callback: (ClientDataTypeEvent) => Unit,
                              initiator: DataTypeInitiator,
                              dataTypeInstanceId: DataTypeInstanceId,
                              dataTypeName: DataTypeName)

@@ -42,7 +42,7 @@ class TestClientDataType(override val historyBuffer: HistoryBuffer, val dataType
   override def cloneOperationWithNewContext(op: DataTypeOperation, context: OperationContext): DataTypeOperation = op
 }
 
-class TestFormicDataType(actor: ActorRef = null) extends FormicDataType(() => {}, TestClasses.dataTypeName, actor, ClientId(), DataTypeInstanceId(), new DataTypeInitiator {
+class TestFormicDataType(actor: ActorRef = null) extends FormicDataType((_) => {}, TestClasses.dataTypeName, actor, ClientId(), DataTypeInstanceId(), new DataTypeInitiator {
   override def initDataType(dataType: FormicDataType): Unit = {}
 }) {
 }

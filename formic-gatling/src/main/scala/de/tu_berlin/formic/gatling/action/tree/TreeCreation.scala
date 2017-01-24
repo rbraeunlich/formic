@@ -25,7 +25,7 @@ case class TreeCreation(dataTypeInstanceId: Expression[String], statsEngine: Sta
       formicSystemOption match {
 
         case Some(formicSystem) =>
-          val tree = new FormicIntegerTree(() => {}, formicSystem, DataTypeInstanceId.valueOf(id))
+          val tree = new FormicIntegerTree((_) => {}, formicSystem, DataTypeInstanceId.valueOf(id))
           val end = TimeHelper.nowMillis
           val modifiedSession = session.set(id, tree)
           FormicActions.logOkTimingValues(start, end, session, statsEngine, name)

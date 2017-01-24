@@ -5,6 +5,7 @@ import akka.stream.{ActorMaterializer, ActorMaterializerSettings}
 import akka.testkit.TestKit
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client._
+import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
 import de.tu_berlin.formic.common.datatype.{ClientDataTypeProvider, DataTypeName, FormicDataType}
 import de.tu_berlin.formic.datatype.linear.client.{FormicString, LinearClientDataTypeProvider}
 import de.tu_berlin.formic.example.OfflineCapabilitySpec.{CollectingCallback, DropNextNMessages, TestWebSocketFactoryJVM}
@@ -47,7 +48,7 @@ class OfflineCapabilitySpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       val checkUserCallback = new CollectingCallback
       userForCheck.init(checkUserCallback)
       Thread.sleep(2000)
-      val string = new FormicString(() => {}, user)
+      val string = new FormicString((_) => {}, user)
       Thread.sleep(1000)
       string.add(0, 'a')
       string.add(1, 'b')
@@ -102,7 +103,7 @@ class OfflineCapabilitySpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       val user2Callback = new CollectingCallback
       user2.init(user2Callback)
       Thread.sleep(2000)
-      val string = new FormicString(() => {}, user1)
+      val string = new FormicString((_) => {}, user1)
       Thread.sleep(1000)
       user2.requestDataType(string.dataTypeInstanceId)
       Thread.sleep(1000)
@@ -133,7 +134,7 @@ object OfflineCapabilitySpec {
     /**
       * Set a new callback interface at a data type instance that was created remotely.
       */
-    override def newCallbackFor(instance: FormicDataType, dataType: DataTypeName): () => Unit = () => Unit
+    override def newCallbackFor(instance: FormicDataType, dataType: DataTypeName): (ClientDataTypeEvent) => Unit = (_) => Unit
 
     /**
       * Perform any initializations necessary for a new, remote data type.

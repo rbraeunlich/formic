@@ -59,7 +59,7 @@ class JsonClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val dataType: TestActorRef[JsonClientDataType] = TestActorRef(Props(JsonClientDataType(DataTypeInstanceId(), new JsonClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty, outgoing.ref)))
       val toInsert = NumberNode("insert", 2.13)
       val operation = TreeInsertOperation(AccessPath(0), toInsert, OperationId(), OperationContext(), ClientId())
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
 
       dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(operation))
@@ -73,7 +73,7 @@ class JsonClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val outgoing = TestProbe()
       val dataType: TestActorRef[JsonClientDataType] = TestActorRef(Props(JsonClientDataType(DataTypeInstanceId(), new JsonClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Some(write(initial)), Option(initialOperationId), outgoing.ref)))
       val operation = TreeDeleteOperation(AccessPath(1), OperationId(), OperationContext(), ClientId())
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
 
       dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(operation))
@@ -88,7 +88,7 @@ class JsonClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val dataType: TestActorRef[JsonClientDataType] = TestActorRef(Props(JsonClientDataType(DataTypeInstanceId(), new JsonClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Some(write(initial)), Option(initialOperationId), outgoing.ref)))
       val replacement = NumberNode("num", 5.0)
       val operation = JsonReplaceOperation(AccessPath(1), replacement, OperationId(), OperationContext(), ClientId())
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
 
       dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(operation))
@@ -103,7 +103,7 @@ class JsonClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val outgoing = TestProbe()
       val dataType: TestActorRef[JsonClientDataType] = TestActorRef(Props(JsonClientDataType(DataTypeInstanceId(), new JsonClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Some(write(initial)), Option(initialOperationId), outgoing.ref)))
       val operation = TreeNoOperation(OperationId(), OperationContext(), ClientId())
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
 
       dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(operation))
@@ -118,7 +118,7 @@ class JsonClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val dataType: TestActorRef[JsonClientDataType] = TestActorRef(Props(JsonClientDataType(DataTypeInstanceId(), new JsonClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Some(initialOperationId), outgoing.ref)))
       val toInsert = NumberNode("insert", 2.13)
       val operation = TreeInsertOperation(AccessPath(0), toInsert, OperationId(), OperationContext(), ClientId())
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
 
       dataType ! LocalOperationMessage(OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(operation)))
 
@@ -132,7 +132,7 @@ class JsonClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val initialData = ObjectNode(null, List(NumberNode("num", 3)))
       val dataType: TestActorRef[JsonClientDataType] = TestActorRef(Props(JsonClientDataType(DataTypeInstanceId(), new JsonClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Some(write(initialData)), Some(initialOperationId), outgoing.ref)))
       val operation = TreeDeleteOperation(AccessPath(0), OperationId(), OperationContext(), ClientId())
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
 
       dataType ! LocalOperationMessage(OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(operation)))
 
@@ -147,7 +147,7 @@ class JsonClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val dataType: TestActorRef[JsonClientDataType] = TestActorRef(Props(JsonClientDataType(DataTypeInstanceId(), new JsonClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Some(write(initialData)), Some(initialOperationId), outgoing.ref)))
       val replacement = NumberNode("num", 2.13)
       val operation = JsonReplaceOperation(AccessPath(0), replacement, OperationId(), OperationContext(), ClientId())
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
 
       dataType ! LocalOperationMessage(OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(operation)))
 
@@ -161,7 +161,7 @@ class JsonClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val dataType: TestActorRef[JsonClientDataType] = TestActorRef(Props(JsonClientDataType(DataTypeInstanceId(), new JsonClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty, outgoing.ref)))
       val toInsert = NumberNode("insert", 2.13)
       val operation = JsonClientInsertOperation(JsonPath(toInsert.key), toInsert, OperationId(), OperationContext(), ClientId())
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
 
       dataType ! LocalOperationMessage(OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(operation)))
 
@@ -173,7 +173,7 @@ class JsonClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val dataType: TestActorRef[JsonClientDataType] = TestActorRef(Props(JsonClientDataType(DataTypeInstanceId(), new JsonClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty, outgoing.ref)))
       val toInsert = NumberNode("insert", 2.13)
       val operation = JsonClientInsertOperation(JsonPath(toInsert.key), toInsert, OperationId(), OperationContext(), ClientId())
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
 
       dataType ! LocalOperationMessage(OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(operation)))
@@ -187,7 +187,7 @@ class JsonClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val initialData = ObjectNode(null, List(NumberNode("num", 3)))
       val dataType: TestActorRef[JsonClientDataType] = TestActorRef(Props(JsonClientDataType(DataTypeInstanceId(), new JsonClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Some(write(initialData)), Some(initialOperationId), outgoing.ref)))
       val operation = JsonClientDeleteOperation(JsonPath("num"), OperationId(), OperationContext(), ClientId())
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
 
       dataType ! LocalOperationMessage(OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(operation)))
 
@@ -200,7 +200,7 @@ class JsonClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val initialData = ObjectNode(null, List(NumberNode("num", 3)))
       val dataType: TestActorRef[JsonClientDataType] = TestActorRef(Props(JsonClientDataType(DataTypeInstanceId(), new JsonClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Some(write(initialData)), Some(initialOperationId), outgoing.ref)))
       val operation = JsonClientDeleteOperation(JsonPath("num"), OperationId(), OperationContext(), ClientId())
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
 
       dataType ! LocalOperationMessage(OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(operation)))
@@ -215,7 +215,7 @@ class JsonClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val replacement = NumberNode("num", 4)
       val dataType: TestActorRef[JsonClientDataType] = TestActorRef(Props(JsonClientDataType(DataTypeInstanceId(), new JsonClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Some(write(initialData)), Some(initialOperationId), outgoing.ref)))
       val operation = JsonClientReplaceOperation(JsonPath("num"), replacement, OperationId(), OperationContext(), ClientId())
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
 
       dataType ! LocalOperationMessage(OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(operation)))
 
@@ -229,7 +229,7 @@ class JsonClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val replacement = NumberNode("num", 4)
       val dataType: TestActorRef[JsonClientDataType] = TestActorRef(Props(JsonClientDataType(DataTypeInstanceId(), new JsonClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Some(write(initialData)), Some(initialOperationId), outgoing.ref)))
       val operation = JsonClientReplaceOperation(JsonPath("num"), replacement, OperationId(), OperationContext(), ClientId())
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
 
       dataType ! LocalOperationMessage(OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("test"), List(operation)))

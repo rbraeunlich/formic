@@ -4,7 +4,7 @@ import akka.actor.ActorRef
 import akka.pattern._
 import akka.util.Timeout
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
-import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
+import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, DataTypeInitiator}
 import de.tu_berlin.formic.common.datatype.{FormicDataType, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
@@ -21,14 +21,14 @@ import scala.scalajs.js.annotation.JSExportAll
   * @author Ronny Bräunlich
   */
 @JSExportAll
-class FormicJsonObject(callback: () => Unit,
+class FormicJsonObject(callback: (ClientDataTypeEvent) => Unit,
                        initiator: DataTypeInitiator,
                        dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId())
   extends FormicDataType(callback, FormicJsonObjectFactory.name, dataTypeInstanceId = dataTypeInstanceId, initiator = initiator) {
 
   implicit val timeout: Timeout = 1.seconds
 
-  def this(callback: () => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataTypeInstanceId, wrapped: ActorRef, localClientId: ClientId) {
+  def this(callback: (ClientDataTypeEvent) => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataTypeInstanceId, wrapped: ActorRef, localClientId: ClientId) {
     this(callback, initiator, dataTypeInstanceId)
     this.actor = wrapped
     this.clientId = localClientId

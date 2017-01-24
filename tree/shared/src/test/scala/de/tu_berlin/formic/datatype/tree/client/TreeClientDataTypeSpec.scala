@@ -54,7 +54,7 @@ class TreeClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val dataType: TestActorRef[TreeClientDataType[Double]] =
         TestActorRef(Props(new TreeClientDataType[Double](DataTypeInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty, outgoing.ref)))
       val operation = TreeInsertOperation(AccessPath(), tree, OperationId(), OperationContext(), ClientId())
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
 
       dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("Test"), List(operation))
@@ -68,7 +68,7 @@ class TreeClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val dataType: TestActorRef[TreeClientDataType[Double]] =
         TestActorRef(Props(new TreeClientDataType[Double](DataTypeInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option(write(tree)), Option(OperationId()), outgoing.ref)))
       val operation = TreeDeleteOperation(AccessPath(0), OperationId(), OperationContext(), ClientId())
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
 
       dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("Test"), List(operation))
@@ -82,7 +82,7 @@ class TreeClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val dataType: TestActorRef[TreeClientDataType[Double]] =
         TestActorRef(Props(new TreeClientDataType[Double](DataTypeInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option(write(tree)), Option(OperationId()), outgoing.ref)))
       val operation = TreeNoOperation(OperationId(), OperationContext(), ClientId())
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataTypeInstanceId())
 
       dataType ! OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("Test"), List(operation))
@@ -106,7 +106,7 @@ class TreeClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val dataType: TestActorRef[TreeClientDataType[Double]] =
         TestActorRef(Props(new TreeClientDataType[Double](DataTypeInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option(write(tree)), Option(initialOperationId), outgoing.ref)))
       val operation = TreeInsertOperation(AccessPath(2), ValueTreeNode(5.6), OperationId(), OperationContext(), ClientId())
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
 
       dataType ! LocalOperationMessage(OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("Test"), List(operation)))
 
@@ -122,7 +122,7 @@ class TreeClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val dataType: TestActorRef[TreeClientDataType[Double]] =
         TestActorRef(Props(new TreeClientDataType[Double](DataTypeInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option(write(tree)), Option(initialOperationId), outgoing.ref)))
       val operation = TreeDeleteOperation(AccessPath(0), OperationId(), OperationContext(), ClientId())
-      dataType ! ReceiveCallback(() => {})
+      dataType ! ReceiveCallback((_) => {})
 
       dataType ! LocalOperationMessage(OperationMessage(ClientId(), DataTypeInstanceId(), DataTypeName("Test"), List(operation)))
 

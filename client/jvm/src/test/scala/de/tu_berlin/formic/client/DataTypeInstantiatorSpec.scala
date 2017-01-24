@@ -56,7 +56,7 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
 
       val msg = expectMsgClass(classOf[NewDataTypeCreated])
 
-      msg.dataTypeActor ! ReceiveCallback(() => {})
+      msg.dataTypeActor ! ReceiveCallback((_) => {})
 
       msg.dataTypeActor ! UpdateRequest(ClientId(), dataTypeInstanceId)
       val answer = expectMsgClass(classOf[UpdateResponse])
