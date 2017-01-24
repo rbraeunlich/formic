@@ -60,11 +60,9 @@ class WebSiteSpec extends FlatSpec
     go to host + "/index"
     click on id("new-string-button")
     val inputTextArea = textArea(className("stringInput"))
-    inputTextArea.underlying.sendKeys("a")
-    Thread.sleep(500)
-    inputTextArea.underlying.sendKeys("b")
-    Thread.sleep(500)
-    inputTextArea.underlying.sendKeys("c")
+    inputTextArea.underlying.sendKeys("abc")
+
+    inputTextArea.value should be("abc")
   }
 
   "A second user" should "be able to subscribe to other string" in {
@@ -72,11 +70,7 @@ class WebSiteSpec extends FlatSpec
     click on id("new-string-button")
     val inputTextArea = textArea(className("stringInput"))
     val stringId = inputTextArea.underlying.getAttribute("id")
-    inputTextArea.underlying.sendKeys("a")
-    Thread.sleep(200)
-    inputTextArea.underlying.sendKeys("b")
-    Thread.sleep(200)
-    inputTextArea.underlying.sendKeys("c")
+    inputTextArea.underlying.sendKeys("abc")
     Thread.sleep(5000)
     val secondUserDriver = new ChromeDriver()
     go.to(host + "/index")(secondUserDriver)

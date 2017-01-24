@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.example
 
 import de.tu_berlin.formic.client.NewInstanceCallback
-import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
+import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, RemoteOperationEvent}
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
 import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
 import de.tu_berlin.formic.datatype.linear.client.FormicString
@@ -30,7 +30,7 @@ class ExampleCallback(val main: Main) extends NewInstanceCallback {
         jQuery("body").append("<p>String data type with id " + id + "</p>")
         jQuery("body").append("<textarea rows=\"30\" cols=\"50\" class=\"stringInput\" id=\"" + inputId + "\"></textarea>")
         jQuery("#" + inputId).keypress(main.keyPressHandler(inputId))
-        main.updateUIForString(str.dataTypeInstanceId)(null)
+        main.updateUIForString(str.dataTypeInstanceId)(RemoteOperationEvent(null))
 
       case tree: FormicIntegerTree =>
         main.trees += tree

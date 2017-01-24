@@ -2,7 +2,7 @@ package de.tu_berlin.formic.example
 
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.FormicSystemFactory
-import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
+import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, RemoteOperationEvent}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
 import de.tu_berlin.formic.datatype.linear.client.FormicString
@@ -66,12 +66,14 @@ class Main extends ExampleClientDataTypes {
     insertBasicTreeElements(id.id)
   }
 
-  def updateUIForString(id: DataTypeInstanceId): (ClientDataTypeEvent) => Unit = (_) => {
-    strings.find(s => s.dataTypeInstanceId == id).get.getAll.foreach {
-      buff =>
-        val textInput = jQuery("#" + id.id)
-        textInput.value(buff.mkString)
-    }
+  def updateUIForString(id: DataTypeInstanceId): (ClientDataTypeEvent) => Unit = {
+    case RemoteOperationEvent(_) =>
+      strings.find(s => s.dataTypeInstanceId == id).get.getAll.foreach {
+        buff =>
+          val textInput = jQuery("#" + id.id)
+          textInput.value(buff.mkString)
+      }
+    case rest => //do nothing
   }
 
   def updateUIForTree(id: DataTypeInstanceId): (ClientDataTypeEvent) => Unit = (_) => {
@@ -92,7 +94,7 @@ class Main extends ExampleClientDataTypes {
   }
 
   //common functions needed by Main and the callback
-  def keyPressHandler(elementId: String): (JQueryEventObject) => Boolean = {
+  def keyPressHandler(elementId: String): (JQueryEventObject) => Unit = {
     (event: JQueryEventObject) => {
       //this is quite some hack
       val index = document.getElementById(elementId).asInstanceOf[HTMLInputElement].selectionStart
@@ -104,7 +106,6 @@ class Main extends ExampleClientDataTypes {
         //since a delete with backspace starts behind the character to delete
         strings.find(s => s.dataTypeInstanceId.id == elementId).get.remove(index - 1)
       }
-      false
     }
   }
 
