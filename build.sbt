@@ -6,7 +6,7 @@ val uPickleVersion = "0.4.3"
 
 val scalatestVersion = "3.0.0"
 
-val akkaHttpVersion = "10.0.0"
+val akkaHttpVersion = "10.0.2"
 
 lazy val root = project
   .enablePlugins(ScalaJSPlugin)
