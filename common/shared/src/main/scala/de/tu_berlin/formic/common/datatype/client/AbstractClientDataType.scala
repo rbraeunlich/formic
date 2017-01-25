@@ -134,6 +134,9 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
               applyOperation(op)
               callbackWrapper ! Invoke(RemoteOperationEvent(op))
             }
+          } else {
+            //this is very, very WaveOTClient specific
+            callbackWrapper ! Invoke(AcknowledgementEvent(op))
           }
         }
       }

@@ -13,3 +13,5 @@ case class LocalOperationEvent(operation: DataTypeOperation) extends  ClientData
 case class RemoteOperationEvent(operation: DataTypeOperation) extends ClientDataTypeEvent
 
 case object CreateResponseEvent extends ClientDataTypeEvent
+
+case class AcknowledgementEvent(operation: DataTypeOperation) extends ClientDataTypeEvent

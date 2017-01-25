@@ -20,10 +20,15 @@ case class FormicConnectAction(config: Config, statsEngine: StatsEngine, next: A
   override def execute(session: Session): Unit = {
     val start = TimeHelper.nowMillis
     val formicSystem = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider(), TreeClientDataTypeProvider(), JsonClientDataTypeProvider()))
-    val callback = new CollectingCallbackWithListener
+    val timeMeasureCallback = new TimeMeasureCallback
+    val callback = new CollectingCallbackWithListener(timeMeasureCallback)
     formicSystem.init(callback)
     val end = TimeHelper.nowMillis
-    val modifiedSession = session.set(SessionVariables.FORMIC_SYSTEM, formicSystem).set(SessionVariables.CALLBACK, callback)
+    //we use this action as a little initialization
+    val modifiedSession = session
+      .set(SessionVariables.FORMIC_SYSTEM, formicSystem)
+      .set(SessionVariables.CALLBACK, callback)
+      .set(SessionVariables.TIMEMEASURE_CALLBACK, timeMeasureCallback)
     FormicActions.logOkTimingValues(start, end, session, statsEngine, name)
     next ! modifiedSession
   }

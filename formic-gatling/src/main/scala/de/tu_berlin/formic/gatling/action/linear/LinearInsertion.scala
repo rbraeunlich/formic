@@ -1,7 +1,9 @@
 package de.tu_berlin.formic.gatling.action.linear
 
+import de.tu_berlin.formic.common.OperationId
+import de.tu_berlin.formic.common.datatype.client.RemoteOperationEvent
 import de.tu_berlin.formic.datatype.linear.client.FormicList
-import de.tu_berlin.formic.gatling.action.{FormicActions, SessionVariables}
+import de.tu_berlin.formic.gatling.action.{FormicActions, SessionVariables, TimeMeasureCallback}
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.action.{Action, ChainableAction}
 import io.gatling.core.session.{Session, _}
@@ -22,10 +24,12 @@ case class LinearInsertion(dataTypeInstanceId: Expression[String], toInsert: Any
       validatedIndex.foreach(i =>
         dataTypeAttribute.asOption[FormicList[Any]] match {
           case None => throw new IllegalArgumentException("Data type not found. Create it first!")
-          case Some(dataType) => dataType.add(i, toInsert)
+          case Some(dataType) =>
+            val opId = OperationId()
+            session(SessionVariables.TIMEMEASURE_CALLBACK).as[TimeMeasureCallback]
+              .addListener(TimeMeasureCallback.RemoteOperationTimeMeasureListener(opId, start, session, statsEngine, name))
+            dataType.add(i, toInsert, opId)
         })
-      val end = TimeHelper.nowMillis
-      FormicActions.logOkTimingValues(start, end, session, statsEngine, name)
       next ! session
     }
   }

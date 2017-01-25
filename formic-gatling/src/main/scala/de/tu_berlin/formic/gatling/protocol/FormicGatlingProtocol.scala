@@ -4,12 +4,7 @@ import java.net.URL
 
 import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
-import de.tu_berlin.formic.client.{FormicSystemFactory, NewInstanceCallback}
 import de.tu_berlin.formic.common.ClientId
-import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
-import de.tu_berlin.formic.datatype.json.client.JsonClientDataTypeProvider
-import de.tu_berlin.formic.datatype.linear.client.LinearClientDataTypeProvider
-import de.tu_berlin.formic.datatype.tree.client.TreeClientDataTypeProvider
 import de.tu_berlin.formic.gatling.FormicGatlingComponents
 import io.gatling.core.CoreComponents
 import io.gatling.core.config.GatlingConfiguration

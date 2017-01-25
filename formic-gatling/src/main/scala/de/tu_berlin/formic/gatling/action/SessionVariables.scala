@@ -9,4 +9,6 @@ object SessionVariables {
 
   val FORMIC_SYSTEM = "FormicSystem"
 
+  val TIMEMEASURE_CALLBACK = "timeMeasureCallback"
+
 }

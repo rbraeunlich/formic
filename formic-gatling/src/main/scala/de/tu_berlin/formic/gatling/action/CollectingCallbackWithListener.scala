@@ -9,7 +9,7 @@ import scala.concurrent.Promise
 /**
   * @author Ronny Bräunlich
   */
-class CollectingCallbackWithListener extends NewInstanceCallback {
+class CollectingCallbackWithListener(timeMeasureCallback: TimeMeasureCallback) extends NewInstanceCallback {
 
   var dataTypes: List[FormicDataType] = List.empty
 
@@ -18,7 +18,7 @@ class CollectingCallbackWithListener extends NewInstanceCallback {
   /**
     * Set a new callback interface at a data type instance that was created remotely.
     */
-  override def newCallbackFor(instance: FormicDataType, dataType: DataTypeName): (ClientDataTypeEvent) => Unit = (_) => Unit
+  override def newCallbackFor(instance: FormicDataType, dataType: DataTypeName): (ClientDataTypeEvent) => Unit = timeMeasureCallback.callbackMethod
 
   /**
     * Perform any initializations necessary for a new, remote data type.

@@ -2,6 +2,7 @@ package de.tu_berlin.formic.gatling
 
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
 import de.tu_berlin.formic.gatling.Predef._
+import de.tu_berlin.formic.gatling.action.{SessionVariables, TimeMeasureCallback}
 import io.gatling.core.Predef._
 
 /**
@@ -39,7 +40,11 @@ class FormicLinearSimulation extends Simulation {
           .linear("${dataTypeInstanceId}")
           .remove("${n}"))
       }
-      .pause(1)
+      .pause(15)
+    .exec(s =>{
+      s(SessionVariables.TIMEMEASURE_CALLBACK).as[TimeMeasureCallback].cancelAll()
+      s
+    })
 
   val subscribe = feed(dataTypeInstanceIdFeeder.iterator.toArray.random)
     .exec(formic("Subscription")
