@@ -1,14 +1,23 @@
 package de.tu_berlin.formic.gatling
 
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.datatype.linear.client.FormicString
 import de.tu_berlin.formic.gatling.Predef._
 import de.tu_berlin.formic.gatling.action.{SessionVariables, TimeMeasureCallback}
 import io.gatling.core.Predef._
+
+import scala.collection.mutable.ArrayBuffer
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
 
 /**
   * @author Ronny Bräunlich
   */
 class FormicLinearSimulation extends Simulation {
+
+  val NUM_DATATYPES = 1
+
+  val NUM_EDITORS = 20
 
   val formicConfig = formic
     .url("http://localhost:8080")
@@ -17,7 +26,7 @@ class FormicLinearSimulation extends Simulation {
     .logLevel("info")
 
   //to have a feeder for all scenarios, we create the ids up front and use them
-  val dataTypeInstanceIdFeeder = for (x <- 0.until(5)) yield Map("dataTypeInstanceId" -> DataTypeInstanceId().id)
+  val dataTypeInstanceIdFeeder = for (x <- 0.until(NUM_DATATYPES)) yield Map("dataTypeInstanceId" -> DataTypeInstanceId().id)
 
   val connect = exec(formic("Connection").connect())
     .pause(2)
@@ -40,13 +49,27 @@ class FormicLinearSimulation extends Simulation {
           .linear("${dataTypeInstanceId}")
           .remove("${n}"))
       }
-      .pause(15)
+      .pause(30)
     .exec(s =>{
       s(SessionVariables.TIMEMEASURE_CALLBACK).as[TimeMeasureCallback].cancelAll()
       s
     })
 
-  val subscribe = feed(dataTypeInstanceIdFeeder.iterator.toArray.random)
+    val check = rendezVous(NUM_EDITORS)
+    .exec( s => {
+      val formicString = s(dataTypeInstanceIdFeeder.head("dataTypeInstanceId").get).as[FormicString]
+      FormicLinearSimulation.addString(formicString)
+      s
+    })
+    .rendezVous(NUM_EDITORS)
+      .exec( s => {
+        //this executes the method several times but that's ok
+        FormicLinearSimulation.checkAllStringsForConsistency()
+        s
+      })
+      .rendezVous(NUM_EDITORS)
+
+  val subscribe = feed(dataTypeInstanceIdFeeder.iterator.toArray.circular)
     .exec(formic("Subscription")
       .subscribe("${dataTypeInstanceId}"))
     .pause(1)
@@ -54,11 +77,34 @@ class FormicLinearSimulation extends Simulation {
   val creators = scenario("Creators").exec(connect, createDataTypes)
 
   val editors = scenario("Editors")
-    .exec(connect).pause(7).exec(subscribe, edit)
+    .exec(connect).pause(7).exec(subscribe, edit, check)
 
   setUp(
-    creators.inject(atOnceUsers(5)),
-    editors.inject(rampUsers(20) over 20)
-  ).protocols(formicConfig)
+    creators.inject(atOnceUsers(NUM_DATATYPES)),
+    editors.inject(rampUsers(NUM_EDITORS) over 20)
+  ).protocols(formicConfig).assertions()
+
+}
+
+object FormicLinearSimulation {
+  import scala.concurrent.ExecutionContext.Implicits.global
+
+  var formicStrings = List.empty[FormicString]
+
+  def addString(s : FormicString) = {
+    formicStrings = s :: formicStrings
+  }
+
+  def checkAllStringsForConsistency() = {
+    //FIXME this check only works within the same JVM, not for distributed tests
+    val futureStrings: List[Future[ArrayBuffer[Char]]] = formicStrings.map(s => s.getAll())
+    val future = Future.sequence(futureStrings)
+    val result = Await.result(future, 20.seconds).map(buff => buff.mkString)
+    result.combinations(2).foreach(comb => {
+      if(comb(0) != comb(1)){
+        throw new AssertionError(s"Strings do not match: $comb")
+      }
+    })
+  }
 
 }
