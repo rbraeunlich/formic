@@ -379,7 +379,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val remoteOperationId = OperationId()
       val previousRemoteOperationId = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
-        Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new WaveOTClient((op)=>{}), outgoingConnection = TestProbe().ref)))
+        Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new WaveOTClient((op) => {}), outgoingConnection = TestProbe().ref)))
       dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(dataTypeInstanceId)
       val localOperation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List()), ClientId(), data)
@@ -532,7 +532,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       controlAlgorithm.correctOperationPassed should be(true)
     }
 
-    "passes local operations to the control algorithm when the CreateResponse comes" in {
+    "pass local operations to the control algorithm when the CreateResponse comes" in {
       val dataTypeInstanceId = DataTypeInstanceId()
       val data = "{foo}"
       val outgoing = TestProbe()
@@ -663,11 +663,12 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
           val operation = pair._1.asInstanceOf[AbstractClientDataTypeSpecTestOperation]
           AbstractClientDataTypeSpecTestOperation(operation.id, OperationContext(List(pair._2.id)), operation.clientId, operation.data)
         }
+
         override protected def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = {
           pair._1
         }
       }
-      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new WaveOTClient((op) => {}), outgoingConnection = TestProbe().ref){
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new WaveOTClient((op) => {}), outgoingConnection = TestProbe().ref) {
         override val transformer = testTransformer
       }))
       dataType ! ReceiveCallback((_) => {})
@@ -683,97 +684,123 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
 
       dataType.underlyingActor.historyBuffer.history.find(op => op.id == additionalOperation.id).get.operationContext should equal(OperationContext(List(localOperation.id)))
     }
-  }
 
-  "generate a LocalOperationEvent after applying a local operation when unacknowledged" in {
-    val dataTypeInstanceId = DataTypeInstanceId()
-    val data = "{foo}"
-    val latch = new CountDownLatch(1)
-    val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
-    val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
-      Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
-    dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
-      event.asInstanceOf[LocalOperationEvent].operation should equal(operation)
-      latch.countDown()
-    })
-    val operationMessage = OperationMessage(
-      ClientId(),
-      dataTypeInstanceId,
-      AbstractClientDataTypeSpec.dataTypeName,
-      List(operation)
-    )
 
-    dataType ! LocalOperationMessage(operationMessage)
+    "generate a LocalOperationEvent after applying a local operation when unacknowledged" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val data = "{foo}"
+      val latch = new CountDownLatch(1)
+      val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+        Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
+      dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
+        event.asInstanceOf[LocalOperationEvent].operation should equal(operation)
+        latch.countDown()
+      })
+      val operationMessage = OperationMessage(
+        ClientId(),
+        dataTypeInstanceId,
+        AbstractClientDataTypeSpec.dataTypeName,
+        List(operation)
+      )
 
-    val awaiting = latch.await(5, TimeUnit.SECONDS)
-    awaiting should equal(true)
-  }
+      dataType ! LocalOperationMessage(operationMessage)
 
-  "generate a LocalOperationEvent after applying a local operation when acknowledged" in {
-    val dataTypeInstanceId = DataTypeInstanceId()
-    val data = "{foo}"
-    val latch = new CountDownLatch(1)
-    val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
-    val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
-      Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
-    dataType ! RemoteInstantiation
-    dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
-      event.asInstanceOf[LocalOperationEvent].operation should equal(operation)
-      latch.countDown()
-    })
-    val operationMessage = OperationMessage(
-      ClientId(),
-      dataTypeInstanceId,
-      AbstractClientDataTypeSpec.dataTypeName,
-      List(operation)
-    )
+      val awaiting = latch.await(5, TimeUnit.SECONDS)
+      awaiting should equal(true)
+    }
 
-    dataType ! LocalOperationMessage(operationMessage)
+    "generate a LocalOperationEvent after applying a local operation when acknowledged" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val data = "{foo}"
+      val latch = new CountDownLatch(1)
+      val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+        Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
+      dataType ! RemoteInstantiation
+      dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
+        event.asInstanceOf[LocalOperationEvent].operation should equal(operation)
+        latch.countDown()
+      })
+      val operationMessage = OperationMessage(
+        ClientId(),
+        dataTypeInstanceId,
+        AbstractClientDataTypeSpec.dataTypeName,
+        List(operation)
+      )
 
-    val awaiting = latch.await(5, TimeUnit.SECONDS)
-    awaiting should equal(true)
-  }
+      dataType ! LocalOperationMessage(operationMessage)
 
-  "generate a RemoteOperationEvent after applying a remote operation when acknowledged" in {
-    val dataTypeInstanceId = DataTypeInstanceId()
-    val data = "{foo}"
-    val latch = new CountDownLatch(1)
-    val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
-    val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
-      Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
-    dataType ! RemoteInstantiation
-    dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
-      event.asInstanceOf[RemoteOperationEvent].operation should equal(operation)
-      latch.countDown()
-    })
-    val operationMessage = OperationMessage(
-      ClientId(),
-      dataTypeInstanceId,
-      AbstractClientDataTypeSpec.dataTypeName,
-      List(operation)
-    )
+      val awaiting = latch.await(5, TimeUnit.SECONDS)
+      awaiting should equal(true)
+    }
 
-    dataType ! operationMessage
+    "generate a RemoteOperationEvent after applying a remote operation when acknowledged" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val data = "{foo}"
+      val latch = new CountDownLatch(1)
+      val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+        Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
+      dataType ! RemoteInstantiation
+      dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
+        event.asInstanceOf[RemoteOperationEvent].operation should equal(operation)
+        latch.countDown()
+      })
+      val operationMessage = OperationMessage(
+        ClientId(),
+        dataTypeInstanceId,
+        AbstractClientDataTypeSpec.dataTypeName,
+        List(operation)
+      )
 
-    val awaiting = latch.await(5, TimeUnit.SECONDS)
-    awaiting should equal(true)
-  }
+      dataType ! operationMessage
 
-  "generate a CreateResponseEvent after receiving a CreateResponse" in {
-    val dataTypeInstanceId = DataTypeInstanceId()
-    val data = "{foo}"
-    val latch = new CountDownLatch(1)
-    val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
-      Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
-    dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
-      event should be(CreateResponseEvent)
-      latch.countDown()
-    })
+      val awaiting = latch.await(5, TimeUnit.SECONDS)
+      awaiting should equal(true)
+    }
 
-    dataType ! CreateResponse(dataTypeInstanceId)
+    "generate a CreateResponseEvent after receiving a CreateResponse" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val data = "{foo}"
+      val latch = new CountDownLatch(1)
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+        Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
+      dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
+        event should be(CreateResponseEvent)
+        latch.countDown()
+      })
 
-    val awaiting = latch.await(5, TimeUnit.SECONDS)
-    awaiting should equal(true)
+      dataType ! CreateResponse(dataTypeInstanceId)
+
+      val awaiting = latch.await(5, TimeUnit.SECONDS)
+      awaiting should equal(true)
+    }
+
+    "generate an AcknowledgementEvent when receiving an remote operation and the control algorithm states it cannot be applied" in {
+      val dataTypeInstanceId = DataTypeInstanceId()
+      val data = "{foo}"
+      val latch = new CountDownLatch(1)
+      val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
+        Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient(canRemoteBeApplied = false), outgoingConnection = TestProbe().ref)))
+      dataType ! RemoteInstantiation
+      dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
+        event.asInstanceOf[AcknowledgementEvent].operation should equal(operation)
+        latch.countDown()
+      })
+      val operationMessage = OperationMessage(
+        ClientId(),
+        dataTypeInstanceId,
+        AbstractClientDataTypeSpec.dataTypeName,
+        List(operation)
+      )
+
+      dataType ! operationMessage
+
+      val awaiting = latch.await(5, TimeUnit.SECONDS)
+      awaiting should equal(true)
+    }
   }
 }
 
