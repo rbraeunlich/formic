@@ -50,7 +50,7 @@ class FormicJsonSimulation extends Simulation {
           .json("${dataTypeInstanceId}")
           .remove(Seq("${prefix}${n}")))
       }
-      .pause(15)
+      .pause(30)
       .exec(s =>{
         s(SessionVariables.TIMEMEASURE_CALLBACK).as[TimeMeasureCallback].cancelAll()
         s
