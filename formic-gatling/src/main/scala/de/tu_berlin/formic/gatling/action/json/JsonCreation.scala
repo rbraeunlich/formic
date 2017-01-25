@@ -3,7 +3,7 @@ package de.tu_berlin.formic.gatling.action.json
 import de.tu_berlin.formic.client.FormicSystem
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
-import de.tu_berlin.formic.gatling.action.{FormicActions, SessionVariables}
+import de.tu_berlin.formic.gatling.action.{FormicActions, SessionVariables, TimeMeasureCallback}
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.action.{Action, ChainableAction}
 import io.gatling.core.session.{Expression, Session}
@@ -24,7 +24,7 @@ case class JsonCreation(dataTypeInstanceId: Expression[String], statsEngine: Sta
       formicSystemOption match {
 
         case Some(formicSystem) =>
-          val json = new FormicJsonObject((_) => {}, formicSystem, DataTypeInstanceId.valueOf(id))
+          val json = new FormicJsonObject(session(SessionVariables.TIMEMEASURE_CALLBACK).as[TimeMeasureCallback].callbackMethod, formicSystem, DataTypeInstanceId.valueOf(id))
           val end = TimeHelper.nowMillis
           val modifiedSession = session.set(id, json)
           FormicActions.logOkTimingValues(start, end, session, statsEngine, name)

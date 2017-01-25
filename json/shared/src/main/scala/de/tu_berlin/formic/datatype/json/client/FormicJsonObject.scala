@@ -34,70 +34,74 @@ class FormicJsonObject(callback: (ClientDataTypeEvent) => Unit,
     this.clientId = localClientId
   }
 
-  def insert(i: Double, path: JsonPath) = {
+  def insert(i: Double, path: JsonPath): OperationId = {
     val toInsert = NumberNode(path.path.last, i)
     sendInsertOperation(toInsert, path)
   }
 
-  def insert(s: String, path: JsonPath) = {
+  def insert(s: String, path: JsonPath): OperationId = {
     val chars = s.toCharArray.map(ch => CharacterNode(null, ch)).toList
     val toInsert = StringNode(path.path.last, chars)
     sendInsertOperation(toInsert, path)
   }
 
-  def insert(c: Char, path: JsonPath) = {
+  def insert(c: Char, path: JsonPath): OperationId = {
     val toInsert = CharacterNode(null, c)
     sendInsertOperation(toInsert, path)
   }
 
-  def insert(b: Boolean, path: JsonPath) = {
+  def insert(b: Boolean, path: JsonPath): OperationId = {
     val toInsert = BooleanNode(path.path.last, b)
     sendInsertOperation(toInsert, path)
   }
 
-  def insert[T](obj: T, path: JsonPath)(implicit writer: Writer[T]) = {
+  def insert[T](obj: T, path: JsonPath)(implicit writer: Writer[T]): OperationId = {
     val toInsert: JsonTreeNode[_] = createNodeForObject(obj, path)
     sendInsertOperation(toInsert, path)
   }
 
-  def sendInsertOperation(toInsert: JsonTreeNode[_], path: JsonPath) = {
+  private def sendInsertOperation(toInsert: JsonTreeNode[_], path: JsonPath): OperationId = {
+    val opId = OperationId()
     actor ! LocalOperationMessage(
       OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(
-        JsonClientInsertOperation(path, toInsert, OperationId(), OperationContext(), clientId)
+        JsonClientInsertOperation(path, toInsert, opId, OperationContext(), clientId)
       ))
     )
+    opId
   }
 
-  def remove(path: JsonPath) = {
+  def remove(path: JsonPath): OperationId = {
+    val opId = OperationId()
     actor ! LocalOperationMessage(
       OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(
-        JsonClientDeleteOperation(path, OperationId(), OperationContext(), clientId)
+        JsonClientDeleteOperation(path, opId, OperationContext(), clientId)
       ))
     )
+    opId
   }
 
-  def replace(i: Double, path: JsonPath) = {
+  def replace(i: Double, path: JsonPath): OperationId = {
     val replacement = NumberNode(path.path.last, i)
     sendReplaceOperation(replacement, path)
   }
 
-  def replace(s: String, path: JsonPath) = {
+  def replace(s: String, path: JsonPath): OperationId = {
     val chars = s.toCharArray.map(ch => CharacterNode(null, ch)).toList
     val replacement = StringNode(path.path.last, chars)
     sendReplaceOperation(replacement, path)
   }
 
-  def replace(b: Boolean, path: JsonPath) = {
+  def replace(b: Boolean, path: JsonPath): OperationId = {
     val replacement = BooleanNode(path.path.last, b)
     sendReplaceOperation(replacement, path)
   }
 
-  def replace(c: Char, path: JsonPath) = {
+  def replace(c: Char, path: JsonPath): OperationId = {
     val replacement = CharacterNode(null, c)
     sendReplaceOperation(replacement, path)
   }
 
-  def replace[T](obj: T, path: JsonPath)(implicit writer: Writer[T]) = {
+  def replace[T](obj: T, path: JsonPath)(implicit writer: Writer[T]): OperationId = {
     val toInsert: JsonTreeNode[_] = createNodeForObject(obj, path)
     sendReplaceOperation(toInsert, path)
   }
@@ -115,12 +119,14 @@ class FormicJsonObject(callback: (ClientDataTypeEvent) => Unit,
     toInsert
   }
 
-  def sendReplaceOperation(toInsert: JsonTreeNode[_], path: JsonPath) = {
+  private def sendReplaceOperation(toInsert: JsonTreeNode[_], path: JsonPath): OperationId = {
+    val opId = OperationId()
     actor ! LocalOperationMessage(
       OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(
-        JsonClientReplaceOperation(path, toInsert, OperationId(), OperationContext(), clientId)
+        JsonClientReplaceOperation(path, toInsert, opId, OperationContext(), clientId)
       ))
     )
+    opId
   }
 
   def getNodeAt(path: JsonPath)(implicit ec: ExecutionContext): Future[JsonTreeNode[_]] = {

@@ -30,21 +30,25 @@ class FormicTree[T](_callback: (ClientDataTypeEvent) => Unit,
   implicit val valueTreeNodeReader = new ValueTreeNodeReader[T]()
 
   @JSExport
-  def insert(value: T, path: AccessPath): Unit = {
+  def insert(value: T, path: AccessPath): OperationId = {
+    val operationId = OperationId()
     actor ! LocalOperationMessage(
       OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(
-        TreeInsertOperation(path, ValueTreeNode(value), OperationId(), OperationContext(), clientId)
+        TreeInsertOperation(path, ValueTreeNode(value), operationId, OperationContext(), clientId)
       ))
     )
+    operationId
   }
 
   @JSExport
-  def remove(path: AccessPath): Unit = {
+  def remove(path: AccessPath): OperationId = {
+    val operationId = OperationId()
     actor ! LocalOperationMessage(
       OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(
-        TreeDeleteOperation(path, OperationId(), OperationContext(), clientId)
+        TreeDeleteOperation(path, operationId, OperationContext(), clientId)
       ))
     )
+    operationId
   }
 
   @JSExport

@@ -29,19 +29,23 @@ abstract class FormicList[T](_callback: (ClientDataTypeEvent) => Unit,
   implicit val timeout: Timeout = 1.seconds
 
   @JSExport
-  def add(index: Int, o: T, operationId: OperationId = OperationId()) = {
+  def add(index: Int, o: T) = {
+    val operationId = OperationId()
     val op = LocalOperationMessage(
       OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(LinearInsertOperation(index, o, operationId, OperationContext(List.empty), clientId)))
     )
     actor ! op
+    operationId
   }
 
   @JSExport
-  def remove(index: Int, operationId: OperationId = OperationId()) = {
+  def remove(index: Int): OperationId = {
+    val operationId = OperationId()
     val op = LocalOperationMessage(
       OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(LinearDeleteOperation(index, operationId, OperationContext(List.empty), clientId)))
     )
     actor ! op
+    operationId
   }
 
   @JSExport

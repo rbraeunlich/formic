@@ -2,7 +2,7 @@ package de.tu_berlin.formic.gatling.action.tree
 
 import de.tu_berlin.formic.datatype.tree.AccessPath
 import de.tu_berlin.formic.datatype.tree.client.FormicTree
-import de.tu_berlin.formic.gatling.action.FormicActions
+import de.tu_berlin.formic.gatling.action.{SessionVariables, TimeMeasureCallback}
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.action.{Action, ChainableAction}
 import io.gatling.core.session.{Expression, Session}
@@ -22,10 +22,11 @@ case class TreeInsertion(dataTypeInstanceId: Expression[String], toInsert: Any, 
       val path = AccessPath(validatedPath: _*)
       dataTypeAttribute.asOption[FormicTree[Any]] match {
         case None => throw new IllegalArgumentException("Data type not found. Create it first!")
-        case Some(dataType) => dataType.insert(toInsert, path)
+        case Some(dataType) =>
+          val opId = dataType.insert(toInsert, path)
+          session(SessionVariables.TIMEMEASURE_CALLBACK).as[TimeMeasureCallback]
+            .addListener(TimeMeasureCallback.RemoteOperationTimeMeasureListener(opId, start, session, statsEngine, name))
       }
-      val end = TimeHelper.nowMillis
-      FormicActions.logOkTimingValues(start, end, session, statsEngine, name)
       next ! session
     }
   }

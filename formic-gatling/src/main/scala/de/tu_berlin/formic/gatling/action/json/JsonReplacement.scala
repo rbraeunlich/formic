@@ -2,7 +2,7 @@ package de.tu_berlin.formic.gatling.action.json
 
 import de.tu_berlin.formic.datatype.json.JsonPath
 import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
-import de.tu_berlin.formic.gatling.action.FormicActions
+import de.tu_berlin.formic.gatling.action.{SessionVariables, TimeMeasureCallback}
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.action.{Action, ChainableAction}
 import io.gatling.core.session.{Expression, Session}
@@ -25,16 +25,16 @@ case class JsonReplacement[T](dataTypeInstanceId: Expression[String], statsEngin
       dataTypeAttribute.asOption[FormicJsonObject] match {
         case None => throw new IllegalArgumentException("Data type not found. Create it first!")
         case Some(dataType) =>
-          replacement match {
+          val opId = replacement match {
             case d: Double => dataType.replace(d, path)
             case s: String => dataType.replace(s, path)
             case c: Char => dataType.replace(c, path)
             case b: Boolean => dataType.replace(b, path)
             case _ => dataType.replace(replacement, path)
           }
+          session(SessionVariables.TIMEMEASURE_CALLBACK).as[TimeMeasureCallback]
+            .addListener(TimeMeasureCallback.RemoteOperationTimeMeasureListener(opId, start, session, statsEngine, name))
       }
-      val end = TimeHelper.nowMillis
-      FormicActions.logOkTimingValues(start, end, session, statsEngine, name)
       next ! session
     }
   }

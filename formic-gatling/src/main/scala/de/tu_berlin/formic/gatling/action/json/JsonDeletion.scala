@@ -2,7 +2,7 @@ package de.tu_berlin.formic.gatling.action.json
 
 import de.tu_berlin.formic.datatype.json.JsonPath
 import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
-import de.tu_berlin.formic.gatling.action.FormicActions
+import de.tu_berlin.formic.gatling.action.{SessionVariables, TimeMeasureCallback}
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.action.{Action, ChainableAction}
 import io.gatling.core.session.{Expression, Session}
@@ -23,10 +23,11 @@ case class JsonDeletion(dataTypeInstanceId: Expression[String], statsEngine: Sta
       val path = JsonPath(validatedPath: _*)
       dataTypeAttribute.asOption[FormicJsonObject] match {
         case None => throw new IllegalArgumentException("Data type not found. Create it first!")
-        case Some(dataType) => dataType.remove(path)
+        case Some(dataType) =>
+          val opId = dataType.remove(path)
+          session(SessionVariables.TIMEMEASURE_CALLBACK).as[TimeMeasureCallback]
+            .addListener(TimeMeasureCallback.RemoteOperationTimeMeasureListener(opId, start, session, statsEngine, name))
       }
-      val end = TimeHelper.nowMillis
-      FormicActions.logOkTimingValues(start, end, session, statsEngine, name)
       next ! session
     }
   }
