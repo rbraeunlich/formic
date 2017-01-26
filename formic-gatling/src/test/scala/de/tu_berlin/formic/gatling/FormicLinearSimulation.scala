@@ -82,7 +82,7 @@ class FormicLinearSimulation extends Simulation {
   setUp(
     creators.inject(atOnceUsers(NUM_DATATYPES)),
     editors.inject(rampUsers(NUM_EDITORS) over 20)
-  ).protocols(formicConfig).assertions()
+  ).protocols(formicConfig)
 
 }
 
@@ -105,6 +105,7 @@ object FormicLinearSimulation {
         throw new AssertionError(s"Strings do not match: $comb")
       }
     })
+    println("All equal: " + result.head)
   }
 
 }
