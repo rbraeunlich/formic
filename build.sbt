@@ -1,4 +1,5 @@
 import org.scalajs.core.tools.sem.{CheckedBehavior, Semantics}
+import sbtassembly.AssemblyPlugin.autoImport._
 
 val akkaVersion = "2.4.16"
 
@@ -243,8 +244,23 @@ lazy val formicGatling = (project in file("formic-gatling")).
   settings(
     name := "formic-gatling",
     libraryDependencies ++= Seq(
-      "io.gatling.highcharts" % "gatling-charts-highcharts" % "2.2.1",
-      "io.gatling" % "gatling-test-framework" % "2.2.1" % "test"
-    )
+      "io.gatling.highcharts" % "gatling-charts-highcharts" % "2.2.1" % "provided",
+      "io.gatling" % "gatling-test-framework" % "2.2.1" % "provided"
+    ),
+    assemblyMergeStrategy in assembly := {
+      case x if x.endsWith("io.netty.versions.properties") => MergeStrategy.first
+      case x =>
+        val oldStrategy = (assemblyMergeStrategy in assembly).value
+        oldStrategy(x)
+    },
+    //the two lines below provide test:assembly in order to create assembled test jar
+    Project.inConfig(Test)(baseAssemblySettings),
+    assemblyJarName in (Test, assembly) := s"${name.value}-test-${version.value}.jar",
+      assemblyMergeStrategy in (Test, assembly) := {
+      case x if x.endsWith("io.netty.versions.properties") => MergeStrategy.first
+      case x =>
+        val oldStrategy = (assemblyMergeStrategy in assembly).value
+        oldStrategy(x)
+    }
   ).enablePlugins(GatlingPlugin).
   dependsOn(clientJVM, commonJVM, linearJVM, treeJVM, jsonJVM)
