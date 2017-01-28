@@ -28,7 +28,7 @@ FORMIC_SERVER="http://10.200.1.67:80"
 if [ $1 -eq 0 ]
     then HOSTS=()
 else
-    HOSTS=( 192.168.0.26 )
+    HOSTS=( 192.168.0.27 )
 fi
 
 #Simulation options
@@ -73,8 +73,7 @@ done
 for HOST in "${HOSTS[@]}"
 do
   echo "Running simulation on host: $HOST"
-  export TMPDIR=/tmp
-  ssh -n -f -i cloud.key $USER_NAME@$HOST "sh -c 'nohup $GATLING_RUNNER -nr -s $SIMULATION_NAME > /gatling/run.log 2>&1 &'"
+  ssh -n -f -i cloud.key $USER_NAME@$HOST "sh -c \"export JAVA_OPTS=\"$JAVA_OPTS\"; nohup $GATLING_RUNNER -nr -s $SIMULATION_NAME > gatling-run.log 2>&1 &\""
 done
 
 echo "Running simulation on localhost"
