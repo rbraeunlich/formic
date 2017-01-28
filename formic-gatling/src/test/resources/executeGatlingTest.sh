@@ -88,7 +88,7 @@ for HOST in "${HOSTS[@]}"
 do
   echo "Gathering result file from host: $HOST"
   ssh -n -f -i cloud.key $USER_NAME@$HOST "sh -c 'ls -t $GATLING_REPORT_DIR | head -n 1 | xargs -I {} mv ${GATLING_REPORT_DIR}{} ${GATLING_REPORT_DIR}report'"
-  scp $USER_NAME@$HOST:${GATLING_REPORT_DIR}report/simulation.log ${GATHER_REPORTS_DIR}simulation-$HOST.log
+  scp -i cloud.key $USER_NAME@$HOST:${GATLING_REPORT_DIR}report/simulation.log ${GATHER_REPORTS_DIR}simulation-$HOST.log
 done
 
 mv $GATHER_REPORTS_DIR $GATLING_REPORT_DIR
