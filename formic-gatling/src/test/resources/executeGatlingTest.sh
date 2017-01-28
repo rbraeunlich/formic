@@ -66,8 +66,8 @@ done
 for HOST in "${HOSTS[@]}"
 do
   echo "Copying simulation JARs to host: $HOST"
-  scp -i cloud.key $GATLING_LIB_DIR/formic-gatling-assembly-1.0.0.jar $USER_NAME@$HOST:$GATLING_SIMULATIONS_DIR
-  scp -i cloud.key $GATLING_LIB_DIR/formic-gatling-test-1.0.0.jar $USER_NAME@$HOST:$GATLING_SIMULATIONS_DIR
+  scp -i cloud.key $GATLING_LIB_DIR/formic-gatling-assembly-1.0.0.jar $USER_NAME@$HOST:$GATLING_LIB_DIR
+  scp -i cloud.key $GATLING_LIB_DIR/formic-gatling-test-1.0.0.jar $USER_NAME@$HOST:$GATLING_LIB_DIR
 done
 
 for HOST in "${HOSTS[@]}"
