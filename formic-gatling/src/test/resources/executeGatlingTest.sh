@@ -13,6 +13,11 @@ if [ -z "$1" ]
         echo "Must provide param for number of users"
         exit 1
 fi
+if [ -z "$2" ]
+    then
+        echo "Must provide param for data type instance id"
+        exit 1
+fi
 
 
 #Assuming same user name for all hosts
@@ -28,7 +33,7 @@ fi
 
 #Simulation options
 NUM_EDITORS=$1
-DATA_TYPE_ID=''
+DATA_TYPE_ID=$2
 JAVA_OPTS="-DformicEditors=$NUM_EDITORS -DformicId=$DATA_TYPE_ID -DformicServer=$FORMIC_SERVER"
 export JAVA_OPTS
 
