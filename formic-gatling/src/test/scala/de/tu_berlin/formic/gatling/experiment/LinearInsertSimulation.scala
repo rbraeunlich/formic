@@ -17,7 +17,8 @@ class LinearInsertSimulation extends Simulation {
 
   val NUM_DATATYPES = 1
 
-  val NUM_EDITORS = 20
+  //zero is the special value for only one user on localhost
+  val NUM_EDITORS = if(System.getProperty("formicEditors").toInt == 0) 1 else System.getProperty("formicEditors").toInt
 
   val NUM_OPERATIONS = 100
 
@@ -25,8 +26,10 @@ class LinearInsertSimulation extends Simulation {
 
   val DATATYPEINSTANCEID = System.getProperty("formicId")
 
+  val SERVER_ADDRESS = System.getProperty("formicServer")
+
   val formicConfig = formic
-    .url("http://localhost:8080")
+    .url(SERVER_ADDRESS)
     .username(ClientId())
     .bufferSize(100)
     .logLevel("info")

@@ -11,10 +11,8 @@ class LinearInsertPreparationSimulation extends Simulation {
 
   val NUM_DATATYPES = 1
 
-  val NUM_EDITORS = 20
-
   val formicConfig = formic
-    .url("http://localhost:8080")
+    .url(System.getProperty("formicServer"))
     .username(ClientId())
     .bufferSize(100)
     .logLevel("info")
