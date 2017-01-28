@@ -253,8 +253,10 @@ lazy val formicGatling = (project in file("formic-gatling")).
         val oldStrategy = (assemblyMergeStrategy in assembly).value
         oldStrategy(x)
     },
+    assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false),
     //the two lines below provide test:assembly in order to create assembled test jar
     Project.inConfig(Test)(baseAssemblySettings),
+    assemblyOption in (Test, assembly) := (assemblyOption in assembly).value.copy(includeScala = false),
     assemblyJarName in (Test, assembly) := s"${name.value}-test-${version.value}.jar",
       assemblyMergeStrategy in (Test, assembly) := {
       case x if x.endsWith("io.netty.versions.properties") => MergeStrategy.first
