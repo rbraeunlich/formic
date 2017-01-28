@@ -16,3 +16,5 @@ sudo chmod -R 777 gatling-charts-highcharts-bundle-$GATLING_VER/
 #delete akka JAR because we need a newer version
 #the newer version is bundled with the formic test jar
 rm gatling-charts-highcharts-bundle-$GATLING_VER/lib/akka-actor_2.11-2.4.4.jar
+
+curl https://raw.githubusercontent.com/rbraeunlich/formic/master/formic-gatling/src/test/resources/wrapGatlingExecution.sh > wrapGatlingExecution.sh

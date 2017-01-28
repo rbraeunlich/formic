@@ -73,7 +73,7 @@ done
 for HOST in "${HOSTS[@]}"
 do
   echo "Running simulation on host: $HOST"
-  ssh -n -f -i cloud.key $USER_NAME@$HOST "sh -c \"export JAVA_OPTS=\"$JAVA_OPTS\"; nohup $GATLING_RUNNER -nr -s $SIMULATION_NAME > gatling-run.log 2>&1 &\""
+  ssh -n -f -i cloud.key $USER_NAME@$HOST "sh -c 'nohup ./wrapGatlingExecution.sh $JAVA_OPTS $GATLING_RUNNER $SIMULATION_NAME'"
 done
 
 echo "Running simulation on localhost"
