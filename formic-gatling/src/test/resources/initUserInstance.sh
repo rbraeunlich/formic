@@ -6,9 +6,13 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get --yes install openjdk-8-jdk openjdk-
 echo "Install Unzip"
 sudo DEBIAN_FRONTEND=noninteractive apt-get --yes install unzip
 
+GATLING_VER=2.2.1
 #Download Gatling
 echo "Download Gatling"
 cd /home/ubuntu
-curl -k https://repo1.maven.org/maven2/io/gatling/highcharts/gatling-charts-highcharts-bundle/2.2.3/gatling-charts-highcharts-bundle-2.2.3-bundle.zip -o gatling.zip
+curl -k https://repo1.maven.org/maven2/io/gatling/highcharts/gatling-charts-highcharts-bundle/$GATLING_VER/gatling-charts-highcharts-bundle-$GATLING_VER-bundle.zip -o gatling.zip
 unzip gatling.zip
-sudo chmod -R 777 gatling-charts-highcharts-bundle-2.2.3/
+sudo chmod -R 777 gatling-charts-highcharts-bundle-$GATLING_VER/
+#delete akka JAR because we need a newer version
+#the newer version is bundled with the formic test jar
+rm gatling-charts-highcharts-bundle-$GATLING_VER/lib/akka-actor_2.11-2.4.4.jar
