@@ -8,20 +8,32 @@
 #4) Assuming all hosts has the same user name (if not change in script)
 ##################################################################################################################
 
+if [ -z "$1" ]
+    then
+        echo "Must provide param for number of users"
+        exit 1
+fi
+
+
 #Assuming same user name for all hosts
 USER_NAME='ubuntu'
+FORMIC_SERVER="http://10.200.1.67:80"
 
 #Remote hosts list
-HOSTS=( 192.168.28.24 192.123.123.12 180.123.98.1)
+if [ $1 -eq 0 ]
+    then HOSTS=()
+else
+    HOSTS=( 192.168.0.26 )
+fi
 
 #Simulation options
-NUM_EDITORS=1
+NUM_EDITORS=$1
 DATA_TYPE_ID=''
-JAVA_OPTS="-DformicEditors=$NUM_EDITORS -DformicId=$DATA_TYPE_ID"
+JAVA_OPTS="-DformicEditors=$NUM_EDITORS -DformicId=$DATA_TYPE_ID -DformicServer=$FORMIC_SERVER"
 export JAVA_OPTS
 
 #Assuming all Gatling installation in same path (with write permissions)
-GATLING_HOME=/gatling-charts-highcharts-bundle-2.2.3
+GATLING_HOME=gatling-charts-highcharts-bundle-2.2.1
 GATLING_SIMULATIONS_DIR=$GATLING_HOME/user-files/simulations
 GATLING_RUNNER=$GATLING_HOME/bin/gatling.sh
 
@@ -30,14 +42,14 @@ SIMULATION_NAME='de.tu_berlin.formic.gatling.experiment.LinearInsertSimulation'
 
 #No need to change this
 GATLING_REPORT_DIR=$GATLING_HOME/results/
-GATHER_REPORTS_DIR=/gatling/reports/
+GATHER_REPORTS_DIR=gatling/reports/
 GATLING_LIB_DIR=$GATLING_HOME/lib
 
 echo "Starting Gatling cluster run for simulation: $SIMULATION_NAME"
 
 echo "Cleaning previous runs from localhost"
 rm -rf $GATHER_REPORTS_DIR
-mkdir $GATHER_REPORTS_DIR
+mkdir -p $GATHER_REPORTS_DIR
 rm -rf $GATLING_REPORT_DIR
 
 for HOST in "${HOSTS[@]}"
@@ -49,8 +61,8 @@ done
 for HOST in "${HOSTS[@]}"
 do
   echo "Copying simulation JARs to host: $HOST"
-  scp -i cloud.key $GATLING_LIB_DIR/formic-gatling-assembly-1.0.0 $USER_NAME@$HOST:$GATLING_SIMULATIONS_DIR
-  scp -i cloud.key $GATLING_LIB_DIR/formic-gatling-test-1.0.0 $USER_NAME@$HOST:$GATLING_SIMULATIONS_DIR
+  scp -i cloud.key $GATLING_LIB_DIR/formic-gatling-assembly-1.0.0.jar $USER_NAME@$HOST:$GATLING_SIMULATIONS_DIR
+  scp -i cloud.key $GATLING_LIB_DIR/formic-gatling-test-1.0.0.jar $USER_NAME@$HOST:$GATLING_SIMULATIONS_DIR
 done
 
 for HOST in "${HOSTS[@]}"
