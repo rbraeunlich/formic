@@ -91,6 +91,12 @@ do
   scp -i cloud.key $USER_NAME@$HOST:${GATLING_REPORT_DIR}report/simulation.log ${GATHER_REPORTS_DIR}simulation-$HOST.log
 done
 
+for HOST in "${HOSTS[@]}"
+do
+  echo "Gathering run log file from host: $HOST"
+  scp -i cloud.key $USER_NAME@$HOST:gatling-run.log ./gatling-run-$HOST.log
+done
+
 mv $GATHER_REPORTS_DIR $GATLING_REPORT_DIR
 echo "Aggregating simulations"
 $GATLING_RUNNER -ro reports
