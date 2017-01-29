@@ -15,14 +15,16 @@ import scala.concurrent.{Await, Future}
   */
 class LinearInsertSimulation extends Simulation {
 
+  //zero is the special value for only one user on localhost
+  val SINGLE_USER = System.getProperty("formicEditors").toInt == 0
+
   val NUM_DATATYPES = 1
 
-  //zero is the special value for only one user on localhost
-  val NUM_EDITORS = if(System.getProperty("formicEditors").toInt == 0) 1 else System.getProperty("formicEditors").toInt
+  val NUM_EDITORS = if(SINGLE_USER) 1 else System.getProperty("formicEditors").toInt
 
   val NUM_OPERATIONS = 100
 
-  val NUM_EDITS = NUM_OPERATIONS / NUM_EDITORS
+  val NUM_EDITS = NUM_OPERATIONS / (NUM_EDITORS / (if(SINGLE_USER) 1 else 5)) //five workers
 
   val DATATYPEINSTANCEID = System.getProperty("formicId")
 
@@ -75,7 +77,7 @@ class LinearInsertSimulation extends Simulation {
     .exec(connect).pause(7).exec(subscribe, edit, check)
 
   setUp(
-    editors.inject(rampUsers(NUM_EDITORS) over 20)
+    editors.inject(atOnceUsers(NUM_EDITORS))
   ).protocols(formicConfig)
 
 }
