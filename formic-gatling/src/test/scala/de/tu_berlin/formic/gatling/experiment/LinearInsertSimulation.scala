@@ -24,7 +24,7 @@ class LinearInsertSimulation extends Simulation {
 
   val NUM_OPERATIONS = 100
 
-  val NUM_EDITS = NUM_OPERATIONS / (NUM_EDITORS / (if(SINGLE_USER) 1 else 5)) //five workers
+  val NUM_EDITS = NUM_OPERATIONS / (NUM_EDITORS * (if(SINGLE_USER) 1 else 5)) //five workers
 
   val DATATYPEINSTANCEID = System.getProperty("formicId")
 
