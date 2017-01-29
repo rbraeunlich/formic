@@ -30,6 +30,8 @@ class LinearInsertSimulation extends Simulation {
 
   val SERVER_ADDRESS = System.getProperty("formicServer")
 
+  val WORKER_NR = System.getProperty("workerNumber").toInt
+
   val formicConfig = formic
     .url(SERVER_ADDRESS)
     .username(ClientId())
@@ -45,7 +47,7 @@ class LinearInsertSimulation extends Simulation {
   val edit = repeat(NUM_EDITS, "n") {
     exec(formic("LinearInsertion")
       .linear("${dataTypeInstanceId}")
-      .insert('a')
+      .insert(WORKER_NR)
       .index("${n}"))
   }
     .pause(60)

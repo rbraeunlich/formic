@@ -34,8 +34,6 @@ fi
 #Simulation options
 NUM_EDITORS=$1
 DATA_TYPE_ID=$2
-JAVA_OPTS="-DformicEditors=$NUM_EDITORS -DformicId=$DATA_TYPE_ID -DformicServer=$FORMIC_SERVER"
-export JAVA_OPTS
 
 #Assuming all Gatling installation in same path (with write permissions)
 GATLING_HOME=gatling-charts-highcharts-bundle-2.2.1
@@ -70,19 +68,25 @@ do
   scp -i cloud.key $GATLING_LIB_DIR/formic-gatling-test-1.0.0.jar $USER_NAME@$HOST:$GATLING_LIB_DIR
 done
 
+workerNumber=1
 for HOST in "${HOSTS[@]}"
 do
+  JAVA_OPTS="-DformicEditors=$NUM_EDITORS -DformicId=$DATA_TYPE_ID -DformicServer=$FORMIC_SERVER -DworkerNumber=$workerNumber"
+  export JAVA_OPTS
   echo "Running simulation on host: $HOST"
   ssh -n -f -i cloud.key $USER_NAME@$HOST "sh -c 'nohup ./wrapGatlingExecution.sh $JAVA_OPTS $GATLING_RUNNER $SIMULATION_NAME'"
+  ((workerNumber+=1))
 done
 
+
+JAVA_OPTS="-DformicEditors=$NUM_EDITORS -DformicId=$DATA_TYPE_ID -DformicServer=$FORMIC_SERVER -DworkerNumber=0"
+export JAVA_OPTS
 echo "Running simulation on localhost"
 $GATLING_RUNNER -nr -s $SIMULATION_NAME
 
 echo "Gathering result file from localhost"
 ls -t $GATLING_REPORT_DIR | head -n 1 | xargs -I {} mv ${GATLING_REPORT_DIR}{} ${GATLING_REPORT_DIR}report
 cp ${GATLING_REPORT_DIR}report/simulation.log $GATHER_REPORTS_DIR
-
 
 for HOST in "${HOSTS[@]}"
 do
