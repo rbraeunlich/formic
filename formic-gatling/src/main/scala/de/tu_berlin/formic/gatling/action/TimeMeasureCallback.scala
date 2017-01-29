@@ -1,13 +1,13 @@
 package de.tu_berlin.formic.gatling.action
 
-import de.tu_berlin.formic.common.OperationId
-import de.tu_berlin.formic.common.datatype.client.{AcknowledgementEvent, ClientDataTypeEvent}
-import de.tu_berlin.formic.gatling.action.TimeMeasureCallback.RemoteOperationTimeMeasureListener
+import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.datatype.client.{AcknowledgementEvent, ClientDataTypeEvent, CreateResponseEvent}
+import de.tu_berlin.formic.gatling.action.TimeMeasureCallback.{RemoteOperationTimeMeasureListener, TimeMeasureListener}
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.session.Session
 import io.gatling.core.stats.StatsEngine
 
-import collection.JavaConverters._
+import scala.collection.JavaConverters._
 
 /**
   * This object is used to measure the time an operation needs from the invocation on the
@@ -17,7 +17,7 @@ import collection.JavaConverters._
   */
 class TimeMeasureCallback {
 
-  val listener = new java.util.concurrent.CopyOnWriteArrayList[RemoteOperationTimeMeasureListener]()
+  val listener = new java.util.concurrent.CopyOnWriteArrayList[TimeMeasureListener]()
 
   def callbackMethod(event: ClientDataTypeEvent): Unit = {
     val end = TimeHelper.nowMillis
@@ -26,7 +26,7 @@ class TimeMeasureCallback {
     listener.removeAll(matched.asJava)
   }
 
-  def addListener[T](listener: RemoteOperationTimeMeasureListener): Unit = {
+  def addListener[T](listener: TimeMeasureListener): Unit = {
     this.listener.add(listener)
   }
 
@@ -37,11 +37,14 @@ class TimeMeasureCallback {
 
 object TimeMeasureCallback {
 
-  case class RemoteOperationTimeMeasureListener(operationId: OperationId, start: Long, session: Session, statsEngine: StatsEngine, name: String) {
+  sealed trait TimeMeasureListener {
 
-    def isOperation(e: ClientDataTypeEvent): Boolean = {
-      e.isInstanceOf[AcknowledgementEvent] && e.asInstanceOf[AcknowledgementEvent].operation.id == operationId
-    }
+    val start: Long
+    val session: Session
+    val statsEngine: StatsEngine
+    val name: String
+
+    def isOperation(e: ClientDataTypeEvent): Boolean
 
     def logOk(end: Long) = {
       FormicActions.logOkTimingValues(start, end, session, statsEngine, name)
@@ -50,7 +53,21 @@ object TimeMeasureCallback {
     def logKo() = {
       FormicActions.logKoTimingValues(start, TimeHelper.nowMillis, session, statsEngine, name)
     }
+  }
 
+  case class RemoteOperationTimeMeasureListener(operationId: OperationId, start: Long, session: Session, statsEngine: StatsEngine, name: String) extends TimeMeasureListener {
+
+    def isOperation(e: ClientDataTypeEvent): Boolean = {
+      e.isInstanceOf[AcknowledgementEvent] && e.asInstanceOf[AcknowledgementEvent].operation.id == operationId
+    }
+
+  }
+
+  case class CreateResponseTimeMeasureListener(dataTypeInstanceId: DataTypeInstanceId, start: Long, session: Session, statsEngine: StatsEngine, name: String) extends TimeMeasureListener {
+
+    def isOperation(e: ClientDataTypeEvent): Boolean = {
+      e.isInstanceOf[CreateResponseEvent] && e.asInstanceOf[CreateResponseEvent].dataTypeInstanceId == dataTypeInstanceId
+    }
   }
 
 }

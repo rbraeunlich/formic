@@ -767,7 +767,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
       dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
-        event should be(CreateResponseEvent)
+        event should equal(CreateResponseEvent(dataTypeInstanceId))
         latch.countDown()
       })
 

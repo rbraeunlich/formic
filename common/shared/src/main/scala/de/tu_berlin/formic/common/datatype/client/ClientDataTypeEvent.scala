@@ -1,5 +1,6 @@
 package de.tu_berlin.formic.common.datatype.client
 
+import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.common.datatype.DataTypeOperation
 
 /**
@@ -12,6 +13,6 @@ case class LocalOperationEvent(operation: DataTypeOperation) extends  ClientData
 
 case class RemoteOperationEvent(operation: DataTypeOperation) extends ClientDataTypeEvent
 
-case object CreateResponseEvent extends ClientDataTypeEvent
+case class CreateResponseEvent(dataTypeInstanceId: DataTypeInstanceId) extends ClientDataTypeEvent
 
 case class AcknowledgementEvent(operation: DataTypeOperation) extends ClientDataTypeEvent
