@@ -3,6 +3,7 @@ package de.tu_berlin.formic.gatling.action.tree
 import de.tu_berlin.formic.client.FormicSystem
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.datatype.tree.client.FormicIntegerTree
+import de.tu_berlin.formic.gatling.action.TimeMeasureCallback.CreateResponseTimeMeasureListener
 import de.tu_berlin.formic.gatling.action.{FormicActions, SessionVariables, TimeMeasureCallback}
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.action.{Action, ChainableAction}
@@ -24,10 +25,10 @@ case class TreeCreation(dataTypeInstanceId: Expression[String], statsEngine: Sta
       formicSystemOption match {
 
         case Some(formicSystem) =>
-          val tree = new FormicIntegerTree(session(SessionVariables.TIMEMEASURE_CALLBACK).as[TimeMeasureCallback].callbackMethod, formicSystem, DataTypeInstanceId.valueOf(id))
-          val end = TimeHelper.nowMillis
+          val callback = session(SessionVariables.TIMEMEASURE_CALLBACK).as[TimeMeasureCallback]
+          val tree = new FormicIntegerTree(callback.callbackMethod, formicSystem, DataTypeInstanceId.valueOf(id))
           val modifiedSession = session.set(id, tree)
-          FormicActions.logOkTimingValues(start, end, session, statsEngine, name)
+          callback.addListener(CreateResponseTimeMeasureListener(tree.dataTypeInstanceId, start, session, statsEngine, name))
           next ! modifiedSession
 
         case None => throw new IllegalArgumentException("Users have to connect first!")

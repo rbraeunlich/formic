@@ -3,6 +3,7 @@ package de.tu_berlin.formic.gatling.action.json
 import de.tu_berlin.formic.client.FormicSystem
 import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
+import de.tu_berlin.formic.gatling.action.TimeMeasureCallback.CreateResponseTimeMeasureListener
 import de.tu_berlin.formic.gatling.action.{FormicActions, SessionVariables, TimeMeasureCallback}
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.action.{Action, ChainableAction}
@@ -24,10 +25,10 @@ case class JsonCreation(dataTypeInstanceId: Expression[String], statsEngine: Sta
       formicSystemOption match {
 
         case Some(formicSystem) =>
-          val json = new FormicJsonObject(session(SessionVariables.TIMEMEASURE_CALLBACK).as[TimeMeasureCallback].callbackMethod, formicSystem, DataTypeInstanceId.valueOf(id))
-          val end = TimeHelper.nowMillis
+          val callback = session(SessionVariables.TIMEMEASURE_CALLBACK).as[TimeMeasureCallback]
+          val json = new FormicJsonObject(callback.callbackMethod, formicSystem, DataTypeInstanceId.valueOf(id))
           val modifiedSession = session.set(id, json)
-          FormicActions.logOkTimingValues(start, end, session, statsEngine, name)
+          callback.addListener(CreateResponseTimeMeasureListener(json.dataTypeInstanceId, start, session, statsEngine, name))
           next ! modifiedSession
 
         case None => throw new IllegalArgumentException("Users have to connect first!")
