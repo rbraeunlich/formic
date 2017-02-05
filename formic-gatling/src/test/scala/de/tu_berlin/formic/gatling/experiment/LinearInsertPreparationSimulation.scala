@@ -29,18 +29,6 @@ class LinearInsertPreparationSimulation extends Simulation {
     .linear("${dataTypeInstanceId}"))
     .pause(5)
 
-  val createTestDataType =
-    exec(s => s.set("formicId", DataTypeInstanceId().id))
-      .exec(formic("DataType")
-        .create()
-        .linear("${formicId}"))
-      .pause(1)
-      .exec(s => {
-        println("Id: " + s("formicId").as[String])
-        s
-      })
-      .pause(1)
-
   val edit = repeat(200, "n") {
     exec(formic("LinearInsertion")
       .linear("${dataTypeInstanceId}")
@@ -61,7 +49,7 @@ class LinearInsertPreparationSimulation extends Simulation {
     }.pause(10)
 
 
-  val warmup = scenario("Warmup").exec(connect, createWarmupDataType, edit, createTestDataType)
+  val warmup = scenario("Warmup").exec(connect, createWarmupDataType, edit)
 
   setUp(
     warmup.inject(atOnceUsers(NUM_DATATYPES))

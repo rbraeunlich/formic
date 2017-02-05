@@ -28,12 +28,12 @@ FORMIC_SERVER="http://10.200.1.67:80"
 if [ $1 -eq 0 ]
     then HOSTS=()
 else
-    HOSTS=( 192.168.0.27 )
+    HOSTS=( 192.168.0.27 192.168.0.28 192.168.0.29 192.168.0.30 )
 fi
 
 #Simulation options
 NUM_EDITORS=$1
-DATA_TYPE_ID=$2
+DATA_TYPE_IDS=( $2 $3 $4 $5 )
 
 #Assuming all Gatling installation in same path (with write permissions)
 GATLING_HOME=gatling-charts-highcharts-bundle-2.2.1
@@ -68,37 +68,40 @@ do
   scp -i cloud.key $GATLING_LIB_DIR/formic-gatling-test-1.0.0.jar $USER_NAME@$HOST:$GATLING_LIB_DIR
 done
 
-workerNumber=1
-for HOST in "${HOSTS[@]}"
+for DATA_TYPE_ID in "${DATA_TYPE_IDS[@]}"
 do
-  JAVA_OPTS="-DformicEditors=$NUM_EDITORS -DformicId=$DATA_TYPE_ID -DformicServer=$FORMIC_SERVER -DworkerNumber=$workerNumber"
-  export JAVA_OPTS
-  echo "Running simulation on host: $HOST"
-  ssh -n -f -i cloud.key $USER_NAME@$HOST "sh -c 'nohup ./wrapGatlingExecution.sh $JAVA_OPTS $GATLING_RUNNER $SIMULATION_NAME'"
-  ((workerNumber+=1))
-done
+    workerNumber=1
+    for HOST in "${HOSTS[@]}"
+    do
+      JAVA_OPTS="-DformicEditors=$NUM_EDITORS -DformicId=$DATA_TYPE_ID -DformicServer=$FORMIC_SERVER -DworkerNumber=$workerNumber"
+      export JAVA_OPTS
+      echo "Running simulation on host: $HOST"
+      ssh -n -f -i cloud.key $USER_NAME@$HOST "sh -c 'nohup ./wrapGatlingExecution.sh $JAVA_OPTS $GATLING_RUNNER $SIMULATION_NAME'"
+      ((workerNumber+=1))
+    done
 
 
-JAVA_OPTS="-DformicEditors=$NUM_EDITORS -DformicId=$DATA_TYPE_ID -DformicServer=$FORMIC_SERVER -DworkerNumber=0"
-export JAVA_OPTS
-echo "Running simulation on localhost"
-$GATLING_RUNNER -nr -s $SIMULATION_NAME
+    JAVA_OPTS="-DformicEditors=$NUM_EDITORS -DformicId=$DATA_TYPE_ID -DformicServer=$FORMIC_SERVER -DworkerNumber=0"
+    export JAVA_OPTS
+    echo "Running simulation on localhost"
+    $GATLING_RUNNER -nr -s $SIMULATION_NAME
 
-echo "Gathering result file from localhost"
-ls -t $GATLING_REPORT_DIR | head -n 1 | xargs -I {} mv ${GATLING_REPORT_DIR}{} ${GATLING_REPORT_DIR}report
-cp ${GATLING_REPORT_DIR}report/simulation.log $GATHER_REPORTS_DIR
+    echo "Gathering result file from localhost"
+    ls -t $GATLING_REPORT_DIR | head -n 1 | xargs -I {} mv ${GATLING_REPORT_DIR}{} ${GATLING_REPORT_DIR}report
+    cp ${GATLING_REPORT_DIR}report/simulation.log ${GATHER_REPORTS_DIR}simulation-${DATA_TYPE_ID}.log
 
-for HOST in "${HOSTS[@]}"
-do
-  echo "Gathering result file from host: $HOST"
-  ssh -n -f -i cloud.key $USER_NAME@$HOST "sh -c 'ls -t $GATLING_REPORT_DIR | head -n 1 | xargs -I {} mv ${GATLING_REPORT_DIR}{} ${GATLING_REPORT_DIR}report'"
-  scp -i cloud.key $USER_NAME@$HOST:${GATLING_REPORT_DIR}report/simulation.log ${GATHER_REPORTS_DIR}simulation-$HOST.log
-done
+    for HOST in "${HOSTS[@]}"
+    do
+      echo "Gathering result file from host: $HOST"
+      ssh -n -f -i cloud.key $USER_NAME@$HOST "sh -c 'ls -t $GATLING_REPORT_DIR | head -n 1 | xargs -I {} mv ${GATLING_REPORT_DIR}{} ${GATLING_REPORT_DIR}report'"
+      scp -i cloud.key $USER_NAME@$HOST:${GATLING_REPORT_DIR}report/simulation.log ${GATHER_REPORTS_DIR}simulation-${HOST}-${DATA_TYPE_ID}.log
+    done
 
-for HOST in "${HOSTS[@]}"
-do
-  echo "Gathering run log file from host: $HOST"
-  scp -i cloud.key $USER_NAME@$HOST:gatling-run.log ./gatling-run-$HOST.log
+    for HOST in "${HOSTS[@]}"
+    do
+      echo "Gathering run log file from host: $HOST"
+      scp -i cloud.key $USER_NAME@$HOST:gatling-run.log ./gatling-run-${HOST}-${DATA_TYPE_ID}.log
+    done
 done
 
 mv $GATHER_REPORTS_DIR $GATLING_REPORT_DIR

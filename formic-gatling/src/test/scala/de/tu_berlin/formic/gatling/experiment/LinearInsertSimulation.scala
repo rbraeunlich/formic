@@ -49,6 +49,7 @@ class LinearInsertSimulation extends Simulation {
       .linear("${dataTypeInstanceId}")
       .insert(WORKER_NR)
       .index("${n}"))
+      .pause(1)
   }
     .pause(60)
     .exec(s => {
@@ -62,13 +63,14 @@ class LinearInsertSimulation extends Simulation {
       LinearInsertSimulation.addString(formicString)
       s
     })
+    .pause(1)
     .rendezVous(NUM_EDITORS)
     .exec(s => {
       //this executes the method several times but that's ok
       LinearInsertSimulation.checkAllStringsForConsistency()
       s
     })
-    .rendezVous(NUM_EDITORS)
+    .pause(1)
 
   val subscribe = feed(dataTypeInstanceIdFeeder.iterator.toArray.circular)
     .exec(formic("Subscription")
