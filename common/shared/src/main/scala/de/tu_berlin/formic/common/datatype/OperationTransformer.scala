@@ -23,7 +23,7 @@ trait OperationTransformer {
     * their original one.
     *
     * @param operation the operation that is transformed against the bridge
-    * @param bridge    the operations that have to be transformed
+    * @param bridge    the operations that have to be transformed, from newest to oldest
     */
   def bulkTransform(operation: DataTypeOperation, bridge: List[DataTypeOperation]): List[DataTypeOperation] = {
     if (bridge.isEmpty) return bridge

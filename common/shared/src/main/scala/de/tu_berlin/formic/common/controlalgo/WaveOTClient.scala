@@ -54,9 +54,9 @@ class WaveOTClient(sendToServerFunction: (DataTypeOperation) => Unit) extends Co
     if (inFlightOperation != null) {
       transformed = (inFlightOperation +: buffer).foldLeft(transformed)((o1, o2) => transformer.transform((o1, o2)))
       //now we have to transform the whole bridge
-      val transformedBridge = transformer.bulkTransform(op, buffer :+ inFlightOperation)
+      val transformedBridge = transformer.bulkTransform(op, buffer.reverse :+ inFlightOperation)
       inFlightOperation = transformedBridge.last
-      buffer = transformedBridge.take(transformedBridge.size - 1)
+      buffer = transformedBridge.take(transformedBridge.size - 1).reverse
     } else {
       currentContext = List(transformed.id)
     }

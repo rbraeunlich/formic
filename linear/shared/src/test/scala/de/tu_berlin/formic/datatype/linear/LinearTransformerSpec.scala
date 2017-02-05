@@ -1,6 +1,7 @@
 package de.tu_berlin.formic.datatype.linear
 
-import de.tu_berlin.formic.common.datatype.OperationContext
+import de.tu_berlin.formic.common.controlalgo.WaveOTClient
+import de.tu_berlin.formic.common.datatype.{HistoryBuffer, OperationContext}
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import org.scalatest._
 
@@ -194,5 +195,38 @@ class LinearTransformerSpec extends FlatSpec with Matchers {
     val transformed = LinearTransformer.transform(op1, op2)
 
     transformed should equal(LinearNoOperation(op1.id, OperationContext(List(op2.id)), op1.clientId))
+  }
+
+  it should "bulk transform bridge with two operations in it correctly" in {
+    val op1 = LinearInsertOperation(0, "z", OperationId(), OperationContext(), ClientId("2"))
+    val op2 = LinearInsertOperation(1, "z", OperationId(), OperationContext(List(op1.id)), ClientId("2"))
+    val op3 = LinearInsertOperation(2, "z", OperationId(), OperationContext(List(op2.id)), ClientId("2"))
+    val op = LinearInsertOperation(0, "a", OperationId(), OperationContext(), ClientId("1"))
+
+    val transformed = LinearTransformer.bulkTransform(op, List(op3, op2, op1))
+
+    transformed should contain inOrder(
+      LinearInsertOperation(op3.index, op3.o, op3.id, op3.operationContext, op3.clientId),
+      LinearInsertOperation(op2.index, op2.o, op2.id, op2.operationContext, op2.clientId),
+      LinearInsertOperation(op1.index, op1.o, op1.id, OperationContext(List(op.id)), op1.clientId))
+  }
+
+  it should "cooperate with WaveOTClient and bulk transformations" in {
+    val controlAlgo = new WaveOTClient(_ => {})
+    val op1 = LinearInsertOperation(0, "z", OperationId(), OperationContext(), ClientId("2"))
+    val op2 = LinearInsertOperation(1, "z", OperationId(), OperationContext(List(op1.id)), ClientId("2"))
+    val op3 = LinearInsertOperation(2, "z", OperationId(), OperationContext(List(op2.id)), ClientId("2"))
+    val op = LinearInsertOperation(0, "a", OperationId(), OperationContext(), ClientId("1"))
+    controlAlgo.canLocalOperationBeApplied(op1)
+    controlAlgo.canLocalOperationBeApplied(op2)
+    controlAlgo.canLocalOperationBeApplied(op3)
+
+    val transformed = controlAlgo.transform(op, new HistoryBuffer(), LinearTransformer)
+
+    transformed should equal(LinearInsertOperation(3, op.o, op.id, OperationContext(List(op3.id)), op.clientId))
+    controlAlgo.inFlightOperation should equal(LinearInsertOperation(op1.index, op1.o, op1.id, OperationContext(List(op.id)), op1.clientId))
+    controlAlgo.buffer should contain inOrder(
+      LinearInsertOperation(op2.index, op2.o, op2.id, op2.operationContext, op2.clientId),
+      LinearInsertOperation(op3.index, op3.o, op3.id, op3.operationContext, op3.clientId))
   }
 }

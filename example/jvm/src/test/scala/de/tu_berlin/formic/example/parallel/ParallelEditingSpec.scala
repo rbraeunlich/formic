@@ -494,6 +494,50 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       user1.system.terminate()
       user2.system.terminate()
     }
+
+    "result in a consistent linear structure when noops are generated" in {
+      val debugConfig = ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}")
+      val iterations = 10
+      val user1Id = ClientId("14")
+      val user2Id = ClientId("15")
+      val user3Id = ClientId("16")
+      val user1 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
+      val user2 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
+      val user3 = FormicSystemFactory.create(debugConfig, Set(LinearClientDataTypeProvider()))
+      val user1Callback = new CollectingCallback
+      val user2Callback = new CollectingCallback
+      val user3Callback = new CollectingCallback
+      user1.init(user1Callback, user1Id)
+      user2.init(user2Callback, user2Id)
+      user3.init(user3Callback, user3Id)
+      Thread.sleep(3000)
+      val stringUser1 = new FormicString((_) => {}, user1)
+      Thread.sleep(1000) //send the CreateRequest to the server
+      user2.requestDataType(stringUser1.dataTypeInstanceId)
+      user3.requestDataType(stringUser1.dataTypeInstanceId)
+      awaitCond(user2Callback.dataTypes.nonEmpty, 5.seconds)
+      awaitCond(user3Callback.dataTypes.nonEmpty, 5.seconds)
+      val stringUser2 = user2Callback.dataTypes.head.asInstanceOf[FormicString]
+      val stringUser3 = user3Callback.dataTypes.head.asInstanceOf[FormicString]
+
+      for (x <- 0.until(iterations)) {
+        stringUser1.add(x, 'a')
+        stringUser2.add(x, 'a')
+        stringUser3.add(x, 'z')
+      }
+
+      Thread.sleep(10000)
+
+      val result1 = Await.result(stringUser1.getAll(), 60.seconds).mkString
+      val result2 = Await.result(stringUser2.getAll(), 60.seconds).mkString
+      val result3 = Await.result(stringUser3.getAll(), 60.seconds).mkString
+
+      result1 should (equal(result2) and equal(result3))
+
+      user1.system.terminate()
+      user2.system.terminate()
+      user3.system.terminate()
+    }
   }
 }
 
