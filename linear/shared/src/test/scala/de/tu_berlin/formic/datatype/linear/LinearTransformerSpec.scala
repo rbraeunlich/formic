@@ -211,22 +211,82 @@ class LinearTransformerSpec extends FlatSpec with Matchers {
       LinearInsertOperation(op1.index, op1.o, op1.id, OperationContext(List(op.id)), op1.clientId))
   }
 
-  it should "cooperate with WaveOTClient and bulk transformations" in {
+  it should "correctly perform bulk transformations with more than one operations in the bridge with WaveOTClient" in {
     val controlAlgo = new WaveOTClient(_ => {})
     val op1 = LinearInsertOperation(0, "z", OperationId(), OperationContext(), ClientId("2"))
     val op2 = LinearInsertOperation(1, "z", OperationId(), OperationContext(List(op1.id)), ClientId("2"))
     val op3 = LinearInsertOperation(2, "z", OperationId(), OperationContext(List(op2.id)), ClientId("2"))
+    val op4 = LinearInsertOperation(3, "z", OperationId(), OperationContext(List(op3.id)), ClientId("2"))
     val op = LinearInsertOperation(0, "a", OperationId(), OperationContext(), ClientId("1"))
+    controlAlgo.canLocalOperationBeApplied(op1)
+    controlAlgo.canLocalOperationBeApplied(op2)
+    controlAlgo.canLocalOperationBeApplied(op3)
+    controlAlgo.canLocalOperationBeApplied(op4)
+
+    val transformed = controlAlgo.transform(op, new HistoryBuffer(), LinearTransformer)
+
+    transformed should equal(LinearInsertOperation(4, op.o, op.id, OperationContext(List(op4.id)), op.clientId))
+    controlAlgo.inFlightOperation should equal(LinearInsertOperation(op1.index, op1.o, op1.id, OperationContext(List(op.id)), op1.clientId))
+    controlAlgo.buffer should contain inOrder(
+      LinearInsertOperation(op2.index, op2.o, op2.id, op2.operationContext, op2.clientId),
+      LinearInsertOperation(op3.index, op3.o, op3.id, op3.operationContext, op3.clientId),
+      LinearInsertOperation(op4.index, op4.o, op4.id, op4.operationContext, op4.clientId))
+  }
+
+  it should "correctly bulk transformation the incoming operation to a noop with WaveOTClient" in {
+    val controlAlgo = new WaveOTClient(_ => {})
+    val op1 = LinearInsertOperation(0, "z", OperationId(), OperationContext(), ClientId("2"))
+    val op2 = LinearInsertOperation(1, "z", OperationId(), OperationContext(List(op1.id)), ClientId("2"))
+    val op3 = LinearInsertOperation(2, "z", OperationId(), OperationContext(List(op2.id)), ClientId("2"))
+    val op = LinearInsertOperation(0, "z", OperationId(), OperationContext(), ClientId("1"))
     controlAlgo.canLocalOperationBeApplied(op1)
     controlAlgo.canLocalOperationBeApplied(op2)
     controlAlgo.canLocalOperationBeApplied(op3)
 
     val transformed = controlAlgo.transform(op, new HistoryBuffer(), LinearTransformer)
 
-    transformed should equal(LinearInsertOperation(3, op.o, op.id, OperationContext(List(op3.id)), op.clientId))
-    controlAlgo.inFlightOperation should equal(LinearInsertOperation(op1.index, op1.o, op1.id, OperationContext(List(op.id)), op1.clientId))
+    transformed should equal(LinearNoOperation(op.id, OperationContext(List(op3.id)), op.clientId))
+    controlAlgo.inFlightOperation should equal(LinearNoOperation(op1.id, OperationContext(List(op.id)), op1.clientId))
     controlAlgo.buffer should contain inOrder(
       LinearInsertOperation(op2.index, op2.o, op2.id, op2.operationContext, op2.clientId),
+      LinearInsertOperation(op3.index, op3.o, op3.id, op3.operationContext, op3.clientId))
+  }
+
+  it should "correctly bulk transform the first operation in the bridge to a noop with WaveOTClient" in {
+    val controlAlgo = new WaveOTClient(_ => {})
+    val op1 = LinearInsertOperation(0, "z", OperationId(), OperationContext(), ClientId("2"))
+    val op2 = LinearInsertOperation(1, "z", OperationId(), OperationContext(List(op1.id)), ClientId("2"))
+    val op3 = LinearInsertOperation(2, "z", OperationId(), OperationContext(List(op2.id)), ClientId("2"))
+    val op = LinearInsertOperation(0, "z", OperationId(), OperationContext(), ClientId("3"))
+    controlAlgo.canLocalOperationBeApplied(op1)
+    controlAlgo.canLocalOperationBeApplied(op2)
+    controlAlgo.canLocalOperationBeApplied(op3)
+
+    val transformed = controlAlgo.transform(op, new HistoryBuffer(), LinearTransformer)
+
+    transformed should equal(LinearNoOperation(op.id, OperationContext(List(op3.id)), op.clientId))
+    controlAlgo.inFlightOperation should equal(LinearNoOperation(op1.id, OperationContext(List(op.id)), op1.clientId))
+    controlAlgo.buffer should contain inOrder(
+      LinearInsertOperation(op2.index, op2.o, op2.id, op2.operationContext, op2.clientId),
+      LinearInsertOperation(op3.index, op3.o, op3.id, op3.operationContext, op3.clientId))
+  }
+
+  it should "correctly bulk transform a middle operation in the bridge to a noop with WaveOTClient" in {
+    val controlAlgo = new WaveOTClient(_ => {})
+    val op1 = LinearInsertOperation(10, "z", OperationId(), OperationContext(), ClientId("2"))
+    val op2 = LinearInsertOperation(1, "z", OperationId(), OperationContext(List(op1.id)), ClientId("2"))
+    val op3 = LinearInsertOperation(2, "z", OperationId(), OperationContext(List(op2.id)), ClientId("2"))
+    val op = LinearInsertOperation(1, "z", OperationId(), OperationContext(), ClientId("3"))
+    controlAlgo.canLocalOperationBeApplied(op1)
+    controlAlgo.canLocalOperationBeApplied(op2)
+    controlAlgo.canLocalOperationBeApplied(op3)
+
+    val transformed = controlAlgo.transform(op, new HistoryBuffer(), LinearTransformer)
+
+    transformed should equal(LinearNoOperation(op.id, OperationContext(List(op3.id)), op.clientId))
+    controlAlgo.inFlightOperation should equal(LinearInsertOperation(11, op1.o, op1.id, OperationContext(List(op.id)), op1.clientId))
+    controlAlgo.buffer should contain inOrder(
+      LinearNoOperation(op2.id, op2.operationContext, op2.clientId),
       LinearInsertOperation(op3.index, op3.o, op3.id, op3.operationContext, op3.clientId))
   }
 }
