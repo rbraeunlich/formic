@@ -44,7 +44,6 @@ class WaveOTServer extends ControlAlgorithm {
       case Some(ancestorId) => history.findAllOperationsAfter(ancestorId)
     }
     //the history goes from the youngest to the oldest, therefore we have to transform from the back
-    //because foldRight applies coll(n-1) op init, we switch them for the transform function
-    parallelOperations.foldRight(op)((o1, o2) => transformer.transform((o2, o1)))
+    parallelOperations.reverse.foldLeft(op)((o1, o2) => transformer.transform(o1, o2))
   }
 }
