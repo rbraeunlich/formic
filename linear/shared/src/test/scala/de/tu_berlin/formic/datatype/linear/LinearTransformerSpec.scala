@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.datatype.linear
 
 import de.tu_berlin.formic.common.controlalgo.WaveOTClient
-import de.tu_berlin.formic.common.datatype.{HistoryBuffer, OperationContext}
+import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, OperationContext}
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import org.scalatest._
 
@@ -330,5 +330,24 @@ class LinearTransformerSpec extends FlatSpec with Matchers {
       LinearInsertOperation(op3.index, op3.o, op3.id, op3.operationContext, op3.clientId),
       LinearInsertOperation(op2.index, op2.o, op2.id, op2.operationContext, op2.clientId),
       LinearNoOperation(op1.id, OperationContext(List(op.id)), op1.clientId))
+  }
+
+  it should "make send WaveOTClient a noop to the server after receiving an ack for the inFlightOperation" in {
+    var sentOperations: List[DataTypeOperation] = List.empty
+    val controlAlgo = new WaveOTClient(op => {sentOperations = sentOperations :+ op})
+    val op1 = LinearInsertOperation(10, "z", OperationId(), OperationContext(), ClientId("2"))
+    val op2 = LinearInsertOperation(1, "z", OperationId(), OperationContext(List(op1.id)), ClientId("2"))
+    val op3 = LinearInsertOperation(2, "z", OperationId(), OperationContext(List(op2.id)), ClientId("2"))
+    val op = LinearInsertOperation(1, "z", OperationId(), OperationContext(), ClientId("3"))
+    controlAlgo.canLocalOperationBeApplied(op1)
+    controlAlgo.canLocalOperationBeApplied(op2)
+    controlAlgo.canLocalOperationBeApplied(op3)
+
+    controlAlgo.transform(op, new HistoryBuffer(), LinearTransformer)
+    controlAlgo.canBeApplied(op1, new HistoryBuffer())
+
+    sentOperations should contain inOrder(
+      op1,
+      LinearNoOperation(op2.id, op2.operationContext, op2.clientId))
   }
 }
