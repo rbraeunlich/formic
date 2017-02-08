@@ -73,9 +73,8 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
     case rep: CreateResponse =>
       log.debug(s"DataType $id received CreateResponse $rep")
       //we have to inform the control algorithm about the buffered operations
+      //TODO we use the fact here, that WaveOT will send the operations itself, that's incompatible with other control algorithms
       historyBuffer.history.reverse.foreach(controlAlgorithm.canLocalOperationBeApplied)
-      //TODO WaveOT will actually send the same operations again here, gotta find a better way
-      outgoingConnection ! OperationMessage(null, id, dataTypeName, historyBuffer.history)
       callbackWrapper ! Invoke(CreateResponseEvent(id))
       context.become(acknowledged(callbackWrapper))
 

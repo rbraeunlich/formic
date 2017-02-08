@@ -480,7 +480,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val dataTypeInstanceId = DataTypeInstanceId()
       val data = "{foo}"
       val outgoing = TestProbe()
-      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = outgoing.ref)))
+      val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new WaveOTClient( op => outgoing.ref ! op), outgoingConnection = outgoing.ref)))
       dataType ! ReceiveCallback((_) => {})
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val operation2 = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
@@ -491,8 +491,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       dataType ! LocalOperationMessage(operationMessage2)
       dataType ! CreateResponse(dataTypeInstanceId)
 
-      val toServer = outgoing.expectMsgClass(classOf[OperationMessage])
-      toServer.operations should contain inOrder(AbstractClientDataTypeSpecTestOperation(operation2.id, OperationContext(List(operation.id)), operation2.clientId, operation2.data), operation)
+      val toServer = outgoing.expectMsgClass(classOf[AbstractClientDataTypeSpecTestOperation])
     }
 
 
