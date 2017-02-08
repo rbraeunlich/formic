@@ -13,7 +13,6 @@ class LinearInsertCreationSimulation extends Simulation {
 
   val formicConfig = formic
     .url(System.getProperty("formicServer"))
-    .username(ClientId())
     .bufferSize(100)
     .logLevel("info")
 

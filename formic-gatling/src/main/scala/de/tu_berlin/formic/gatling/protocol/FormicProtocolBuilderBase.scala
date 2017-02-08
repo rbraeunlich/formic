@@ -7,30 +7,22 @@ import de.tu_berlin.formic.common.ClientId
   */
 case object FormicProtocolBuilderBase {
 
-  def url(url: String) = FormicProtocolBuilderUsernameStep(url)
+  def url(url: String) = FormicProtocolBuilderBufferSizeStep(url)
 
 }
 
-case class FormicProtocolBuilderUsernameStep(url: String) {
+case class FormicProtocolBuilderBufferSizeStep(url: String) {
 
-  def username(name : String) = FormicProtocolBuilderBufferSizeStep(url, ClientId(name))
-
-  def username(clientId: ClientId) = FormicProtocolBuilderBufferSizeStep(url, clientId)
+  def bufferSize(size: Int) = FormicProtocolBuilderLogLevelStep(url, size)
 
 }
 
-case class FormicProtocolBuilderBufferSizeStep(url: String, username: ClientId) {
+case class FormicProtocolBuilderLogLevelStep(url: String, bufferSize: Int) {
 
-  def bufferSize(size: Int) = FormicProtocolBuilderLogLevelStep(url, username, size)
-
+  def logLevel(level: String) = FormicProtocolBuilder(url, bufferSize, level)
 }
 
-case class FormicProtocolBuilderLogLevelStep(url: String, username: ClientId, bufferSize: Int) {
+case class FormicProtocolBuilder(url: String, bufferSize: Int, logLevel: String) {
 
-  def logLevel(level: String) = FormicProtocolBuilder(url, username, bufferSize, level)
-}
-
-case class FormicProtocolBuilder(url: String, username: ClientId, bufferSize: Int, logLevel: String) {
-
-  def build = new FormicGatlingProtocol(url, username, bufferSize, logLevel)
+  def build = new FormicGatlingProtocol(url, bufferSize, logLevel)
 }

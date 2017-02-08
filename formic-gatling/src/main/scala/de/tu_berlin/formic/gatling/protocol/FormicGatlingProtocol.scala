@@ -13,7 +13,7 @@ import io.gatling.core.protocol.{Protocol, ProtocolKey}
 /**
   * @author Ronny Bräunlich
   */
-case class FormicGatlingProtocol(serverUrl: String, username: ClientId, bufferSize: Int, logLevel: String) extends Protocol {
+case class FormicGatlingProtocol(serverUrl: String, bufferSize: Int, logLevel: String) extends Protocol {
 
   val url = new URL(serverUrl)
   val config = ConfigFactory.parseString(s"""akka {\n  loglevel = $logLevel\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"${url.getHost}\"\n    port = ${url.getPort}\n  }\n  client {\n    buffersize = $bufferSize\n  }\n}""")

@@ -1,6 +1,5 @@
 package de.tu_berlin.formic.gatling.experiment
 
-import de.tu_berlin.formic.common.ClientId
 import de.tu_berlin.formic.datatype.linear.client.FormicString
 import de.tu_berlin.formic.gatling.Predef._
 import de.tu_berlin.formic.gatling.action.{SessionVariables, TimeMeasureCallback}
@@ -9,6 +8,7 @@ import io.gatling.core.Predef._
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.util.Random
 
 /**
   * @author Ronny Bräunlich
@@ -22,7 +22,7 @@ class LinearInsertSimulation extends Simulation {
 
   val NUM_EDITORS = if(SINGLE_USER) 1 else System.getProperty("formicEditors").toInt
 
-  val NUM_OPERATIONS = 100
+  val NUM_OPERATIONS = 10
 
   val NUM_EDITS = NUM_OPERATIONS / (NUM_EDITORS * (if(SINGLE_USER) 1 else 5)) //five workers
 
@@ -32,11 +32,12 @@ class LinearInsertSimulation extends Simulation {
 
   val WORKER_NR = System.getProperty("workerNumber").toInt
 
+  val rand = Random.alphanumeric
+
   val formicConfig = formic
     .url(SERVER_ADDRESS)
-    .username(ClientId())
     .bufferSize(100)
-    .logLevel("info")
+    .logLevel("debug")
 
   //to have a feeder for all scenarios, we create the ids up front and use them
   val dataTypeInstanceIdFeeder = Seq(Map("dataTypeInstanceId" -> DATATYPEINSTANCEID))
@@ -47,7 +48,7 @@ class LinearInsertSimulation extends Simulation {
   val edit = repeat(NUM_EDITS, "n") {
     exec(formic("LinearInsertion")
       .linear("${dataTypeInstanceId}")
-      .insert(WORKER_NR)
+      .insert(0)
       .index("${n}"))
       .pause(1)
   }

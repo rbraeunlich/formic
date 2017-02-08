@@ -2,6 +2,7 @@ package de.tu_berlin.formic.gatling.action
 
 import com.typesafe.config.Config
 import de.tu_berlin.formic.client.FormicSystemFactory
+import de.tu_berlin.formic.common.ClientId
 import de.tu_berlin.formic.datatype.json.client.JsonClientDataTypeProvider
 import de.tu_berlin.formic.datatype.linear.client.LinearClientDataTypeProvider
 import de.tu_berlin.formic.datatype.tree.client.TreeClientDataTypeProvider
@@ -22,7 +23,7 @@ case class FormicConnectAction(config: Config, statsEngine: StatsEngine, next: A
     val formicSystem = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider(), TreeClientDataTypeProvider(), JsonClientDataTypeProvider()))
     val timeMeasureCallback = new TimeMeasureCallback
     val callback = new CollectingCallbackWithListener(timeMeasureCallback)
-    formicSystem.init(callback)
+    formicSystem.init(callback, ClientId())
     val end = TimeHelper.nowMillis
     //we use this action as a little initialization
     val modifiedSession = session

@@ -21,7 +21,6 @@ class FormicLinearSimulation extends Simulation {
 
   val formicConfig = formic
     .url("http://localhost:8080")
-    .username(ClientId())
     .bufferSize(100)
     .logLevel("info")
 
