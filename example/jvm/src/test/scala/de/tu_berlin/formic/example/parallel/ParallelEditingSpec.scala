@@ -538,6 +538,73 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       user2.system.terminate()
       user3.system.terminate()
     }
+
+    "result in a consistent linear structure when even more noops are generated" in {
+      val debugConfig = ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}")
+      val iterations = 20
+      val user1Id = ClientId()
+      val user2Id = ClientId()
+      val user3Id = ClientId()
+      val user4Id = ClientId()
+      val user5Id = ClientId()
+      val user1 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
+      val user2 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
+      val user3 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
+      val user4 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
+      val user5 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
+      val user1Callback = new CollectingCallback
+      val user2Callback = new CollectingCallback
+      val user3Callback = new CollectingCallback
+      val user4Callback = new CollectingCallback
+      val user5Callback = new CollectingCallback
+      user1.init(user1Callback, user1Id)
+      user2.init(user2Callback, user2Id)
+      user3.init(user3Callback, user3Id)
+      user4.init(user4Callback, user4Id)
+      user5.init(user5Callback, user5Id)
+      Thread.sleep(3000)
+      val stringUser1 = new FormicString((_) => {}, user1)
+      Thread.sleep(1000) //send the CreateRequest to the server
+      user2.requestDataType(stringUser1.dataTypeInstanceId)
+      user3.requestDataType(stringUser1.dataTypeInstanceId)
+      user4.requestDataType(stringUser1.dataTypeInstanceId)
+      user5.requestDataType(stringUser1.dataTypeInstanceId)
+      awaitCond(user2Callback.dataTypes.nonEmpty, 5.seconds)
+      awaitCond(user4Callback.dataTypes.nonEmpty, 5.seconds)
+      awaitCond(user5Callback.dataTypes.nonEmpty, 5.seconds)
+      val stringUser2 = user2Callback.dataTypes.head.asInstanceOf[FormicString]
+      val stringUser3 = user3Callback.dataTypes.head.asInstanceOf[FormicString]
+      val stringUser4 = user4Callback.dataTypes.head.asInstanceOf[FormicString]
+      val stringUser5 = user5Callback.dataTypes.head.asInstanceOf[FormicString]
+
+      for (x <- 0.until(iterations)) {
+        stringUser1.add(0, 'a')
+        if(x%3 == 0) stringUser2.add(0, 'a')
+        stringUser3.add(0, 'z')
+        if(x%5 == 0)stringUser4.add(0, 'z')
+        stringUser5.add(0, 'x')
+      }
+
+      Thread.sleep(10000)
+
+      val result1 = Await.result(stringUser1.getAll(), 60.seconds).mkString
+      val result2 = Await.result(stringUser2.getAll(), 60.seconds).mkString
+      val result3 = Await.result(stringUser3.getAll(), 60.seconds).mkString
+      val result4 = Await.result(stringUser4.getAll(), 60.seconds).mkString
+      val result5 = Await.result(stringUser5.getAll(), 60.seconds).mkString
+
+      result1 should (equal(result2) and equal(result3))
+      result4 should (equal(result3) and equal(result2))
+      result5 should (equal(result4) and equal(result3))
+
+      println(result5)
+
+      user1.system.terminate()
+      user2.system.terminate()
+      user3.system.terminate()
+      user4.system.terminate()
+      user5.system.terminate()
+    }
   }
 }
 
