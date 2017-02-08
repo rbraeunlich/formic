@@ -157,7 +157,6 @@ abstract class AbstractClientDataType(val id: DataTypeInstanceId,
     val transformed = controlAlgorithm.transform(dataTypeOperation, historyBuffer, transformer)
     apply(transformed)
     historyBuffer.addOperation(transformed)
-    lastRemoteOperationId = transformed.id
   }
 
   def apply(op: DataTypeOperation)
