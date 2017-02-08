@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.gatling.action.linear
 
-import de.tu_berlin.formic.datatype.linear.client.FormicList
+import de.tu_berlin.formic.datatype.linear.client.{FormicList, FormicString}
 import de.tu_berlin.formic.gatling.action.{SessionVariables, TimeMeasureCallback}
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.action.{Action, ChainableAction}
@@ -10,7 +10,7 @@ import io.gatling.core.stats.StatsEngine
 /**
   * @author Ronny Bräunlich
   */
-case class LinearInsertion(dataTypeInstanceId: Expression[String], toInsert: Any, index: Expression[Int], statsEngine: StatsEngine, next: Action) extends ChainableAction {
+case class LinearInsertion(dataTypeInstanceId: Expression[String], toInsert: Char, index: Expression[Int], statsEngine: StatsEngine, next: Action) extends ChainableAction {
 
   override def name: String = "LinearInsert action"
 
@@ -20,7 +20,7 @@ case class LinearInsertion(dataTypeInstanceId: Expression[String], toInsert: Any
       val dataTypeAttribute = session(id)
       val validatedIndex = index.apply(session)
       validatedIndex.foreach(i =>
-        dataTypeAttribute.asOption[FormicList[Any]] match {
+        dataTypeAttribute.asOption[FormicString] match {
           case None => throw new IllegalArgumentException("Data type not found. Create it first!")
           case Some(dataType) =>
             val opId = dataType.add(i, toInsert)

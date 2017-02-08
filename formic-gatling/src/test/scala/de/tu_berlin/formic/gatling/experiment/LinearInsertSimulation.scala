@@ -22,7 +22,7 @@ class LinearInsertSimulation extends Simulation {
 
   val NUM_EDITORS = if(SINGLE_USER) 1 else System.getProperty("formicEditors").toInt
 
-  val NUM_OPERATIONS = 10
+  val NUM_OPERATIONS = 100
 
   val NUM_EDITS = NUM_OPERATIONS / (NUM_EDITORS * (if(SINGLE_USER) 1 else 5)) //five workers
 
@@ -37,7 +37,7 @@ class LinearInsertSimulation extends Simulation {
   val formicConfig = formic
     .url(SERVER_ADDRESS)
     .bufferSize(100)
-    .logLevel("debug")
+    .logLevel("info")
 
   //to have a feeder for all scenarios, we create the ids up front and use them
   val dataTypeInstanceIdFeeder = Seq(Map("dataTypeInstanceId" -> DATATYPEINSTANCEID))
@@ -48,7 +48,7 @@ class LinearInsertSimulation extends Simulation {
   val edit = repeat(NUM_EDITS, "n") {
     exec(formic("LinearInsertion")
       .linear("${dataTypeInstanceId}")
-      .insert(0)
+      .insert(Integer.toString(WORKER_NR).toCharArray.head)
       .index("${n}"))
       .pause(1)
   }
