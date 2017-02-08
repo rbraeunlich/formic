@@ -211,6 +211,34 @@ class LinearTransformerSpec extends FlatSpec with Matchers {
       LinearInsertOperation(op1.index, op1.o, op1.id, OperationContext(List(op.id)), op1.clientId))
   }
 
+  it should "correctly increase the index in the bridge when bulk transforming" in {
+    val op1 = LinearInsertOperation(0, "z", OperationId(), OperationContext(), ClientId("1"))
+    val op2 = LinearInsertOperation(1, "z", OperationId(), OperationContext(List(op1.id)), ClientId("1"))
+    val op3 = LinearInsertOperation(2, "z", OperationId(), OperationContext(List(op2.id)), ClientId("1"))
+    val op = LinearInsertOperation(0, "a", OperationId(), OperationContext(), ClientId("2"))
+
+    val transformed = LinearTransformer.bulkTransform(op, List(op3, op2, op1))
+
+    transformed should contain inOrder(
+      LinearInsertOperation(op3.index + 1, op3.o, op3.id, op3.operationContext, op3.clientId),
+      LinearInsertOperation(op2.index + 1, op2.o, op2.id, op2.operationContext, op2.clientId),
+      LinearInsertOperation(op1.index + 1, op1.o, op1.id, OperationContext(List(op.id)), op1.clientId))
+  }
+
+  it should "not change the bridge when bulk transforming against a noop" in {
+    val op1 = LinearInsertOperation(0, "z", OperationId(), OperationContext(), ClientId("1"))
+    val op2 = LinearInsertOperation(1, "z", OperationId(), OperationContext(List(op1.id)), ClientId("1"))
+    val op3 = LinearInsertOperation(2, "z", OperationId(), OperationContext(List(op2.id)), ClientId("1"))
+    val op = LinearNoOperation(OperationId(), OperationContext(), ClientId("2"))
+
+    val transformed = LinearTransformer.bulkTransform(op, List(op3, op2, op1))
+
+    transformed should contain inOrder(
+      LinearInsertOperation(op3.index, op3.o, op3.id, op3.operationContext, op3.clientId),
+      LinearInsertOperation(op2.index, op2.o, op2.id, op2.operationContext, op2.clientId),
+      LinearInsertOperation(op1.index, op1.o, op1.id, OperationContext(List(op.id)), op1.clientId))
+  }
+
   it should "correctly perform bulk transformations with more than one operations in the bridge with WaveOTClient" in {
     val controlAlgo = new WaveOTClient(_ => {})
     val op1 = LinearInsertOperation(0, "z", OperationId(), OperationContext(), ClientId("2"))
@@ -288,5 +316,19 @@ class LinearTransformerSpec extends FlatSpec with Matchers {
     controlAlgo.buffer should contain inOrder(
       LinearNoOperation(op2.id, op2.operationContext, op2.clientId),
       LinearInsertOperation(op3.index, op3.o, op3.id, op3.operationContext, op3.clientId))
+  }
+
+  it should "not transform the whole bridge into noops when all operations in the bridge are the same" in {
+    val op1 = LinearInsertOperation(1, "z", OperationId(), OperationContext(), ClientId("2"))
+    val op2 = LinearInsertOperation(1, "z", OperationId(), OperationContext(List(op1.id)), ClientId("2"))
+    val op3 = LinearInsertOperation(1, "z", OperationId(), OperationContext(List(op2.id)), ClientId("2"))
+    val op = LinearInsertOperation(1, "z", OperationId(), OperationContext(), ClientId("3"))
+
+    val transformed = LinearTransformer.bulkTransform(op, List(op3, op2, op1))
+
+    transformed should contain inOrder(
+      LinearInsertOperation(op3.index, op3.o, op3.id, op3.operationContext, op3.clientId),
+      LinearInsertOperation(op2.index, op2.o, op2.id, op2.operationContext, op2.clientId),
+      LinearNoOperation(op1.id, OperationContext(List(op.id)), op1.clientId))
   }
 }
