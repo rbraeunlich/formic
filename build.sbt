@@ -167,7 +167,7 @@ lazy val client = crossProject.in(file("client")).
   .dependsOn(common)
 
 lazy val clientJS = client.js.dependsOn(commonJS).disablePlugins(AssemblyPlugin)
-lazy val clientJVM = client.jvm.dependsOn(commonJVM).disablePlugins(AssemblyPlugin)
+lazy val clientJVM = client.jvm.dependsOn(commonJVM, linearJVM % "test->compile").disablePlugins(AssemblyPlugin)
 
 //PhantomJS and AkkaJSTestkit do not work together, so they have to be split
 lazy val websockettests = crossProject.in(file("websockettests")).
