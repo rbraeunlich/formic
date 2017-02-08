@@ -4,6 +4,7 @@ import de.tu_berlin.formic.common.controlalgo.WaveOTClient
 import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, OperationContext}
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import org.scalatest._
+import upickle.default._
 
 /**
   * @author Ronny Bräunlich
@@ -350,4 +351,12 @@ class LinearTransformerSpec extends FlatSpec with Matchers {
       op1,
       LinearNoOperation(op2.id, op2.operationContext, op2.clientId))
   }
+
+  it should "throw an exception when both insertions contain incompatible objects" in {
+    val op1 = LinearInsertOperation(0,0,OperationId(),OperationContext(),ClientId())
+    val op2 = LinearInsertOperation(0,'a',OperationId(),OperationContext(),ClientId())
+
+    an[IllegalArgumentException] should be thrownBy LinearTransformer.transform((op1, op2))
+  }
+
 }

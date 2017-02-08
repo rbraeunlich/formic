@@ -58,6 +58,9 @@ object LinearTransformer extends OperationTransformer {
   }
 
   private def transform(o1: LinearInsertOperation, o2: LinearInsertOperation, newContext: OperationContext): LinearStructureOperation = {
+    if(!o1.o.getClass.isAssignableFrom(o2.o.getClass) || !o2.o.getClass.isAssignableFrom(o1.o.getClass)){
+      throw new IllegalArgumentException(s"Incompatible types ${o1.o.getClass} and ${o2.o.getClass}")
+    }
     if (o1.index < o2.index) LinearInsertOperation(o1.index, o1.o, o1.id, newContext, o1.clientId)
     else if (o1.index > o2.index) LinearInsertOperation(o1.index + 1, o1.o, o1.id, newContext, o1.clientId)
     else if (o1.o == o2.o) LinearNoOperation(o1.id, newContext, o1.clientId)
