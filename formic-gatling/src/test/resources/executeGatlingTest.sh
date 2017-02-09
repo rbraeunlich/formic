@@ -10,10 +10,15 @@
 
 if [ -z "$1" ]
     then
-        echo "Must provide param for number of users"
+        echo "Must provide param for test class"
         exit 1
 fi
 if [ -z "$2" ]
+    then
+        echo "Must provide param for number of users"
+        exit 1
+fi
+if [ -z "$3" ]
     then
         echo "Must provide param for data type instance id"
         exit 1
@@ -25,15 +30,15 @@ USER_NAME='ubuntu'
 FORMIC_SERVER="http://10.200.1.67:80"
 
 #Remote hosts list
-if [ $1 -eq 0 ]
+if [ $2 -eq 0 ]
     then HOSTS=()
 else
     HOSTS=( 192.168.0.27 192.168.0.28 192.168.0.29 192.168.0.30 )
 fi
 
 #Simulation options
-NUM_EDITORS=$1
-DATA_TYPE_IDS=( $2 $3 $4 $5 )
+NUM_EDITORS=$2
+DATA_TYPE_IDS=( $3 $4 $5 $6 )
 
 #Assuming all Gatling installation in same path (with write permissions)
 GATLING_HOME=gatling-charts-highcharts-bundle-2.2.1
@@ -41,7 +46,7 @@ GATLING_SIMULATIONS_DIR=$GATLING_HOME/user-files/simulations
 GATLING_RUNNER=$GATLING_HOME/bin/gatling.sh
 
 #Change to your simulation class name
-SIMULATION_NAME='de.tu_berlin.formic.gatling.experiment.LinearInsertSimulation'
+SIMULATION_NAME=$1
 
 #No need to change this
 GATLING_REPORT_DIR=$GATLING_HOME/results/
