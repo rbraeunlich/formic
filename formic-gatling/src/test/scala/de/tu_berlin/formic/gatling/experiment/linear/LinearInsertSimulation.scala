@@ -1,4 +1,4 @@
-package de.tu_berlin.formic.gatling.experiment
+package de.tu_berlin.formic.gatling.experiment.linear
 
 import de.tu_berlin.formic.datatype.linear.client.FormicString
 import de.tu_berlin.formic.gatling.Predef._
@@ -8,7 +8,6 @@ import io.gatling.core.Predef._
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.util.Random
 
 /**
   * @author Ronny Bräunlich
@@ -32,8 +31,6 @@ class LinearInsertSimulation extends Simulation {
 
   val WORKER_NR = System.getProperty("workerNumber").toInt
 
-  val rand = Random.alphanumeric
-
   val formicConfig = formic
     .url(SERVER_ADDRESS)
     .bufferSize(100)
@@ -52,7 +49,7 @@ class LinearInsertSimulation extends Simulation {
       .index("${n}"))
       .pause(1)
   }
-    .pause(60)
+    .pause(30)
     .exec(s => {
       s(SessionVariables.TIMEMEASURE_CALLBACK).as[TimeMeasureCallback].cancelAll()
       s

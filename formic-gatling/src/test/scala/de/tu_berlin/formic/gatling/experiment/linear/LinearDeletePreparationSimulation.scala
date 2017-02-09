@@ -1,13 +1,13 @@
-package de.tu_berlin.formic.gatling.experiment
+package de.tu_berlin.formic.gatling.experiment.linear
 
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.gatling.Predef._
 import io.gatling.core.Predef._
 
 /**
   * @author Ronny Bräunlich
   */
-class LinearInsertPreparationSimulation extends Simulation {
+class LinearDeletePreparationSimulation extends Simulation {
 
   val NUM_DATATYPES = 1
 
@@ -45,6 +45,21 @@ class LinearInsertPreparationSimulation extends Simulation {
         .linear("${dataTypeInstanceId}")
         .insert('a')
         .index("${n}"))
+    }.pause(10)
+    .repeat(200, "n") {
+      exec(formic("LinearDeletion")
+        .linear("${dataTypeInstanceId}")
+        .remove(0))
+    }.pause(10)
+    .repeat(200, "n") {
+      exec(formic("LinearDeletion")
+        .linear("${dataTypeInstanceId}")
+        .remove(0))
+    }.pause(10)
+    .repeat(101, "n") {
+      exec(formic("LinearDeletion")
+        .linear("${dataTypeInstanceId}")
+        .remove(0))
     }.pause(10)
 
 

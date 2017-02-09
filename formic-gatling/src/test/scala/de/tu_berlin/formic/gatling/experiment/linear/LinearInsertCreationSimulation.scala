@@ -1,6 +1,6 @@
-package de.tu_berlin.formic.gatling.experiment
+package de.tu_berlin.formic.gatling.experiment.linear
 
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.DataTypeInstanceId
 import de.tu_berlin.formic.gatling.Predef._
 import io.gatling.core.Predef._
 
