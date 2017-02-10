@@ -412,4 +412,10 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
 
     an[IllegalArgumentException] should be thrownBy tree.translateJsonPath(JsonPath("ships"))
   }
+
+  it should "have a hash value when it's empty" in {
+    val node = ObjectNode(null, List.empty)
+
+    noException should be thrownBy node.hashCode()
+  }
 }

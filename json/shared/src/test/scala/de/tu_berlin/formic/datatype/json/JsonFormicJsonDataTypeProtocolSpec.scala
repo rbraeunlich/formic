@@ -96,6 +96,13 @@ class JsonFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
     read(json)(reader) should equal(ObjectNode(null, List(ObjectNode("nested", List(NumberNode("num", 6))))))
   }
 
+  it should "deserialize an empty ObjectNode" in {
+    val reader = new JsonTreeNodeReader
+    val json = "{}"
+
+    read(json)(reader) should equal(ObjectNode(null, List.empty))
+  }
+
   "JsonFormicJsonDataTypeProtocol" should "serialize an insert operation" in {
     val operationId = OperationId()
     val clientId = ClientId()

@@ -189,7 +189,7 @@ class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) e
   }
 
   override def hashCode(): Int = {
-    val state = Seq(key, children)
+    val state = if(key != null) Seq(key, children) else Seq(children)
     state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
