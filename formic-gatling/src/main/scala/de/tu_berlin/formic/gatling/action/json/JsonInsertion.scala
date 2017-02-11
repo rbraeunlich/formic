@@ -27,6 +27,7 @@ case class JsonInsertion[T](dataTypeInstanceId: Expression[String], statsEngine:
         case Some(dataType) =>
           val opId = toInsert match {
             case d: Double => dataType.insert(d, path)
+            case i: Int => dataType.insert(i.toDouble, path)
             case s: String => dataType.insert(s, path)
             case c: Char => dataType.insert(c, path)
             case b: Boolean => dataType.insert(b, path)
