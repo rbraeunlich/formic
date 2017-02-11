@@ -89,7 +89,7 @@ do
     JAVA_OPTS="-DformicEditors=$NUM_EDITORS -DformicId=$DATA_TYPE_ID -DformicServer=$FORMIC_SERVER -DworkerNumber=0"
     export JAVA_OPTS
     echo "Running simulation on localhost"
-    $GATLING_RUNNER -nr -s $SIMULATION_NAME
+    $GATLING_RUNNER -nr -s $SIMULATION_NAME > gatling-run-localhost-${DATA_TYPE_ID}.log
 
     echo "Gathering result file from localhost"
     ls -t $GATLING_REPORT_DIR | head -n 1 | xargs -I {} mv ${GATLING_REPORT_DIR}{} ${GATLING_REPORT_DIR}report
