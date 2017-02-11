@@ -8,7 +8,7 @@ import io.gatling.core.structure.ScenarioContext
 /**
   * @author Ronny Bräunlich
   */
-case class FormicTreeInsertActionBuilder(dataTypeInstanceId: Expression[String], toInsert: Any, pathElements: Seq[Expression[Int]]) extends FormicActionBuilder {
+case class FormicTreeInsertActionBuilder(dataTypeInstanceId: Expression[String], toInsert: Int, pathElements: Seq[Expression[Int]]) extends FormicActionBuilder {
   override def build(ctx: ScenarioContext, next: Action): Action = {
     val statsEngine = ctx.coreComponents.statsEngine
     TreeInsertion(dataTypeInstanceId, toInsert, statsEngine, next, pathElements)
