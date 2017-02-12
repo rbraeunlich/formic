@@ -58,13 +58,6 @@ echo "Starting Gatling cluster run for simulation: $SIMULATION_NAME"
 echo "Cleaning previous runs from localhost"
 rm -rf $GATHER_REPORTS_DIR
 mkdir -p $GATHER_REPORTS_DIR
-rm -rf $GATLING_REPORT_DIR
-
-for HOST in "${HOSTS[@]}"
-do
-  echo "Cleaning previous runs from host: $HOST"
-  ssh -n -f -i cloud.key $USER_NAME@$HOST "sh -c 'rm -rf $GATLING_REPORT_DIR'"
-done
 
 for HOST in "${HOSTS[@]}"
 do
@@ -75,6 +68,13 @@ done
 
 for DATA_TYPE_ID in "${DATA_TYPE_IDS[@]}"
 do
+    for HOST in "${HOSTS[@]}"
+    do
+      echo "Cleaning previous runs from host: $HOST"
+      ssh -n -f -i cloud.key $USER_NAME@$HOST "sh -c 'rm -rf $GATLING_REPORT_DIR'"
+    done
+    rm -rf $GATLING_REPORT_DIR
+
     workerNumber=1
     for HOST in "${HOSTS[@]}"
     do
