@@ -50,7 +50,28 @@ class JsonReplacePreparationSimulation extends Simulation {
         .insert("foo")
         .path(Seq("${m}")))
     }.pause(10)
-
+  .repeat(200, "n") {
+    exec(formic("jsonInsertion")
+      .json("${dataTypeInstanceId}")
+      .replace("bar")
+      .path(Seq("${n}")))
+  }.pause(10)
+    .repeat(200, "n") {
+      exec(s => {
+        s.set("m", s("n").validate[Int].map(i => i + 200))
+      }).exec(formic("jsonInsertion")
+        .json("${dataTypeInstanceId}")
+        .replace("bar")
+        .path(Seq("${m}")))
+    }.pause(10)
+    .repeat(101, "n") {
+      exec(s => {
+        s.set("m", s("n").validate[Int].map(i => i + 400))
+      }).exec(formic("jsonInsertion")
+        .json("${dataTypeInstanceId}")
+        .replace("bar")
+        .path(Seq("${m}")))
+    }.pause(10)
 
   val warmup = scenario("Warmup").exec(connect, createWarmupDataType, edit)
 
