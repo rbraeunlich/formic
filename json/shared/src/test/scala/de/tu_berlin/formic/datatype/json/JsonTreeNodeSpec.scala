@@ -419,7 +419,7 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
     noException should be thrownBy node.hashCode()
   }
 
-  it should "result in a valid JSON representation when calling toString" in {
+  it should "result in a valid JSON representation when calling toJsonString" in {
     val node = ObjectNode(null, List(
       ArrayNode("arr", List(BooleanNode(null, value = false), NumberNode(null, 6.3))),
       BooleanNode("bool", value = true),
@@ -428,7 +428,7 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
       StringNode("str", List(CharacterNode(null, 'f'), CharacterNode(null, 'o'), CharacterNode(null, 'o')))
     ))
 
-    node.toString should equal("{\n" +
+    node.toJsonString should equal("{\n" +
       "arr: [false, 6.3],\n" +
       "bool: true,\n" +
       "num: 5.6,\n" +

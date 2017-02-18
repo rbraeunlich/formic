@@ -14,6 +14,8 @@ trait JsonTreeNode[T] extends TreeNode {
 
   override def applyOperationRecursive(operation: TreeStructureOperation, accessPath: AccessPath): JsonTreeNode[T]
 
+  def toJsonString: String
+
 }
 
 abstract class AtomicNode[T] extends JsonTreeNode[T] {
@@ -28,14 +30,14 @@ case class BooleanNode(key: String, private val value: Boolean) extends AtomicNo
 
   override def getData: Boolean = value
 
-  override def toString: String = s"$key: $value"
+  override def toJsonString: String = s"$key: $value"
 }
 
 case class NumberNode(key: String, private val value: Double) extends AtomicNode[Double] {
 
   override def getData: Double = value
 
-  override def toString: String = s"$key: $value"
+  override def toJsonString: String = s"$key: $value"
 
 }
 
@@ -43,6 +45,7 @@ case class CharacterNode(key: String, private val value: Char) extends AtomicNod
 
   override def getData: Char = value
 
+  override def toJsonString: String = value.toString
 }
 
 /**
@@ -89,7 +92,7 @@ case class ArrayNode(key: String, children: List[JsonTreeNode[_]]) extends JsonT
     }
   }
 
-  override def toString: String = s"$key: [${children.map(_.getData).mkString(", ")}]"
+  override def toJsonString: String = s"$key: [${children.map(_.getData).mkString(", ")}]"
 }
 
 case class StringNode(key: String, children: List[CharacterNode]) extends JsonTreeNodeWithChildren[CharacterNode, String] {
@@ -107,7 +110,7 @@ case class StringNode(key: String, children: List[CharacterNode]) extends JsonTr
     }
   }
 
-  override def toString: String = s"""$key: "${children.map(child => child.getData).mkString}""""
+  override def toJsonString: String = s"""$key: "${children.map(child => child.toJsonString).mkString}""""
 }
 
 class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) extends JsonTreeNode[List[JsonTreeNode[_]]] with Serializable {
@@ -184,11 +187,11 @@ class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) e
     }
   }
 
-  override def toString = {
+  def toJsonString = {
     val prefix = if (key != null) s"$key: " else ""
     prefix +
       "{\n" +
-      children.map(child => child.toString).mkString(",\n") +
+      children.map(child => child.toJsonString).mkString(",\n") +
       "\n}"
   }
 
