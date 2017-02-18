@@ -421,7 +421,7 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
 
   it should "result in a valid JSON representation when calling toString" in {
     val node = ObjectNode(null, List(
-      ArrayNode("arr", List(BooleanNode(null, value = false), NumberNode(null, 6.0))),
+      ArrayNode("arr", List(BooleanNode(null, value = false), NumberNode(null, 6.3))),
       BooleanNode("bool", value = true),
       NumberNode("num", 5.6),
       ObjectNode("obj", List.empty),
@@ -429,7 +429,7 @@ class JsonTreeNodeSpec extends FlatSpec with Matchers {
     ))
 
     node.toString should equal("{\n" +
-      "arr: [false, 6.0],\n" +
+      "arr: [false, 6.3],\n" +
       "bool: true,\n" +
       "num: 5.6,\n" +
       "obj: {\n" +
