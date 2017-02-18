@@ -6,13 +6,13 @@ export JAVA_OPTS
 gatling-charts-highcharts-bundle-2.2.1/bin/gatling.sh -s de.tu_berlin.formic.gatling.experiment.linear.LinearInsertPreparationSimulation
 gatling-charts-highcharts-bundle-2.2.1/bin/gatling.sh -s de.tu_berlin.formic.gatling.experiment.linear.LinearInsertCreationSimulation
 
-./executeGatlingTest.sh 0 aef49a6b-4a63-44f4-b2d3-2b82a09e325f b256d765-bd01-4dd8-b1cb-8f54d9553bb4 a1c9e9ab-7b9f-4e4c-aa02-06918db0bb10 f16c15c8-4805-48d4-ad9e-bbadcddb1c5f
+./executeGatlingTest.sh "de.tu_berlin.formic.gatling.experiment.linear.LinearInsertSimulation" 0 
 gatling-charts-highcharts-bundle-2.2.1/bin/gatling.sh -s de.tu_berlin.formic.gatling.experiment.linear.LinearInsertCreationSimulation
-./executeGatlingTest.sh 1
+./executeGatlingTest.sh "de.tu_berlin.formic.gatling.experiment.linear.LinearInsertSimulation" 1 
 gatling-charts-highcharts-bundle-2.2.1/bin/gatling.sh -s de.tu_berlin.formic.gatling.experiment.linear.LinearInsertCreationSimulation
-./executeGatlingTest.sh 2 2fd66ec1-eede-40fd-93d3-48ab814cf7da a49aa34f-a5ae-4001-a755-a17cbde11f8e 3e94fb3e-35de-4e78-94d4-de98726a1d47 2b3d461e-1def-4984-b05f-9d61150ebd32
+./executeGatlingTest.sh "de.tu_berlin.formic.gatling.experiment.linear.LinearInsertSimulation" 2 
 gatling-charts-highcharts-bundle-2.2.1/bin/gatling.sh -s de.tu_berlin.formic.gatling.experiment.linear.LinearInsertCreationSimulation
-./executeGatlingTest.sh 4 248e7e77-8082-4d21-90c8-8c8d9d95edac 47a50ee1-12a2-4471-897e-0d7678f6520b e181cc36-2c8a-46cf-99cc-f6ab37368596 d40307a9-c274-480c-97c8-a508f43960bc
+./executeGatlingTest.sh "de.tu_berlin.formic.gatling.experiment.linear.LinearInsertSimulation" 4 
 
 
 gatling-charts-highcharts-bundle-2.2.1/bin/gatling.sh -s de.tu_berlin.formic.gatling.experiment.linear.LinearDeletePreparationSimulation
@@ -73,10 +73,10 @@ gatling-charts-highcharts-bundle-2.2.1/bin/gatling.sh -s de.tu_berlin.formic.gat
 gatling-charts-highcharts-bundle-2.2.1/bin/gatling.sh -s de.tu_berlin.formic.gatling.experiment.json.JsonReplacePreparationSimulation
 gatling-charts-highcharts-bundle-2.2.1/bin/gatling.sh -s de.tu_berlin.formic.gatling.experiment.json.JsonReplaceCreationSimulation
 
-./executeGatlingTest.sh "de.tu_berlin.formic.gatling.experiment.json.JsonReplaceSimulation" 0 d21e30eb-40b5-4152-b6e6-c51f0d1669a6 1ef7df3d-e511-4b64-a30c-8a2b57ad870a de68e77f-06b5-43f8-b3e6-0844ff6f9e5e a420cfb9-cbe7-4bec-987c-9fc76534ff3a
+./executeGatlingTest.sh "de.tu_berlin.formic.gatling.experiment.json.JsonReplaceSimulation" 0 256db1f5-93f0-490a-b6bd-0742a07778b3 c047f1fb-2315-4f58-a4d3-f4479ccb24e0 5d012aee-03f7-48fe-8a67-82f951177bd1 2d7df53b-9882-47fb-9b40-f808df35e534
 gatling-charts-highcharts-bundle-2.2.1/bin/gatling.sh -s de.tu_berlin.formic.gatling.experiment.json.JsonReplaceCreationSimulation
-./executeGatlingTest.sh "de.tu_berlin.formic.gatling.experiment.json.JsonReplaceSimulation" 1 0d829fbc-9500-4242-b930-0eb8bf069990 ad9d967d-c434-482f-b7e2-2f1552c25d11 1f9bcf7f-6ede-4eb3-aa9b-99dfb07b76fc 47713049-9efd-4a4a-b050-927fd22b4ff0
+./executeGatlingTest.sh "de.tu_berlin.formic.gatling.experiment.json.JsonReplaceSimulation" 1 48bb4ad4-7837-445b-b0d2-f92940f754c7 e5399d7b-1a07-43a7-832a-d509096cf4ef a4d078e8-f40a-4106-aa4b-633d22de06b2 833a52d5-70e3-41b7-abe6-2e281ff1df54
 gatling-charts-highcharts-bundle-2.2.1/bin/gatling.sh -s de.tu_berlin.formic.gatling.experiment.json.JsonReplaceCreationSimulation
-./executeGatlingTest.sh "de.tu_berlin.formic.gatling.experiment.json.JsonReplaceSimulation" 2 c47f3d21-e17b-411f-909d-53f4118eee91 8daeee9f-ba4c-484c-aa52-eb2dee88cb59 723255d4-6482-4d16-aa80-0a1ed18af41f a2ce6ff6-644e-40fa-98ba-5642d1a0cf8f
+./executeGatlingTest.sh "de.tu_berlin.formic.gatling.experiment.json.JsonReplaceSimulation" 2 5690ee36-c0ed-4543-9892-4c667587ef99 33e489e5-7faa-4631-b32d-6e403c31849f c64e9e39-6342-41eb-a82a-2c1039a0325a eb4a8e44-41ae-44b1-aad1-d91e0a4a2315
 gatling-charts-highcharts-bundle-2.2.1/bin/gatling.sh -s de.tu_berlin.formic.gatling.experiment.json.JsonReplaceCreationSimulation
-./executeGatlingTest.sh "de.tu_berlin.formic.gatling.experiment.json.JsonReplaceSimulation" 4 71191165-dc1f-4520-8ee6-ebb1d9fb549d b2fdc194-e325-424b-aede-6269611334d9 bbba1f8b-f203-441a-ac3d-e2aff7d0ef77 fe2d1f60-3bc9-4950-be38-12a5398b1f80
+./executeGatlingTest.sh "de.tu_berlin.formic.gatling.experiment.json.JsonReplaceSimulation" 4 032e3386-47e8-4758-ad2c-c209b0563b36 ee4811fa-c33d-46fe-8608-d73cca267a96 c9896d05-2a4f-46bf-a0e1-90359a8410a6 4c198121-df86-4610-93c3-ca993ffd678a
