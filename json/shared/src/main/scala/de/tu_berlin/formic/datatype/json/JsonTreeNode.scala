@@ -27,11 +27,15 @@ abstract class AtomicNode[T] extends JsonTreeNode[T] {
 case class BooleanNode(key: String, private val value: Boolean) extends AtomicNode[Boolean] {
 
   override def getData: Boolean = value
+
+  override def toString: String = s"$key: $value"
 }
 
 case class NumberNode(key: String, private val value: Double) extends AtomicNode[Double] {
 
   override def getData: Double = value
+
+  override def toString: String = s"$key: $value"
 
 }
 
@@ -84,6 +88,8 @@ case class ArrayNode(key: String, children: List[JsonTreeNode[_]]) extends JsonT
       ArrayNode(key, children.updated(accessPath.path.head, newChild))
     }
   }
+
+  override def toString: String = s"$key: [${children.map(_.getData).mkString(", ")}]"
 }
 
 case class StringNode(key: String, children: List[CharacterNode]) extends JsonTreeNodeWithChildren[CharacterNode, String] {
@@ -100,6 +106,8 @@ case class StringNode(key: String, children: List[CharacterNode]) extends JsonTr
       throw new IllegalArgumentException("Character nodes cannot have children")
     }
   }
+
+  override def toString: String = s"""$key: "${children.map(child => child.getData).mkString}""""
 }
 
 class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) extends JsonTreeNode[List[JsonTreeNode[_]]] with Serializable {
@@ -176,7 +184,13 @@ class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) e
     }
   }
 
-  override def toString = s"ObjectNode($key, $children)"
+  override def toString = {
+    val prefix = if (key != null) s"$key: " else ""
+    prefix +
+      "{\n" +
+      children.map(child => child.toString).mkString(",\n") +
+      "\n}"
+  }
 
   def canEqual(other: Any): Boolean = other.isInstanceOf[ObjectNode]
 
@@ -189,7 +203,7 @@ class ObjectNode private(val key: String, val children: List[JsonTreeNode[_]]) e
   }
 
   override def hashCode(): Int = {
-    val state = if(key != null) Seq(key, children) else Seq(children)
+    val state = if (key != null) Seq(key, children) else Seq(children)
     state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
