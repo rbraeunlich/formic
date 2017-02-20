@@ -17,7 +17,7 @@ class ExampleCallback(val main: Main) extends NewInstanceCallback {
     instance match {
       case str: FormicString => main.updateUIForString(instance.dataTypeInstanceId)
       case tree: FormicIntegerTree => main.updateUIForTree(instance.dataTypeInstanceId)
-      case json: FormicJsonObject => main.newCallbackForBattleship(json)
+      case json: FormicJsonObject => main.updateUIForJson(instance.dataTypeInstanceId)
     }
   }
 
@@ -41,8 +41,12 @@ class ExampleCallback(val main: Main) extends NewInstanceCallback {
 
       case json: FormicJsonObject =>
         main.jsons += json
+        if(jQuery("body").has("#"+json.dataTypeInstanceId.id).length == 0){
+          main.insertJsonManipulationElements(json.dataTypeInstanceId.id)
+        }
+        main.updateUIForJson(json.dataTypeInstanceId)(null)
         //in order to force Battleship to update the UI we invoke the callback here manually
-        json.callback(null)
+        //json.callback(null)
     }
   }
 }

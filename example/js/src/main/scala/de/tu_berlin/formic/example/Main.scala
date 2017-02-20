@@ -102,10 +102,7 @@ class Main extends ExampleClientDataTypes {
       case Success(rootNode) =>
         val jsonDiv = jQuery("#" + id.id)
         jsonDiv.empty()
-        jsonDiv.append(s"""Json data type with id ${id.id}""")
-        jsonDiv.append("<div>")
         jsonDiv.append(rootNode.toJsonString)
-        jsonDiv.append("</div>")
       case Failure(ex) => throw ex
     }
   }
@@ -154,17 +151,18 @@ class Main extends ExampleClientDataTypes {
     jQuery("body").append(s"""<div id=\"head$id\">""")
     val headElements = new StringBuilder
     headElements ++= "<p>"
-    headElements ++= s"""<button id="insertJson$id">Insert</button>"""
-    headElements ++= s"""<input id="inputJson$id" type="text">"""
+    headElements ++= s"""<button id="insertJson$id" class="insertButton" >Insert</button>"""
+    headElements ++= s"""<input id="inputJson$id" class="inputJson" type="text">"""
     headElements ++= """</br>"""
     headElements ++= s"""<button id="deleteJson$id">Delete</button>"""
     headElements ++= """</br>"""
     headElements ++= s"""<button id="replaceJson$id">Replace</button>"""
     headElements ++= """</br>"""
-    headElements ++= s"""Path<input id="pathJson$id" type="text">"""
+    headElements ++= s"""Path<input id="pathJson$id" class="pathJson" type="text">"""
     headElements ++= "</p>"
     jQuery(s"#head$id").append(headElements.toString())
     jQuery("body").append("</div>")
+    jQuery("body").append(s"""Json data type with id $id""")
     jQuery("body").append(s"""<div id="$id" class="jsonObject">""")
     jQuery("body").append("</div>")
     jQuery("#insertJson" + id).click(insertValueToJson(id))
