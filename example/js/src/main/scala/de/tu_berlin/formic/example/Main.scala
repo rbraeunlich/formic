@@ -4,6 +4,7 @@ import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.FormicSystemFactory
 import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, RemoteOperationEvent}
 import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.datatype.json.JsonPath
 import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
 import de.tu_berlin.formic.datatype.linear.client.FormicString
 import de.tu_berlin.formic.datatype.tree.AccessPath
@@ -46,6 +47,7 @@ class Main extends ExampleClientDataTypes {
     jQuery("#subscribe-button").click(subscribe _)
     jQuery("#new-string-button").click(createNewString _)
     jQuery("#new-tree-button").click(createNewTree _)
+    jQuery("#new-json-button").click(createNewJson _)
     jQuery("#startButton").click(startBattleship _)
   }
 
@@ -66,6 +68,13 @@ class Main extends ExampleClientDataTypes {
     insertBasicTreeElements(id.id)
   }
 
+  def createNewJson() = {
+    val id = DataTypeInstanceId()
+    val json = new FormicJsonObject(updateUIForJson(id), system, id)
+    jsons += json
+    insertJsonManipulationElements(id.id)
+  }
+
   def updateUIForString(id: DataTypeInstanceId): (ClientDataTypeEvent) => Unit = {
     case RemoteOperationEvent(_) =>
       strings.find(s => s.dataTypeInstanceId == id).get.getAll.foreach {
@@ -84,6 +93,19 @@ class Main extends ExampleClientDataTypes {
         treeDiv.append(s"""Tree data type with id ${id.id}""")
         val ui = new UITree(id.id, rootNode)
         ui.drawTree()
+      case Failure(ex) => throw ex
+    }
+  }
+
+  def updateUIForJson(id: DataTypeInstanceId): (ClientDataTypeEvent) => Unit = (_) => {
+    jsons.find(s => s.dataTypeInstanceId == id).get.getNodeAt(JsonPath()).onComplete {
+      case Success(rootNode) =>
+        val jsonDiv = jQuery("#" + id.id)
+        jsonDiv.empty()
+        jsonDiv.append(s"""Json data type with id ${id.id}""")
+        jsonDiv.append("<div>")
+        jsonDiv.append(rootNode.toJsonString)
+        jsonDiv.append("</div>")
       case Failure(ex) => throw ex
     }
   }
@@ -125,6 +147,54 @@ class Main extends ExampleClientDataTypes {
       val tree = trees.find(s => s.dataTypeInstanceId.id == id).get
       val where = jQuery("#path" + id).`val`().toString.split("/").filter(s => s.nonEmpty).map(s => s.toInt)
       tree.remove(AccessPath(where: _*))
+    }
+  }
+
+  def insertJsonManipulationElements(id: String) = {
+    jQuery("body").append(s"""<div id=\"head$id\">""")
+    val headElements = new StringBuilder
+    headElements ++= "<p>"
+    headElements ++= s"""<button id="insertJson$id">Insert</button>"""
+    headElements ++= s"""<input id="inputJson$id" type="text">"""
+    headElements ++= """</br>"""
+    headElements ++= s"""<button id="deleteJson$id">Delete</button>"""
+    headElements ++= """</br>"""
+    headElements ++= s"""<button id="replaceJson$id">Replace</button>"""
+    headElements ++= """</br>"""
+    headElements ++= s"""Path<input id="pathJson$id" type="text">"""
+    headElements ++= "</p>"
+    jQuery(s"#head$id").append(headElements.toString())
+    jQuery("body").append("</div>")
+    jQuery("body").append(s"""<div id="$id" class="jsonObject">""")
+    jQuery("body").append("</div>")
+    jQuery("#insertJson" + id).click(insertValueToJson(id))
+    jQuery("#deleteJson" + id).click(deleteFromJson(id))
+    jQuery("#replaceJson" + id).click(replaceInJson(id))
+  }
+
+  def insertValueToJson(id: String): (JQueryEventObject) => Unit = {
+    (eventObject: JQueryEventObject) => {
+      val json = jsons.find(s => s.dataTypeInstanceId.id == id).get
+      val toInsert = jQuery("#inputJson" + id).value()
+      val where = jQuery("#pathJson" + id).`val`().toString.split("/").filter(s => s.nonEmpty)
+      json.insert(toInsert.toString, JsonPath(where: _*))
+    }
+  }
+
+  def deleteFromJson(id: String): (JQueryEventObject) => Unit = {
+    (eventObject: JQueryEventObject) => {
+      val json = jsons.find(s => s.dataTypeInstanceId.id == id).get
+      val where = jQuery("#pathJson" + id).`val`().toString.split("/").filter(s => s.nonEmpty)
+      json.remove(JsonPath(where: _*))
+    }
+  }
+
+  def replaceInJson(id: String): (JQueryEventObject) => Unit = {
+    (eventObject: JQueryEventObject) => {
+      val json = jsons.find(s => s.dataTypeInstanceId.id == id).get
+      val toInsert = jQuery("#inputJson" + id).value()
+      val where = jQuery("#pathJson" + id).`val`().toString.split("/").filter(s => s.nonEmpty)
+      json.replace(toInsert.toString, JsonPath(where: _*))
     }
   }
 
