@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.datatype.linear.server
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import de.tu_berlin.formic.common.datatype.{DataTypeName, ServerDataTypeProvider}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, ServerDataTypeProvider}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataTypeProtocol
 
@@ -10,8 +10,8 @@ import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataTypeProtocol
   */
 class LinearServerDataTypeProvider extends ServerDataTypeProvider {
   
-  override def initFactories(actorSystem: ActorSystem): Map[DataTypeName, ActorRef] = {
-    var factories: Map[DataTypeName, ActorRef] = Map.empty
+  override def initFactories(actorSystem: ActorSystem): Map[DataStructureName, ActorRef] = {
+    var factories: Map[DataStructureName, ActorRef] = Map.empty
     val booleanListFactory = actorSystem.actorOf(Props[BooleanListDataTypeFactory], BooleanListDataTypeFactory.name.name)
     val doubleListFactory = actorSystem.actorOf(Props[DoubleListDataTypeFactory], DoubleListDataTypeFactory.name.name)
     val integerListFactory = actorSystem.actorOf(Props[IntegerListDataTypeFactory], IntegerListDataTypeFactory.name.name)

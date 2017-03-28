@@ -32,7 +32,7 @@ class TreeClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
     "have empty tree node if no initial data was provided" in {
       val outgoing = TestProbe()
       val dataType: TestActorRef[TreeClientDataType[Double]] =
-        TestActorRef(Props(new TreeClientDataType[Double](DataStructureInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty, outgoing.ref)))
+        TestActorRef(Props(new TreeClientDataType[Double](DataStructureInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataStructureName("test"), Option.empty, Option.empty, outgoing.ref)))
 
       dataType.underlyingActor.data should equal(EmptyTreeNode)
     }
@@ -43,7 +43,7 @@ class TreeClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val initialOperationId: OperationId = OperationId()
       val outgoing = TestProbe()
       val dataType: TestActorRef[TreeClientDataType[Double]] =
-        TestActorRef(Props(new TreeClientDataType[Double](DataStructureInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option(initialDataJson), Option(initialOperationId), outgoing.ref)))
+        TestActorRef(Props(new TreeClientDataType[Double](DataStructureInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataStructureName("test"), Option(initialDataJson), Option(initialOperationId), outgoing.ref)))
 
       dataType.underlyingActor.data should equal(initialTree)
     }
@@ -52,12 +52,12 @@ class TreeClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val outgoing = TestProbe()
       val tree = ValueTreeNode(1.6, List(ValueTreeNode(2.0), ValueTreeNode(1.7)))
       val dataType: TestActorRef[TreeClientDataType[Double]] =
-        TestActorRef(Props(new TreeClientDataType[Double](DataStructureInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option.empty, Option.empty, outgoing.ref)))
+        TestActorRef(Props(new TreeClientDataType[Double](DataStructureInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataStructureName("test"), Option.empty, Option.empty, outgoing.ref)))
       val operation = TreeInsertOperation(AccessPath(), tree, OperationId(), OperationContext(), ClientId())
       dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataStructureInstanceId())
 
-      dataType ! OperationMessage(ClientId(), DataStructureInstanceId(), DataTypeName("Test"), List(operation))
+      dataType ! OperationMessage(ClientId(), DataStructureInstanceId(), DataStructureName("Test"), List(operation))
 
       dataType.underlyingActor.data should equal(tree)
     }
@@ -66,12 +66,12 @@ class TreeClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val outgoing = TestProbe()
       val tree = ValueTreeNode(1.6, List(ValueTreeNode(2.0), ValueTreeNode(1.7)))
       val dataType: TestActorRef[TreeClientDataType[Double]] =
-        TestActorRef(Props(new TreeClientDataType[Double](DataStructureInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option(write(tree)), Option(OperationId()), outgoing.ref)))
+        TestActorRef(Props(new TreeClientDataType[Double](DataStructureInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataStructureName("test"), Option(write(tree)), Option(OperationId()), outgoing.ref)))
       val operation = TreeDeleteOperation(AccessPath(0), OperationId(), OperationContext(), ClientId())
       dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataStructureInstanceId())
 
-      dataType ! OperationMessage(ClientId(), DataStructureInstanceId(), DataTypeName("Test"), List(operation))
+      dataType ! OperationMessage(ClientId(), DataStructureInstanceId(), DataStructureName("Test"), List(operation))
 
       dataType.underlyingActor.data should equal(ValueTreeNode(1.6, List(ValueTreeNode(1.7))))
     }
@@ -80,12 +80,12 @@ class TreeClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val outgoing = TestProbe()
       val tree = ValueTreeNode(1.6, List(ValueTreeNode(2.0), ValueTreeNode(1.7)))
       val dataType: TestActorRef[TreeClientDataType[Double]] =
-        TestActorRef(Props(new TreeClientDataType[Double](DataStructureInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option(write(tree)), Option(OperationId()), outgoing.ref)))
+        TestActorRef(Props(new TreeClientDataType[Double](DataStructureInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataStructureName("test"), Option(write(tree)), Option(OperationId()), outgoing.ref)))
       val operation = TreeNoOperation(OperationId(), OperationContext(), ClientId())
       dataType ! ReceiveCallback((_) => {})
       dataType ! CreateResponse(DataStructureInstanceId())
 
-      dataType ! OperationMessage(ClientId(), DataStructureInstanceId(), DataTypeName("Test"), List(operation))
+      dataType ! OperationMessage(ClientId(), DataStructureInstanceId(), DataStructureName("Test"), List(operation))
 
       dataType.underlyingActor.data should equal(tree)
     }
@@ -94,7 +94,7 @@ class TreeClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val outgoing = TestProbe()
       val tree = ValueTreeNode(100.0, List(ValueTreeNode(1.0), ValueTreeNode(2.0)))
       val dataType: TestActorRef[TreeClientDataType[Double]] =
-        TestActorRef(Props(new TreeClientDataType[Double](DataStructureInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option(write(tree)), Option(OperationId()), outgoing.ref)))
+        TestActorRef(Props(new TreeClientDataType[Double](DataStructureInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataStructureName("test"), Option(write(tree)), Option(OperationId()), outgoing.ref)))
 
       dataType.underlyingActor.getDataAsJson should equal("{\"value\":100,\"children\":[{\"value\":1,\"children\":[]},{\"value\":2,\"children\":[]}]}")
     }
@@ -104,11 +104,11 @@ class TreeClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val initialOperationId = OperationId()
       val tree = ValueTreeNode(1.6, List(ValueTreeNode(2.0), ValueTreeNode(1.7)))
       val dataType: TestActorRef[TreeClientDataType[Double]] =
-        TestActorRef(Props(new TreeClientDataType[Double](DataStructureInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option(write(tree)), Option(initialOperationId), outgoing.ref)))
+        TestActorRef(Props(new TreeClientDataType[Double](DataStructureInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataStructureName("test"), Option(write(tree)), Option(initialOperationId), outgoing.ref)))
       val operation = TreeInsertOperation(AccessPath(2), ValueTreeNode(5.6), OperationId(), OperationContext(), ClientId())
       dataType ! ReceiveCallback((_) => {})
 
-      dataType ! LocalOperationMessage(OperationMessage(ClientId(), DataStructureInstanceId(), DataTypeName("Test"), List(operation)))
+      dataType ! LocalOperationMessage(OperationMessage(ClientId(), DataStructureInstanceId(), DataStructureName("Test"), List(operation)))
 
       awaitAssert(dataType.underlyingActor.historyBuffer.history.head should equal(
         TreeInsertOperation(operation.accessPath, operation.tree, operation.id, OperationContext(List(initialOperationId)), operation.clientId)
@@ -120,11 +120,11 @@ class TreeClientDataTypeSpec extends TestKit(ActorSystem("TreeClientDataTypeSpec
       val initialOperationId = OperationId()
       val tree = ValueTreeNode(1.6, List(ValueTreeNode(2.0), ValueTreeNode(1.7)))
       val dataType: TestActorRef[TreeClientDataType[Double]] =
-        TestActorRef(Props(new TreeClientDataType[Double](DataStructureInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataTypeName("test"), Option(write(tree)), Option(initialOperationId), outgoing.ref)))
+        TestActorRef(Props(new TreeClientDataType[Double](DataStructureInstanceId(), new TreeClientDataTypeSpecControlAlgoClient, DataStructureName("test"), Option(write(tree)), Option(initialOperationId), outgoing.ref)))
       val operation = TreeDeleteOperation(AccessPath(0), OperationId(), OperationContext(), ClientId())
       dataType ! ReceiveCallback((_) => {})
 
-      dataType ! LocalOperationMessage(OperationMessage(ClientId(), DataStructureInstanceId(), DataTypeName("Test"), List(operation)))
+      dataType ! LocalOperationMessage(OperationMessage(ClientId(), DataStructureInstanceId(), DataStructureName("Test"), List(operation)))
 
       awaitAssert(dataType.underlyingActor.historyBuffer.history.head should equal(
         TreeDeleteOperation(operation.accessPath, operation.id, OperationContext(List(initialOperationId)), operation.clientId)

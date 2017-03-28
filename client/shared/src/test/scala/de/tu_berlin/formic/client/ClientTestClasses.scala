@@ -15,7 +15,7 @@ import upickle.Js
 
 class TestDataTypeFactory extends AbstractClientDataTypeFactory[TestClientDataType, TestFormicDataType] {
 
-  override val name: DataTypeName = TestClasses.dataTypeName
+  override val name: DataStructureName = TestClasses.dataTypeName
 
   override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId] = Option.empty): TestClientDataType = new TestClientDataType(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm, data, lastOperationId, outgoingConnection)
 
@@ -33,7 +33,7 @@ class TestClientDataType(override val historyBuffer: HistoryBuffer, val dataType
     }
   }
 
-  override val dataTypeName: DataTypeName = TestClasses.dataTypeName
+  override val dataTypeName: DataStructureName = TestClasses.dataTypeName
 
   override def getDataAsJson: String = data
 
@@ -59,7 +59,7 @@ class TestFormicJsonDataTypeProtocol extends FormicJsonDataTypeProtocol {
       ClientId(valueMap("clientId").str))
   }
 
-  override val name: DataTypeName = TestClasses.dataTypeName
+  override val name: DataStructureName = TestClasses.dataTypeName
 
   override def serializeOperation(op: DataTypeOperation): String = {
     Js.Obj(
@@ -91,5 +91,5 @@ object TestTransformer extends OperationTransformer {
 }
 
 object TestClasses {
-  val dataTypeName = DataTypeName("Test")
+  val dataTypeName = DataStructureName("Test")
 }

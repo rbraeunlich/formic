@@ -1,15 +1,15 @@
 package de.tu_berlin.formic.datatype.linear.server
 
-import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.datatype.DataStructureName
 import upickle.default._
 
 /**
   * @author Ronny Bräunlich
   */
 class StringDataTypeFactory extends LinearServerDataTypeFactory[Char] {
-  override val name: DataTypeName = StringDataTypeFactory.name
+  override val name: DataStructureName = StringDataTypeFactory.name
 }
 
 object StringDataTypeFactory {
-  val name = DataTypeName("string")
+  val name = DataStructureName("string")
 }

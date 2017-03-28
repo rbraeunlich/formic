@@ -28,7 +28,7 @@ class AbstractServerDataTypeSpecTestServerDataType(override val historyBuffer: H
     }
   }
 
-  override val dataTypeName: DataTypeName = AbstractServerDataTypeSpec.dataTypeName
+  override val dataTypeName: DataStructureName = AbstractServerDataTypeSpec.dataTypeName
 
   override def getDataAsJson: String = data
 }
@@ -219,5 +219,5 @@ class AbstractServerDataTypeSpec extends TestKit(ActorSystem("AbstractServerData
 }
 
 object AbstractServerDataTypeSpec {
-  val dataTypeName = DataTypeName("Test")
+  val dataTypeName = DataStructureName("Test")
 }

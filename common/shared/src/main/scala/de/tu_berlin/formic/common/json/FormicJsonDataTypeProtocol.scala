@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.json
 
-import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation}
 
 /**
   * Only the concrete data types can know about the structure of their operations. Therefore,
@@ -14,6 +14,6 @@ trait FormicJsonDataTypeProtocol {
 
   def serializeOperation(op: DataTypeOperation): String
 
-  val name: DataTypeName
+  val name: DataStructureName
 
 }

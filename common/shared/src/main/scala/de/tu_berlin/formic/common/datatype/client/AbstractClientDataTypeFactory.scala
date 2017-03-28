@@ -3,7 +3,7 @@ package de.tu_berlin.formic.common.datatype.client
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.RemoteInstantiation
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
-import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataType}
 import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 
@@ -45,7 +45,7 @@ abstract class AbstractClientDataTypeFactory[T <: AbstractClientDataType : Class
 
   def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): S
 
-  val name: DataTypeName
+  val name: DataStructureName
 }
 
 object AbstractClientDataTypeFactory {

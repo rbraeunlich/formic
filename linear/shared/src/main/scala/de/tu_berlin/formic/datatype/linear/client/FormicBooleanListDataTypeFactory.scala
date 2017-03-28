@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.linear.client
 
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
-import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
 import upickle.default._
 /**
@@ -14,9 +14,9 @@ class FormicBooleanListDataTypeFactory extends FormicLinearDataTypeFactory[Boole
     new FormicBooleanList((ClientDataTypeEvent) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 
-  override val name: DataTypeName = FormicBooleanListDataTypeFactory.name
+  override val name: DataStructureName = FormicBooleanListDataTypeFactory.name
 }
 
 object FormicBooleanListDataTypeFactory {
-  val name = DataTypeName("BooleanList")
+  val name = DataStructureName("BooleanList")
 }

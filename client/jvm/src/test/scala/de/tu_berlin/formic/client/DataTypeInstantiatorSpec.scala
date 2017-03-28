@@ -6,7 +6,7 @@ import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.Dispatcher.WrappedUpdateResponse
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
-import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
 import de.tu_berlin.formic.common.message.{UpdateRequest, UpdateResponse}
 import org.scalatest.{Matchers, WordSpecLike}
@@ -28,7 +28,7 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
     "create a new data type instance upon receiving an UpdateResponse" in {
       val clientId = ClientId()
       val testFactory = TestActorRef(Props(new TestDataTypeFactory))
-      val testFactories: Map[DataTypeName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
+      val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
       val instantiator = system.actorOf(Props(new DataTypeInstantiator(testFactories, clientId)))
       val outgoingConnection = TestProbe()
       val dataTypeInstanceId = DataStructureInstanceId()
@@ -44,7 +44,7 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
     "create a new data type instance upon receiving an UpdateResponse with the contained data" in {
       val clientId = ClientId()
       val testFactory = TestActorRef(Props(new TestDataTypeFactory))
-      val testFactories: Map[DataTypeName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
+      val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
       val instantiator = system.actorOf(Props(new DataTypeInstantiator(testFactories, clientId)))
       val outgoingConnection = TestProbe()
       val dataTypeInstanceId = DataStructureInstanceId()

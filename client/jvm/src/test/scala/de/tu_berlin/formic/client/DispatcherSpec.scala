@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{EventFilter, ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.Dispatcher.{ErrorMessage, KnownDataTypeIds, RequestKnownDataTypeIds, WrappedUpdateResponse}
-import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
@@ -34,7 +34,7 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
 
     "create a new data type instance and remember it when receiving an UpdateResponse" in {
       val testFactory = TestActorRef(Props(new TestDataTypeFactory))
-      val testFactories: Map[DataTypeName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
+      val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
       val instantiator = TestActorRef(Props(new DataTypeInstantiator(testFactories, ClientId())))
       val newInstanceCallback = TestProbe()
 
@@ -52,7 +52,7 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       val testDataType = TestProbe()
       val testDataType2 = TestProbe()
       val testFactory = TestProbe()
-      val testFactories: Map[DataTypeName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory.ref)
+      val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory.ref)
       val instantiator = TestActorRef(Props(new DataTypeInstantiator(testFactories, clientId)))
       val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(null, TestProbe().ref, instantiator)))
       val dataTypeInstanceId = DataStructureInstanceId()
@@ -109,7 +109,7 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       val testDataType2 = TestProbe()
       val testFactory = TestProbe()
       val clientId = ClientId()
-      val testFactories: Map[DataTypeName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory.ref)
+      val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory.ref)
       val instantiator = TestActorRef(Props(new DataTypeInstantiator(testFactories, clientId)))
       val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(null, TestProbe().ref, instantiator)))
       val dataTypeInstanceId = DataStructureInstanceId()

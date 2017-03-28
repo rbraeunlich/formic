@@ -42,7 +42,7 @@ class AbstractServerDataTypeFactoryPersistenceSpec extends PersistenceSpec(Actor
 
 object AbstractServerDataTypeFactoryPersistenceSpec {
 
-  val dataTypeName = DataTypeName("persistenceFactory")
+  val dataTypeName = DataStructureName("persistenceFactory")
 
   class AbstractServerDataTypeFactoryPersistenceSpecServerDataType(id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataType(id, controlAlgorithm) {
 
@@ -62,7 +62,7 @@ object AbstractServerDataTypeFactoryPersistenceSpec {
       }
     }
 
-    override val dataTypeName: DataTypeName = AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName
+    override val dataTypeName: DataStructureName = AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName
 
     override def getDataAsJson: String = data
   }
@@ -73,7 +73,7 @@ object AbstractServerDataTypeFactoryPersistenceSpec {
       new AbstractServerDataTypeFactoryPersistenceSpecServerDataType(dataTypeInstanceId, new WaveOTServer())
     }
 
-    override val name: DataTypeName = AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName
+    override val name: DataStructureName = AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName
   }
 
 }

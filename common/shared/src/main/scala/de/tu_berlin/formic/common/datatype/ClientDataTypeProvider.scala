@@ -11,7 +11,7 @@ import de.tu_berlin.formic.common.json.FormicJsonProtocol
   */
 trait ClientDataTypeProvider {
 
-  def initFactories(actorSystem: ActorSystem): Map[DataTypeName, ActorRef]
+  def initFactories(actorSystem: ActorSystem): Map[DataStructureName, ActorRef]
 
   def registerFormicJsonDataTypeProtocols(formicJsonProtocol: FormicJsonProtocol): Unit
 

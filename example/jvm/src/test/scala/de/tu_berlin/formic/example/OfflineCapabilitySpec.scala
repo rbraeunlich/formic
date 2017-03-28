@@ -6,7 +6,7 @@ import akka.testkit.TestKit
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client._
 import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
-import de.tu_berlin.formic.common.datatype.{ClientDataTypeProvider, DataTypeName, FormicDataType}
+import de.tu_berlin.formic.common.datatype.{ClientDataTypeProvider, DataStructureName, FormicDataType}
 import de.tu_berlin.formic.datatype.linear.client.{FormicString, LinearClientDataTypeProvider}
 import de.tu_berlin.formic.example.OfflineCapabilitySpec.{CollectingCallback, DropNextNMessages, TestWebSocketFactoryJVM}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
@@ -134,12 +134,12 @@ object OfflineCapabilitySpec {
     /**
       * Set a new callback interface at a data type instance that was created remotely.
       */
-    override def newCallbackFor(instance: FormicDataType, dataType: DataTypeName): (ClientDataTypeEvent) => Unit = (_) => Unit
+    override def newCallbackFor(instance: FormicDataType, dataType: DataStructureName): (ClientDataTypeEvent) => Unit = (_) => Unit
 
     /**
       * Perform any initializations necessary for a new, remote data type.
       */
-    override def doNewInstanceCreated(instance: FormicDataType, dataType: DataTypeName): Unit = {
+    override def doNewInstanceCreated(instance: FormicDataType, dataType: DataStructureName): Unit = {
       dataTypes = instance :: dataTypes
     }
   }

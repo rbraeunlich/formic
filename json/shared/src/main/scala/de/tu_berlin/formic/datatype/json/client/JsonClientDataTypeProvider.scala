@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.datatype.json.client
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import de.tu_berlin.formic.common.datatype.{ClientDataTypeProvider, DataTypeName}
+import de.tu_berlin.formic.common.datatype.{ClientDataTypeProvider, DataStructureName}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol
 
@@ -10,7 +10,7 @@ import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol
   */
 class JsonClientDataTypeProvider extends ClientDataTypeProvider {
 
-  override def initFactories(actorSystem: ActorSystem): Map[DataTypeName, ActorRef] = {
+  override def initFactories(actorSystem: ActorSystem): Map[DataStructureName, ActorRef] = {
     val factory = actorSystem.actorOf(Props(new FormicJsonObjectFactory), FormicJsonObjectFactory.name.name)
     Map(FormicJsonObjectFactory.name -> factory)
   }

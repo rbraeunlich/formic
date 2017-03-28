@@ -12,7 +12,7 @@ import de.tu_berlin.formic.common.message.OperationMessage
   * @author Ronny Bräunlich
   */
 abstract class FormicDataType(private var _callback: (ClientDataTypeEvent) => Unit,
-                              val dataTypeName: DataTypeName,
+                              val dataTypeName: DataStructureName,
                               var actor: ActorRef = null,
                               var clientId: ClientId = null,
                               val dataTypeInstanceId: DataStructureInstanceId,

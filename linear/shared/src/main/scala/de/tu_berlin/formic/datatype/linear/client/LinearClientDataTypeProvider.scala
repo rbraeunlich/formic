@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.datatype.linear.client
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import de.tu_berlin.formic.common.datatype.{ClientDataTypeProvider, DataTypeName}
+import de.tu_berlin.formic.common.datatype.{ClientDataTypeProvider, DataStructureName}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataTypeProtocol
 
@@ -10,8 +10,8 @@ import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataTypeProtocol
   */
 class LinearClientDataTypeProvider extends ClientDataTypeProvider {
 
-  override def initFactories(actorSystem: ActorSystem): Map[DataTypeName, ActorRef] = {
-    var factories: Map[DataTypeName, ActorRef] = Map.empty
+  override def initFactories(actorSystem: ActorSystem): Map[DataStructureName, ActorRef] = {
+    var factories: Map[DataStructureName, ActorRef] = Map.empty
     val formicBooleanListFactory = actorSystem.actorOf(Props(new FormicBooleanListDataTypeFactory), FormicBooleanListDataTypeFactory.name.name)
     val formicDoubleListFactory = actorSystem.actorOf(Props(new FormicDoubleListDataTypeFactory), FormicDoubleListDataTypeFactory.name.name)
     val formicIntegerListFactory = actorSystem.actorOf(Props(new FormicIntegerListDataTypeFactory), FormicIntegerListDataTypeFactory.name.name)

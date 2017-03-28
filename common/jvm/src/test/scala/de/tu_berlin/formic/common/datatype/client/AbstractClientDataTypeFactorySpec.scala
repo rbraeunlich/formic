@@ -26,7 +26,7 @@ class AbstractClientDataTypeFactorySpec extends TestKit(ActorSystem("AbstractCli
       val instanceId = DataStructureInstanceId()
       val clientId = ClientId()
 
-      factory ! WrappedCreateRequest(outgoing.ref, null, Option.empty,CreateRequest(ClientId(), instanceId, DataTypeName("AbstractClientDataTypeFactorySpec") ), clientId)
+      factory ! WrappedCreateRequest(outgoing.ref, null, Option.empty,CreateRequest(ClientId(), instanceId, DataStructureName("AbstractClientDataTypeFactorySpec") ), clientId)
 
       val msg = expectMsgClass(classOf[NewDataTypeCreated])
       msg.dataTypeInstanceId should equal(instanceId)
@@ -64,7 +64,7 @@ object AbstractClientDataTypeSpecControlAlgorithm extends ControlAlgorithmClient
 }
 
 class AbstractClientDataTypeFactorySpecServerDataType(outgoingConnection: ActorRef) extends AbstractClientDataType(DataStructureInstanceId(), AbstractClientDataTypeSpecControlAlgorithm, Option.empty, outgoingConnection) {
-  override val dataTypeName: DataTypeName = DataTypeName("AbstractClientDataTypeFactorySpec")
+  override val dataTypeName: DataStructureName = DataStructureName("AbstractClientDataTypeFactorySpec")
 
   override val transformer: OperationTransformer = null
 
@@ -75,14 +75,14 @@ class AbstractClientDataTypeFactorySpecServerDataType(outgoingConnection: ActorR
   override def cloneOperationWithNewContext(op: DataTypeOperation, context: OperationContext): DataTypeOperation = op
 }
 
-class AbstractClientDataTypeFactorySpecFormicDataType(clientId: ClientId) extends FormicDataType(null, DataTypeName("AbstractClientDataTypeFactorySpec"),null,clientId, DataStructureInstanceId(), new DataTypeInitiator {
+class AbstractClientDataTypeFactorySpecFormicDataType(clientId: ClientId) extends FormicDataType(null, DataStructureName("AbstractClientDataTypeFactorySpec"),null,clientId, DataStructureInstanceId(), new DataTypeInitiator {
   override def initDataType(dataType: FormicDataType): Unit = {}
 }) {
 }
 
 class AbstractClientDataTypeFactorySpecFactory extends AbstractClientDataTypeFactory[AbstractClientDataTypeFactorySpecServerDataType, AbstractClientDataTypeFactorySpecFormicDataType] {
 
-  override val name: DataTypeName = DataTypeName("AbstractClientDataTypeFactorySpec")
+  override val name: DataStructureName = DataStructureName("AbstractClientDataTypeFactorySpec")
 
   override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): AbstractClientDataTypeFactorySpecServerDataType = {
     new AbstractClientDataTypeFactorySpecServerDataType(outgoingConnection)

@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.json.client
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
-import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
@@ -25,7 +25,7 @@ class FormicJsonObjectFactorySpec extends TestKit(ActorSystem("FormicJsonFactory
     "have correct data type name" in {
       val factory: TestActorRef[FormicJsonObjectFactory] = TestActorRef(Props(new FormicJsonObjectFactory()))
 
-      factory.underlyingActor.name should equal(DataTypeName("json"))
+      factory.underlyingActor.name should equal(DataStructureName("json"))
     }
 
     "create FormicJsonObjects and JsonClientDataType" in {

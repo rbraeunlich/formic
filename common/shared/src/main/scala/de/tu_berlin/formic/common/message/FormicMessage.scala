@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.message
 
-import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 
 /**
@@ -20,7 +20,7 @@ case class CreateResponse(dataTypeInstanceId: DataStructureInstanceId) extends F
   * @param dataTypeInstanceId the id the client gave the data type
   * @param dataType the name of the data type, needed to find the proper factory
   */
-case class CreateRequest(clientId: ClientId, dataTypeInstanceId: DataStructureInstanceId, dataType: DataTypeName) extends FormicMessage
+case class CreateRequest(clientId: ClientId, dataTypeInstanceId: DataStructureInstanceId, dataType: DataStructureName) extends FormicMessage
 
 /**
   * If a client was disconnected and missed some operations it can send this request.
@@ -37,7 +37,7 @@ case class HistoricOperationRequest(clientId: ClientId, dataTypeInstanceId: Data
   * @param data the actual data as JSON
   * @param lastOperationId the id of the last operation applied, when this response was created, might be empty
   */
-case class UpdateResponse(dataTypeInstanceId: DataStructureInstanceId, dataType: DataTypeName, data: String, lastOperationId: Option[OperationId]) extends FormicMessage
+case class UpdateResponse(dataTypeInstanceId: DataStructureInstanceId, dataType: DataStructureName, data: String, lastOperationId: Option[OperationId]) extends FormicMessage
 
 /**
   * A message with which a client indicates that it wants to receive updates from now on from a certain data type instance.
@@ -55,4 +55,4 @@ case class UpdateRequest(clientId: ClientId, dataTypeInstanceId: DataStructureIn
   * @param dataType the type of the data type that changed, needed for JSON deserialization
   * @param operations the operation/s that shall be applied
   */
-case class OperationMessage(clientId: ClientId, dataTypeInstanceId: DataStructureInstanceId, dataType: DataTypeName, operations: List[DataTypeOperation]) extends FormicMessage
+case class OperationMessage(clientId: ClientId, dataTypeInstanceId: DataStructureInstanceId, dataType: DataStructureName, operations: List[DataTypeOperation]) extends FormicMessage

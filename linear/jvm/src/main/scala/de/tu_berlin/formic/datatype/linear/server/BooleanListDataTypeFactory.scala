@@ -1,15 +1,15 @@
 package de.tu_berlin.formic.datatype.linear.server
 
-import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.datatype.DataStructureName
 import upickle.default._
 
 /**
   * @author Ronny Bräunlich
   */
 class BooleanListDataTypeFactory extends LinearServerDataTypeFactory[Boolean] {
-  override val name: DataTypeName = BooleanListDataTypeFactory.name
+  override val name: DataStructureName = BooleanListDataTypeFactory.name
 }
 
 object BooleanListDataTypeFactory {
-  val name = DataTypeName("BooleanList")
+  val name = DataStructureName("BooleanList")
 }

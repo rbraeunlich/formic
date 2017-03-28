@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.tree.persistence
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.TestProbe
 import de.tu_berlin.formic.common.controlalgo.WaveOTServer
-import de.tu_berlin.formic.common.datatype.{DataTypeName, OperationContext}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import de.tu_berlin.formic.datatype.tree._
@@ -20,7 +20,7 @@ class TreeServerDataTypePersistenceSpec extends PersistenceSpec(ActorSystem("Tre
       val probe = TestProbe()
       system.eventStream.subscribe(probe.ref, classOf[OperationMessage])
       val id = DataStructureInstanceId()
-      val dataTypeName: DataTypeName = StringTreeDataTypeFactory.name
+      val dataTypeName: DataStructureName = StringTreeDataTypeFactory.name
       val dataType = system.actorOf(Props(new TreeServerDataType[String](id, new WaveOTServer(), dataTypeName)), id.id)
       val op1 = TreeInsertOperation(AccessPath(), ValueTreeNode("root"), OperationId(), OperationContext(), ClientId())
       val op2 = TreeInsertOperation(AccessPath(0), ValueTreeNode("child"), OperationId(), OperationContext(List(op1.id)), ClientId())

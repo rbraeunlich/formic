@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.linear.client
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType
-import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, OperationContext, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.{DataStructureInstanceId$, OperationId}
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation, LinearNoOperation, LinearTransformer}
 import upickle.default._
@@ -15,7 +15,7 @@ import scala.collection.mutable.ArrayBuffer
   */
 class LinearClientDataType[T](id: DataStructureInstanceId,
                               controlAlgorithmClient: ControlAlgorithmClient,
-                              val dataTypeName: DataTypeName,
+                              val dataTypeName: DataStructureName,
                               val initialData: Option[String],
                               lastOperationId: Option[OperationId],
                               outgoingConnection: ActorRef)
@@ -52,7 +52,7 @@ class LinearClientDataType[T](id: DataStructureInstanceId,
 
 object LinearClientDataType {
 
-  def apply[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithmClient, dataTypeName: DataTypeName, initialData: Option[String], lastOperationId: Option[OperationId], outgoingConnection: ActorRef)(implicit writer: Writer[T], reader: Reader[T]): LinearClientDataType[T] =
+  def apply[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithmClient, dataTypeName: DataStructureName, initialData: Option[String], lastOperationId: Option[OperationId], outgoingConnection: ActorRef)(implicit writer: Writer[T], reader: Reader[T]): LinearClientDataType[T] =
     new LinearClientDataType(id, controlAlgorithm, dataTypeName, initialData, lastOperationId, outgoingConnection)
 
 }

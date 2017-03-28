@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.datatype.tree
 
-import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, OperationContext}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, OperationContext}
 import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import upickle.Js
@@ -10,7 +10,7 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-case class TreeFormicJsonDataTypeProtocol[T](name: DataTypeName)(implicit val reader: Reader[T], val writer: Writer[T]) extends FormicJsonDataTypeProtocol {
+case class TreeFormicJsonDataTypeProtocol[T](name: DataStructureName)(implicit val reader: Reader[T], val writer: Writer[T]) extends FormicJsonDataTypeProtocol {
 
   implicit val treeNodeWriter = new ValueTreeNodeWriter[T]
 

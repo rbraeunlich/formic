@@ -20,7 +20,7 @@ abstract class AbstractClientDataType(val id: DataStructureInstanceId,
                                       val lastOperationId: Option[OperationId],
                                       val outgoingConnection: ActorRef) extends Actor with ActorLogging {
 
-  val dataTypeName: DataTypeName
+  val dataTypeName: DataStructureName
 
   val transformer: OperationTransformer
 

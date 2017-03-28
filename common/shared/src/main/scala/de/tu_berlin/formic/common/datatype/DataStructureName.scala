@@ -5,4 +5,4 @@ package de.tu_berlin.formic.common.datatype
   *
   * @author Ronny Bräunlich
   */
-sealed case class DataTypeName(name: String)
+sealed case class DataStructureName(name: String)

@@ -2,7 +2,7 @@ package de.tu_berlin.formic.example
 
 import de.tu_berlin.formic.client.NewInstanceCallback
 import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, RemoteOperationEvent}
-import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataType}
 import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
 import de.tu_berlin.formic.datatype.linear.client.FormicString
 import de.tu_berlin.formic.datatype.tree.client.FormicIntegerTree
@@ -14,7 +14,7 @@ import org.scalajs.jquery.jQuery
   */
 class ExampleCallback(val main: Main) extends NewInstanceCallback {
 
-  override def newCallbackFor(instance: FormicDataType, dataType: DataTypeName): (ClientDataTypeEvent) => Unit = {
+  override def newCallbackFor(instance: FormicDataType, dataType: DataStructureName): (ClientDataTypeEvent) => Unit = {
     instance match {
       case str: FormicString => main.updateUIForString(instance.dataTypeInstanceId)
       case tree: FormicIntegerTree => main.updateUIForTree(instance.dataTypeInstanceId)
@@ -22,7 +22,7 @@ class ExampleCallback(val main: Main) extends NewInstanceCallback {
     }
   }
 
-  override def doNewInstanceCreated(instance: FormicDataType, dataType: DataTypeName): Unit = {
+  override def doNewInstanceCreated(instance: FormicDataType, dataType: DataStructureName): Unit = {
     instance match {
       case str: FormicString =>
         main.strings += str

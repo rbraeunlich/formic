@@ -7,7 +7,7 @@ import de.tu_berlin.formic.client.FormicSystemIntegrationSpec.MockWebSocketFacto
 import de.tu_berlin.formic.client.WebSocketConnection.{OnConnect, OnMessage}
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
-import de.tu_berlin.formic.common.datatype.{ClientDataTypeProvider, DataTypeName, FormicDataType, OperationContext}
+import de.tu_berlin.formic.common.datatype.{ClientDataTypeProvider, DataStructureName, FormicDataType, OperationContext}
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.datatype.linear.{LinearInsertOperation, LinearNoOperation}
 import de.tu_berlin.formic.datatype.linear.client.{FormicString, LinearClientDataTypeProvider}
@@ -31,9 +31,9 @@ class FormicSystemIntegrationSpec extends TestKit(ActorSystem("FormicSystemInteg
       }
       formicSystem.init(new NewInstanceCallback {
 
-      override def doNewInstanceCreated(instance: FormicDataType, dataType: DataTypeName): Unit = {}
+      override def doNewInstanceCreated(instance: FormicDataType, dataType: DataStructureName): Unit = {}
 
-        override def newCallbackFor(instance: FormicDataType, dataType: DataTypeName): (ClientDataTypeEvent) => Unit = _ => {}
+        override def newCallbackFor(instance: FormicDataType, dataType: DataStructureName): (ClientDataTypeEvent) => Unit = _ => {}
       }, ClientId("2"))
       implicit val writer = formicSystem.jsonProtocol.writer
       implicit val reader = formicSystem.jsonProtocol.reader

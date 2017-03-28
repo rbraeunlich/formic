@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.datatype.json
 
-import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, OperationContext}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, OperationContext}
 import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import de.tu_berlin.formic.datatype.tree._
@@ -14,7 +14,7 @@ import upickle.default._
   *
   * @author Ronny Bräunlich
   */
-case class JsonFormicJsonDataTypeProtocol(name: DataTypeName)(implicit val reader: Reader[ObjectNode], val writer: Writer[ObjectNode]) extends FormicJsonDataTypeProtocol {
+case class JsonFormicJsonDataTypeProtocol(name: DataStructureName)(implicit val reader: Reader[ObjectNode], val writer: Writer[ObjectNode]) extends FormicJsonDataTypeProtocol {
 
   override def deserializeOperation(json: String): DataTypeOperation = {
     val valueMap = upickle.json.read(json).obj

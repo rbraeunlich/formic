@@ -4,7 +4,7 @@ import akka.actor.{ActorSystem, Props}
 import akka.testkit.TestProbe
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import de.tu_berlin.formic.common.controlalgo.WaveOTServer
-import de.tu_berlin.formic.common.datatype.{DataTypeName, OperationContext}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.datatype.json._
 import de.tu_berlin.formic.datatype.tree._
@@ -21,7 +21,7 @@ class JsonServerDataTypePersistenceSpec extends PersistenceSpec(ActorSystem("Jso
       val probe = TestProbe()
       system.eventStream.subscribe(probe.ref, classOf[OperationMessage])
       val id = DataStructureInstanceId()
-      val dataTypeName: DataTypeName = JsonServerDataTypeFactory.name
+      val dataTypeName: DataStructureName = JsonServerDataTypeFactory.name
       val dataType = system.actorOf(Props(new JsonServerDataType(id, new WaveOTServer(), dataTypeName)), id.id)
       val op1 = TreeInsertOperation(AccessPath(0), BooleanNode("bool", value = true), OperationId(), OperationContext(), ClientId())
       val op2 = TreeInsertOperation(AccessPath(1), NumberNode("num", 12), OperationId(), OperationContext(List(op1.id)), ClientId())

@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.tree.client
 
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
-import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
 
 /**
@@ -15,10 +15,10 @@ class FormicDoubleTreeFactory extends FormicTreeDataTypeFactory[Double] {
     new FormicDoubleTree((ClientDataTypeEvent) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 
-  override val name: DataTypeName = FormicDoubleTreeFactory.name
+  override val name: DataStructureName = FormicDoubleTreeFactory.name
 }
 
 object FormicDoubleTreeFactory {
-  val name: DataTypeName = DataTypeName("DoubleTree")
+  val name: DataStructureName = DataStructureName("DoubleTree")
 
 }

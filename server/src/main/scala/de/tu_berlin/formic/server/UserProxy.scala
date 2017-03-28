@@ -2,7 +2,7 @@ package de.tu_berlin.formic.server
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import de.tu_berlin.formic.common.server.datatype.AbstractServerDataType.HistoricOperationsAnswer
-import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.server.datatype.NewDataTypeCreated
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
@@ -16,7 +16,7 @@ import scala.util.{Failure, Success}
 /**
   * @author Ronny Bräunlich
   */
-class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = ClientId()) extends Actor with ActorLogging{
+class UserProxy(val factories: Map[DataStructureName, ActorRef], val id: ClientId = ClientId()) extends Actor with ActorLogging{
 
   var watchlist: Map[DataStructureInstanceId, ActorRef] = Map.empty
 

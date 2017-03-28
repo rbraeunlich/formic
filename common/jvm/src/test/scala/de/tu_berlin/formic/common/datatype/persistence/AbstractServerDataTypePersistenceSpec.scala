@@ -44,7 +44,7 @@ class AbstractServerDataTypePersistenceSpec extends PersistenceSpec(ActorSystem(
 
 object AbstractServerDataTypePersistenceSpec {
 
-  val dataTypeName = DataTypeName("persistence")
+  val dataTypeName = DataStructureName("persistence")
 
   case class AbstractServerDataTypePersistenceSpecOperation(id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends DataTypeOperation
 
@@ -74,7 +74,7 @@ object AbstractServerDataTypePersistenceSpec {
       }
     }
 
-    override val dataTypeName: DataTypeName = AbstractServerDataTypePersistenceSpec.dataTypeName
+    override val dataTypeName: DataStructureName = AbstractServerDataTypePersistenceSpec.dataTypeName
 
     override def getDataAsJson: String = data
   }

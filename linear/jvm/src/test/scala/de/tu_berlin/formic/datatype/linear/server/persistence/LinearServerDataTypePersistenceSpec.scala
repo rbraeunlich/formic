@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.linear.server.persistence
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.TestProbe
 import de.tu_berlin.formic.common.controlalgo.WaveOTServer
-import de.tu_berlin.formic.common.datatype.{DataTypeName, OperationContext}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import de.tu_berlin.formic.datatype.linear.server.{IntegerListDataTypeFactory, LinearServerDataType}
@@ -21,7 +21,7 @@ class LinearServerDataTypePersistenceSpec extends PersistenceSpec(ActorSystem("L
       val probe = TestProbe()
       system.eventStream.subscribe(probe.ref, classOf[OperationMessage])
       val id = DataStructureInstanceId()
-      val dataTypeName: DataTypeName = IntegerListDataTypeFactory.name
+      val dataTypeName: DataStructureName = IntegerListDataTypeFactory.name
       val dataType = system.actorOf(Props(new LinearServerDataType[Int](id, new WaveOTServer(), dataTypeName)), id.id)
       val op1 = LinearInsertOperation(0, 1, OperationId(), OperationContext(), ClientId())
       val op2 = LinearInsertOperation(1, 2, OperationId(), OperationContext(List(op1.id)), ClientId())

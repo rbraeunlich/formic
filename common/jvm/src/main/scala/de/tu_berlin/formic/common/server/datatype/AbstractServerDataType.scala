@@ -4,7 +4,7 @@ import akka.actor.ActorLogging
 import akka.persistence.{PersistentActor, RecoveryCompleted}
 import de.tu_berlin.formic.common.DataStructureInstanceId$
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
-import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, HistoryBuffer, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, HistoryBuffer, OperationTransformer}
 import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.server.datatype.AbstractServerDataType._
 /**
@@ -16,7 +16,7 @@ abstract class AbstractServerDataType(val id: DataStructureInstanceId, val contr
 
   val historyBuffer: HistoryBuffer = new HistoryBuffer()
 
-  val dataTypeName: DataTypeName
+  val dataTypeName: DataStructureName
 
   val transformer: OperationTransformer
 

@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.json.client
 
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.WaveOTClient
-import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataTypeFactory, ClientDataTypeEvent}
 import de.tu_berlin.formic.common.message.OperationMessage
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
@@ -28,9 +28,9 @@ class FormicJsonObjectFactory extends AbstractClientDataTypeFactory[JsonClientDa
     new FormicJsonObject((ClientDataTypeEvent) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 
-  override val name: DataTypeName = FormicJsonObjectFactory.name
+  override val name: DataStructureName = FormicJsonObjectFactory.name
 }
 
 object FormicJsonObjectFactory {
-  val name = DataTypeName("json")
+  val name = DataStructureName("json")
 }

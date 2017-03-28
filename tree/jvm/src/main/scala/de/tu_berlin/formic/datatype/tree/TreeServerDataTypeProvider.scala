@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.datatype.tree
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import de.tu_berlin.formic.common.datatype.{DataTypeName, ServerDataTypeProvider}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, ServerDataTypeProvider}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 
 /**
@@ -9,8 +9,8 @@ import de.tu_berlin.formic.common.json.FormicJsonProtocol
   */
 class TreeServerDataTypeProvider extends ServerDataTypeProvider {
 
-  override def initFactories(actorSystem: ActorSystem): Map[DataTypeName, ActorRef] = {
-    var factories: Map[DataTypeName, ActorRef] = Map.empty
+  override def initFactories(actorSystem: ActorSystem): Map[DataStructureName, ActorRef] = {
+    var factories: Map[DataStructureName, ActorRef] = Map.empty
     val booleanTreeFactory = actorSystem.actorOf(Props[BooleanTreeDataTypeFactory], BooleanTreeDataTypeFactory.name.name)
     val doubleTreeFactory = actorSystem.actorOf(Props[DoubleTreeDataTypeFactory], DoubleTreeDataTypeFactory.name.name)
     val integerTreeFactory = actorSystem.actorOf(Props[IntegerTreeDataTypeFactory], IntegerTreeDataTypeFactory.name.name)

@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.datatype.linear
 
-import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, OperationContext}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, OperationContext}
 import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import upickle.Js
@@ -9,7 +9,7 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-case class LinearFormicJsonDataTypeProtocol[T](name: DataTypeName)(implicit val reader: Reader[T], val writer: Writer[T]) extends FormicJsonDataTypeProtocol {
+case class LinearFormicJsonDataTypeProtocol[T](name: DataStructureName)(implicit val reader: Reader[T], val writer: Writer[T]) extends FormicJsonDataTypeProtocol {
 
   override def deserializeOperation(json: String): DataTypeOperation = {
     val valueMap = upickle.json.read(json).obj

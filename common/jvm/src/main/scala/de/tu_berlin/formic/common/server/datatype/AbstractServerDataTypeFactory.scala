@@ -3,7 +3,7 @@ package de.tu_berlin.formic.common.server.datatype
 import akka.actor.{ActorLogging, Props}
 import akka.persistence.{PersistentActor, RecoveryCompleted}
 import de.tu_berlin.formic.common.DataStructureInstanceId$
-import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.message.CreateRequest
 
 import scala.reflect.ClassTag
@@ -36,5 +36,5 @@ abstract class AbstractServerDataTypeFactory[T <: AbstractServerDataType : Class
 
   def create(dataTypeInstanceId: DataStructureInstanceId): T
 
-  val name: DataTypeName
+  val name: DataStructureName
 }

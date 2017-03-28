@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.json
 
-import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import upickle.Js
@@ -14,15 +14,15 @@ import upickle.Js
   * @author Ronny Bräunlich
   */
 class FormicJsonProtocol {
-  private var _dataTypeOperationJsonProtocols: Map[DataTypeName, FormicJsonDataTypeProtocol] = Map.empty
+  private var _dataTypeOperationJsonProtocols: Map[DataStructureName, FormicJsonDataTypeProtocol] = Map.empty
 
-  def dataTypeOperationJsonProtocols: Map[DataTypeName, FormicJsonDataTypeProtocol] = Map(_dataTypeOperationJsonProtocols.toList:_*)
+  def dataTypeOperationJsonProtocols: Map[DataStructureName, FormicJsonDataTypeProtocol] = Map(_dataTypeOperationJsonProtocols.toList:_*)
 
   def registerProtocol(protocol: FormicJsonDataTypeProtocol) = {
     _dataTypeOperationJsonProtocols += (protocol.name -> protocol)
   }
 
-  def remove(dataTypeName: DataTypeName) = _dataTypeOperationJsonProtocols -= dataTypeName
+  def remove(dataTypeName: DataStructureName) = _dataTypeOperationJsonProtocols -= dataTypeName
 
   implicit val writer = upickle.default.Writer[OperationMessage] {
     message =>
@@ -53,7 +53,7 @@ class FormicJsonProtocol {
           CreateRequest(
             ClientId(map("clientId").obj("id").str),
             DataStructureInstanceId(map("dataTypeInstanceId").obj("id").str),
-            DataTypeName(map("dataType").obj("name").str)
+            DataStructureName(map("dataType").obj("name").str)
           )
         case "de.tu_berlin.formic.common.message.HistoricOperationRequest" =>
           HistoricOperationRequest(
@@ -66,7 +66,7 @@ class FormicJsonProtocol {
         case "de.tu_berlin.formic.common.message.UpdateResponse" =>
           UpdateResponse(
             DataStructureInstanceId(map("dataTypeInstanceId").obj("id").str),
-            DataTypeName(map("dataType").obj("name").str),
+            DataStructureName(map("dataType").obj("name").str),
             map("data").str,
             map("lastOperationId").arr.headOption.map(value => OperationId(value.obj("id").str))
           )
@@ -76,12 +76,12 @@ class FormicJsonProtocol {
             DataStructureInstanceId(map("dataTypeInstanceId").obj("id").str)
           )
         case "de.tu_berlin.formic.common.message.OperationMessage" =>
-          val protocol = _dataTypeOperationJsonProtocols.find(t => t._1 == DataTypeName(map("dataTypeName").str)).get
+          val protocol = _dataTypeOperationJsonProtocols.find(t => t._1 == DataStructureName(map("dataTypeName").str)).get
           val operations = map("operations").arr.map(v => v.toString()).map(json => protocol._2.deserializeOperation(json)).toList
           OperationMessage(
             ClientId(map("clientId").str),
             DataStructureInstanceId(map("dataTypeInstanceId").str),
-            DataTypeName(map("dataTypeName").str),
+            DataStructureName(map("dataTypeName").str),
             operations)
       }
   }

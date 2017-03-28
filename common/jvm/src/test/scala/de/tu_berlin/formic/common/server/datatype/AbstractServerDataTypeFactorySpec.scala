@@ -3,7 +3,7 @@ package de.tu_berlin.formic.common.server.datatype
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import de.tu_berlin.formic.StopSystemAfterAll
-import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
 import org.scalatest.concurrent.ScalaFutures
@@ -26,7 +26,7 @@ class AbstractServerDataTypeFactorySpec extends TestKit(ActorSystem("AbstractSer
     "create a new data type instance when receiving a CreateRequest" in {
       val factory = system.actorOf(Props[TestDataTypeFactory])
       val dataTypeInstanceId = DataStructureInstanceId()
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, DataTypeName("Test"))
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, DataStructureName("Test"))
 
       val received = expectMsgClass(classOf[NewDataTypeCreated])
       received.dataTypeInstanceId should be(dataTypeInstanceId)
@@ -36,7 +36,7 @@ class AbstractServerDataTypeFactorySpec extends TestKit(ActorSystem("AbstractSer
     "give a new data type instance the actor name of its datatypeinstance id" in {
       val factory = system.actorOf(Props[TestDataTypeFactory], TestClasses.dataTypeName.name)
       val dataTypeInstanceId = DataStructureInstanceId()
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, DataTypeName("Test"))
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, DataStructureName("Test"))
       receiveN(1)
 
       val selection = system.actorSelection(factory.path.child(dataTypeInstanceId.id)).resolveOne(3 seconds)

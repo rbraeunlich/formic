@@ -3,14 +3,14 @@ package de.tu_berlin.formic.client
 import akka.actor.{Actor, ActorRef}
 import de.tu_berlin.formic.client.Dispatcher.WrappedUpdateResponse
 import de.tu_berlin.formic.common.ClientId
-import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.WrappedCreateRequest
 import de.tu_berlin.formic.common.message.CreateRequest
 
 /**
   * @author Ronny Bräunlich
   */
-class DataTypeInstantiator(val factories: Map[DataTypeName, ActorRef], val localClientId: ClientId) extends Actor {
+class DataTypeInstantiator(val factories: Map[DataStructureName, ActorRef], val localClientId: ClientId) extends Actor {
 
   def receive = {
     case WrappedUpdateResponse(outgoing, rep) =>

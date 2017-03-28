@@ -6,7 +6,7 @@ import com.typesafe.config.Config
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated}
 import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
-import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataType}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message.{CreateRequest, UpdateRequest}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
@@ -48,7 +48,7 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
   @JSExport
   var id: ClientId = _
 
-  var factories: Map[DataTypeName, ActorRef] = Map.empty
+  var factories: Map[DataStructureName, ActorRef] = Map.empty
 
   @JSExport
   def init(callback: NewInstanceCallback, username: ClientId = ClientId()) = {

@@ -812,7 +812,7 @@ class AbstractClientDataTypeTestClientDataType(
 
   var data = "{test}"
 
-  override val dataTypeName: DataTypeName = AbstractClientDataTypeSpec.dataTypeName
+  override val dataTypeName: DataStructureName = AbstractClientDataTypeSpec.dataTypeName
 
   override val transformer: OperationTransformer = new OperationTransformer {
     override def transform(pair: (DataTypeOperation, DataTypeOperation)): DataTypeOperation = pair._1
@@ -841,7 +841,7 @@ class AbstractClientDataTypeTestClientDataType(
 case class AbstractClientDataTypeSpecTestOperation(id: OperationId, operationContext: OperationContext, var clientId: ClientId, data: String) extends DataTypeOperation
 
 object AbstractClientDataTypeSpec {
-  val dataTypeName = DataTypeName("AbstractClientDataType")
+  val dataTypeName = DataStructureName("AbstractClientDataType")
 }
 
 class AbstractClientDataTypeSpecControlAlgorithmClient(canRemoteBeApplied: Boolean = true) extends ControlAlgorithmClient {

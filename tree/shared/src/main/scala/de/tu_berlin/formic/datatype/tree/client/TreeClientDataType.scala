@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.tree.client
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType
-import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, OperationContext, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.{DataStructureInstanceId$, OperationId}
 import de.tu_berlin.formic.datatype.tree._
 import upickle.default._
@@ -12,7 +12,7 @@ import upickle.default._
   */
 class TreeClientDataType[T](id: DataStructureInstanceId,
                             controlAlgorithm: ControlAlgorithmClient,
-                            val dataTypeName: DataTypeName,
+                            val dataTypeName: DataStructureName,
                             initialData: Option[String],
                             lastOperationId: Option[OperationId],
                             outgoingConnection: ActorRef)
@@ -47,7 +47,7 @@ class TreeClientDataType[T](id: DataStructureInstanceId,
 }
 
 object TreeClientDataType {
-  def apply[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithmClient, dataTypeName: DataTypeName, initialData: Option[String], lastOperationId: Option[OperationId], outgoingConnection: ActorRef)(implicit writer: Writer[T], reader: Reader[T]): TreeClientDataType[T] =
+  def apply[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithmClient, dataTypeName: DataStructureName, initialData: Option[String], lastOperationId: Option[OperationId], outgoingConnection: ActorRef)(implicit writer: Writer[T], reader: Reader[T]): TreeClientDataType[T] =
     new TreeClientDataType(id, controlAlgorithm, dataTypeName, initialData, lastOperationId, outgoingConnection)
 
 }

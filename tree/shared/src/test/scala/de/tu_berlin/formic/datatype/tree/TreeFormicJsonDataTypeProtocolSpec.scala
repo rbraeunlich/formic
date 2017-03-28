@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.datatype.tree
 
-import de.tu_berlin.formic.common.datatype.{DataTypeName, OperationContext}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, OperationContext}
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -12,7 +12,7 @@ class TreeFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   "Tree Formic JSON data type protocol" should "serialize an insert operation" in {
     val operationId = OperationId()
     val clientId = ClientId()
-    val protocol = new TreeFormicJsonDataTypeProtocol[Int](DataTypeName("intTree"))
+    val protocol = new TreeFormicJsonDataTypeProtocol[Int](DataStructureName("intTree"))
     val operation = TreeInsertOperation(AccessPath(0, 1), ValueTreeNode(100, List(ValueTreeNode(1), ValueTreeNode(2))), operationId, OperationContext(), clientId)
 
     val serialized = protocol.serializeOperation(operation)
@@ -23,7 +23,7 @@ class TreeFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   it should "serialize a delete operation" in {
     val operationId = OperationId()
     val clientId = ClientId()
-    val protocol = new TreeFormicJsonDataTypeProtocol[Int](DataTypeName("intTree"))
+    val protocol = new TreeFormicJsonDataTypeProtocol[Int](DataStructureName("intTree"))
     val operation = TreeDeleteOperation(AccessPath(5, 6), operationId, OperationContext(), clientId)
 
     val serialized = protocol.serializeOperation(operation)
@@ -34,7 +34,7 @@ class TreeFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   it should "serialize a no operation" in {
     val operationId = OperationId()
     val clientId = ClientId()
-    val protocol = new TreeFormicJsonDataTypeProtocol[Int](DataTypeName("intTree"))
+    val protocol = new TreeFormicJsonDataTypeProtocol[Int](DataStructureName("intTree"))
     val operation = TreeNoOperation(operationId, OperationContext(), clientId)
 
     val serialized = protocol.serializeOperation(operation)
@@ -46,7 +46,7 @@ class TreeFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   it should "deserialize an insert operation" in {
     val operationId = OperationId()
     val clientId = ClientId()
-    val protocol = new TreeFormicJsonDataTypeProtocol[Int](DataTypeName("intTree"))
+    val protocol = new TreeFormicJsonDataTypeProtocol[Int](DataStructureName("intTree"))
     val json = s"""{\"accessPath\":[0,1],\"tree\":{\"value\":100,\"children\":[{\"value\":1,\"children\":[]}]},\"operationId\":\"${operationId.id}\",\"operationContext\":[],\"clientId\":\"${clientId.id}\"}"""
 
     val deserialized = protocol.deserializeOperation(json)
@@ -57,7 +57,7 @@ class TreeFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   it should "deserialize a delete operation" in {
     val operationId = OperationId()
     val clientId = ClientId()
-    val protocol = new TreeFormicJsonDataTypeProtocol[Int](DataTypeName("intTree"))
+    val protocol = new TreeFormicJsonDataTypeProtocol[Int](DataStructureName("intTree"))
     val json = s"""{\"accessPath\":[5,6],\"operationId\":\"${operationId.id}\",\"operationContext\":[],\"clientId\":\"${clientId.id}\"}"""
 
     val deserialized = protocol.deserializeOperation(json)
@@ -68,7 +68,7 @@ class TreeFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   it should "deserialize a no operation" in {
     val operationId = OperationId()
     val clientId = ClientId()
-    val protocol = new TreeFormicJsonDataTypeProtocol[Int](DataTypeName("intTree"))
+    val protocol = new TreeFormicJsonDataTypeProtocol[Int](DataStructureName("intTree"))
     val json = s"""{\"accessPath\":[-1],\"operationId\":\"${operationId.id}\",\"operationContext\":[],\"clientId\":\"${clientId.id}\"}"""
 
     val deserialized = protocol.deserializeOperation(json)

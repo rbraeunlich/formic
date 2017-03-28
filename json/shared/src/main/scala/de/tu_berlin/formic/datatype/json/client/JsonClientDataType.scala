@@ -4,7 +4,7 @@ import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType
-import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, OperationContext, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.message.{FormicMessage, OperationMessage}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import de.tu_berlin.formic.datatype.json._
@@ -18,7 +18,7 @@ import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
   */
 class JsonClientDataType(id: DataStructureInstanceId,
                          controlAlgorithm: ControlAlgorithmClient,
-                         val dataTypeName: DataTypeName,
+                         val dataTypeName: DataStructureName,
                          initialData: Option[String],
                          lastOperationId: Option[OperationId],
                          outgoingConnection: ActorRef)
@@ -101,7 +101,7 @@ object JsonClientDataType {
 
   def apply(id: DataStructureInstanceId,
             controlAlgorithm: ControlAlgorithmClient,
-            dataTypeName: DataTypeName,
+            dataTypeName: DataStructureName,
             initialData: Option[String],
             lastOperationId: Option[OperationId],
             outgoingConnection: ActorRef): JsonClientDataType = new JsonClientDataType(id, controlAlgorithm, dataTypeName, initialData, lastOperationId, outgoingConnection)

@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.tree.client
 
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
-import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
 
 /**
@@ -15,11 +15,11 @@ class FormicStringTreeFactory extends FormicTreeDataTypeFactory[String] {
     new FormicStringTree((ClientDataTypeEvent) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 
-  override val name: DataTypeName = FormicStringTreeFactory.name
+  override val name: DataStructureName = FormicStringTreeFactory.name
 }
 
 object FormicStringTreeFactory {
 
-  val name = DataTypeName("StringTree")
+  val name = DataStructureName("StringTree")
 
 }

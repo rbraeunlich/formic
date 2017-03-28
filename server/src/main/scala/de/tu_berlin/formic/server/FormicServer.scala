@@ -12,7 +12,7 @@ import akka.http.scaladsl.server.ExceptionHandler
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings, OverflowStrategy, Supervision}
 import de.tu_berlin.formic.common.ClientId
-import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message.FormicMessage
 import upickle.default._
@@ -28,7 +28,7 @@ class FormicServer {
 
   this: ServerDataTypes =>
 
-  var factories: Map[DataTypeName, ActorRef] = Map.empty
+  var factories: Map[DataStructureName, ActorRef] = Map.empty
 
   val decider: Supervision.Decider = {
     case iae: IllegalArgumentException =>

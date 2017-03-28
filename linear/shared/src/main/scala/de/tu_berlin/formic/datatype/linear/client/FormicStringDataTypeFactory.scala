@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.linear.client
 
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
-import de.tu_berlin.formic.common.datatype.DataTypeName
+import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
 import upickle.default._
 
@@ -15,9 +15,9 @@ class FormicStringDataTypeFactory extends FormicLinearDataTypeFactory[Char] {
     new FormicString((ClientDataTypeEvent) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 
-  override val name: DataTypeName = FormicStringDataTypeFactory.name
+  override val name: DataStructureName = FormicStringDataTypeFactory.name
 }
 
 object FormicStringDataTypeFactory {
-  val name = DataTypeName("string")
+  val name = DataStructureName("string")
 }
