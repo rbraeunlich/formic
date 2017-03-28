@@ -6,7 +6,7 @@ import de.tu_berlin.formic.StopSystemAfterAll
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message._
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import de.tu_berlin.formic.server.datatype.{TestClasses, TestDataTypeFactory, TestFormicJsonDataTypeProtocol}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
@@ -43,7 +43,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
       val userProxy: TestActorRef[UserProxy] = TestActorRef(Props(new UserProxy(Map(datatype.TestClasses.dataTypeName -> factory))))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
 
       userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, datatype.TestClasses.dataTypeName)
 
@@ -58,7 +58,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
       val publisherProbe = TestProbe()
       system.eventStream.subscribe(publisherProbe.ref, classOf[OperationMessage])
       userProxy ! Connected(outgoingProbe.ref)
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, datatype.TestClasses.dataTypeName)
       outgoingProbe.receiveOne(3 seconds)
       val clientId: ClientId = ClientId()
@@ -81,7 +81,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
       val userProxy = system.actorOf(Props(new UserProxy(Map(datatype.TestClasses.dataTypeName -> factory))))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, datatype.TestClasses.dataTypeName)
       outgoingProbe.receiveOne(3 seconds)
       val operationMessage = OperationMessage(
@@ -101,11 +101,11 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
       val userProxy = system.actorOf(Props(new UserProxy(Map(datatype.TestClasses.dataTypeName -> factory))))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
-      userProxy ! CreateRequest(ClientId(), DataTypeInstanceId(), datatype.TestClasses.dataTypeName)
+      userProxy ! CreateRequest(ClientId(), DataStructureInstanceId(), datatype.TestClasses.dataTypeName)
       outgoingProbe.receiveOne(3 seconds)
       val operationMessage = OperationMessage(
         ClientId(),
-        DataTypeInstanceId(),
+        DataStructureInstanceId(),
         datatype.TestClasses.dataTypeName,
         List(datatype.TestOperation(OperationId(), OperationContext(List.empty), ClientId()))
       )
@@ -120,7 +120,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
       val userProxy = system.actorOf(Props(new UserProxy(Map(TestClasses.dataTypeName -> factory))))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName)
       outgoingProbe.receiveOne(3 seconds)
       val operationId = OperationId()
@@ -154,7 +154,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
     }
 
     "forward an UpdateRequest to the correct data type and save the data type instance id" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val factory = system.actorOf(Props[TestDataTypeFactory])
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName)
       Thread.sleep(500) //give the server time to create the data type

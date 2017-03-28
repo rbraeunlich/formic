@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.json.persistence
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.TestProbe
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import de.tu_berlin.formic.common.controlalgo.WaveOTServer
 import de.tu_berlin.formic.common.datatype.{DataTypeName, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
@@ -20,7 +20,7 @@ class JsonServerDataTypePersistenceSpec extends PersistenceSpec(ActorSystem("Jso
     "re-apply stored operations after recovery" in {
       val probe = TestProbe()
       system.eventStream.subscribe(probe.ref, classOf[OperationMessage])
-      val id = DataTypeInstanceId()
+      val id = DataStructureInstanceId()
       val dataTypeName: DataTypeName = JsonServerDataTypeFactory.name
       val dataType = system.actorOf(Props(new JsonServerDataType(id, new WaveOTServer(), dataTypeName)), id.id)
       val op1 = TreeInsertOperation(AccessPath(0), BooleanNode("bool", value = true), OperationId(), OperationContext(), ClientId())

@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.datatype.tree.client
 
 import akka.actor.ActorRef
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
 import upickle.default._
@@ -11,7 +11,7 @@ import upickle.default._
   */
 class FormicBooleanTreeFactory extends FormicTreeDataTypeFactory[Boolean] {
 
-  override def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef, localClientId: ClientId): FormicTree[Boolean] = {
+  override def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): FormicTree[Boolean] = {
     new FormicBooleanTree((ClientDataTypeEvent) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 

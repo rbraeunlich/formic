@@ -5,7 +5,7 @@ import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message.CreateRequest
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 /**
@@ -31,7 +31,7 @@ class FormicJsonObjectFactorySpec extends TestKit(ActorSystem("FormicJsonFactory
     "create FormicJsonObjects and JsonClientDataType" in {
       val factory = system.actorOf(Props(new FormicJsonObjectFactory()))
       val outgoing = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "{\"value\":1.5, \"children\": []}", Option.empty, CreateRequest(

@@ -3,7 +3,7 @@ package de.tu_berlin.formic.gatling.action
 import java.util.concurrent.{CountDownLatch, TimeUnit}
 
 import de.tu_berlin.formic.client.FormicSystem
-import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.DataStructureInstanceId$
 import de.tu_berlin.formic.common.datatype.FormicDataType
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.action.{Action, ChainableAction}
@@ -28,7 +28,7 @@ case class SubscriptionAction(dataTypeInstanceId: Expression[String], statsEngin
       formicSystemOption match {
 
         case Some(formicSystem) =>
-          formicSystem.requestDataType(DataTypeInstanceId.valueOf(id))
+          formicSystem.requestDataType(DataStructureInstanceId.valueOf(id))
 
           val callback = session(SessionVariables.CALLBACK).validate[CollectingCallbackWithListener].get //when the FormicSystem is present, this one must be, too
           val promise = Promise[FormicDataType]()
@@ -38,7 +38,7 @@ case class SubscriptionAction(dataTypeInstanceId: Expression[String], statsEngin
             latch.countDown()
             suc
           }
-          val callbackCondition = (d: FormicDataType) => d.dataTypeInstanceId == DataTypeInstanceId.valueOf(id)
+          val callbackCondition = (d: FormicDataType) => d.dataTypeInstanceId == DataStructureInstanceId.valueOf(id)
           callback.addListener(callbackCondition, callbackMethod)
           //gotta block here, because the session is immutable
           latch.await(10, TimeUnit.SECONDS)

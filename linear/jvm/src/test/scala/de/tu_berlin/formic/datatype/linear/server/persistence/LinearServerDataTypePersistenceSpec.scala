@@ -5,7 +5,7 @@ import akka.testkit.TestProbe
 import de.tu_berlin.formic.common.controlalgo.WaveOTServer
 import de.tu_berlin.formic.common.datatype.{DataTypeName, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import de.tu_berlin.formic.datatype.linear.server.{IntegerListDataTypeFactory, LinearServerDataType}
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation, LinearNoOperation}
 
@@ -20,7 +20,7 @@ class LinearServerDataTypePersistenceSpec extends PersistenceSpec(ActorSystem("L
     "re-apply stored operations after recovery" in {
       val probe = TestProbe()
       system.eventStream.subscribe(probe.ref, classOf[OperationMessage])
-      val id = DataTypeInstanceId()
+      val id = DataStructureInstanceId()
       val dataTypeName: DataTypeName = IntegerListDataTypeFactory.name
       val dataType = system.actorOf(Props(new LinearServerDataType[Int](id, new WaveOTServer(), dataTypeName)), id.id)
       val op1 = LinearInsertOperation(0, 1, OperationId(), OperationContext(), ClientId())

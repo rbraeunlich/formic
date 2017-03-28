@@ -3,7 +3,7 @@ package de.tu_berlin.formic.example
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.FormicSystemFactory
 import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, RemoteOperationEvent}
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
 import de.tu_berlin.formic.datatype.json.JsonPath
 import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
 import de.tu_berlin.formic.datatype.linear.client.FormicString
@@ -52,7 +52,7 @@ class Main extends ExampleClientDataTypes {
   }
 
   def createNewString() = {
-    val id = DataTypeInstanceId()
+    val id = DataStructureInstanceId()
     val string = new FormicString(updateUIForString(id), system, id)
     strings += string
     val inputId = id.id
@@ -62,20 +62,20 @@ class Main extends ExampleClientDataTypes {
   }
 
   def createNewTree() = {
-    val id = DataTypeInstanceId()
+    val id = DataStructureInstanceId()
     val tree = new FormicIntegerTree(updateUIForTree(id), system, id)
     trees += tree
     insertBasicTreeElements(id.id)
   }
 
   def createNewJson() = {
-    val id = DataTypeInstanceId()
+    val id = DataStructureInstanceId()
     val json = new FormicJsonObject(updateUIForJson(id), system, id)
     jsons += json
     insertJsonManipulationElements(id.id)
   }
 
-  def updateUIForString(id: DataTypeInstanceId): (ClientDataTypeEvent) => Unit = {
+  def updateUIForString(id: DataStructureInstanceId): (ClientDataTypeEvent) => Unit = {
     case RemoteOperationEvent(_) =>
       strings.find(s => s.dataTypeInstanceId == id).get.getAll.foreach {
         buff =>
@@ -85,7 +85,7 @@ class Main extends ExampleClientDataTypes {
     case rest => //do nothing
   }
 
-  def updateUIForTree(id: DataTypeInstanceId): (ClientDataTypeEvent) => Unit = (_) => {
+  def updateUIForTree(id: DataStructureInstanceId): (ClientDataTypeEvent) => Unit = (_) => {
     trees.find(s => s.dataTypeInstanceId == id).get.getTree().onComplete {
       case Success(rootNode) =>
         val treeDiv = jQuery("#" + id.id)
@@ -97,7 +97,7 @@ class Main extends ExampleClientDataTypes {
     }
   }
 
-  def updateUIForJson(id: DataTypeInstanceId): (ClientDataTypeEvent) => Unit = (_) => {
+  def updateUIForJson(id: DataStructureInstanceId): (ClientDataTypeEvent) => Unit = (_) => {
     jsons.find(s => s.dataTypeInstanceId == id).get.getNodeAt(JsonPath()).onComplete {
       case Success(rootNode) =>
         val jsonDiv = jQuery("#" + id.id)
@@ -109,7 +109,7 @@ class Main extends ExampleClientDataTypes {
 
   def subscribe(): Unit = {
     val id = jQuery("#subscribe-id").value()
-    system.requestDataType(DataTypeInstanceId(id.toString))
+    system.requestDataType(DataStructureInstanceId(id.toString))
   }
 
   //common functions needed by Main and the callback
@@ -216,7 +216,7 @@ class Main extends ExampleClientDataTypes {
   def startBattleship() = {
     val gameInput = jQuery("#gameInput").value().toString
     if (gameInput == null || gameInput.trim.isEmpty) {
-      val newId = DataTypeInstanceId()
+      val newId = DataStructureInstanceId()
       jQuery("#gameInput").value(newId.id)
       val battleship = new Battleship()
       val json: FormicJsonObject = new FormicJsonObject((_) => {
@@ -224,7 +224,7 @@ class Main extends ExampleClientDataTypes {
       }, system, newId)
       jsons += json
     } else {
-      system.requestDataType(DataTypeInstanceId(gameInput))
+      system.requestDataType(DataStructureInstanceId(gameInput))
     }
     jQuery("#gameInput").prop("disabled", true)
     jQuery("#startButton").prop("disabled", true)

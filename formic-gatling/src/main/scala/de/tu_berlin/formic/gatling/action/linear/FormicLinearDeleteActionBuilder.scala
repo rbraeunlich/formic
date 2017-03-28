@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.gatling.action.linear
 
-import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.DataStructureInstanceId$
 import de.tu_berlin.formic.gatling.action.FormicActionBuilder
 import io.gatling.core.action.Action
 import io.gatling.core.session.Expression

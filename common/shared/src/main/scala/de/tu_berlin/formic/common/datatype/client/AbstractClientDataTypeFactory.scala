@@ -5,7 +5,7 @@ import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.RemoteI
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
 import de.tu_berlin.formic.common.message.CreateRequest
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 
 import scala.reflect.ClassTag
 
@@ -18,7 +18,7 @@ abstract class AbstractClientDataTypeFactory[T <: AbstractClientDataType : Class
   override def receive: Receive = {
     case WrappedCreateRequest(outgoingConnection, data, lastOperationId, req, localClientId) =>
       log.debug(s"Factory for $name received CreateRequest: $req from sender: $sender")
-      val id: DataTypeInstanceId = req.dataTypeInstanceId
+      val id: DataStructureInstanceId = req.dataTypeInstanceId
       val initialData = if(data == null || data.isEmpty) Option.empty else Option(data)
       val actor = context.actorOf(Props(createDataType(id, outgoingConnection, initialData, lastOperationId)), id.id)
       val wrapper = createWrapperType(id, actor, localClientId)
@@ -27,7 +27,7 @@ abstract class AbstractClientDataTypeFactory[T <: AbstractClientDataType : Class
 
     case local: LocalCreateRequest =>
       log.debug(s"Factory for $name received LocalCreateRequest: $local from sender: $sender")
-      val id: DataTypeInstanceId = local.dataTypeInstanceId
+      val id: DataStructureInstanceId = local.dataTypeInstanceId
       val actor = context.actorOf(Props(createDataType(id, local.outgoingConnection, Option.empty, Option.empty)), id.id)
       sender ! NewDataTypeCreated(id, actor, null)
   }
@@ -41,9 +41,9 @@ abstract class AbstractClientDataTypeFactory[T <: AbstractClientDataType : Class
     * @param lastOperationId the operation id the data is based on, might be empty
     * @return
     */
-  def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): T
+  def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): T
 
-  def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef, localClientId: ClientId): S
+  def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): S
 
   val name: DataTypeName
 }
@@ -54,9 +54,9 @@ object AbstractClientDataTypeFactory {
     * Local means that a client created the FormicDataType itself by calling new and using FormicSystem.init().
     * Therefore no wrapper data type needs to be created.
     */
-  case class LocalCreateRequest(outgoingConnection: ActorRef, dataTypeInstanceId: DataTypeInstanceId)
+  case class LocalCreateRequest(outgoingConnection: ActorRef, dataTypeInstanceId: DataStructureInstanceId)
 
-  case class NewDataTypeCreated(dataTypeInstanceId: DataTypeInstanceId, dataTypeActor: ActorRef, wrapper: FormicDataType)
+  case class NewDataTypeCreated(dataTypeInstanceId: DataStructureInstanceId, dataTypeActor: ActorRef, wrapper: FormicDataType)
 
   /**
     * To be able to pass the outgoing connection and the initial data to the factory, the CreateRequest has to be wrapped.

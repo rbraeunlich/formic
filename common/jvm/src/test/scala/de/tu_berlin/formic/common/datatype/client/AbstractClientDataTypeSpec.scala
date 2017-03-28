@@ -9,7 +9,7 @@ import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.{ReceiveCallback, RemoteInstantiation}
 import de.tu_berlin.formic.common.message._
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import org.scalatest.Assertions._
 import org.scalatest.{Matchers, WordSpecLike}
 
@@ -28,10 +28,10 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
 
     "ignore messages until callback is set" in {
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
-        Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
+        Props(new AbstractClientDataTypeTestClientDataType(DataStructureInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
       val operationMessage = OperationMessage(
         ClientId(),
-        DataTypeInstanceId(),
+        DataStructureInstanceId(),
         AbstractClientDataTypeSpec.dataTypeName,
         List(
           AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "")
@@ -42,14 +42,14 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       expectNoMsg()
       dataType ! operationMessage
       expectNoMsg()
-      dataType ! UpdateRequest(ClientId(), DataTypeInstanceId())
+      dataType ! UpdateRequest(ClientId(), DataStructureInstanceId())
       expectNoMsg()
 
       dataType.underlyingActor.historyBuffer.history shouldBe empty
     }
 
     "apply received local operations immediately from an local operation message" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
@@ -69,7 +69,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "not transform local operations" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val controlAlgo = new AbstractClientDataTypeSpecControlAlgorithmClient
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
@@ -90,7 +90,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "add local operations to the history buffer" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
@@ -109,7 +109,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "update the operation context of local operations when unacknowledged" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
@@ -136,7 +136,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "update the operation context of local operations when acknowledged using the control algorithm" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
@@ -164,7 +164,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "add remote operations to the history buffer" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
@@ -184,7 +184,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "apply received operations from an operation message" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
       dataType ! ReceiveCallback((_) => {})
@@ -203,7 +203,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "not apply operations when the ControlAlgorithm states they are not ready and store them" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient(false), outgoingConnection = TestProbe().ref)))
       dataType ! ReceiveCallback((_) => {})
@@ -211,7 +211,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "{}")
       val message = OperationMessage(
         ClientId(),
-        DataTypeInstanceId(),
+        DataStructureInstanceId(),
         AbstractClientDataTypeSpec.dataTypeName,
         List(operation)
       )
@@ -238,13 +238,13 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       }
 
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
-        Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), controlAlgo, outgoingConnection = TestProbe().ref)))
+        Props(new AbstractClientDataTypeTestClientDataType(DataStructureInstanceId(), controlAlgo, outgoingConnection = TestProbe().ref)))
       dataType ! ReceiveCallback((_) => {})
-      dataType ! CreateResponse(DataTypeInstanceId())
+      dataType ! CreateResponse(DataStructureInstanceId())
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "{1}")
       val message = OperationMessage(
         ClientId(),
-        DataTypeInstanceId(),
+        DataStructureInstanceId(),
         AbstractClientDataTypeSpec.dataTypeName,
         List(operation)
       )
@@ -256,7 +256,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
 
     "replace a callback when receiving a new one and kill the old one" in {
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
-        Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient(false), outgoingConnection = TestProbe().ref)))
+        Props(new AbstractClientDataTypeTestClientDataType(DataStructureInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient(false), outgoingConnection = TestProbe().ref)))
       dataType ! ReceiveCallback((_) => {})
       val oldCallback = dataType.children.head
       val watcher = TestProbe()
@@ -268,7 +268,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "answer UpdateRequests with UpdateResponses" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val operationId = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
@@ -284,7 +284,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "answer UpdateRequests with the initial operation id when no operations were executed yet when being unacknowledged" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val operationId = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, Option(operationId), outgoingConnection = TestProbe().ref)))
@@ -296,7 +296,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "answer UpdateRequests with the initial operation id when no operations were executed yet when being acknowledged" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val operationId = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, Option(operationId), outgoingConnection = TestProbe().ref)))
@@ -309,7 +309,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "send an HistoricOperationRequest after it receives a remote OperationMessage whose parent it does no know" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val operationId = OperationId()
       val previousOperation = OperationId()
@@ -328,7 +328,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "must use the initial operation id for HistoricOperationsRequest if no other operation is present" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val initialOperationId = OperationId()
       val operationId = OperationId()
@@ -348,7 +348,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "must use the last operation id from a remote operation for a HistoricOperationsRequest if local operations happened in between" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val lastArrivedRemoteOperationId = OperationId()
       val remoteOperationId = OperationId()
@@ -374,7 +374,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "must use the operation id of an acknowledged local operation for a HistoricOperationsRequest if that was the last remote operation with WaveOT" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val remoteOperationId = OperationId()
       val previousRemoteOperationId = OperationId()
@@ -397,7 +397,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "apply the operations of an HistoricOperationRequest that have not been applied" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val operationId = OperationId()
       val previousOperation = OperationId()
@@ -423,7 +423,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "must not apply duplicated received operations" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       //because the control algorithm has to check for duplicates, we have to make sure the data type listens to it
       val controlAlgorithm = new ControlAlgorithmClient {
 
@@ -455,7 +455,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "must not apply duplicated received operations with WaveOT" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       //because the control algorithm has to check for duplicates, we have to make sure the data type listens to it
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new WaveOTClient((op) => {}), outgoingConnection = TestProbe().ref)))
@@ -477,7 +477,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "buffer local operations until the CreateResponse comes" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val outgoing = TestProbe()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(Props(new AbstractClientDataTypeTestClientDataType(dataTypeInstanceId, new WaveOTClient( op => outgoing.ref ! op), outgoingConnection = outgoing.ref)))
@@ -497,7 +497,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
 
     "pass acknowledgements to the control algorithm" in {
       val outgoing = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val operation2 = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
@@ -532,7 +532,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "pass local operations to the control algorithm when the CreateResponse comes" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val outgoing = TestProbe()
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
@@ -577,10 +577,10 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     "add initialized lastOperationId to first local operation when being unacknowledged" in {
       val lastOperationId = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
-        Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
+        Props(new AbstractClientDataTypeTestClientDataType(DataStructureInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
       dataType ! ReceiveCallback((_) => {})
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "")
-      val operationMessage = OperationMessage(ClientId(), DataTypeInstanceId(), AbstractClientDataTypeSpec.dataTypeName, List(operation))
+      val operationMessage = OperationMessage(ClientId(), DataStructureInstanceId(), AbstractClientDataTypeSpec.dataTypeName, List(operation))
 
       dataType ! LocalOperationMessage(operationMessage)
 
@@ -590,11 +590,11 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     "add initialized lastOperationId to first local operation when going from un- to acknowledged" in {
       val lastOperationId = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
-        Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
+        Props(new AbstractClientDataTypeTestClientDataType(DataStructureInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
       dataType ! ReceiveCallback((_) => {})
-      dataType ! CreateResponse(DataTypeInstanceId())
+      dataType ! CreateResponse(DataStructureInstanceId())
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "")
-      val operationMessage = OperationMessage(ClientId(), DataTypeInstanceId(), AbstractClientDataTypeSpec.dataTypeName, List(operation))
+      val operationMessage = OperationMessage(ClientId(), DataStructureInstanceId(), AbstractClientDataTypeSpec.dataTypeName, List(operation))
 
       dataType ! LocalOperationMessage(operationMessage)
 
@@ -604,11 +604,11 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     "add initialized lastOperationId to first local operation when being a remote instantiation" in {
       val lastOperationId = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
-        Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
+        Props(new AbstractClientDataTypeTestClientDataType(DataStructureInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
       dataType ! RemoteInstantiation
       dataType ! ReceiveCallback((_) => {})
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "")
-      val operationMessage = OperationMessage(ClientId(), DataTypeInstanceId(), AbstractClientDataTypeSpec.dataTypeName, List(operation))
+      val operationMessage = OperationMessage(ClientId(), DataStructureInstanceId(), AbstractClientDataTypeSpec.dataTypeName, List(operation))
 
       dataType ! LocalOperationMessage(operationMessage)
 
@@ -617,10 +617,10 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
 
     "ignore messages until callback is set when being a remote instantiation" in {
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
-        Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
+        Props(new AbstractClientDataTypeTestClientDataType(DataStructureInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
       val operationMessage = OperationMessage(
         ClientId(),
-        DataTypeInstanceId(),
+        DataStructureInstanceId(),
         AbstractClientDataTypeSpec.dataTypeName,
         List(
           AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), "")
@@ -632,7 +632,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       expectNoMsg()
       dataType ! operationMessage
       expectNoMsg()
-      dataType ! UpdateRequest(ClientId(), DataTypeInstanceId())
+      dataType ! UpdateRequest(ClientId(), DataStructureInstanceId())
       expectNoMsg()
 
       dataType.underlyingActor.historyBuffer.history shouldBe empty
@@ -641,11 +641,11 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     "consider the initial operation id when searching for context dependency" in {
       val lastOperationId = OperationId()
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
-        Props(new AbstractClientDataTypeTestClientDataType(DataTypeInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
+        Props(new AbstractClientDataTypeTestClientDataType(DataStructureInstanceId(), new AbstractClientDataTypeSpecControlAlgorithmClient, Option(lastOperationId), outgoingConnection = TestProbe().ref)))
       dataType ! ReceiveCallback((_) => {})
-      dataType ! CreateResponse(DataTypeInstanceId())
+      dataType ! CreateResponse(DataStructureInstanceId())
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List(lastOperationId)), ClientId(), "")
-      val operationMessage = OperationMessage(ClientId(), DataTypeInstanceId(), AbstractClientDataTypeSpec.dataTypeName, List(operation))
+      val operationMessage = OperationMessage(ClientId(), DataStructureInstanceId(), AbstractClientDataTypeSpec.dataTypeName, List(operation))
 
       dataType ! operationMessage
 
@@ -654,7 +654,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "not remove the inFlightOperation if it is the second operation within the message before transforming the first one against it with WaveOT" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       //create own transformer so the context update happens
       val testTransformer = new OperationTransformer {
@@ -686,7 +686,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
 
 
     "generate a LocalOperationEvent after applying a local operation when unacknowledged" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val latch = new CountDownLatch(1)
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
@@ -710,7 +710,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "generate a LocalOperationEvent after applying a local operation when acknowledged" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val latch = new CountDownLatch(1)
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
@@ -735,7 +735,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "generate a RemoteOperationEvent after applying a remote operation when acknowledged" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val latch = new CountDownLatch(1)
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
@@ -760,7 +760,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "generate a CreateResponseEvent after receiving a CreateResponse" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val latch = new CountDownLatch(1)
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataType] = TestActorRef(
@@ -777,7 +777,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
     }
 
     "generate an AcknowledgementEvent when receiving an remote operation and the control algorithm states it cannot be applied" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val data = "{foo}"
       val latch = new CountDownLatch(1)
       val operation = AbstractClientDataTypeSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
@@ -804,7 +804,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
 }
 
 class AbstractClientDataTypeTestClientDataType(
-                                                dataTypeInstanceId: DataTypeInstanceId,
+                                                dataTypeInstanceId: DataStructureInstanceId,
                                                 clientControlAlgorithm: ControlAlgorithmClient,
                                                 lastOperationId: Option[OperationId] = Option.empty,
                                                 outgoingConnection: ActorRef)

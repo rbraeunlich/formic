@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.common.datatype
 
 import akka.actor.ActorRef
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
 import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, DataTypeInitiator}
 import de.tu_berlin.formic.common.message.OperationMessage
@@ -15,7 +15,7 @@ abstract class FormicDataType(private var _callback: (ClientDataTypeEvent) => Un
                               val dataTypeName: DataTypeName,
                               var actor: ActorRef = null,
                               var clientId: ClientId = null,
-                              val dataTypeInstanceId: DataTypeInstanceId,
+                              val dataTypeInstanceId: DataStructureInstanceId,
                               initiator: DataTypeInitiator) {
 
   def callback = _callback

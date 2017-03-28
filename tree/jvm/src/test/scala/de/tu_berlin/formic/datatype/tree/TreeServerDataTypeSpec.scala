@@ -5,7 +5,7 @@ import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 import upickle.default._
 
@@ -26,7 +26,7 @@ class TreeServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
 
   "TreeServerDataType" must {
     "insert data" in {
-      val dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
       val tree = system.actorOf(Props(new TreeServerDataType[Boolean](dataTypeInstanceId, TreeServerDataTypeSpecControlAlgorithm, BooleanTreeDataTypeFactory.name)))
       val op1 = TreeInsertOperation(AccessPath(), ValueTreeNode(true, List(ValueTreeNode(false))), OperationId(), OperationContext(), ClientId())
       val op2 = TreeInsertOperation(AccessPath(1), ValueTreeNode(true), OperationId(), OperationContext(), ClientId())
@@ -41,7 +41,7 @@ class TreeServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
     }
 
     "delete data" in {
-      val dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
       val tree = system.actorOf(Props(new TreeServerDataType[Boolean](dataTypeInstanceId, TreeServerDataTypeSpecControlAlgorithm, BooleanTreeDataTypeFactory.name)))
       val op1 = TreeInsertOperation(AccessPath(), ValueTreeNode(true, List(ValueTreeNode(false))), OperationId(), OperationContext(), ClientId())
       val op2 = TreeInsertOperation(AccessPath(1), ValueTreeNode(true), OperationId(), OperationContext(), ClientId())
@@ -58,7 +58,7 @@ class TreeServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
     }
 
     "not change after no-operation" in {
-      val dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
       val tree = system.actorOf(Props(new TreeServerDataType[Boolean](dataTypeInstanceId, TreeServerDataTypeSpecControlAlgorithm, BooleanTreeDataTypeFactory.name)))
       val op = TreeInsertOperation(AccessPath(), ValueTreeNode(true, List(ValueTreeNode(false))), OperationId(), OperationContext(), ClientId())
       val noop = TreeNoOperation(OperationId(), OperationContext(), ClientId())
@@ -71,7 +71,7 @@ class TreeServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
     }
 
     "result in valid JSON representation" in {
-      val dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
       val tree = system.actorOf(Props(new TreeServerDataType[Boolean](dataTypeInstanceId, TreeServerDataTypeSpecControlAlgorithm, BooleanTreeDataTypeFactory.name)))
       val op1 = TreeInsertOperation(AccessPath(), ValueTreeNode(true, List(ValueTreeNode(false))), OperationId(), OperationContext(), ClientId())
       val op2 = TreeInsertOperation(AccessPath(1), ValueTreeNode(true), OperationId(), OperationContext(), ClientId())

@@ -7,7 +7,7 @@ import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.persistence.AbstractServerDataTypePersistenceSpec._
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.server.datatype.AbstractServerDataType
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import org.scalatest.Assertions._
 
 /**
@@ -20,7 +20,7 @@ class AbstractServerDataTypePersistenceSpec extends PersistenceSpec(ActorSystem(
     "re-apply stored operations after recovery" in {
       val probe = TestProbe()
       system.eventStream.subscribe(probe.ref, classOf[OperationMessage])
-      val id = DataTypeInstanceId()
+      val id = DataStructureInstanceId()
       val dataType = system.actorOf(Props(new AbstractServerDataTypePersistenceSpec.AbstractServerDataTypePersistenceSpecServerDataType(id, new AbstractServerDataTypePersistenceSpecControlAlgorithm)), id.id)
       val op1 = AbstractServerDataTypePersistenceSpecOperation(OperationId(), OperationContext(), ClientId())
       val op2 = AbstractServerDataTypePersistenceSpecOperation(OperationId(), OperationContext(List(op1.id)), ClientId())
@@ -55,7 +55,7 @@ object AbstractServerDataTypePersistenceSpec {
     override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = op
   }
 
-  class AbstractServerDataTypePersistenceSpecServerDataType(id: DataTypeInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataType(id, controlAlgorithm) {
+  class AbstractServerDataTypePersistenceSpecServerDataType(id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataType(id, controlAlgorithm) {
 
     val transformer = new OperationTransformer {
       override def transform(pair: (DataTypeOperation, DataTypeOperation)): DataTypeOperation = pair._1

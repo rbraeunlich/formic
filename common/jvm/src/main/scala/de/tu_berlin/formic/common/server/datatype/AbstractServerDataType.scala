@@ -2,7 +2,7 @@ package de.tu_berlin.formic.common.server.datatype
 
 import akka.actor.ActorLogging
 import akka.persistence.{PersistentActor, RecoveryCompleted}
-import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.DataStructureInstanceId$
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, HistoryBuffer, OperationTransformer}
 import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
@@ -10,7 +10,7 @@ import de.tu_berlin.formic.common.server.datatype.AbstractServerDataType._
 /**
   * @author Ronny Bräunlich
   */
-abstract class AbstractServerDataType(val id: DataTypeInstanceId, val controlAlgorithm: ControlAlgorithm) extends PersistentActor with ActorLogging {
+abstract class AbstractServerDataType(val id: DataStructureInstanceId, val controlAlgorithm: ControlAlgorithm) extends PersistentActor with ActorLogging {
 
   def persistenceId = id.id
 

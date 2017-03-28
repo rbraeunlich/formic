@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.tree.client
 
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.OperationContext
 import de.tu_berlin.formic.common.message.{UpdateRequest, UpdateResponse}
@@ -28,7 +28,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
   "Formic Tree" must {
     "wrap insert invocation into LocalOperationMessage" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val tree = new FormicIntegerTree((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
 
@@ -49,7 +49,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap remove invocation into LocalOperationMessage" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val tree = new FormicIntegerTree((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
 
@@ -68,7 +68,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
     }
 
     "send an UpdateRequest to the wrapped data type actor when getSubTree is called" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val dataTypeActor = new TestProbe(system) {
         def receiveUpdateRequestAndAnswer() = {
@@ -94,7 +94,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
     }
 
     "send an UpdateRequest to the wrapped data type actor when getTree is called" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val dataTypeActor = new TestProbe(system) {
         def receiveUpdateRequestAndAnswer() = {
@@ -122,7 +122,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
   "FormicBooleanTree" must {
     "work with boolean values" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val dataTypeActor = new TestProbe(system) {
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF() {
@@ -153,7 +153,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
   "FormicDoubleTree" must {
     "work with double values" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val dataTypeActor = new TestProbe(system) {
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF() {
@@ -182,7 +182,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
   "FormicIntegerTree" must {
     "work with integer values" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val dataTypeActor = new TestProbe(system) {
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF() {
@@ -211,7 +211,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
   "FormicStringTree" must {
     "work with string values" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val dataTypeActor = new TestProbe(system) {
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF() {

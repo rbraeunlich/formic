@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.json.client
 
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.OperationContext
 import de.tu_berlin.formic.common.message.{UpdateRequest, UpdateResponse}
@@ -32,7 +32,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap insert invocation for number into LocalOperationMessage with NumberNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
       val key = "num"
@@ -55,7 +55,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap insert invocation for string into LocalOperationMessage with StringNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
       val key = "str"
@@ -78,7 +78,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap insert invocation for character into LocalOperationMessage with CharacterNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
       val key = "str"
@@ -101,7 +101,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap insert invocation for boolean into LocalOperationMessage with BooleanNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
       val key = "bool"
@@ -124,7 +124,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap insert invocation for object into LocalOperationMessage with ObjectNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
       val key = "obj"
@@ -147,7 +147,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap insert invocation for array into LocalOperationMessage with ArrayNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
       val key = "arr"
@@ -170,7 +170,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap remove invocation into LocalOperationMessage" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
       val path = JsonPath("foo")
@@ -191,7 +191,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap replace invocation for number into LocalOperationMessage with NumberNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
       val key = "num"
@@ -214,7 +214,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap replace invocation for string into LocalOperationMessage with StringNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
       val key = "str"
@@ -237,7 +237,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap replace invocation for character into LocalOperationMessage with CharacterNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
       val key = "str"
@@ -260,7 +260,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap replace invocation for boolean into LocalOperationMessage with BooleanNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
       val key = "bool"
@@ -283,7 +283,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap replace invocation for object into LocalOperationMessage with ObjectNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
       val key = "bool"
@@ -306,7 +306,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap replace invocation for array into LocalOperationMessage with ObjectNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
       val key = "arr"
@@ -328,7 +328,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
     }
 
     "send an UpdateRequest to the wrapped data type actor when getNodeAt is called" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val dataTypeActor = new TestProbe(system) {
         def receiveUpdateRequestAndAnswer() = {
@@ -354,7 +354,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
     }
 
     "send an UpdateRequest to the wrapped data type actor when getValueAt is called" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val dataTypeActor = new TestProbe(system) {
         def receiveUpdateRequestAndAnswer() = {

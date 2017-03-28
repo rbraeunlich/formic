@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.linear.client
 
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
 import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, DataTypeInitiator}
@@ -48,7 +48,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
 
     "wrap add invocation in LocalOperationMessage and send it to the data type actor" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val list = new FormicBooleanList((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId)
       list.actor = dataTypeActor.ref
       list.add(0, false)
@@ -68,7 +68,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
 
     "wrap remove invocation in LocalOperationMessage and send it to the data type actor" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val list = new FormicBooleanList((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId)
       list.actor = dataTypeActor.ref
       list.add(0, false)
@@ -89,7 +89,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
     }
 
     "send an UpdateRequest to the wrapped data type actor when get is called" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val dataTypeActor = new TestProbe(system){
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF(){
@@ -114,7 +114,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
     }
 
     "send an UpdateRequest to the wrapped data type actor when getAll is called" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val dataTypeActor = new TestProbe(system){
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF(){
@@ -141,7 +141,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
 
   "FormicBooleanList" must {
     "work with boolean values" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
 
       val dataTypeActor = new TestProbe(system){
@@ -175,7 +175,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
 
   "FormicDoubleList" must {
     "work with double values" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
 
       val dataTypeActor = new TestProbe(system){
@@ -209,7 +209,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
 
   "FormicIntegerList" must {
     "work with integer values" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
 
       val dataTypeActor = new TestProbe(system){
@@ -243,7 +243,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
 
   "FormicString" must {
     "work with char values" in {
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
 
       val dataTypeActor = new TestProbe(system){

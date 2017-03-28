@@ -5,7 +5,7 @@ import akka.testkit.TestProbe
 import de.tu_berlin.formic.common.controlalgo.WaveOTServer
 import de.tu_berlin.formic.common.datatype.{DataTypeName, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import de.tu_berlin.formic.datatype.tree._
 import scala.concurrent.duration._
 
@@ -19,7 +19,7 @@ class TreeServerDataTypePersistenceSpec extends PersistenceSpec(ActorSystem("Tre
     "re-apply stored operations after recovery" in {
       val probe = TestProbe()
       system.eventStream.subscribe(probe.ref, classOf[OperationMessage])
-      val id = DataTypeInstanceId()
+      val id = DataStructureInstanceId()
       val dataTypeName: DataTypeName = StringTreeDataTypeFactory.name
       val dataType = system.actorOf(Props(new TreeServerDataType[String](id, new WaveOTServer(), dataTypeName)), id.id)
       val op1 = TreeInsertOperation(AccessPath(), ValueTreeNode("root"), OperationId(), OperationContext(), ClientId())

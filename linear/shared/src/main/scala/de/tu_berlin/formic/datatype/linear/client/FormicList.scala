@@ -6,7 +6,7 @@ import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, DataTypeInitiator}
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
-import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{DataStructureInstanceId$, OperationId}
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation}
 import upickle.default._
 
@@ -21,7 +21,7 @@ import scala.scalajs.js.annotation.{JSExport, JSExportDescendentClasses}
 @JSExportDescendentClasses
 abstract class FormicList[T](_callback: (ClientDataTypeEvent) => Unit,
                              initiator: DataTypeInitiator,
-                             dataTypeInstanceId: DataTypeInstanceId,
+                             dataTypeInstanceId: DataStructureInstanceId,
                              dataTypeName: DataTypeName)
                             (implicit val writer: Writer[T], val reader: Reader[T])
   extends FormicDataType(_callback, dataTypeName, dataTypeInstanceId = dataTypeInstanceId, initiator = initiator ) {

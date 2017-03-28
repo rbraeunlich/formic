@@ -5,7 +5,7 @@ import akka.testkit.{EventFilter, ImplicitSender, TestActorRef, TestKit, TestPro
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.Dispatcher.WrappedUpdateResponse
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.NewDataTypeCreated
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
 import de.tu_berlin.formic.common.message.{UpdateRequest, UpdateResponse}
@@ -31,7 +31,7 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
       val testFactories: Map[DataTypeName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
       val instantiator = system.actorOf(Props(new DataTypeInstantiator(testFactories, clientId)))
       val outgoingConnection = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "", Option.empty)
 
       instantiator ! WrappedUpdateResponse(outgoingConnection.ref, updateResponse)
@@ -47,7 +47,7 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
       val testFactories: Map[DataTypeName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
       val instantiator = system.actorOf(Props(new DataTypeInstantiator(testFactories, clientId)))
       val outgoingConnection = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val lastOperationId = OperationId()
       val json = "[\"a\",\"b\",\"c\"]"
       val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, json, Option(lastOperationId))
@@ -67,7 +67,7 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
     "throw an exception when receiving an UpdateResponse with unknown data type name" in {
       val clientId = ClientId()
       val instantiator: TestActorRef[DataTypeInstantiator] = TestActorRef(Props(new DataTypeInstantiator(Map.empty, clientId)))
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val outgoingConnection = TestProbe()
       val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "", Option.empty)
 

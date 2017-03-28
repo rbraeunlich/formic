@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.datatype.tree
 
-import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.DataStructureInstanceId$
 import de.tu_berlin.formic.common.controlalgo.WaveOTServer
 import de.tu_berlin.formic.common.server.datatype.AbstractServerDataTypeFactory
 import upickle.default._
@@ -10,7 +10,7 @@ import upickle.default._
   */
 abstract class TreeDataTypeFactory[S](implicit writer: Writer[S]) extends AbstractServerDataTypeFactory[TreeServerDataType[S]] {
 
-  override def create(dataTypeInstanceId: DataTypeInstanceId): TreeServerDataType[S] = {
+  override def create(dataTypeInstanceId: DataStructureInstanceId): TreeServerDataType[S] = {
     TreeServerDataType(dataTypeInstanceId, new WaveOTServer(), name)
   }
 }

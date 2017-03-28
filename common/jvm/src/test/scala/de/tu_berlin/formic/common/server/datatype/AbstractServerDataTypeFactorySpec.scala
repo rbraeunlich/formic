@@ -5,7 +5,7 @@ import akka.testkit.{ImplicitSender, TestKit}
 import de.tu_berlin.formic.StopSystemAfterAll
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.message.CreateRequest
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{Matchers, WordSpecLike}
 
@@ -25,7 +25,7 @@ class AbstractServerDataTypeFactorySpec extends TestKit(ActorSystem("AbstractSer
   "The factory" must {
     "create a new data type instance when receiving a CreateRequest" in {
       val factory = system.actorOf(Props[TestDataTypeFactory])
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, DataTypeName("Test"))
 
       val received = expectMsgClass(classOf[NewDataTypeCreated])
@@ -35,7 +35,7 @@ class AbstractServerDataTypeFactorySpec extends TestKit(ActorSystem("AbstractSer
 
     "give a new data type instance the actor name of its datatypeinstance id" in {
       val factory = system.actorOf(Props[TestDataTypeFactory], TestClasses.dataTypeName.name)
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, DataTypeName("Test"))
       receiveN(1)
 

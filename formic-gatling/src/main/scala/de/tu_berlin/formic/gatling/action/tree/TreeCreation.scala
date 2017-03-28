@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.gatling.action.tree
 
 import de.tu_berlin.formic.client.FormicSystem
-import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.DataStructureInstanceId$
 import de.tu_berlin.formic.datatype.tree.client.FormicIntegerTree
 import de.tu_berlin.formic.gatling.action.TimeMeasureCallback.CreateResponseTimeMeasureListener
 import de.tu_berlin.formic.gatling.action.{FormicActions, SessionVariables, TimeMeasureCallback}
@@ -26,7 +26,7 @@ case class TreeCreation(dataTypeInstanceId: Expression[String], statsEngine: Sta
 
         case Some(formicSystem) =>
           val callback = session(SessionVariables.TIMEMEASURE_CALLBACK).as[TimeMeasureCallback]
-          val tree = new FormicIntegerTree(callback.callbackMethod, formicSystem, DataTypeInstanceId.valueOf(id))
+          val tree = new FormicIntegerTree(callback.callbackMethod, formicSystem, DataStructureInstanceId.valueOf(id))
           val modifiedSession = session.set(id, tree)
           callback.addListener(CreateResponseTimeMeasureListener(tree.dataTypeInstanceId, start, session, statsEngine, name))
           next ! modifiedSession

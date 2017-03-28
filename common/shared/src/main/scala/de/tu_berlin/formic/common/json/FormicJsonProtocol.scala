@@ -2,7 +2,7 @@ package de.tu_berlin.formic.common.json
 
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.message._
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import upickle.Js
 
 /**
@@ -46,26 +46,26 @@ class FormicJsonProtocol {
       val className = map("$type").str
       className match {
         case "de.tu_berlin.formic.common.message.CreateResponse" =>
-          CreateResponse(DataTypeInstanceId(
+          CreateResponse(DataStructureInstanceId(
             map("dataTypeInstanceId").obj("id").str)
           )
         case "de.tu_berlin.formic.common.message.CreateRequest" =>
           CreateRequest(
             ClientId(map("clientId").obj("id").str),
-            DataTypeInstanceId(map("dataTypeInstanceId").obj("id").str),
+            DataStructureInstanceId(map("dataTypeInstanceId").obj("id").str),
             DataTypeName(map("dataType").obj("name").str)
           )
         case "de.tu_berlin.formic.common.message.HistoricOperationRequest" =>
           HistoricOperationRequest(
             ClientId(map("clientId").obj("id").str),
-            DataTypeInstanceId(map("dataTypeInstanceId").obj("id").str),
+            DataStructureInstanceId(map("dataTypeInstanceId").obj("id").str),
             map("sinceId") match {
               case Js.Null => null
               case obj:Js.Obj => OperationId(obj("id").str)
             })
         case "de.tu_berlin.formic.common.message.UpdateResponse" =>
           UpdateResponse(
-            DataTypeInstanceId(map("dataTypeInstanceId").obj("id").str),
+            DataStructureInstanceId(map("dataTypeInstanceId").obj("id").str),
             DataTypeName(map("dataType").obj("name").str),
             map("data").str,
             map("lastOperationId").arr.headOption.map(value => OperationId(value.obj("id").str))
@@ -73,14 +73,14 @@ class FormicJsonProtocol {
         case "de.tu_berlin.formic.common.message.UpdateRequest" =>
           UpdateRequest(
             ClientId(map("clientId").obj("id").str),
-            DataTypeInstanceId(map("dataTypeInstanceId").obj("id").str)
+            DataStructureInstanceId(map("dataTypeInstanceId").obj("id").str)
           )
         case "de.tu_berlin.formic.common.message.OperationMessage" =>
           val protocol = _dataTypeOperationJsonProtocols.find(t => t._1 == DataTypeName(map("dataTypeName").str)).get
           val operations = map("operations").arr.map(v => v.toString()).map(json => protocol._2.deserializeOperation(json)).toList
           OperationMessage(
             ClientId(map("clientId").str),
-            DataTypeInstanceId(map("dataTypeInstanceId").str),
+            DataStructureInstanceId(map("dataTypeInstanceId").str),
             DataTypeName(map("dataTypeName").str),
             operations)
       }

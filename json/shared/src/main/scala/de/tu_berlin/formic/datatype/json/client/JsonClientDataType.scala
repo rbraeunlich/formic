@@ -6,7 +6,7 @@ import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType
 import de.tu_berlin.formic.common.datatype.{DataTypeName, DataTypeOperation, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.message.{FormicMessage, OperationMessage}
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import de.tu_berlin.formic.datatype.json._
 import de.tu_berlin.formic.datatype.json.client.JsonClientDataType._
 import de.tu_berlin.formic.datatype.tree.{TreeDeleteOperation, TreeInsertOperation, TreeStructureOperation}
@@ -16,7 +16,7 @@ import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
 /**
   * @author Ronny Bräunlich
   */
-class JsonClientDataType(id: DataTypeInstanceId,
+class JsonClientDataType(id: DataStructureInstanceId,
                          controlAlgorithm: ControlAlgorithmClient,
                          val dataTypeName: DataTypeName,
                          initialData: Option[String],
@@ -99,7 +99,7 @@ object JsonClientDataType {
 
   case class JsonClientReplaceOperation(path: JsonPath, tree: JsonTreeNode[_], id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends JsonClientOperation
 
-  def apply(id: DataTypeInstanceId,
+  def apply(id: DataStructureInstanceId,
             controlAlgorithm: ControlAlgorithmClient,
             dataTypeName: DataTypeName,
             initialData: Option[String],

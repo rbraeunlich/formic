@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.json
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
 import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.server.datatype.NewDataTypeCreated
 import de.tu_berlin.formic.datatype.tree.BooleanTreeDataTypeFactory
@@ -25,7 +25,7 @@ class JsonDataTypeFactorySpec extends TestKit(ActorSystem("JsonDataTypeFactorySp
   "A JsonDataTypeFactory" must {
     "create Json data types" in {
       val factory = system.actorOf(Props(new JsonServerDataTypeFactory()), "jsonFactory")
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, JsonServerDataTypeFactory.name)
 
       val response = expectMsgClass(classOf[NewDataTypeCreated])

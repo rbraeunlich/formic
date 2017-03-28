@@ -7,7 +7,7 @@ import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, DataTypeInitiator}
 import de.tu_berlin.formic.common.datatype.{FormicDataType, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
 import de.tu_berlin.formic.datatype.json._
 import de.tu_berlin.formic.datatype.json.client.JsonClientDataType._
@@ -23,12 +23,12 @@ import scala.scalajs.js.annotation.JSExportAll
 @JSExportAll
 class FormicJsonObject(callback: (ClientDataTypeEvent) => Unit,
                        initiator: DataTypeInitiator,
-                       dataTypeInstanceId: DataTypeInstanceId = DataTypeInstanceId())
+                       dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId())
   extends FormicDataType(callback, FormicJsonObjectFactory.name, dataTypeInstanceId = dataTypeInstanceId, initiator = initiator) {
 
   implicit val timeout: Timeout = 1.seconds
 
-  def this(callback: (ClientDataTypeEvent) => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataTypeInstanceId, wrapped: ActorRef, localClientId: ClientId) {
+  def this(callback: (ClientDataTypeEvent) => Unit, initiator: DataTypeInitiator, dataTypeInstanceId: DataStructureInstanceId, wrapped: ActorRef, localClientId: ClientId) {
     this(callback, initiator, dataTypeInstanceId)
     this.actor = wrapped
     this.clientId = localClientId

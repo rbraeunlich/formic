@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.gatling.action.json
 
 import de.tu_berlin.formic.client.FormicSystem
-import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.DataStructureInstanceId$
 import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
 import de.tu_berlin.formic.gatling.action.TimeMeasureCallback.CreateResponseTimeMeasureListener
 import de.tu_berlin.formic.gatling.action.{FormicActions, SessionVariables, TimeMeasureCallback}
@@ -26,7 +26,7 @@ case class JsonCreation(dataTypeInstanceId: Expression[String], statsEngine: Sta
 
         case Some(formicSystem) =>
           val callback = session(SessionVariables.TIMEMEASURE_CALLBACK).as[TimeMeasureCallback]
-          val json = new FormicJsonObject(callback.callbackMethod, formicSystem, DataTypeInstanceId.valueOf(id))
+          val json = new FormicJsonObject(callback.callbackMethod, formicSystem, DataStructureInstanceId.valueOf(id))
           val modifiedSession = session.set(id, json)
           callback.addListener(CreateResponseTimeMeasureListener(json.dataTypeInstanceId, start, session, statsEngine, name))
           next ! modifiedSession

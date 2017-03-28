@@ -12,7 +12,7 @@ import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.testkit.TestKit
 import de.tu_berlin.formic.common.datatype.{OperationContext, ServerDataTypeProvider}
 import de.tu_berlin.formic.common.message._
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import de.tu_berlin.formic.datatype.linear.LinearInsertOperation
 import de.tu_berlin.formic.datatype.linear.server.{LinearServerDataTypeProvider, StringDataTypeFactory}
 import org.scalatest.{BeforeAndAfterAll, Matchers, OneInstancePerTest, WordSpecLike}
@@ -72,7 +72,7 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
       val (user2Incoming, user2Outgoing) = connectUser(user2Id.id)
 
 
-      val dataTypeInstanceId: DataTypeInstanceId = createStringDataTypeInstance(user1Id, user2Id, user1Incoming, user1Outgoing, user2Incoming, user2Outgoing)
+      val dataTypeInstanceId: DataStructureInstanceId = createStringDataTypeInstance(user1Id, user2Id, user1Incoming, user1Outgoing, user2Incoming, user2Outgoing)
 
 
       applyOperations(user1Id, user2Id, user1Incoming, user1Outgoing, user2Incoming, user2Outgoing, dataTypeInstanceId)
@@ -109,7 +109,7 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
     }
   }
 
-  def applyOperations(user1Id: ClientId, user2Id: ClientId, user1Incoming: SinkQueueWithCancel[Message], user1Outgoing: SourceQueueWithComplete[Message], user2Incoming: SinkQueueWithCancel[Message], user2Outgoing: SourceQueueWithComplete[Message], dataTypeInstanceId: DataTypeInstanceId)(implicit ec: ExecutionContext) = {
+  def applyOperations(user1Id: ClientId, user2Id: ClientId, user1Incoming: SinkQueueWithCancel[Message], user1Outgoing: SourceQueueWithComplete[Message], user2Incoming: SinkQueueWithCancel[Message], user2Outgoing: SourceQueueWithComplete[Message], dataTypeInstanceId: DataStructureInstanceId)(implicit ec: ExecutionContext) = {
     //let both users send operations in parallel
     //because the id of u1 is greater than u2 (f > b), it should have precedence
     //user 2
@@ -155,8 +155,8 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
     verifyEqual(user2Incoming.pull(), u1Msg3)
   }
 
-  def createStringDataTypeInstance(user1Id: ClientId, user2Id: ClientId, user1Incoming: SinkQueueWithCancel[Message], user1Outgoing: SourceQueueWithComplete[Message], user2Incoming: SinkQueueWithCancel[Message], user2Outgoing: SourceQueueWithComplete[Message])(implicit executionContext: ExecutionContext): DataTypeInstanceId = {
-    val dataTypeInstanceId = DataTypeInstanceId()
+  def createStringDataTypeInstance(user1Id: ClientId, user2Id: ClientId, user1Incoming: SinkQueueWithCancel[Message], user1Outgoing: SourceQueueWithComplete[Message], user2Incoming: SinkQueueWithCancel[Message], user2Outgoing: SourceQueueWithComplete[Message])(implicit executionContext: ExecutionContext): DataStructureInstanceId = {
+    val dataTypeInstanceId = DataStructureInstanceId()
     user1Outgoing.offer(TextMessage(write(CreateRequest(user1Id, dataTypeInstanceId, StringDataTypeFactory.name))))
 
     val incomingCreateResponse = user1Incoming.pull()

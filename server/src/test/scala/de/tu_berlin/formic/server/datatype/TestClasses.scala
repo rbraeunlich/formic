@@ -5,7 +5,7 @@ import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.json.{FormicJsonDataTypeProtocol, FormicJsonProtocol}
 import de.tu_berlin.formic.common.server.datatype.{AbstractServerDataType, AbstractServerDataTypeFactory}
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import org.scalatest.Assertions._
 import upickle.Js
 
@@ -15,12 +15,12 @@ import upickle.Js
 
 class TestDataTypeFactory extends AbstractServerDataTypeFactory[TestServerDataType] {
 
-  override def create(dataTypeInstanceId: DataTypeInstanceId): TestServerDataType = new TestServerDataType(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm)
+  override def create(dataTypeInstanceId: DataStructureInstanceId): TestServerDataType = new TestServerDataType(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm)
 
   override val name: DataTypeName = TestClasses.dataTypeName
 }
 
-class TestServerDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataTypeInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataType(dataTypeInstanceId, controlAlgorithm) {
+class TestServerDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataType(dataTypeInstanceId, controlAlgorithm) {
 
 
 

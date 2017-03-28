@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.datatype.json
 
-import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.DataStructureInstanceId$
 import de.tu_berlin.formic.common.controlalgo.WaveOTServer
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.server.datatype.AbstractServerDataTypeFactory
@@ -10,7 +10,7 @@ import de.tu_berlin.formic.common.server.datatype.AbstractServerDataTypeFactory
   */
 class JsonServerDataTypeFactory extends AbstractServerDataTypeFactory[JsonServerDataType] {
 
-  override def create(dataTypeInstanceId: DataTypeInstanceId): JsonServerDataType = {
+  override def create(dataTypeInstanceId: DataStructureInstanceId): JsonServerDataType = {
     JsonServerDataType(dataTypeInstanceId, new WaveOTServer(), name)
   }
 

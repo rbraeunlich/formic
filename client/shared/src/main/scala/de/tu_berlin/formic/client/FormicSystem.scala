@@ -9,7 +9,7 @@ import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
 import de.tu_berlin.formic.common.datatype.{DataTypeName, FormicDataType}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message.{CreateRequest, UpdateRequest}
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
 
 import scala.concurrent.duration._
 import scala.scalajs.js.annotation.JSExport
@@ -61,7 +61,7 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
   }
 
   @JSExport
-  def requestDataType(dataTypeInstanceId: DataTypeInstanceId) = {
+  def requestDataType(dataTypeInstanceId: DataStructureInstanceId) = {
     connection ! UpdateRequest(id, dataTypeInstanceId)
   }
 

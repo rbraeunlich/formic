@@ -3,7 +3,7 @@ package de.tu_berlin.formic.client
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import de.tu_berlin.formic.client.Dispatcher._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.NewDataTypeCreated
-import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.DataStructureInstanceId$
 import de.tu_berlin.formic.common.message._
 
 /**
@@ -11,7 +11,7 @@ import de.tu_berlin.formic.common.message._
   */
 class Dispatcher(val outgoingConnection: ActorRef, val newInstanceCallback: ActorRef, val instantiator: ActorRef) extends Actor with ActorLogging {
 
-  var instances: Map[DataTypeInstanceId, ActorRef] = Map.empty
+  var instances: Map[DataStructureInstanceId, ActorRef] = Map.empty
 
   def receive = {
     case op: OperationMessage =>
@@ -66,5 +66,5 @@ object Dispatcher {
   /**
     * Answer to the RequestKnownDataTypeId message
     */
-  case class KnownDataTypeIds(ids: Set[DataTypeInstanceId])
+  case class KnownDataTypeIds(ids: Set[DataStructureInstanceId])
 }

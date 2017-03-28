@@ -4,7 +4,7 @@ import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message.CreateRequest
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 /**
@@ -30,7 +30,7 @@ class FormicTreeDataTypeFactorySpec extends TestKit(ActorSystem("FormicTreeDataT
     "create FormicBooleanTree and TreeClientDataType" in {
       val factory = system.actorOf(Props(new FormicBooleanTreeFactory()))
       val outgoing = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "{\"value\":true, \"children\": []}", Option.empty, CreateRequest(
@@ -59,7 +59,7 @@ class FormicTreeDataTypeFactorySpec extends TestKit(ActorSystem("FormicTreeDataT
     "create FormicDoubleTree and TreeClientDataType" in {
       val factory = system.actorOf(Props(new FormicDoubleTreeFactory()))
       val outgoing = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "{\"value\":1.5, \"children\": []}", Option.empty, CreateRequest(
@@ -88,7 +88,7 @@ class FormicTreeDataTypeFactorySpec extends TestKit(ActorSystem("FormicTreeDataT
     "create FormicIntegerTree and TreeClientDataType" in {
       val factory = system.actorOf(Props(new FormicIntegerTreeFactory()))
       val outgoing = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "{\"value\":1, \"children\": []}", Option.empty, CreateRequest(
@@ -117,7 +117,7 @@ class FormicTreeDataTypeFactorySpec extends TestKit(ActorSystem("FormicTreeDataT
     "create FormicStringTree and TreelientDataType" in {
       val factory = system.actorOf(Props(new FormicStringTreeFactory()))
       val outgoing = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "{\"value\":\"def\", \"children\": []}", Option.empty, CreateRequest(

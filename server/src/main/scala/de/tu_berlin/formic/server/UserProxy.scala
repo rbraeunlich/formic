@@ -5,7 +5,7 @@ import de.tu_berlin.formic.common.server.datatype.AbstractServerDataType.Histori
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.server.datatype.NewDataTypeCreated
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
 import de.tu_berlin.formic.server.UserProxy.NewDataTypeSubscription
 
 import scala.concurrent.Await
@@ -18,7 +18,7 @@ import scala.util.{Failure, Success}
   */
 class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = ClientId()) extends Actor with ActorLogging{
 
-  var watchlist: Map[DataTypeInstanceId, ActorRef] = Map.empty
+  var watchlist: Map[DataStructureInstanceId, ActorRef] = Map.empty
 
   import context._
 
@@ -88,7 +88,7 @@ class UserProxy(val factories: Map[DataTypeName, ActorRef], val id: ClientId = C
 
 class OperationMessageSubscriber(val outgoingConnection: ActorRef, val clientId: ClientId) extends Actor with ActorLogging{
 
-  var watchlist: Map[DataTypeInstanceId, ActorRef] = Map.empty
+  var watchlist: Map[DataStructureInstanceId, ActorRef] = Map.empty
 
   def receive = {
     case op: OperationMessage =>
@@ -107,6 +107,6 @@ class OperationMessageSubscriber(val outgoingConnection: ActorRef, val clientId:
 
 object UserProxy {
 
-  case class NewDataTypeSubscription(dataTypeInstanceId: DataTypeInstanceId, actorRef: ActorRef)
+  case class NewDataTypeSubscription(dataTypeInstanceId: DataStructureInstanceId, actorRef: ActorRef)
 
 }

@@ -2,7 +2,7 @@ package de.tu_berlin.formic.common.datatype.persistence
 
 import akka.actor.{ActorSystem, Props}
 import de.tu_berlin.formic.common.controlalgo.{ControlAlgorithm, WaveOTServer}
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.persistence.AbstractServerDataTypeFactoryPersistenceSpec.AbstractServerDataTypeFactoryPersistenceSpecFactory
 import de.tu_berlin.formic.common.message.CreateRequest
@@ -21,8 +21,8 @@ class AbstractServerDataTypeFactoryPersistenceSpec extends PersistenceSpec(Actor
   "An AbstractServerDataTypeFactory" should {
     "re-apply stored operations after recovery" in {
       val factory = system.actorOf(Props(new AbstractServerDataTypeFactoryPersistenceSpecFactory), AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName.name)
-      val dataTypeInstanceId = DataTypeInstanceId()
-      val dataTypeInstanceId2 = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
+      val dataTypeInstanceId2 = DataStructureInstanceId()
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName)
       factory ! CreateRequest(ClientId(), dataTypeInstanceId2, AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName)
       receiveN(2)
@@ -44,7 +44,7 @@ object AbstractServerDataTypeFactoryPersistenceSpec {
 
   val dataTypeName = DataTypeName("persistenceFactory")
 
-  class AbstractServerDataTypeFactoryPersistenceSpecServerDataType(id: DataTypeInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataType(id, controlAlgorithm) {
+  class AbstractServerDataTypeFactoryPersistenceSpecServerDataType(id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataType(id, controlAlgorithm) {
 
     val transformer = new OperationTransformer {
       override def transform(pair: (DataTypeOperation, DataTypeOperation)): DataTypeOperation = pair._1
@@ -69,7 +69,7 @@ object AbstractServerDataTypeFactoryPersistenceSpec {
 
   class AbstractServerDataTypeFactoryPersistenceSpecFactory
     extends AbstractServerDataTypeFactory[AbstractServerDataTypeFactoryPersistenceSpecServerDataType] {
-    override def create(dataTypeInstanceId: DataTypeInstanceId): AbstractServerDataTypeFactoryPersistenceSpecServerDataType = {
+    override def create(dataTypeInstanceId: DataStructureInstanceId): AbstractServerDataTypeFactoryPersistenceSpecServerDataType = {
       new AbstractServerDataTypeFactoryPersistenceSpecServerDataType(dataTypeInstanceId, new WaveOTServer())
     }
 

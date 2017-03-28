@@ -14,7 +14,7 @@ import akka.util.ByteString
 import de.tu_berlin.formic.common.datatype.ServerDataTypeProvider
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse, FormicMessage}
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
 import org.scalatest.{path => _, _}
 import de.tu_berlin.formic.server.datatype.{TestClassProvider, TestClasses}
 import upickle.default._
@@ -83,7 +83,7 @@ class ExceptionHandlingIntegrationTest extends TestKit(ActorSystem("ExceptionHan
       userOutgoing.offer(BinaryMessage(ByteString("Test Message")))
 
       //if the stream did not crash, this should work
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       userOutgoing.offer(TextMessage(write(CreateRequest(userId, dataTypeInstanceId, TestClasses.dataTypeName))))
 
       val incomingCreateResponse = userIncoming.pull()

@@ -4,7 +4,7 @@ import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message.CreateRequest
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 /**
@@ -30,7 +30,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
     "create FormicBooleanList and LinearClientDataType" in {
       val factory = system.actorOf(Props(new FormicBooleanListDataTypeFactory()))
       val outgoing = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "[false]", Option.empty, CreateRequest(
@@ -59,7 +59,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
     "create FormicDoubleList and LinearClientDataType" in {
       val factory = system.actorOf(Props(new FormicDoubleListDataTypeFactory()))
       val outgoing = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "[1.0]", Option.empty, CreateRequest(
@@ -88,7 +88,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
     "create FormicIntegerList and LinearClientDataType" in {
       val factory = system.actorOf(Props(new FormicIntegerListDataTypeFactory()))
       val outgoing = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "[2]", Option.empty, CreateRequest(
@@ -117,7 +117,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
     "create FormicString and LinearClientDataType" in {
       val factory = system.actorOf(Props(new FormicStringDataTypeFactory()))
       val outgoing = TestProbe()
-      val dataTypeInstanceId = DataTypeInstanceId()
+      val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, "[\"b\"]", Option.empty, CreateRequest(

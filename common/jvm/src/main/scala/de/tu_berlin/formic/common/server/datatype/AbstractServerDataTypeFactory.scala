@@ -2,7 +2,7 @@ package de.tu_berlin.formic.common.server.datatype
 
 import akka.actor.{ActorLogging, Props}
 import akka.persistence.{PersistentActor, RecoveryCompleted}
-import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.DataStructureInstanceId$
 import de.tu_berlin.formic.common.datatype.DataTypeName
 import de.tu_berlin.formic.common.message.CreateRequest
 
@@ -34,7 +34,7 @@ abstract class AbstractServerDataTypeFactory[T <: AbstractServerDataType : Class
       log.info(logText)
   }
 
-  def create(dataTypeInstanceId: DataTypeInstanceId): T
+  def create(dataTypeInstanceId: DataStructureInstanceId): T
 
   val name: DataTypeName
 }

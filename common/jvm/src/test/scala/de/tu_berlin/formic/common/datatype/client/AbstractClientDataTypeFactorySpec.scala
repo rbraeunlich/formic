@@ -6,7 +6,7 @@ import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message.CreateRequest
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
 import org.scalatest.{Matchers, WordSpecLike}
 
 /**
@@ -23,7 +23,7 @@ class AbstractClientDataTypeFactorySpec extends TestKit(ActorSystem("AbstractCli
     "create a data type and data type wrapper when receiving a WrappedCreateRequest" in {
       val factory = system.actorOf(Props(new AbstractClientDataTypeFactorySpecFactory))
       val outgoing = TestProbe()
-      val instanceId = DataTypeInstanceId()
+      val instanceId = DataStructureInstanceId()
       val clientId = ClientId()
 
       factory ! WrappedCreateRequest(outgoing.ref, null, Option.empty,CreateRequest(ClientId(), instanceId, DataTypeName("AbstractClientDataTypeFactorySpec") ), clientId)
@@ -38,7 +38,7 @@ class AbstractClientDataTypeFactorySpec extends TestKit(ActorSystem("AbstractCli
     "create only a data type when receiving a LocalCreateRequest" in {
       val factory = system.actorOf(Props(new AbstractClientDataTypeFactorySpecFactory))
       val outgoing = TestProbe()
-      val instanceId = DataTypeInstanceId()
+      val instanceId = DataStructureInstanceId()
 
       factory ! LocalCreateRequest(outgoing.ref, instanceId)
 
@@ -63,7 +63,7 @@ object AbstractClientDataTypeSpecControlAlgorithm extends ControlAlgorithmClient
   override def currentOperationContext: OperationContext = OperationContext(List.empty)
 }
 
-class AbstractClientDataTypeFactorySpecServerDataType(outgoingConnection: ActorRef) extends AbstractClientDataType(DataTypeInstanceId(), AbstractClientDataTypeSpecControlAlgorithm, Option.empty, outgoingConnection) {
+class AbstractClientDataTypeFactorySpecServerDataType(outgoingConnection: ActorRef) extends AbstractClientDataType(DataStructureInstanceId(), AbstractClientDataTypeSpecControlAlgorithm, Option.empty, outgoingConnection) {
   override val dataTypeName: DataTypeName = DataTypeName("AbstractClientDataTypeFactorySpec")
 
   override val transformer: OperationTransformer = null
@@ -75,7 +75,7 @@ class AbstractClientDataTypeFactorySpecServerDataType(outgoingConnection: ActorR
   override def cloneOperationWithNewContext(op: DataTypeOperation, context: OperationContext): DataTypeOperation = op
 }
 
-class AbstractClientDataTypeFactorySpecFormicDataType(clientId: ClientId) extends FormicDataType(null, DataTypeName("AbstractClientDataTypeFactorySpec"),null,clientId, DataTypeInstanceId(), new DataTypeInitiator {
+class AbstractClientDataTypeFactorySpecFormicDataType(clientId: ClientId) extends FormicDataType(null, DataTypeName("AbstractClientDataTypeFactorySpec"),null,clientId, DataStructureInstanceId(), new DataTypeInitiator {
   override def initDataType(dataType: FormicDataType): Unit = {}
 }) {
 }
@@ -84,11 +84,11 @@ class AbstractClientDataTypeFactorySpecFactory extends AbstractClientDataTypeFac
 
   override val name: DataTypeName = DataTypeName("AbstractClientDataTypeFactorySpec")
 
-  override def createDataType(dataTypeInstanceId: DataTypeInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): AbstractClientDataTypeFactorySpecServerDataType = {
+  override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): AbstractClientDataTypeFactorySpecServerDataType = {
     new AbstractClientDataTypeFactorySpecServerDataType(outgoingConnection)
   }
 
-  override def createWrapperType(dataTypeInstanceId: DataTypeInstanceId, dataType: ActorRef, localClientId: ClientId): AbstractClientDataTypeFactorySpecFormicDataType = {
+  override def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): AbstractClientDataTypeFactorySpecFormicDataType = {
     new AbstractClientDataTypeFactorySpecFormicDataType(localClientId)
   }
 }

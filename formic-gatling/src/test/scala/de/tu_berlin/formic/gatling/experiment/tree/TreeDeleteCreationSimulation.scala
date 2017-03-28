@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.gatling.experiment.tree
 
-import de.tu_berlin.formic.common.DataTypeInstanceId
+import de.tu_berlin.formic.common.DataStructureInstanceId$
 import de.tu_berlin.formic.gatling.Predef._
 import io.gatling.core.Predef._
 
@@ -17,7 +17,7 @@ class TreeDeleteCreationSimulation extends Simulation {
     .logLevel("info")
 
   //to have a feeder for all scenarios, we create the ids up front and use them
-  val dataTypeInstanceIdFeeder = for (x <- 0.until(NUM_DATATYPES)) yield Map("dataTypeInstanceId" -> DataTypeInstanceId().id)
+  val dataTypeInstanceIdFeeder = for (x <- 0.until(NUM_DATATYPES)) yield Map("dataTypeInstanceId" -> DataStructureInstanceId().id)
 
   val connect = exec(formic("Connection").connect())
     .pause(2)

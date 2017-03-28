@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.gatling
 
-import de.tu_berlin.formic.common.{ClientId, DataTypeInstanceId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
 import de.tu_berlin.formic.datatype.linear.client.FormicString
 import de.tu_berlin.formic.gatling.Predef._
 import de.tu_berlin.formic.gatling.action.{SessionVariables, TimeMeasureCallback}
@@ -25,7 +25,7 @@ class FormicLinearSimulation extends Simulation {
     .logLevel("info")
 
   //to have a feeder for all scenarios, we create the ids up front and use them
-  val dataTypeInstanceIdFeeder = for (x <- 0.until(NUM_DATATYPES)) yield Map("dataTypeInstanceId" -> DataTypeInstanceId().id)
+  val dataTypeInstanceIdFeeder = for (x <- 0.until(NUM_DATATYPES)) yield Map("dataTypeInstanceId" -> DataStructureInstanceId().id)
 
   val connect = exec(formic("Connection").connect())
     .pause(2)

@@ -7,7 +7,7 @@ import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType._
 import de.tu_berlin.formic.common.datatype.client.CallbackWrapper.Invoke
 import de.tu_berlin.formic.common.message._
-import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{DataStructureInstanceId$, OperationId}
 
 /**
   * The data types on the client basically receive only operation messages. Also, they need another
@@ -15,7 +15,7 @@ import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
   *
   * @author Ronny Bräunlich
   */
-abstract class AbstractClientDataType(val id: DataTypeInstanceId,
+abstract class AbstractClientDataType(val id: DataStructureInstanceId,
                                       val controlAlgorithm: ControlAlgorithmClient,
                                       val lastOperationId: Option[OperationId],
                                       val outgoingConnection: ActorRef) extends Actor with ActorLogging {

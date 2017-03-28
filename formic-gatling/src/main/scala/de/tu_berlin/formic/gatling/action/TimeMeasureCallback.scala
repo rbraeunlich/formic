@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.gatling.action
 
-import de.tu_berlin.formic.common.{DataTypeInstanceId, OperationId}
+import de.tu_berlin.formic.common.{DataStructureInstanceId$, OperationId}
 import de.tu_berlin.formic.common.datatype.client.{AcknowledgementEvent, ClientDataTypeEvent, CreateResponseEvent}
 import de.tu_berlin.formic.gatling.action.TimeMeasureCallback.{RemoteOperationTimeMeasureListener, TimeMeasureListener}
 import io.gatling.commons.util.TimeHelper
@@ -63,7 +63,7 @@ object TimeMeasureCallback {
 
   }
 
-  case class CreateResponseTimeMeasureListener(dataTypeInstanceId: DataTypeInstanceId, start: Long, session: Session, statsEngine: StatsEngine, name: String) extends TimeMeasureListener {
+  case class CreateResponseTimeMeasureListener(dataTypeInstanceId: DataStructureInstanceId, start: Long, session: Session, statsEngine: StatsEngine, name: String) extends TimeMeasureListener {
 
     def isOperation(e: ClientDataTypeEvent): Boolean = {
       e.isInstanceOf[CreateResponseEvent] && e.asInstanceOf[CreateResponseEvent].dataTypeInstanceId == dataTypeInstanceId
