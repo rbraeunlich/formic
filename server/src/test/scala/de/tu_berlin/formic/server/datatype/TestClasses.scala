@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.json.{FormicJsonDataTypeProtocol, FormicJsonProtocol}
-import de.tu_berlin.formic.common.server.datatype.{AbstractServerDataType, AbstractServerDataTypeFactory}
+import de.tu_berlin.formic.common.server.datatype.{AbstractServerDataStructure$, AbstractServerDataTypeFactory}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest.Assertions._
 import upickle.Js
@@ -13,14 +13,14 @@ import upickle.Js
   * @author Ronny Bräunlich
   */
 
-class TestDataTypeFactory extends AbstractServerDataTypeFactory[TestServerDataType] {
+class TestDataTypeFactory extends AbstractServerDataTypeFactory[TestServerDataStructure] {
 
-  override def create(dataTypeInstanceId: DataStructureInstanceId): TestServerDataType = new TestServerDataType(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm)
+  override def create(dataTypeInstanceId: DataStructureInstanceId): TestServerDataStructure = new TestServerDataStructure(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm)
 
   override val name: DataStructureName = TestClasses.dataTypeName
 }
 
-class TestServerDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataType(dataTypeInstanceId, controlAlgorithm) {
+class TestServerDataStructure(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataStructure(dataTypeInstanceId, controlAlgorithm) {
 
 
 

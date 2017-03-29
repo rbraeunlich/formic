@@ -9,10 +9,10 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-abstract class LinearServerDataTypeFactory[S](implicit writer: Writer[S]) extends AbstractServerDataTypeFactory[LinearServerDataType[S]] {
+abstract class LinearServerDataTypeFactory[S](implicit writer: Writer[S]) extends AbstractServerDataTypeFactory[LinearServerDataStructure[S]] {
 
-  override def create(dataTypeInstanceId: DataStructureInstanceId): LinearServerDataType[S] = {
-    LinearServerDataType(dataTypeInstanceId, new WaveOTServer(), name)
+  override def create(dataTypeInstanceId: DataStructureInstanceId): LinearServerDataStructure[S] = {
+    LinearServerDataStructure(dataTypeInstanceId, new WaveOTServer(), name)
   }
 
 }

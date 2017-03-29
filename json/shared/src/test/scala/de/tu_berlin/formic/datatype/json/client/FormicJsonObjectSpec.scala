@@ -9,7 +9,7 @@ import de.tu_berlin.formic.common.message.{UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.datatype.json._
 import de.tu_berlin.formic.datatype.tree.client.RemoteDataTypeInitiator
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
-import de.tu_berlin.formic.datatype.json.client.JsonClientDataType._
+import de.tu_berlin.formic.datatype.json.client.JsonClientDataStructure._
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success}

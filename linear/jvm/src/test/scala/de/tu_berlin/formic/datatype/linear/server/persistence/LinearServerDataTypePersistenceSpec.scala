@@ -6,7 +6,7 @@ import de.tu_berlin.formic.common.controlalgo.WaveOTServer
 import de.tu_berlin.formic.common.datatype.{DataStructureName, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
-import de.tu_berlin.formic.datatype.linear.server.{IntegerListDataTypeFactory, LinearServerDataType}
+import de.tu_berlin.formic.datatype.linear.server.{IntegerListDataTypeFactory, LinearServerDataStructure}
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation, LinearNoOperation}
 
 import scala.concurrent.duration._
@@ -22,7 +22,7 @@ class LinearServerDataTypePersistenceSpec extends PersistenceSpec(ActorSystem("L
       system.eventStream.subscribe(probe.ref, classOf[OperationMessage])
       val id = DataStructureInstanceId()
       val dataTypeName: DataStructureName = IntegerListDataTypeFactory.name
-      val dataType = system.actorOf(Props(new LinearServerDataType[Int](id, new WaveOTServer(), dataTypeName)), id.id)
+      val dataType = system.actorOf(Props(new LinearServerDataStructure[Int](id, new WaveOTServer(), dataTypeName)), id.id)
       val op1 = LinearInsertOperation(0, 1, OperationId(), OperationContext(), ClientId())
       val op2 = LinearInsertOperation(1, 2, OperationId(), OperationContext(List(op1.id)), ClientId())
       val op3 = LinearDeleteOperation(1, OperationId(), OperationContext(List(op2.id)), ClientId())
@@ -40,7 +40,7 @@ class LinearServerDataTypePersistenceSpec extends PersistenceSpec(ActorSystem("L
 
       killActors(dataType)
 
-      val recoveredActor = system.actorOf(Props(new LinearServerDataType[Int](id, new WaveOTServer(), dataTypeName)), id.id)
+      val recoveredActor = system.actorOf(Props(new LinearServerDataStructure[Int](id, new WaveOTServer(), dataTypeName)), id.id)
 
       recoveredActor ! UpdateRequest(ClientId(), id)
 

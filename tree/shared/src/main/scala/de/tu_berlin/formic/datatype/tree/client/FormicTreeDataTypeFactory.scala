@@ -9,10 +9,10 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-abstract class FormicTreeDataTypeFactory[S](implicit val writer: Writer[S], val reader: Reader[S]) extends AbstractClientDataTypeFactory[TreeClientDataType[S], FormicTree[S]] {
+abstract class FormicTreeDataTypeFactory[S](implicit val writer: Writer[S], val reader: Reader[S]) extends AbstractClientDataTypeFactory[TreeClientDataStructure[S], FormicTree[S]] {
 
-  override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): TreeClientDataType[S] = {
-    TreeClientDataType(
+  override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): TreeClientDataStructure[S] = {
+    TreeClientDataStructure(
       dataTypeInstanceId,
       new WaveOTClient((op) => outgoingConnection ! OperationMessage(null, dataTypeInstanceId, name, List(op))),
       name,

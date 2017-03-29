@@ -21,7 +21,7 @@ class TreeServerDataTypePersistenceSpec extends PersistenceSpec(ActorSystem("Tre
       system.eventStream.subscribe(probe.ref, classOf[OperationMessage])
       val id = DataStructureInstanceId()
       val dataTypeName: DataStructureName = StringTreeDataTypeFactory.name
-      val dataType = system.actorOf(Props(new TreeServerDataType[String](id, new WaveOTServer(), dataTypeName)), id.id)
+      val dataType = system.actorOf(Props(new TreeServerDataStructure[String](id, new WaveOTServer(), dataTypeName)), id.id)
       val op1 = TreeInsertOperation(AccessPath(), ValueTreeNode("root"), OperationId(), OperationContext(), ClientId())
       val op2 = TreeInsertOperation(AccessPath(0), ValueTreeNode("child"), OperationId(), OperationContext(List(op1.id)), ClientId())
       val op3 = TreeDeleteOperation(AccessPath(0), OperationId(), OperationContext(List(op2.id)), ClientId())
@@ -39,7 +39,7 @@ class TreeServerDataTypePersistenceSpec extends PersistenceSpec(ActorSystem("Tre
 
       killActors(dataType)
 
-      val recoveredActor = system.actorOf(Props(new TreeServerDataType[String](id, new WaveOTServer(), dataTypeName)), id.id)
+      val recoveredActor = system.actorOf(Props(new TreeServerDataStructure[String](id, new WaveOTServer(), dataTypeName)), id.id)
 
       recoveredActor ! UpdateRequest(ClientId(), id)
 

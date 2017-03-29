@@ -63,7 +63,7 @@ object AbstractClientDataTypeSpecControlAlgorithm extends ControlAlgorithmClient
   override def currentOperationContext: OperationContext = OperationContext(List.empty)
 }
 
-class AbstractClientDataTypeFactorySpecServerDataType(outgoingConnection: ActorRef) extends AbstractClientDataType(DataStructureInstanceId(), AbstractClientDataTypeSpecControlAlgorithm, Option.empty, outgoingConnection) {
+class AbstractClientDataTypeFactorySpecServerDataStructure(outgoingConnection: ActorRef) extends AbstractClientDataStructure(DataStructureInstanceId(), AbstractClientDataTypeSpecControlAlgorithm, Option.empty, outgoingConnection) {
   override val dataTypeName: DataStructureName = DataStructureName("AbstractClientDataTypeFactorySpec")
 
   override val transformer: OperationTransformer = null
@@ -80,12 +80,12 @@ class AbstractClientDataTypeFactorySpecFormicDataType(clientId: ClientId) extend
 }) {
 }
 
-class AbstractClientDataTypeFactorySpecFactory extends AbstractClientDataTypeFactory[AbstractClientDataTypeFactorySpecServerDataType, AbstractClientDataTypeFactorySpecFormicDataType] {
+class AbstractClientDataTypeFactorySpecFactory extends AbstractClientDataTypeFactory[AbstractClientDataTypeFactorySpecServerDataStructure, AbstractClientDataTypeFactorySpecFormicDataType] {
 
   override val name: DataStructureName = DataStructureName("AbstractClientDataTypeFactorySpec")
 
-  override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): AbstractClientDataTypeFactorySpecServerDataType = {
-    new AbstractClientDataTypeFactorySpecServerDataType(outgoingConnection)
+  override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): AbstractClientDataTypeFactorySpecServerDataStructure = {
+    new AbstractClientDataTypeFactorySpecServerDataStructure(outgoingConnection)
   }
 
   override def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): AbstractClientDataTypeFactorySpecFormicDataType = {

@@ -11,10 +11,10 @@ import de.tu_berlin.formic.datatype.tree.client.RemoteDataTypeInitiator
 /**
   * @author Ronny Bräunlich
   */
-class FormicJsonObjectFactory extends AbstractClientDataTypeFactory[JsonClientDataType, FormicJsonObject]{
+class FormicJsonObjectFactory extends AbstractClientDataTypeFactory[JsonClientDataStructure, FormicJsonObject]{
 
-  override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): JsonClientDataType = {
-    JsonClientDataType(
+  override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): JsonClientDataStructure = {
+    JsonClientDataStructure(
       dataTypeInstanceId,
       new WaveOTClient((op) => outgoingConnection ! OperationMessage(null, dataTypeInstanceId, name, List(op))),
       name,

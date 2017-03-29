@@ -8,9 +8,9 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-abstract class TreeDataTypeFactory[S](implicit writer: Writer[S]) extends AbstractServerDataTypeFactory[TreeServerDataType[S]] {
+abstract class TreeDataTypeFactory[S](implicit writer: Writer[S]) extends AbstractServerDataTypeFactory[TreeServerDataStructure[S]] {
 
-  override def create(dataTypeInstanceId: DataStructureInstanceId): TreeServerDataType[S] = {
-    TreeServerDataType(dataTypeInstanceId, new WaveOTServer(), name)
+  override def create(dataTypeInstanceId: DataStructureInstanceId): TreeServerDataStructure[S] = {
+    TreeServerDataStructure(dataTypeInstanceId, new WaveOTServer(), name)
   }
 }

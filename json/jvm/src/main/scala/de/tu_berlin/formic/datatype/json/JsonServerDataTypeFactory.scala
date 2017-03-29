@@ -8,10 +8,10 @@ import de.tu_berlin.formic.common.server.datatype.AbstractServerDataTypeFactory
 /**
   * @author Ronny Bräunlich
   */
-class JsonServerDataTypeFactory extends AbstractServerDataTypeFactory[JsonServerDataType] {
+class JsonServerDataTypeFactory extends AbstractServerDataTypeFactory[JsonServerDataStructure] {
 
-  override def create(dataTypeInstanceId: DataStructureInstanceId): JsonServerDataType = {
-    JsonServerDataType(dataTypeInstanceId, new WaveOTServer(), name)
+  override def create(dataTypeInstanceId: DataStructureInstanceId): JsonServerDataStructure = {
+    JsonServerDataStructure(dataTypeInstanceId, new WaveOTServer(), name)
   }
 
   override val name: DataStructureName = JsonServerDataTypeFactory.name

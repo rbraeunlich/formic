@@ -28,7 +28,7 @@ class JsonServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
 
     "insert data" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
-      val json = system.actorOf(Props(JsonServerDataType(dataTypeInstanceId, JsonServerDataTypeSpecControlAlgorithm, JsonServerDataTypeFactory.name)))
+      val json = system.actorOf(Props(JsonServerDataStructure(dataTypeInstanceId, JsonServerDataTypeSpecControlAlgorithm, JsonServerDataTypeFactory.name)))
       val node1 = StringNode("text", List(CharacterNode(null, 'a'), CharacterNode(null, 'b')))
       val node2 = NumberNode("num", 1)
       val node3 = BooleanNode("true?", value = true)
@@ -46,7 +46,7 @@ class JsonServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
 
     "delete data" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
-      val json = system.actorOf(Props(JsonServerDataType(dataTypeInstanceId, JsonServerDataTypeSpecControlAlgorithm, JsonServerDataTypeFactory.name)))
+      val json = system.actorOf(Props(JsonServerDataStructure(dataTypeInstanceId, JsonServerDataTypeSpecControlAlgorithm, JsonServerDataTypeFactory.name)))
       val node1 = StringNode("text", List(CharacterNode(null, 'a'), CharacterNode(null, 'b')))
       val node2 = NumberNode("num", 1)
       val op1 = TreeInsertOperation(AccessPath(0), node1, OperationId(), OperationContext(), ClientId())
@@ -63,7 +63,7 @@ class JsonServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
 
     "replace data" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
-      val json = system.actorOf(Props(JsonServerDataType(dataTypeInstanceId, JsonServerDataTypeSpecControlAlgorithm, JsonServerDataTypeFactory.name)))
+      val json = system.actorOf(Props(JsonServerDataStructure(dataTypeInstanceId, JsonServerDataTypeSpecControlAlgorithm, JsonServerDataTypeFactory.name)))
       val node1 = StringNode("text", List(CharacterNode(null, 'a'), CharacterNode(null, 'b')))
       val op1 = TreeInsertOperation(AccessPath(0), node1, OperationId(), OperationContext(), ClientId())
       val replacement = CharacterNode(null, 'z')
@@ -78,7 +78,7 @@ class JsonServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
 
     "not change after no operation" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
-      val json = system.actorOf(Props(JsonServerDataType(dataTypeInstanceId, JsonServerDataTypeSpecControlAlgorithm, JsonServerDataTypeFactory.name)))
+      val json = system.actorOf(Props(JsonServerDataStructure(dataTypeInstanceId, JsonServerDataTypeSpecControlAlgorithm, JsonServerDataTypeFactory.name)))
       val node1 = StringNode("text", List(CharacterNode(null, 'a'), CharacterNode(null, 'b')))
       val op1 = TreeInsertOperation(AccessPath(0), node1, OperationId(), OperationContext(), ClientId())
       json ! OperationMessage(ClientId(), dataTypeInstanceId, JsonServerDataTypeFactory.name, List(op1))
@@ -91,7 +91,7 @@ class JsonServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
 
     "result in valid JSON representation" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
-      val json = system.actorOf(Props(JsonServerDataType(dataTypeInstanceId, JsonServerDataTypeSpecControlAlgorithm, JsonServerDataTypeFactory.name)))
+      val json = system.actorOf(Props(JsonServerDataStructure(dataTypeInstanceId, JsonServerDataTypeSpecControlAlgorithm, JsonServerDataTypeFactory.name)))
       val node = ObjectNode("node", List(
         BooleanNode("bool", value = true),
         NumberNode("num", 1), StringNode("str",

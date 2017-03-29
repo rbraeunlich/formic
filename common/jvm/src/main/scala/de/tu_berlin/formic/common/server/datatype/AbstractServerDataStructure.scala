@@ -6,11 +6,11 @@ import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, HistoryBuffer, OperationTransformer}
 import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
-import de.tu_berlin.formic.common.server.datatype.AbstractServerDataType._
+import de.tu_berlin.formic.common.server.datatype.AbstractServerDataStructure._
 /**
   * @author Ronny Bräunlich
   */
-abstract class AbstractServerDataType(val id: DataStructureInstanceId, val controlAlgorithm: ControlAlgorithm) extends PersistentActor with ActorLogging {
+abstract class AbstractServerDataStructure(val id: DataStructureInstanceId, val controlAlgorithm: ControlAlgorithm) extends PersistentActor with ActorLogging {
 
   def persistenceId = id.id
 
@@ -26,7 +26,7 @@ abstract class AbstractServerDataType(val id: DataStructureInstanceId, val contr
 
   val receiveCommand: Receive = {
     case opMsg: OperationMessage =>
-      log.debug(s"DataType $id received OperationMessage: $opMsg")
+      log.debug(s"DataStructure $id received OperationMessage: $opMsg")
       //if a client sent several operations, the oldest one will be at the end, therefore we reverse the list here
       val duplicatesRemoved = opMsg.operations.reverse.filter(op => historyBuffer.findOperation(op.id).isEmpty)
       val applicable = duplicatesRemoved.filter(controlAlgorithm.canBeApplied(_, historyBuffer))
@@ -34,11 +34,11 @@ abstract class AbstractServerDataType(val id: DataStructureInstanceId, val contr
       persistAll(applicable)(applyOperation)
 
     case hist: HistoricOperationRequest =>
-      log.debug(s"DataType $id received HistoricOperationRequest: $hist")
+      log.debug(s"DataStructure $id received HistoricOperationRequest: $hist")
       sender !  HistoricOperationsAnswer(OperationMessage(hist.clientId, id, dataTypeName, historyBuffer.findAllOperationsAfter(hist.sinceId)))
 
     case upd: UpdateRequest =>
-      log.debug(s"DataType $id received UpdateRequest: $upd")
+      log.debug(s"DataStructure $id received UpdateRequest: $upd")
       sender ! UpdateResponse(id, dataTypeName, getDataAsJson, historyBuffer.history.headOption.map(op => op.id))
 
     case GetHistory => sender ! new HistoryBuffer(historyBuffer.history)
@@ -62,7 +62,7 @@ abstract class AbstractServerDataType(val id: DataStructureInstanceId, val contr
 
 }
 
-object AbstractServerDataType {
+object AbstractServerDataStructure {
   /**
     * If the answer was an OperationMessage, nobody could distinguish between
     * incoming operations and answers to HistoricOperationRequests. Therfore we need this little

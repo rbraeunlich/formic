@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.linear.client
 
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure$
 import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.{DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation, LinearNoOperation, LinearTransformer}
@@ -13,14 +13,14 @@ import scala.collection.mutable.ArrayBuffer
 /**
   * @author Ronny Bräunlich
   */
-class LinearClientDataType[T](id: DataStructureInstanceId,
-                              controlAlgorithmClient: ControlAlgorithmClient,
-                              val dataTypeName: DataStructureName,
-                              val initialData: Option[String],
-                              lastOperationId: Option[OperationId],
-                              outgoingConnection: ActorRef)
-                             (implicit val writer: Writer[T], val reader: Reader[T])
-  extends AbstractClientDataType(id, controlAlgorithmClient, lastOperationId, outgoingConnection) {
+class LinearClientDataStructure[T](id: DataStructureInstanceId,
+                                   controlAlgorithmClient: ControlAlgorithmClient,
+                                   val dataTypeName: DataStructureName,
+                                   val initialData: Option[String],
+                                   lastOperationId: Option[OperationId],
+                                   outgoingConnection: ActorRef)
+                                  (implicit val writer: Writer[T], val reader: Reader[T])
+  extends AbstractClientDataStructure(id, controlAlgorithmClient, lastOperationId, outgoingConnection) {
 
 
   override val transformer: OperationTransformer = LinearTransformer
@@ -50,9 +50,9 @@ class LinearClientDataType[T](id: DataStructureInstanceId,
   }
 }
 
-object LinearClientDataType {
+object LinearClientDataStructure {
 
-  def apply[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithmClient, dataTypeName: DataStructureName, initialData: Option[String], lastOperationId: Option[OperationId], outgoingConnection: ActorRef)(implicit writer: Writer[T], reader: Reader[T]): LinearClientDataType[T] =
-    new LinearClientDataType(id, controlAlgorithm, dataTypeName, initialData, lastOperationId, outgoingConnection)
+  def apply[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithmClient, dataTypeName: DataStructureName, initialData: Option[String], lastOperationId: Option[OperationId], outgoingConnection: ActorRef)(implicit writer: Writer[T], reader: Reader[T]): LinearClientDataStructure[T] =
+    new LinearClientDataStructure(id, controlAlgorithm, dataTypeName, initialData, lastOperationId, outgoingConnection)
 
 }

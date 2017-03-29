@@ -3,12 +3,12 @@ package de.tu_berlin.formic.datatype.json.client
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure$
 import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.message.{FormicMessage, OperationMessage}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.json._
-import de.tu_berlin.formic.datatype.json.client.JsonClientDataType._
+import de.tu_berlin.formic.datatype.json.client.JsonClientDataStructure._
 import de.tu_berlin.formic.datatype.tree.{TreeDeleteOperation, TreeInsertOperation, TreeStructureOperation}
 import upickle.default._
 import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
@@ -16,13 +16,13 @@ import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
 /**
   * @author Ronny Bräunlich
   */
-class JsonClientDataType(id: DataStructureInstanceId,
-                         controlAlgorithm: ControlAlgorithmClient,
-                         val dataTypeName: DataStructureName,
-                         initialData: Option[String],
-                         lastOperationId: Option[OperationId],
-                         outgoingConnection: ActorRef)
-                        (implicit val writer: JsonTreeNodeWriter, val reader: JsonTreeNodeReader) extends AbstractClientDataType(id, controlAlgorithm, lastOperationId, outgoingConnection) {
+class JsonClientDataStructure(id: DataStructureInstanceId,
+                              controlAlgorithm: ControlAlgorithmClient,
+                              val dataTypeName: DataStructureName,
+                              initialData: Option[String],
+                              lastOperationId: Option[OperationId],
+                              outgoingConnection: ActorRef)
+                             (implicit val writer: JsonTreeNodeWriter, val reader: JsonTreeNodeReader) extends AbstractClientDataStructure(id, controlAlgorithm, lastOperationId, outgoingConnection) {
 
   private var privateData: ObjectNode = initialData.map(read[ObjectNode]).getOrElse(ObjectNode(null, List.empty))
 
@@ -45,7 +45,7 @@ class JsonClientDataType(id: DataStructureInstanceId,
 
   override def getDataAsJson: String = write(data)
 
-  override def unacknowledged(callbackWrapper: _root_.akka.actor.ActorRef): JsonClientDataType.this.Receive = {
+  override def unacknowledged(callbackWrapper: _root_.akka.actor.ActorRef): JsonClientDataStructure.this.Receive = {
     case local: LocalOperationMessage =>
       local.op.operations.head match {
         case json: JsonClientOperation =>
@@ -83,7 +83,7 @@ class JsonClientDataType(id: DataStructureInstanceId,
   }
 }
 
-object JsonClientDataType {
+object JsonClientDataStructure {
 
   /**
     * Marker interface for all the operations that are only restricted to the client and to the JSON data type.
@@ -104,5 +104,5 @@ object JsonClientDataType {
             dataTypeName: DataStructureName,
             initialData: Option[String],
             lastOperationId: Option[OperationId],
-            outgoingConnection: ActorRef): JsonClientDataType = new JsonClientDataType(id, controlAlgorithm, dataTypeName, initialData, lastOperationId, outgoingConnection)
+            outgoingConnection: ActorRef): JsonClientDataStructure = new JsonClientDataStructure(id, controlAlgorithm, dataTypeName, initialData, lastOperationId, outgoingConnection)
 }

@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.linear.server
 import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, OperationTransformer}
-import de.tu_berlin.formic.common.server.datatype.AbstractServerDataType
+import de.tu_berlin.formic.common.server.datatype.AbstractServerDataStructure$
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation, LinearNoOperation, LinearTransformer}
 import upickle.default._
 
@@ -14,7 +14,7 @@ import scala.collection.mutable.ArrayBuffer
   *
   * @author Ronny Bräunlich
   */
-class LinearServerDataType[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm, val dataTypeName: DataStructureName)(implicit val writer: Writer[T]) extends AbstractServerDataType(id, controlAlgorithm) {
+class LinearServerDataStructure[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm, val dataTypeName: DataStructureName)(implicit val writer: Writer[T]) extends AbstractServerDataStructure(id, controlAlgorithm) {
 
   override val transformer: OperationTransformer = LinearTransformer
 
@@ -36,7 +36,7 @@ class LinearServerDataType[T](id: DataStructureInstanceId, controlAlgorithm: Con
   }
 }
 
-object LinearServerDataType {
+object LinearServerDataStructure {
 
-  def apply[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm, dataTypeName: DataStructureName)(implicit writer: Writer[T]): LinearServerDataType[T] = new LinearServerDataType(id, controlAlgorithm, dataTypeName)
+  def apply[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm, dataTypeName: DataStructureName)(implicit writer: Writer[T]): LinearServerDataStructure[T] = new LinearServerDataStructure(id, controlAlgorithm, dataTypeName)
 }

@@ -10,7 +10,7 @@ import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, Upda
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
 import de.tu_berlin.formic.datatype.json._
-import de.tu_berlin.formic.datatype.json.client.JsonClientDataType._
+import de.tu_berlin.formic.datatype.json.client.JsonClientDataStructure._
 import upickle.default._
 
 import scala.concurrent.duration._

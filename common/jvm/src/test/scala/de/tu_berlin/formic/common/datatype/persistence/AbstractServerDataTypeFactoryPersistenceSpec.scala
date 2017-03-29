@@ -6,7 +6,7 @@ import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationI
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.persistence.AbstractServerDataTypeFactoryPersistenceSpec.AbstractServerDataTypeFactoryPersistenceSpecFactory
 import de.tu_berlin.formic.common.message.CreateRequest
-import de.tu_berlin.formic.common.server.datatype.{AbstractServerDataType, AbstractServerDataTypeFactory}
+import de.tu_berlin.formic.common.server.datatype.{AbstractServerDataStructure$, AbstractServerDataTypeFactory}
 import org.scalatest.Assertions._
 
 import scala.concurrent.Await
@@ -44,7 +44,7 @@ object AbstractServerDataTypeFactoryPersistenceSpec {
 
   val dataTypeName = DataStructureName("persistenceFactory")
 
-  class AbstractServerDataTypeFactoryPersistenceSpecServerDataType(id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataType(id, controlAlgorithm) {
+  class AbstractServerDataTypeFactoryPersistenceSpecServerDataStructure(id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataStructure(id, controlAlgorithm) {
 
     val transformer = new OperationTransformer {
       override def transform(pair: (DataTypeOperation, DataTypeOperation)): DataTypeOperation = pair._1
@@ -68,9 +68,9 @@ object AbstractServerDataTypeFactoryPersistenceSpec {
   }
 
   class AbstractServerDataTypeFactoryPersistenceSpecFactory
-    extends AbstractServerDataTypeFactory[AbstractServerDataTypeFactoryPersistenceSpecServerDataType] {
-    override def create(dataTypeInstanceId: DataStructureInstanceId): AbstractServerDataTypeFactoryPersistenceSpecServerDataType = {
-      new AbstractServerDataTypeFactoryPersistenceSpecServerDataType(dataTypeInstanceId, new WaveOTServer())
+    extends AbstractServerDataTypeFactory[AbstractServerDataTypeFactoryPersistenceSpecServerDataStructure] {
+    override def create(dataTypeInstanceId: DataStructureInstanceId): AbstractServerDataTypeFactoryPersistenceSpecServerDataStructure = {
+      new AbstractServerDataTypeFactoryPersistenceSpecServerDataStructure(dataTypeInstanceId, new WaveOTServer())
     }
 
     override val name: DataStructureName = AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName

@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.common.datatype.client
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.RemoteInstantiation
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure.RemoteInstantiation
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataType}
 import de.tu_berlin.formic.common.message.CreateRequest
@@ -13,7 +13,7 @@ import scala.reflect.ClassTag
   * @author Ronny Bräunlich
   */
 //Why the ClassTag? See http://stackoverflow.com/questions/18692265/no-classtag-available-for-t-not-for-array
-abstract class AbstractClientDataTypeFactory[T <: AbstractClientDataType : ClassTag, S <: FormicDataType : ClassTag] extends Actor with ActorLogging {
+abstract class AbstractClientDataTypeFactory[T <: AbstractClientDataStructure : ClassTag, S <: FormicDataType : ClassTag] extends Actor with ActorLogging {
 
   override def receive: Receive = {
     case WrappedCreateRequest(outgoingConnection, data, lastOperationId, req, localClientId) =>

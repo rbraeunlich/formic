@@ -12,7 +12,7 @@ import scala.reflect.ClassTag
   * @author Ronny Bräunlich
   */
 //Why the ClassTag? See http://stackoverflow.com/questions/18692265/no-classtag-available-for-t-not-for-array
-abstract class AbstractServerDataTypeFactory[T <: AbstractServerDataType : ClassTag] extends PersistentActor with ActorLogging {
+abstract class AbstractServerDataTypeFactory[T <: AbstractServerDataStructure : ClassTag] extends PersistentActor with ActorLogging {
 
   override def persistenceId: String = name.name
 

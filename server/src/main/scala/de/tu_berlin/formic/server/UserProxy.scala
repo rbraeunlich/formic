@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.server
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import de.tu_berlin.formic.common.server.datatype.AbstractServerDataType.HistoricOperationsAnswer
+import de.tu_berlin.formic.common.server.datatype.AbstractServerDataStructure.HistoricOperationsAnswer
 import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.server.datatype.NewDataTypeCreated

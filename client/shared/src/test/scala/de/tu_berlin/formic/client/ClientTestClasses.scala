@@ -3,7 +3,7 @@ package de.tu_berlin.formic.client
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype._
-import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataType, AbstractClientDataTypeFactory, DataTypeInitiator}
+import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataStructure$, AbstractClientDataTypeFactory, DataTypeInitiator}
 import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest.Assertions._
@@ -13,16 +13,16 @@ import upickle.Js
   * @author Ronny Bräunlich
   */
 
-class TestDataTypeFactory extends AbstractClientDataTypeFactory[TestClientDataType, TestFormicDataType] {
+class TestDataTypeFactory extends AbstractClientDataTypeFactory[TestClientDataStructure, TestFormicDataType] {
 
   override val name: DataStructureName = TestClasses.dataTypeName
 
-  override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId] = Option.empty): TestClientDataType = new TestClientDataType(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm, data, lastOperationId, outgoingConnection)
+  override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId] = Option.empty): TestClientDataStructure = new TestClientDataStructure(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm, data, lastOperationId, outgoingConnection)
 
   override def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, clientId: ClientId): TestFormicDataType = new TestFormicDataType
 }
 
-class TestClientDataType(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataStructureInstanceId, controlAlgorithm: ControlAlgorithmClient, initialData: Option[String] = Option.empty, lastOperationId: Option[OperationId], outgoingConnection: ActorRef) extends AbstractClientDataType(dataTypeInstanceId, controlAlgorithm, lastOperationId, outgoingConnection) {
+class TestClientDataStructure(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataStructureInstanceId, controlAlgorithm: ControlAlgorithmClient, initialData: Option[String] = Option.empty, lastOperationId: Option[OperationId], outgoingConnection: ActorRef) extends AbstractClientDataStructure(dataTypeInstanceId, controlAlgorithm, lastOperationId, outgoingConnection) {
 
   var data = initialData.getOrElse("{data}")
 
