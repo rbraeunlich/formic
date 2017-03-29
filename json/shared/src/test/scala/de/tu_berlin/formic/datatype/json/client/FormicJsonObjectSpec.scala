@@ -3,11 +3,11 @@ package de.tu_berlin.formic.datatype.json.client
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
-import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
+import de.tu_berlin.formic.common.datatype.FormicDataStructure.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.OperationContext
 import de.tu_berlin.formic.common.message.{UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.datatype.json._
-import de.tu_berlin.formic.datatype.tree.client.RemoteDataTypeInitiator
+import de.tu_berlin.formic.datatype.tree.client.RemoteDataStructureInitiator
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 import de.tu_berlin.formic.datatype.json.client.JsonClientDataStructure._
 
@@ -34,7 +34,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
       val dataTypeActor = TestProbe()
       val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataStructureInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "num"
       val path = JsonPath(key)
 
@@ -57,7 +57,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
       val dataTypeActor = TestProbe()
       val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataStructureInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "str"
       val path = JsonPath(key)
 
@@ -80,7 +80,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
       val dataTypeActor = TestProbe()
       val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataStructureInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "str"
       val path = JsonPath("str", "0")
 
@@ -103,7 +103,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
       val dataTypeActor = TestProbe()
       val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataStructureInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "bool"
       val path = JsonPath(key)
 
@@ -126,7 +126,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
       val dataTypeActor = TestProbe()
       val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataStructureInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "obj"
       val path = JsonPath(key)
 
@@ -149,7 +149,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
       val dataTypeActor = TestProbe()
       val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataStructureInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "arr"
       val path = JsonPath(key)
 
@@ -172,7 +172,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
       val dataTypeActor = TestProbe()
       val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataStructureInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val path = JsonPath("foo")
 
       jsonObject.remove(path)
@@ -193,7 +193,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
       val dataTypeActor = TestProbe()
       val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataStructureInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "num"
       val path = JsonPath(key)
 
@@ -216,7 +216,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
       val dataTypeActor = TestProbe()
       val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataStructureInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "str"
       val path = JsonPath(key)
 
@@ -239,7 +239,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
       val dataTypeActor = TestProbe()
       val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataStructureInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "str"
       val path = JsonPath("str", "0")
 
@@ -262,7 +262,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
       val dataTypeActor = TestProbe()
       val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataStructureInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "bool"
       val path = JsonPath(key)
 
@@ -285,7 +285,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
       val dataTypeActor = TestProbe()
       val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataStructureInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "bool"
       val path = JsonPath(key)
 
@@ -308,7 +308,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
       val dataTypeActor = TestProbe()
       val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataStructureInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "arr"
       val path = JsonPath(key)
 
@@ -340,7 +340,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
           }
         }
       }
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataStructureInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
 
       val answer = jsonObject.getNodeAt(JsonPath("num"))
 
@@ -366,7 +366,7 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
           }
         }
       }
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataStructureInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
 
       val answer: Future[Double] = jsonObject.getValueAt(JsonPath("num"))
 

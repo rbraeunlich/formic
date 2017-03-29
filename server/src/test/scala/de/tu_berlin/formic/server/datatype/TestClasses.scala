@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.json.{FormicJsonDataTypeProtocol, FormicJsonProtocol}
-import de.tu_berlin.formic.common.server.datatype.{AbstractServerDataStructure$, AbstractServerDataTypeFactory}
+import de.tu_berlin.formic.common.server.datatype.{AbstractServerDataStructure, AbstractServerDataTypeFactory}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest.Assertions._
 import upickle.Js

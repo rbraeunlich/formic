@@ -2,7 +2,7 @@ package de.tu_berlin.formic.gatling.action
 
 import de.tu_berlin.formic.client.NewInstanceCallback
 import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
-import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataType}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataStructure}
 
 import scala.concurrent.Promise
 
@@ -11,19 +11,19 @@ import scala.concurrent.Promise
   */
 class CollectingCallbackWithListener(timeMeasureCallback: TimeMeasureCallback) extends NewInstanceCallback {
 
-  var dataTypes: List[FormicDataType] = List.empty
+  var dataTypes: List[FormicDataStructure] = List.empty
 
-  var listener: List[((FormicDataType) => Boolean,(FormicDataType) => {})] = List.empty
+  var listener: List[((FormicDataStructure) => Boolean,(FormicDataStructure) => {})] = List.empty
 
   /**
     * Set a new callback interface at a data type instance that was created remotely.
     */
-  override def newCallbackFor(instance: FormicDataType, dataType: DataStructureName): (ClientDataTypeEvent) => Unit = timeMeasureCallback.callbackMethod
+  override def newCallbackFor(instance: FormicDataStructure, dataType: DataStructureName): (ClientDataTypeEvent) => Unit = timeMeasureCallback.callbackMethod
 
   /**
     * Perform any initializations necessary for a new, remote data type.
     */
-  override def doNewInstanceCreated(instance: FormicDataType, dataType: DataStructureName): Unit = {
+  override def doNewInstanceCreated(instance: FormicDataStructure, dataType: DataStructureName): Unit = {
     dataTypes = instance :: dataTypes
     //remove all listener that already matched to keep the list small
     val (matched, nonMatched) = listener.partition(t => t._1(instance))
@@ -31,7 +31,7 @@ class CollectingCallbackWithListener(timeMeasureCallback: TimeMeasureCallback) e
     listener = nonMatched
   }
 
-  def addListener[T](condition: (FormicDataType) => Boolean,listener: (FormicDataType) => Promise[T]): Unit = {
+  def addListener[T](condition: (FormicDataStructure) => Boolean, listener: (FormicDataStructure) => Promise[T]): Unit = {
     this.listener = (condition, listener) :: this.listener
   }
 }

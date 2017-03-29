@@ -5,8 +5,8 @@ import akka.pattern.ask
 import com.typesafe.config.Config
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure.ReceiveCallback
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated}
-import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
-import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataType}
+import de.tu_berlin.formic.common.datatype.client.DataStructureInitiator
+import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataStructure}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message.{CreateRequest, UpdateRequest}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
@@ -19,7 +19,7 @@ import scala.util.{Failure, Success}
   * @author Ronny Bräunlich
   */
 @JSExport
-class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) extends DataTypeInitiator {
+class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) extends DataStructureInitiator {
 
   this: ClientDataTypes =>
 
@@ -54,7 +54,7 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
   def init(callback: NewInstanceCallback, username: ClientId = ClientId()) = {
     id = username
     initDataTypes()
-    val instantiator = system.actorOf(Props(new DataTypeInstantiator(factories, id)), "Instantiator")
+    val instantiator = system.actorOf(Props(new DataStructureInstantiator(factories, id)), "Instantiator")
     val wrappedCallback = system.actorOf(Props(new NewInstanceCallbackActorWrapper(callback)), "CallbackActor")
     val url = s"ws://${username.id}@$serverAddress:$serverPort/formic"
     connection = system.actorOf(Props(new WebSocketConnection(wrappedCallback, instantiator, username, webSocketFactory, url, bufferSize, jsonProtocol)), "WebSocketConnection")
@@ -65,7 +65,7 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
     connection ! UpdateRequest(id, dataStructureInstanceId)
   }
 
-  override def initDataType(dataType: FormicDataType): Unit = {
+  override def initDataStructure(dataType: FormicDataStructure): Unit = {
     val name = dataType.dataStructureName
     factories.find(t => t._1 == name) match {
       case Some((k, v)) =>

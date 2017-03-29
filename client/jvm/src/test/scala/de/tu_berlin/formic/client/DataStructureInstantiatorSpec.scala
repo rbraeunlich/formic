@@ -14,7 +14,7 @@ import org.scalatest.{Matchers, WordSpecLike}
 /**
   * @author Ronny Bräunlich
   */
-class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiatorSpec", ConfigFactory.parseString(
+class DataStructureInstantiatorSpec extends TestKit(ActorSystem("DataStructureInstantiatorSpec", ConfigFactory.parseString(
   """
   akka.loggers = ["akka.testkit.TestEventListener"]
   """)))
@@ -29,7 +29,7 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
       val clientId = ClientId()
       val testFactory = TestActorRef(Props(new TestDataTypeFactory))
       val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
-      val instantiator = system.actorOf(Props(new DataTypeInstantiator(testFactories, clientId)))
+      val instantiator = system.actorOf(Props(new DataStructureInstantiator(testFactories, clientId)))
       val outgoingConnection = TestProbe()
       val dataTypeInstanceId = DataStructureInstanceId()
       val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "", Option.empty)
@@ -45,7 +45,7 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
       val clientId = ClientId()
       val testFactory = TestActorRef(Props(new TestDataTypeFactory))
       val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
-      val instantiator = system.actorOf(Props(new DataTypeInstantiator(testFactories, clientId)))
+      val instantiator = system.actorOf(Props(new DataStructureInstantiator(testFactories, clientId)))
       val outgoingConnection = TestProbe()
       val dataTypeInstanceId = DataStructureInstanceId()
       val lastOperationId = OperationId()
@@ -66,7 +66,7 @@ class DataTypeInstantiatorSpec extends TestKit(ActorSystem("DataTypeInstantiator
 
     "throw an exception when receiving an UpdateResponse with unknown data type name" in {
       val clientId = ClientId()
-      val instantiator: TestActorRef[DataTypeInstantiator] = TestActorRef(Props(new DataTypeInstantiator(Map.empty, clientId)))
+      val instantiator: TestActorRef[DataStructureInstantiator] = TestActorRef(Props(new DataStructureInstantiator(Map.empty, clientId)))
       val dataTypeInstanceId = DataStructureInstanceId()
       val outgoingConnection = TestProbe()
       val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "", Option.empty)

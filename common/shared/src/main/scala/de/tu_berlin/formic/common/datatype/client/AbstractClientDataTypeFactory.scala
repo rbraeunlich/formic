@@ -3,7 +3,7 @@ package de.tu_berlin.formic.common.datatype.client
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure.RemoteInstantiation
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
-import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataType}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataStructure}
 import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 
@@ -13,7 +13,7 @@ import scala.reflect.ClassTag
   * @author Ronny Bräunlich
   */
 //Why the ClassTag? See http://stackoverflow.com/questions/18692265/no-classtag-available-for-t-not-for-array
-abstract class AbstractClientDataTypeFactory[T <: AbstractClientDataStructure : ClassTag, S <: FormicDataType : ClassTag] extends Actor with ActorLogging {
+abstract class AbstractClientDataTypeFactory[T <: AbstractClientDataStructure : ClassTag, S <: FormicDataStructure : ClassTag] extends Actor with ActorLogging {
 
   override def receive: Receive = {
     case WrappedCreateRequest(outgoingConnection, data, lastOperationId, req, localClientId) =>
@@ -56,7 +56,7 @@ object AbstractClientDataTypeFactory {
     */
   case class LocalCreateRequest(outgoingConnection: ActorRef, dataTypeInstanceId: DataStructureInstanceId)
 
-  case class NewDataTypeCreated(dataTypeInstanceId: DataStructureInstanceId, dataTypeActor: ActorRef, wrapper: FormicDataType)
+  case class NewDataTypeCreated(dataTypeInstanceId: DataStructureInstanceId, dataTypeActor: ActorRef, wrapper: FormicDataStructure)
 
   /**
     * To be able to pass the outgoing connection and the initial data to the factory, the CreateRequest has to be wrapped.

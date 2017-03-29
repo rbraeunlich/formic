@@ -12,7 +12,7 @@ import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
 class FormicIntegerTreeFactory extends FormicTreeDataTypeFactory[Int] {
 
   override def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): FormicTree[Int] = {
-    new FormicIntegerTree((ClientDataTypeEvent) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType, localClientId)
+    new FormicIntegerTree((ClientDataTypeEvent) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 
   override val name: DataStructureName = FormicIntegerTreeFactory.name

@@ -2,7 +2,7 @@ package de.tu_berlin.formic.common.datatype.client
 
 import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
-import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
+import de.tu_berlin.formic.common.datatype.FormicDataStructure.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure._
 import de.tu_berlin.formic.common.datatype.client.CallbackWrapper.Invoke

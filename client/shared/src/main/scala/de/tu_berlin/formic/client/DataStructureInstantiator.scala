@@ -10,7 +10,7 @@ import de.tu_berlin.formic.common.message.CreateRequest
 /**
   * @author Ronny Bräunlich
   */
-class DataTypeInstantiator(val factories: Map[DataStructureName, ActorRef], val localClientId: ClientId) extends Actor {
+class DataStructureInstantiator(val factories: Map[DataStructureName, ActorRef], val localClientId: ClientId) extends Actor {
 
   def receive = {
     case WrappedUpdateResponse(outgoing, rep) =>

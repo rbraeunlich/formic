@@ -2,9 +2,9 @@ package de.tu_berlin.formic.datatype.linear.client
 
 import akka.pattern._
 import akka.util.Timeout
-import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
-import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, DataTypeInitiator}
-import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataType, OperationContext}
+import de.tu_berlin.formic.common.datatype.FormicDataStructure.LocalOperationMessage
+import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, DataStructureInitiator}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataStructure, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation}
@@ -20,11 +20,11 @@ import scala.scalajs.js.annotation.{JSExport, JSExportDescendentClasses}
   */
 @JSExportDescendentClasses
 abstract class FormicList[T](_callback: (ClientDataTypeEvent) => Unit,
-                             initiator: DataTypeInitiator,
+                             initiator: DataStructureInitiator,
                              dataTypeInstanceId: DataStructureInstanceId,
                              dataTypeName: DataStructureName)
                             (implicit val writer: Writer[T], val reader: Reader[T])
-  extends FormicDataType(_callback, dataTypeName, dataStructureInstanceId = dataTypeInstanceId, initiator = initiator ) {
+  extends FormicDataStructure(_callback, dataTypeName, dataStructureInstanceId = dataTypeInstanceId, initiator = initiator ) {
 
   implicit val timeout: Timeout = 1.seconds
 

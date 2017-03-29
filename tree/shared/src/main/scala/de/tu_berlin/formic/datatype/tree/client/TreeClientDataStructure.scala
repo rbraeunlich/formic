@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.tree.client
 
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure$
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure
 import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.{DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.tree._

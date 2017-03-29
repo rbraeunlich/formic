@@ -5,7 +5,7 @@ import java.util.concurrent.{CountDownLatch, TimeUnit}
 import akka.actor.{ActorRef, ActorSystem, Props, Terminated}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import de.tu_berlin.formic.common.controlalgo.{ControlAlgorithmClient, WaveOTClient}
-import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
+import de.tu_berlin.formic.common.datatype.FormicDataStructure.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure.{ReceiveCallback, RemoteInstantiation}
 import de.tu_berlin.formic.common.message._

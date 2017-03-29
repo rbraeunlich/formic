@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.tree.client
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
-import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
+import de.tu_berlin.formic.common.datatype.FormicDataStructure.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.OperationContext
 import de.tu_berlin.formic.common.message.{UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.datatype.tree._
@@ -30,7 +30,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
       val dataTypeActor = TestProbe()
       val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val tree = new FormicIntegerTree((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val tree = new FormicIntegerTree((_) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
 
       tree.insert(5, AccessPath())
 
@@ -51,7 +51,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
       val dataTypeActor = TestProbe()
       val dataTypeInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val tree = new FormicIntegerTree((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val tree = new FormicIntegerTree((_) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
 
       tree.remove(AccessPath(0))
 
@@ -80,7 +80,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
           }
         }
       }
-      val tree = new FormicIntegerTree((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val tree = new FormicIntegerTree((_) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
 
       val answer = tree.getSubTree(AccessPath(0))
 
@@ -106,7 +106,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
           }
         }
       }
-      val tree = new FormicIntegerTree((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val tree = new FormicIntegerTree((_) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
 
       val answer = tree.getTree()
 
@@ -132,7 +132,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
           }
         }
       }
-      val tree = new FormicBooleanTree((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, ClientId())
+      val tree = new FormicBooleanTree((_) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataTypeActor.ref, ClientId())
 
       tree.insert(true, AccessPath(0))
       dataTypeActor.receiveN(1)
@@ -163,7 +163,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
           }
         }
       }
-      val tree = new FormicDoubleTree((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, ClientId())
+      val tree = new FormicDoubleTree((_) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataTypeActor.ref, ClientId())
 
       tree.insert(5.67, AccessPath(0))
       dataTypeActor.receiveN(1)
@@ -192,7 +192,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
           }
         }
       }
-      val tree = new FormicIntegerTree((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, ClientId())
+      val tree = new FormicIntegerTree((_) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataTypeActor.ref, ClientId())
 
       tree.insert(9, AccessPath(0))
       dataTypeActor.receiveN(1)
@@ -221,7 +221,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
           }
         }
       }
-      val tree = new FormicStringTree((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, ClientId())
+      val tree = new FormicStringTree((_) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataTypeActor.ref, ClientId())
 
       tree.insert("a", AccessPath(0))
       dataTypeActor.receiveN(1)

@@ -6,7 +6,7 @@ import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataTypeFactory, ClientDataTypeEvent}
 import de.tu_berlin.formic.common.message.OperationMessage
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
-import de.tu_berlin.formic.datatype.tree.client.RemoteDataTypeInitiator
+import de.tu_berlin.formic.datatype.tree.client.{RemoteDataStructureInitiator}
 
 /**
   * @author Ronny Bräunlich
@@ -25,7 +25,7 @@ class FormicJsonObjectFactory extends AbstractClientDataTypeFactory[JsonClientDa
   }
 
   override def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): FormicJsonObject = {
-    new FormicJsonObject((ClientDataTypeEvent) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataType, localClientId)
+    new FormicJsonObject((ClientDataTypeEvent) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 
   override val name: DataStructureName = FormicJsonObjectFactory.name

@@ -6,7 +6,7 @@ import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationI
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.persistence.AbstractServerDataTypeFactoryPersistenceSpec.AbstractServerDataTypeFactoryPersistenceSpecFactory
 import de.tu_berlin.formic.common.message.CreateRequest
-import de.tu_berlin.formic.common.server.datatype.{AbstractServerDataStructure$, AbstractServerDataTypeFactory}
+import de.tu_berlin.formic.common.server.datatype.{AbstractServerDataStructure, AbstractServerDataTypeFactory}
 import org.scalatest.Assertions._
 
 import scala.concurrent.Await

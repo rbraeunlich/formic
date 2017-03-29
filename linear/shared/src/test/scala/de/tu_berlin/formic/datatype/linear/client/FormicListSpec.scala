@@ -3,10 +3,10 @@ package de.tu_berlin.formic.datatype.linear.client
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
-import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
+import de.tu_berlin.formic.common.datatype.FormicDataStructure.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure.ReceiveCallback
-import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, DataTypeInitiator}
-import de.tu_berlin.formic.common.datatype.{FormicDataType, OperationContext}
+import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, DataStructureInitiator}
+import de.tu_berlin.formic.common.datatype.{FormicDataStructure, OperationContext}
 import de.tu_berlin.formic.common.message.{UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation}
 import org.scalatest._
@@ -37,7 +37,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
 
     "inform the wrapped data type actor about a new callback when set" in {
       val dataTypeActor = TestProbe()
-      val list = new FormicBooleanList((_) => {}, RemoteDataTypeInitiator)
+      val list = new FormicBooleanList((_) => {}, RemoteDataStructureInitiator)
       list.actor = dataTypeActor.ref
       val newCallback: (ClientDataTypeEvent) => Unit = (_) => {println("test")}
 
@@ -49,7 +49,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
     "wrap add invocation in LocalOperationMessage and send it to the data type actor" in {
       val dataTypeActor = TestProbe()
       val dataTypeInstanceId = DataStructureInstanceId()
-      val list = new FormicBooleanList((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId)
+      val list = new FormicBooleanList((_) => {}, RemoteDataStructureInitiator, dataTypeInstanceId)
       list.actor = dataTypeActor.ref
       list.add(0, false)
 
@@ -69,7 +69,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
     "wrap remove invocation in LocalOperationMessage and send it to the data type actor" in {
       val dataTypeActor = TestProbe()
       val dataTypeInstanceId = DataStructureInstanceId()
-      val list = new FormicBooleanList((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId)
+      val list = new FormicBooleanList((_) => {}, RemoteDataStructureInitiator, dataTypeInstanceId)
       list.actor = dataTypeActor.ref
       list.add(0, false)
       dataTypeActor.receiveN(1)
@@ -99,7 +99,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
           }
         }
       }
-      val list = new FormicBooleanList((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId)
+      val list = new FormicBooleanList((_) => {}, RemoteDataStructureInitiator, dataTypeInstanceId)
       list.actor = dataTypeActor.ref
 
       val answer = list.get(0)
@@ -124,7 +124,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
           }
         }
       }
-      val list = new FormicBooleanList((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId)
+      val list = new FormicBooleanList((_) => {}, RemoteDataStructureInitiator, dataTypeInstanceId)
       list.actor = dataTypeActor.ref
 
       val answer = list.getAll()
@@ -154,7 +154,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
           }
         }
       }
-      val list = new FormicBooleanList((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val list = new FormicBooleanList((_) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
 
       list.add(0, true)
       dataTypeActor.receiveN(1)
@@ -188,7 +188,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
           }
         }
       }
-      val list = new FormicDoubleList((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val list = new FormicDoubleList((_) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
 
       list.add(0, 0.456)
       dataTypeActor.receiveN(1)
@@ -222,7 +222,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
           }
         }
       }
-      val list = new FormicIntegerList((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val list = new FormicIntegerList((_) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
 
       list.add(0, 4)
       dataTypeActor.receiveN(1)
@@ -256,7 +256,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
           }
         }
       }
-      val list = new FormicString((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val list = new FormicString((_) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
 
       list.add(0, 'a')
       dataTypeActor.receiveN(1)
@@ -276,11 +276,11 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
   }
 }
 
-class FormicListSpecInitiator extends DataTypeInitiator {
+class FormicListSpecInitiator extends DataStructureInitiator {
 
   var initCalled = false
 
-  override def initDataType(dataType: FormicDataType): Unit = {
+  override def initDataStructure(dataType: FormicDataStructure): Unit = {
     initCalled = true
   }
 }

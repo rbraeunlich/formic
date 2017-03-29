@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.datatype.tree.client
 
-import de.tu_berlin.formic.common.datatype.FormicDataType
-import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
+import de.tu_berlin.formic.common.datatype.FormicDataStructure
+import de.tu_berlin.formic.common.datatype.client.DataStructureInitiator
 
 /**
   * Data types that are instantiated because they were created remote (i.e. not by calling new whatever
@@ -10,6 +10,6 @@ import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
   *
   * @author Ronny Bräunlich
   */
-object RemoteDataTypeInitiator extends DataTypeInitiator {
-  override def initDataType(dataType: FormicDataType): Unit = {}
+object RemoteDataStructureInitiator extends DataStructureInitiator {
+  override def initDataStructure(dataType: FormicDataStructure): Unit = {}
 }

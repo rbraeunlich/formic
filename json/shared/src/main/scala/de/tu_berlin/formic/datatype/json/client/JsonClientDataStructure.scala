@@ -2,8 +2,8 @@ package de.tu_berlin.formic.datatype.json.client
 
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
-import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure$
+import de.tu_berlin.formic.common.datatype.FormicDataStructure.LocalOperationMessage
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure
 import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.message.{FormicMessage, OperationMessage}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}

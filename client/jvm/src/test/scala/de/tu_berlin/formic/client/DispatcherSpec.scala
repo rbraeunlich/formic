@@ -35,7 +35,7 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
     "create a new data type instance and remember it when receiving an UpdateResponse" in {
       val testFactory = TestActorRef(Props(new TestDataTypeFactory))
       val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
-      val instantiator = TestActorRef(Props(new DataTypeInstantiator(testFactories, ClientId())))
+      val instantiator = TestActorRef(Props(new DataStructureInstantiator(testFactories, ClientId())))
       val newInstanceCallback = TestProbe()
 
       val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(null, newInstanceCallback.ref, instantiator)))
@@ -53,17 +53,17 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       val testDataType2 = TestProbe()
       val testFactory = TestProbe()
       val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory.ref)
-      val instantiator = TestActorRef(Props(new DataTypeInstantiator(testFactories, clientId)))
+      val instantiator = TestActorRef(Props(new DataStructureInstantiator(testFactories, clientId)))
       val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(null, TestProbe().ref, instantiator)))
       val dataTypeInstanceId = DataStructureInstanceId()
       val dataTypeInstanceId2 = DataStructureInstanceId()
       //create two data types
       dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
       testFactory.expectMsg(WrappedCreateRequest(null, "a", Option.empty,CreateRequest(null, dataTypeInstanceId, TestClasses.dataTypeName), clientId))
-      testFactory.reply(NewDataTypeCreated(dataTypeInstanceId, testDataType.ref, new TestFormicDataType))
+      testFactory.reply(NewDataTypeCreated(dataTypeInstanceId, testDataType.ref, new TestFormicDataStructure))
       dispatcher ! UpdateResponse(dataTypeInstanceId2, TestClasses.dataTypeName, "a", Option.empty)
       testFactory.expectMsg(WrappedCreateRequest(null, "a", Option.empty, CreateRequest(null, dataTypeInstanceId2, TestClasses.dataTypeName), clientId))
-      testFactory.reply(NewDataTypeCreated(dataTypeInstanceId2, testDataType2.ref, new TestFormicDataType))
+      testFactory.reply(NewDataTypeCreated(dataTypeInstanceId2, testDataType2.ref, new TestFormicDataStructure))
 
       val opMessage = OperationMessage(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName, List.empty)
       dispatcher ! opMessage
@@ -82,7 +82,7 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
     }
 
     "remember the actor when receiving a tuple of actor and CreateRequest" in {
-      val instantiator = TestActorRef(Props(new DataTypeInstantiator(Map.empty, ClientId())))
+      val instantiator = TestActorRef(Props(new DataStructureInstantiator(Map.empty, ClientId())))
       val dataTypeInstanceId = DataStructureInstanceId()
       val request = CreateRequest(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName)
       val actor = TestProbe()
@@ -94,7 +94,7 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
     }
 
     "forward an HistoricOperationRequest to the outgoing connection" in {
-      val instantiator = TestActorRef(Props(new DataTypeInstantiator(Map.empty, ClientId())))
+      val instantiator = TestActorRef(Props(new DataStructureInstantiator(Map.empty, ClientId())))
       val outgoing = TestProbe()
       val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(outgoing.ref, TestProbe().ref, instantiator)))
       val historicRequest = HistoricOperationRequest(ClientId(), DataStructureInstanceId(), OperationId())
@@ -110,17 +110,17 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       val testFactory = TestProbe()
       val clientId = ClientId()
       val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory.ref)
-      val instantiator = TestActorRef(Props(new DataTypeInstantiator(testFactories, clientId)))
+      val instantiator = TestActorRef(Props(new DataStructureInstantiator(testFactories, clientId)))
       val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(null, TestProbe().ref, instantiator)))
       val dataTypeInstanceId = DataStructureInstanceId()
       val dataTypeInstanceId2 = DataStructureInstanceId()
       //create two data types
       dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
       testFactory.expectMsg(WrappedCreateRequest(null, "a", Option.empty,CreateRequest(null, dataTypeInstanceId, TestClasses.dataTypeName), clientId))
-      testFactory.reply(NewDataTypeCreated(dataTypeInstanceId, testDataType.ref, new TestFormicDataType))
+      testFactory.reply(NewDataTypeCreated(dataTypeInstanceId, testDataType.ref, new TestFormicDataStructure))
       dispatcher ! UpdateResponse(dataTypeInstanceId2, TestClasses.dataTypeName, "a", Option.empty)
       testFactory.expectMsg(WrappedCreateRequest(null, "a", Option.empty, CreateRequest(null, dataTypeInstanceId2, TestClasses.dataTypeName), clientId))
-      testFactory.reply(NewDataTypeCreated(dataTypeInstanceId2, testDataType2.ref, new TestFormicDataType))
+      testFactory.reply(NewDataTypeCreated(dataTypeInstanceId2, testDataType2.ref, new TestFormicDataStructure))
       val response = CreateResponse(dataTypeInstanceId2)
 
       dispatcher ! response

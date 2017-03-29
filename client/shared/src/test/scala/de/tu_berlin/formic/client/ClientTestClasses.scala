@@ -3,7 +3,7 @@ package de.tu_berlin.formic.client
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype._
-import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataStructure$, AbstractClientDataTypeFactory, DataTypeInitiator}
+import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataStructure, AbstractClientDataTypeFactory, DataStructureInitiator}
 import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest.Assertions._
@@ -13,13 +13,13 @@ import upickle.Js
   * @author Ronny Bräunlich
   */
 
-class TestDataTypeFactory extends AbstractClientDataTypeFactory[TestClientDataStructure, TestFormicDataType] {
+class TestDataTypeFactory extends AbstractClientDataTypeFactory[TestClientDataStructure, TestFormicDataStructure] {
 
   override val name: DataStructureName = TestClasses.dataTypeName
 
   override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId] = Option.empty): TestClientDataStructure = new TestClientDataStructure(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm, data, lastOperationId, outgoingConnection)
 
-  override def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, clientId: ClientId): TestFormicDataType = new TestFormicDataType
+  override def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, clientId: ClientId): TestFormicDataStructure = new TestFormicDataStructure
 }
 
 class TestClientDataStructure(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataStructureInstanceId, controlAlgorithm: ControlAlgorithmClient, initialData: Option[String] = Option.empty, lastOperationId: Option[OperationId], outgoingConnection: ActorRef) extends AbstractClientDataStructure(dataTypeInstanceId, controlAlgorithm, lastOperationId, outgoingConnection) {
@@ -42,8 +42,8 @@ class TestClientDataStructure(override val historyBuffer: HistoryBuffer, val dat
   override def cloneOperationWithNewContext(op: DataTypeOperation, context: OperationContext): DataTypeOperation = op
 }
 
-class TestFormicDataType(actor: ActorRef = null) extends FormicDataType((_) => {}, TestClasses.dataTypeName, actor, ClientId(), DataStructureInstanceId(), new DataTypeInitiator {
-  override def initDataType(dataType: FormicDataType): Unit = {}
+class TestFormicDataStructure(actor: ActorRef = null) extends FormicDataStructure((_) => {}, TestClasses.dataTypeName, actor, ClientId(), DataStructureInstanceId(), new DataStructureInitiator {
+  override def initDataStructure(dataType: FormicDataStructure): Unit = {}
 }) {
 }
 

@@ -108,7 +108,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       system.scheduler.scheduleOnce(0.millis) {
         connection ! OnConnect(factory.mock)
         val dispatcher = connection.getSingleChild("dispatcher")
-        dispatcher ! NewDataTypeCreated(dataTypeInstanceId, dataType.ref, new TestFormicDataType())
+        dispatcher ! NewDataTypeCreated(dataTypeInstanceId, dataType.ref, new TestFormicDataStructure())
 
         connection ! OnMessage(write(createResponse))
       }
