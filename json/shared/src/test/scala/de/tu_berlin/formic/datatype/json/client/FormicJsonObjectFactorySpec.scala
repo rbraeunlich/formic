@@ -5,7 +5,7 @@ import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message.CreateRequest
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 /**
@@ -42,9 +42,9 @@ class FormicJsonObjectFactorySpec extends TestKit(ActorSystem("FormicJsonFactory
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicJsonObject]
-      wrapper.dataTypeInstanceId should equal(dataTypeInstanceId)
+      wrapper.dataStructureInstanceId should equal(dataTypeInstanceId)
       wrapper.actor should equal(answer.dataTypeActor)
-      wrapper.dataTypeName should equal(FormicJsonObjectFactory.name)
+      wrapper.dataStructureName should equal(FormicJsonObjectFactory.name)
       wrapper.clientId should equal(clientId)
       answer.dataTypeActor should not be null
     }

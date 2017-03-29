@@ -46,7 +46,7 @@ class FormicSystemIntegrationSpec extends TestKit(ActorSystem("FormicSystemInteg
       val createRequest = read[FormicMessage](mockSocketFactory.wrapper.sent.last)
       createRequest shouldBe a[CreateRequest]
 
-      webSocketConnection ! OnMessage(write(CreateResponse(createRequest.asInstanceOf[CreateRequest].dataTypeInstanceId)))
+      webSocketConnection ! OnMessage(write(CreateResponse(createRequest.asInstanceOf[CreateRequest].dataStructureInstanceId)))
 
       string.add(0, 'a')
       string.add(1, 'a')
@@ -69,7 +69,7 @@ class FormicSystemIntegrationSpec extends TestKit(ActorSystem("FormicSystemInteg
 
       //make second operation a no-op
       webSocketConnection ! OnMessage(write(
-        OperationMessage(ClientId("3"), opMsg1.asInstanceOf[OperationMessage].dataTypeInstanceId, opMsg1.asInstanceOf[OperationMessage].dataType,
+        OperationMessage(ClientId("3"), opMsg1.asInstanceOf[OperationMessage].dataStructureInstanceId, opMsg1.asInstanceOf[OperationMessage].dataStructure,
           List(LinearInsertOperation(0, 'a', OperationId(), OperationContext(List(opId)), ClientId("3"))))))
 
 

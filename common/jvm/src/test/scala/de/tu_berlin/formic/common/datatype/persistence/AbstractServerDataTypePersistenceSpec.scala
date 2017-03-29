@@ -7,7 +7,7 @@ import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.persistence.AbstractServerDataTypePersistenceSpec._
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.server.datatype.AbstractServerDataType
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest.Assertions._
 
 /**

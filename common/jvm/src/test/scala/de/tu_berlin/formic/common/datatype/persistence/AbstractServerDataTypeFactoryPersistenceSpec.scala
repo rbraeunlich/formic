@@ -2,7 +2,7 @@ package de.tu_berlin.formic.common.datatype.persistence
 
 import akka.actor.{ActorSystem, Props}
 import de.tu_berlin.formic.common.controlalgo.{ControlAlgorithm, WaveOTServer}
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.persistence.AbstractServerDataTypeFactoryPersistenceSpec.AbstractServerDataTypeFactoryPersistenceSpecFactory
 import de.tu_berlin.formic.common.message.CreateRequest

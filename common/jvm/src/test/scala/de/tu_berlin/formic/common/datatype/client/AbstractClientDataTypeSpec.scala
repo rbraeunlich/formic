@@ -9,7 +9,7 @@ import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.{ReceiveCallback, RemoteInstantiation}
 import de.tu_berlin.formic.common.message._
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest.Assertions._
 import org.scalatest.{Matchers, WordSpecLike}
 
@@ -324,7 +324,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
 
       val answer = expectMsgClass(classOf[HistoricOperationRequest])
       answer.sinceId should equal(null)
-      answer.dataTypeInstanceId should equal(dataTypeInstanceId)
+      answer.dataStructureInstanceId should equal(dataTypeInstanceId)
     }
 
     "must use the initial operation id for HistoricOperationsRequest if no other operation is present" in {
@@ -344,7 +344,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
 
       val answer = expectMsgClass(classOf[HistoricOperationRequest])
       answer.sinceId should equal(initialOperationId)
-      answer.dataTypeInstanceId should equal(dataTypeInstanceId)
+      answer.dataStructureInstanceId should equal(dataTypeInstanceId)
     }
 
     "must use the last operation id from a remote operation for a HistoricOperationsRequest if local operations happened in between" in {
@@ -370,7 +370,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
 
       val answer = expectMsgClass(classOf[HistoricOperationRequest])
       answer.sinceId should equal(lastArrivedRemoteOperationId)
-      answer.dataTypeInstanceId should equal(dataTypeInstanceId)
+      answer.dataStructureInstanceId should equal(dataTypeInstanceId)
     }
 
     "must use the operation id of an acknowledged local operation for a HistoricOperationsRequest if that was the last remote operation with WaveOT" in {
@@ -393,7 +393,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
 
       val answer = expectMsgClass(classOf[HistoricOperationRequest])
       answer.sinceId should equal(localOperation.id)
-      answer.dataTypeInstanceId should equal(dataTypeInstanceId)
+      answer.dataStructureInstanceId should equal(dataTypeInstanceId)
     }
 
     "apply the operations of an HistoricOperationRequest that have not been applied" in {
@@ -804,11 +804,11 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
 }
 
 class AbstractClientDataTypeTestClientDataType(
-                                                dataTypeInstanceId: DataStructureInstanceId,
+                                                dataStructureInstanceId: DataStructureInstanceId,
                                                 clientControlAlgorithm: ControlAlgorithmClient,
                                                 lastOperationId: Option[OperationId] = Option.empty,
                                                 outgoingConnection: ActorRef)
-  extends AbstractClientDataType(dataTypeInstanceId, clientControlAlgorithm, lastOperationId, outgoingConnection) {
+  extends AbstractClientDataType(dataStructureInstanceId, clientControlAlgorithm, lastOperationId, outgoingConnection) {
 
   var data = "{test}"
 

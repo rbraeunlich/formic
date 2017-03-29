@@ -7,7 +7,7 @@ import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
 import de.tu_berlin.formic.common.message.{CreateResponse, OperationMessage}
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
 import de.tu_berlin.formic.datatype.json._
 import de.tu_berlin.formic.datatype.tree.{AccessPath, TreeDeleteOperation, TreeInsertOperation, TreeNoOperation}

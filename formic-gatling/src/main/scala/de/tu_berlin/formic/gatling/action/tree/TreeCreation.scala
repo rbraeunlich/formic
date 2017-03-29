@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.gatling.action.tree
 
 import de.tu_berlin.formic.client.FormicSystem
-import de.tu_berlin.formic.common.DataStructureInstanceId$
+import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.datatype.tree.client.FormicIntegerTree
 import de.tu_berlin.formic.gatling.action.TimeMeasureCallback.CreateResponseTimeMeasureListener
 import de.tu_berlin.formic.gatling.action.{FormicActions, SessionVariables, TimeMeasureCallback}
@@ -28,7 +28,7 @@ case class TreeCreation(dataTypeInstanceId: Expression[String], statsEngine: Sta
           val callback = session(SessionVariables.TIMEMEASURE_CALLBACK).as[TimeMeasureCallback]
           val tree = new FormicIntegerTree(callback.callbackMethod, formicSystem, DataStructureInstanceId.valueOf(id))
           val modifiedSession = session.set(id, tree)
-          callback.addListener(CreateResponseTimeMeasureListener(tree.dataTypeInstanceId, start, session, statsEngine, name))
+          callback.addListener(CreateResponseTimeMeasureListener(tree.dataStructureInstanceId, start, session, statsEngine, name))
           next ! modifiedSession
 
         case None => throw new IllegalArgumentException("Users have to connect first!")

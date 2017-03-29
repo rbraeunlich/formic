@@ -9,7 +9,7 @@ import de.tu_berlin.formic.common.datatype.client.DataTypeInitiator
 import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataType}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message.{CreateRequest, UpdateRequest}
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 
 import scala.concurrent.duration._
 import scala.scalajs.js.annotation.JSExport
@@ -61,16 +61,16 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
   }
 
   @JSExport
-  def requestDataType(dataTypeInstanceId: DataStructureInstanceId) = {
-    connection ! UpdateRequest(id, dataTypeInstanceId)
+  def requestDataType(dataStructureInstanceId: DataStructureInstanceId) = {
+    connection ! UpdateRequest(id, dataStructureInstanceId)
   }
 
   override def initDataType(dataType: FormicDataType): Unit = {
-    val name = dataType.dataTypeName
+    val name = dataType.dataStructureName
     factories.find(t => t._1 == name) match {
       case Some((k, v)) =>
-        val request = CreateRequest(id, dataType.dataTypeInstanceId, name)
-        ask(v, LocalCreateRequest(connection, dataType.dataTypeInstanceId))(2.seconds)
+        val request = CreateRequest(id, dataType.dataStructureInstanceId, name)
+        ask(v, LocalCreateRequest(connection, dataType.dataStructureInstanceId))(2.seconds)
           .mapTo[NewDataTypeCreated]
           .map(msg => msg.dataTypeActor)
           .onComplete {

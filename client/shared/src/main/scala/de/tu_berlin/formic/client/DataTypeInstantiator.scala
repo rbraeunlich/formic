@@ -14,11 +14,11 @@ class DataTypeInstantiator(val factories: Map[DataStructureName, ActorRef], val 
 
   def receive = {
     case WrappedUpdateResponse(outgoing, rep) =>
-      factories.find(t => t._1 == rep.dataType) match {
+      factories.find(t => t._1 == rep.dataStructure) match {
         case Some((k,v)) =>
           //that ways the factory directly answers to the dispatcher
-          v forward WrappedCreateRequest(outgoing, rep.data, rep.lastOperationId, CreateRequest(null, rep.dataTypeInstanceId, k), localClientId)
-        case None => throw new IllegalArgumentException(s"Unknown data type name: ${rep.dataType}")
+          v forward WrappedCreateRequest(outgoing, rep.data, rep.lastOperationId, CreateRequest(null, rep.dataStructureInstanceId, k), localClientId)
+        case None => throw new IllegalArgumentException(s"Unknown data structure name: ${rep.dataStructure}")
       }
   }
 }

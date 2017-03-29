@@ -7,7 +7,7 @@ import de.tu_berlin.formic.client.Dispatcher.{ErrorMessage, KnownDataTypeIds, Re
 import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message._
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest.{Matchers, WordSpecLike}
 
 /**
@@ -73,7 +73,7 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
 
     "log a warning if it does not know the data type instance of an operation message" in {
       val message = OperationMessage(ClientId(), DataStructureInstanceId(), TestClasses.dataTypeName, List.empty)
-      val warningText = s"Did not find data type instance with id ${message.dataTypeInstanceId}, dropping message $message"
+      val warningText = s"Did not find data type instance with id ${message.dataStructureInstanceId}, dropping message $message"
       val dispatcher = system.actorOf(Props(new Dispatcher(null, TestProbe().ref, TestProbe().ref)))
 
       EventFilter.warning(message = warningText, occurrences = 1) intercept {
@@ -139,7 +139,7 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
       instantiator.expectMsgPF(){
         case WrappedUpdateResponse(outgoing, rep) =>
-          instantiator.forward(testFactory, WrappedCreateRequest(outgoing, rep.data, rep.lastOperationId, CreateRequest(null, rep.dataTypeInstanceId, TestClasses.dataTypeName), ClientId()))
+          instantiator.forward(testFactory, WrappedCreateRequest(outgoing, rep.data, rep.lastOperationId, CreateRequest(null, rep.dataStructureInstanceId, TestClasses.dataTypeName), ClientId()))
       }
       dispatcher.underlyingActor.instances should contain key dataTypeInstanceId
 
@@ -153,7 +153,7 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
         def answerWrappedUpdateResponse() = {
           expectMsgPF(){
             case WrappedUpdateResponse(outgoing, rep) =>
-            forward(testFactory, WrappedCreateRequest(outgoing, rep.data, rep.lastOperationId, CreateRequest(null, rep.dataTypeInstanceId, TestClasses.dataTypeName), ClientId()))
+            forward(testFactory, WrappedCreateRequest(outgoing, rep.data, rep.lastOperationId, CreateRequest(null, rep.dataStructureInstanceId, TestClasses.dataTypeName), ClientId()))
           }
         }
       }

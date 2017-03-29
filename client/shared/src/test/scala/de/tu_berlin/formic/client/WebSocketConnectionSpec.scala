@@ -9,7 +9,7 @@ import de.tu_berlin.formic.common.datatype.OperationContext
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message._
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest._
 import upickle.default._
 
@@ -193,7 +193,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       connection ! PoisonPill
       val sentMessages = factory.mock.sent
       sentMessages.lastOption match {
-        case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(CreateRequest(clientId, request.dataTypeInstanceId, TestClasses.dataTypeName))
+        case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(CreateRequest(clientId, request.dataStructureInstanceId, TestClasses.dataTypeName))
         case None => fail("No message sent via WebSocket")
       }
     }
@@ -217,7 +217,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       connection ! PoisonPill
       val sentMessages = factory.mock.sent
       sentMessages.headOption match {
-        case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(HistoricOperationRequest(clientId, request.dataTypeInstanceId, request.sinceId))
+        case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(HistoricOperationRequest(clientId, request.dataStructureInstanceId, request.sinceId))
         case None => fail("No message sent via WebSocket")
       }
     }
@@ -241,7 +241,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       connection ! PoisonPill
       val sentMessages = factory.mock.sent
       sentMessages.headOption match {
-        case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(UpdateRequest(clientId, request.dataTypeInstanceId))
+        case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(UpdateRequest(clientId, request.dataStructureInstanceId))
         case None => fail("No message sent via WebSocket")
       }
     }
@@ -268,7 +268,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
         case Some(msg) =>
           val sentOperation = message.operations.head
           read[FormicMessage](msg.asInstanceOf[String]) should equal(
-            OperationMessage(clientId, message.dataTypeInstanceId, message.dataType, List(TestOperation(sentOperation.id, sentOperation.operationContext, clientId)))
+            OperationMessage(clientId, message.dataStructureInstanceId, message.dataStructure, List(TestOperation(sentOperation.id, sentOperation.operationContext, clientId)))
           )
         case None => fail("No message sent via WebSocket")
       }
@@ -292,7 +292,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
         case Some(msg) =>
           val sentOperation = message.operations.head
           read[FormicMessage](msg.asInstanceOf[String]) should equal(
-            OperationMessage(clientId, message.dataTypeInstanceId, message.dataType, List(TestOperation(sentOperation.id, sentOperation.operationContext, clientId)))
+            OperationMessage(clientId, message.dataStructureInstanceId, message.dataStructure, List(TestOperation(sentOperation.id, sentOperation.operationContext, clientId)))
           )
         case None => fail("No message sent via WebSocket")
       }
@@ -314,7 +314,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       awaitCond(factory.mock.sent.nonEmpty, timeout)
       val sentMessages = factory.mock.sent
       sentMessages.headOption match {
-        case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(CreateRequest(clientId, request.dataTypeInstanceId, request.dataType))
+        case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(CreateRequest(clientId, request.dataStructureInstanceId, request.dataStructure))
         case None => fail("No message sent via WebSocket")
       }
     }
@@ -334,7 +334,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       awaitCond(factory.mock.sent.nonEmpty, timeout)
       val sentMessages = factory.mock.sent
       sentMessages.headOption match {
-        case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(HistoricOperationRequest(clientId, request.dataTypeInstanceId, request.sinceId))
+        case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(HistoricOperationRequest(clientId, request.dataStructureInstanceId, request.sinceId))
         case None => fail("No message sent via WebSocket")
       }
     }
@@ -354,7 +354,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       awaitCond(factory.mock.sent.nonEmpty, timeout)
       val sentMessages = factory.mock.sent
       sentMessages.headOption match {
-        case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(UpdateRequest(clientId, request.dataTypeInstanceId))
+        case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(UpdateRequest(clientId, request.dataStructureInstanceId))
         case None => fail("No message sent via WebSocket")
       }
     }

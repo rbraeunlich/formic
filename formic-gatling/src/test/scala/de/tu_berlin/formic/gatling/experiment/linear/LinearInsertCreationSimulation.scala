@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.gatling.experiment.linear
 
-import de.tu_berlin.formic.common.DataStructureInstanceId$
+import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.gatling.Predef._
 import io.gatling.core.Predef._
 
@@ -17,20 +17,20 @@ class LinearInsertCreationSimulation extends Simulation {
     .logLevel("info")
 
   //to have a feeder for all scenarios, we create the ids up front and use them
-  val dataTypeInstanceIdFeeder = for (x <- 0.until(NUM_DATATYPES)) yield Map("dataTypeInstanceId" -> DataStructureInstanceId().id)
+  val dataStructureInstanceIdFeeder = for (x <- 0.until(NUM_DATATYPES)) yield Map("dataStructureInstanceId" -> DataStructureInstanceId().id)
 
   val connect = exec(formic("Connection").connect())
     .pause(2)
 
 
   val createTestDataType =
-    feed(dataTypeInstanceIdFeeder.iterator)
+    feed(dataStructureInstanceIdFeeder.iterator)
       .exec(formic("DataType")
         .create()
-        .linear("${dataTypeInstanceId}"))
+        .linear("${dataStructureInstanceId}"))
       .pause(1)
       .exec(s => {
-        println("Id: " + s("dataTypeInstanceId").as[String])
+        println("Id: " + s("dataStructureInstanceId").as[String])
         s
       })
       .pause(1)

@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.json.client
 
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.OperationContext
 import de.tu_berlin.formic.common.message.{UpdateRequest, UpdateResponse}
@@ -32,9 +32,9 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap insert invocation for number into LocalOperationMessage with NumberNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataStructureInstanceId()
+      val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "num"
       val path = JsonPath(key)
 
@@ -42,8 +42,8 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
       val localOpMsg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
       val opMsg = localOpMsg.op
-      opMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      opMsg.dataType should equal(jsonObject.dataTypeName)
+      opMsg.dataStructureInstanceId should equal(dataStructureInstanceId)
+      opMsg.dataStructure should equal(jsonObject.dataStructureName)
       opMsg.operations should have size 1
       val operation = opMsg.operations.head.asInstanceOf[JsonClientInsertOperation]
       operation.clientId should be(clientId)
@@ -55,9 +55,9 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap insert invocation for string into LocalOperationMessage with StringNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataStructureInstanceId()
+      val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "str"
       val path = JsonPath(key)
 
@@ -65,8 +65,8 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
       val localOpMsg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
       val opMsg = localOpMsg.op
-      opMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      opMsg.dataType should equal(jsonObject.dataTypeName)
+      opMsg.dataStructureInstanceId should equal(dataStructureInstanceId)
+      opMsg.dataStructure should equal(jsonObject.dataStructureName)
       opMsg.operations should have size 1
       val operation = opMsg.operations.head.asInstanceOf[JsonClientInsertOperation]
       operation.clientId should be(clientId)
@@ -78,9 +78,9 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap insert invocation for character into LocalOperationMessage with CharacterNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataStructureInstanceId()
+      val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "str"
       val path = JsonPath("str", "0")
 
@@ -88,8 +88,8 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
       val localOpMsg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
       val opMsg = localOpMsg.op
-      opMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      opMsg.dataType should equal(jsonObject.dataTypeName)
+      opMsg.dataStructureInstanceId should equal(dataStructureInstanceId)
+      opMsg.dataStructure should equal(jsonObject.dataStructureName)
       opMsg.operations should have size 1
       val operation = opMsg.operations.head.asInstanceOf[JsonClientInsertOperation]
       operation.clientId should be(clientId)
@@ -101,9 +101,9 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap insert invocation for boolean into LocalOperationMessage with BooleanNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataStructureInstanceId()
+      val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "bool"
       val path = JsonPath(key)
 
@@ -111,8 +111,8 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
       val localOpMsg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
       val opMsg = localOpMsg.op
-      opMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      opMsg.dataType should equal(jsonObject.dataTypeName)
+      opMsg.dataStructureInstanceId should equal(dataStructureInstanceId)
+      opMsg.dataStructure should equal(jsonObject.dataStructureName)
       opMsg.operations should have size 1
       val operation = opMsg.operations.head.asInstanceOf[JsonClientInsertOperation]
       operation.clientId should be(clientId)
@@ -124,9 +124,9 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap insert invocation for object into LocalOperationMessage with ObjectNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataStructureInstanceId()
+      val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "obj"
       val path = JsonPath(key)
 
@@ -134,8 +134,8 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
       val localOpMsg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
       val opMsg = localOpMsg.op
-      opMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      opMsg.dataType should equal(jsonObject.dataTypeName)
+      opMsg.dataStructureInstanceId should equal(dataStructureInstanceId)
+      opMsg.dataStructure should equal(jsonObject.dataStructureName)
       opMsg.operations should have size 1
       val operation = opMsg.operations.head.asInstanceOf[JsonClientInsertOperation]
       operation.clientId should be(clientId)
@@ -147,9 +147,9 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap insert invocation for array into LocalOperationMessage with ArrayNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataStructureInstanceId()
+      val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "arr"
       val path = JsonPath(key)
 
@@ -157,8 +157,8 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
       val localOpMsg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
       val opMsg = localOpMsg.op
-      opMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      opMsg.dataType should equal(jsonObject.dataTypeName)
+      opMsg.dataStructureInstanceId should equal(dataStructureInstanceId)
+      opMsg.dataStructure should equal(jsonObject.dataStructureName)
       opMsg.operations should have size 1
       val operation = opMsg.operations.head.asInstanceOf[JsonClientInsertOperation]
       operation.clientId should be(clientId)
@@ -170,17 +170,17 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap remove invocation into LocalOperationMessage" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataStructureInstanceId()
+      val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val path = JsonPath("foo")
 
       jsonObject.remove(path)
 
       val localOpMsg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
       val opMsg = localOpMsg.op
-      opMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      opMsg.dataType should equal(jsonObject.dataTypeName)
+      opMsg.dataStructureInstanceId should equal(dataStructureInstanceId)
+      opMsg.dataStructure should equal(jsonObject.dataStructureName)
       opMsg.operations should have size 1
       val operation = opMsg.operations.head.asInstanceOf[JsonClientDeleteOperation]
       operation.clientId should be(clientId)
@@ -191,9 +191,9 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap replace invocation for number into LocalOperationMessage with NumberNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataStructureInstanceId()
+      val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "num"
       val path = JsonPath(key)
 
@@ -201,8 +201,8 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
       val localOpMsg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
       val opMsg = localOpMsg.op
-      opMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      opMsg.dataType should equal(jsonObject.dataTypeName)
+      opMsg.dataStructureInstanceId should equal(dataStructureInstanceId)
+      opMsg.dataStructure should equal(jsonObject.dataStructureName)
       opMsg.operations should have size 1
       val operation = opMsg.operations.head.asInstanceOf[JsonClientReplaceOperation]
       operation.clientId should be(clientId)
@@ -214,9 +214,9 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap replace invocation for string into LocalOperationMessage with StringNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataStructureInstanceId()
+      val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "str"
       val path = JsonPath(key)
 
@@ -224,8 +224,8 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
       val localOpMsg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
       val opMsg = localOpMsg.op
-      opMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      opMsg.dataType should equal(jsonObject.dataTypeName)
+      opMsg.dataStructureInstanceId should equal(dataStructureInstanceId)
+      opMsg.dataStructure should equal(jsonObject.dataStructureName)
       opMsg.operations should have size 1
       val operation = opMsg.operations.head.asInstanceOf[JsonClientReplaceOperation]
       operation.clientId should be(clientId)
@@ -237,9 +237,9 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap replace invocation for character into LocalOperationMessage with CharacterNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataStructureInstanceId()
+      val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "str"
       val path = JsonPath("str", "0")
 
@@ -247,8 +247,8 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
       val localOpMsg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
       val opMsg = localOpMsg.op
-      opMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      opMsg.dataType should equal(jsonObject.dataTypeName)
+      opMsg.dataStructureInstanceId should equal(dataStructureInstanceId)
+      opMsg.dataStructure should equal(jsonObject.dataStructureName)
       opMsg.operations should have size 1
       val operation = opMsg.operations.head.asInstanceOf[JsonClientReplaceOperation]
       operation.clientId should be(clientId)
@@ -260,9 +260,9 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap replace invocation for boolean into LocalOperationMessage with BooleanNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataStructureInstanceId()
+      val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "bool"
       val path = JsonPath(key)
 
@@ -270,8 +270,8 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
       val localOpMsg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
       val opMsg = localOpMsg.op
-      opMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      opMsg.dataType should equal(jsonObject.dataTypeName)
+      opMsg.dataStructureInstanceId should equal(dataStructureInstanceId)
+      opMsg.dataStructure should equal(jsonObject.dataStructureName)
       opMsg.operations should have size 1
       val operation = opMsg.operations.head.asInstanceOf[JsonClientReplaceOperation]
       operation.clientId should be(clientId)
@@ -283,9 +283,9 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap replace invocation for object into LocalOperationMessage with ObjectNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataStructureInstanceId()
+      val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "bool"
       val path = JsonPath(key)
 
@@ -293,8 +293,8 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
       val localOpMsg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
       val opMsg = localOpMsg.op
-      opMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      opMsg.dataType should equal(jsonObject.dataTypeName)
+      opMsg.dataStructureInstanceId should equal(dataStructureInstanceId)
+      opMsg.dataStructure should equal(jsonObject.dataStructureName)
       opMsg.operations should have size 1
       val operation = opMsg.operations.head.asInstanceOf[JsonClientReplaceOperation]
       operation.clientId should be(clientId)
@@ -306,9 +306,9 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
     "wrap replace invocation for array into LocalOperationMessage with ObjectNode" in {
       val dataTypeActor = TestProbe()
-      val dataTypeInstanceId = DataStructureInstanceId()
+      val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
       val key = "arr"
       val path = JsonPath(key)
 
@@ -316,8 +316,8 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
       val localOpMsg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
       val opMsg = localOpMsg.op
-      opMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      opMsg.dataType should equal(jsonObject.dataTypeName)
+      opMsg.dataStructureInstanceId should equal(dataStructureInstanceId)
+      opMsg.dataStructure should equal(jsonObject.dataStructureName)
       opMsg.operations should have size 1
       val operation = opMsg.operations.head.asInstanceOf[JsonClientReplaceOperation]
       operation.clientId should be(clientId)
@@ -328,19 +328,19 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
     }
 
     "send an UpdateRequest to the wrapped data type actor when getNodeAt is called" in {
-      val dataTypeInstanceId = DataStructureInstanceId()
+      val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val dataTypeActor = new TestProbe(system) {
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF() {
             case up: UpdateRequest =>
-              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              up.dataStructureInstanceId should equal(dataStructureInstanceId)
               up.clientId should equal(clientId)
-              sender ! UpdateResponse(dataTypeInstanceId, FormicJsonObjectFactory.name, "{\"num\":25}", Option.empty)
+              sender ! UpdateResponse(dataStructureInstanceId, FormicJsonObjectFactory.name, "{\"num\":25}", Option.empty)
           }
         }
       }
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
 
       val answer = jsonObject.getNodeAt(JsonPath("num"))
 
@@ -354,19 +354,19 @@ class FormicJsonObjectSpec extends TestKit(ActorSystem("FormicTreeSpec"))
     }
 
     "send an UpdateRequest to the wrapped data type actor when getValueAt is called" in {
-      val dataTypeInstanceId = DataStructureInstanceId()
+      val dataStructureInstanceId = DataStructureInstanceId()
       val clientId = ClientId()
       val dataTypeActor = new TestProbe(system) {
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF() {
             case up: UpdateRequest =>
-              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              up.dataStructureInstanceId should equal(dataStructureInstanceId)
               up.clientId should equal(clientId)
-              sender ! UpdateResponse(dataTypeInstanceId, FormicJsonObjectFactory.name, "{\"num\":25}", Option.empty)
+              sender ! UpdateResponse(dataStructureInstanceId, FormicJsonObjectFactory.name, "{\"num\":25}", Option.empty)
           }
         }
       }
-      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataTypeInstanceId, dataTypeActor.ref, clientId)
+      val jsonObject = new FormicJsonObject((_) => {}, RemoteDataTypeInitiator, dataStructureInstanceId, dataTypeActor.ref, clientId)
 
       val answer: Future[Double] = jsonObject.getValueAt(JsonPath("num"))
 

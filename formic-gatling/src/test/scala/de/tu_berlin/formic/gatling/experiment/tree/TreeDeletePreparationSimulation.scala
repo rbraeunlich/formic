@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.gatling.experiment.tree
 
-import de.tu_berlin.formic.common.DataStructureInstanceId$
+import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.gatling.Predef._
 import io.gatling.core.Predef._
 
@@ -17,52 +17,52 @@ class TreeDeletePreparationSimulation extends Simulation {
     .logLevel("info")
 
   //to have a feeder for all scenarios, we create the ids up front and use them
-  val dataTypeInstanceIdFeeder = for (x <- 0.until(NUM_DATATYPES)) yield Map("dataTypeInstanceId" -> DataStructureInstanceId().id)
+  val dataStructureInstanceIdFeeder = for (x <- 0.until(NUM_DATATYPES)) yield Map("dataStructureInstanceId" -> DataStructureInstanceId().id)
 
   val connect = exec(formic("Connection").connect())
     .pause(2)
 
-  val createWarmupDataType = feed(dataTypeInstanceIdFeeder.iterator) //IMPORTANT, use an iterator or both scenarios will share one, which results in Exceptions
+  val createWarmupDataType = feed(dataStructureInstanceIdFeeder.iterator) //IMPORTANT, use an iterator or both scenarios will share one, which results in Exceptions
     .exec(formic("Creation")
     .create()
-    .tree("${dataTypeInstanceId}"))
+    .tree("${dataStructureInstanceId}"))
     .pause(5)
 
   val edit = exec(formic("TreeInsertion")
-    .tree("${dataTypeInstanceId}")
+    .tree("${dataStructureInstanceId}")
     .insert(0)
     .path(Seq.empty))
     .repeat(200, "n") {
       exec(formic("TreeInsertion")
-        .tree("${dataTypeInstanceId}")
+        .tree("${dataStructureInstanceId}")
         .insert('a')
         .path(Seq("${n}")))
     }.pause(10)
     .repeat(200, "n") {
       exec(formic("TreeInsertion")
-        .tree("${dataTypeInstanceId}")
+        .tree("${dataStructureInstanceId}")
         .insert('a')
         .path(Seq("${n}")))
     }.pause(10)
     .repeat(100, "n") {
       exec(formic("TreeInsertion")
-        .tree("${dataTypeInstanceId}")
+        .tree("${dataStructureInstanceId}")
         .insert('a')
         .path(Seq("${n}")))
     }.pause(10)
     .repeat(200, "n") {
       exec(formic("TreeInsertion")
-        .tree("${dataTypeInstanceId}")
+        .tree("${dataStructureInstanceId}")
         .remove(Seq(0)))
     }.pause(10)
     .repeat(200, "n") {
       exec(formic("TreeInsertion")
-        .tree("${dataTypeInstanceId}")
+        .tree("${dataStructureInstanceId}")
         .remove(Seq(0)))
     }.pause(10)
     .repeat(101, "n") {
       exec(formic("TreeInsertion")
-        .tree("${dataTypeInstanceId}")
+        .tree("${dataStructureInstanceId}")
         .remove(Seq(0)))
     }.pause(10)
 

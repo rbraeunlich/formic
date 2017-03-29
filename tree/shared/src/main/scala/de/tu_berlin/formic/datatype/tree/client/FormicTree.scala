@@ -6,7 +6,7 @@ import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, DataTypeInitiator}
 import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataType, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
-import de.tu_berlin.formic.common.{DataStructureInstanceId$, OperationId}
+import de.tu_berlin.formic.common.{DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.tree._
 import upickle.default._
 
@@ -22,7 +22,7 @@ class FormicTree[T](_callback: (ClientDataTypeEvent) => Unit,
                     dataTypeInstanceId: DataStructureInstanceId,
                     dataTypeName: DataStructureName)
                    (implicit val writer: Writer[T], val reader: Reader[T])
-  extends FormicDataType(_callback, dataTypeName, dataTypeInstanceId = dataTypeInstanceId, initiator = initiator) {
+  extends FormicDataType(_callback, dataTypeName, dataStructureInstanceId = dataTypeInstanceId, initiator = initiator) {
 
   //TODO I suppose getDataAsJson within the TreeClientDataType is quite slow, optimize
   implicit val timeout: Timeout = 3.seconds

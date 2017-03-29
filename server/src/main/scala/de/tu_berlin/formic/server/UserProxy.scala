@@ -5,7 +5,7 @@ import de.tu_berlin.formic.common.server.datatype.AbstractServerDataType.Histori
 import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.server.datatype.NewDataTypeCreated
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import de.tu_berlin.formic.server.UserProxy.NewDataTypeSubscription
 
 import scala.concurrent.Await
@@ -34,7 +34,7 @@ class UserProxy(val factories: Map[DataStructureName, ActorRef], val id: ClientI
 
     case req: CreateRequest =>
       log.debug(s"Incoming CreateRequest from user $id: $req")
-      val factory = factories.find(t => t._1 == req.dataType)
+      val factory = factories.find(t => t._1 == req.dataStructure)
       factory match {
         case Some(f) => f._2 ! req
         case None => throw new IllegalArgumentException("Unknown data type")
@@ -48,7 +48,7 @@ class UserProxy(val factories: Map[DataStructureName, ActorRef], val id: ClientI
 
     case hist: HistoricOperationRequest =>
       log.debug(s"Incoming HistoricOperationRequest from user $id: $hist")
-      val dataTypeInstance = watchlist.find(t => t._1 == hist.dataTypeInstanceId)
+      val dataTypeInstance = watchlist.find(t => t._1 == hist.dataStructureInstanceId)
       dataTypeInstance match {
         case Some((_, ref)) => ref ! hist
         case None => throw new IllegalArgumentException(s"Data type instance with id $dataTypeInstance unkown")
@@ -56,28 +56,28 @@ class UserProxy(val factories: Map[DataStructureName, ActorRef], val id: ClientI
 
     case req: UpdateRequest =>
       log.debug(s"Incoming UpdateRequest from user $id: $req")
-      val actorSelection = context.actorSelection(s"../*/${req.dataTypeInstanceId.id}").resolveOne(3 seconds)
+      val actorSelection = context.actorSelection(s"../*/${req.dataStructureInstanceId.id}").resolveOne(3 seconds)
       //blocking here is necessary to ensure no messages for a data type are received while we look it up
       Await.ready(actorSelection, 6.seconds)
       //onComplete might be executed async, but we need to be sync here
       actorSelection.value.get match {
         case Success(ref) =>
-          watchlist += (req.dataTypeInstanceId -> ref)
+          watchlist += (req.dataStructureInstanceId -> ref)
           ref ! req
-        case Failure(ex) => throw new IllegalArgumentException(s"Data type instance with id ${req.dataTypeInstanceId.id} not found. Exception: $ex")
+        case Failure(ex) => throw new IllegalArgumentException(s"Data type instance with id ${req.dataStructureInstanceId.id} not found. Exception: $ex")
       }
 
     case rep: UpdateResponse =>
       log.debug(s"Sending UpdateResponse to user $id: $rep")
-      subscriber ! NewDataTypeSubscription(rep.dataTypeInstanceId, sender)
+      subscriber ! NewDataTypeSubscription(rep.dataStructureInstanceId, sender)
       outgoing ! rep
 
     case operationMessage: OperationMessage =>
       log.debug(s"Incoming operation from user $id: $operationMessage")
-      val dataTypeInstance = watchlist.find(t => t._1 == operationMessage.dataTypeInstanceId)
+      val dataTypeInstance = watchlist.find(t => t._1 == operationMessage.dataStructureInstanceId)
       dataTypeInstance match {
         case Some((_, ref)) => ref ! operationMessage
-        case None => throw new IllegalArgumentException(s"Data type instance with id ${operationMessage.dataTypeInstanceId.id} unkown")
+        case None => throw new IllegalArgumentException(s"Data type instance with id ${operationMessage.dataStructureInstanceId.id} unkown")
       }
 
     case HistoricOperationsAnswer(opMsg) =>
@@ -92,7 +92,7 @@ class OperationMessageSubscriber(val outgoingConnection: ActorRef, val clientId:
 
   def receive = {
     case op: OperationMessage =>
-      val dataTypeInstance = watchlist.find(t => t._1 == op.dataTypeInstanceId)
+      val dataTypeInstance = watchlist.find(t => t._1 == op.dataStructureInstanceId)
       dataTypeInstance match {
         case Some(_) =>
           log.debug(s"Sending operation message $op to user $clientId")

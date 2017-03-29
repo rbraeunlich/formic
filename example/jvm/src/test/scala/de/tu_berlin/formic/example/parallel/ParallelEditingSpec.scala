@@ -67,7 +67,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       Thread.sleep(3000)
       val stringUser1 = new FormicString((_) => {}, user1)
       Thread.sleep(1000) //send the CreateRequest to the server
-      user2.requestDataType(stringUser1.dataTypeInstanceId)
+      user2.requestDataType(stringUser1.dataStructureInstanceId)
       awaitCond(user2Callback.dataTypes.nonEmpty, 5.seconds)
       val stringUser2 = user2Callback.dataTypes.head.asInstanceOf[FormicString]
 
@@ -147,7 +147,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       //insert root node
       treeUser1.insert(1, AccessPath())
       Thread.sleep(1000) //send the CreateRequest to the server
-      user2.requestDataType(treeUser1.dataTypeInstanceId)
+      user2.requestDataType(treeUser1.dataStructureInstanceId)
       awaitCond(user2Callback.dataTypes.nonEmpty, 5.seconds)
       val treeUser2 = user2Callback.dataTypes.head.asInstanceOf[FormicIntegerTree]
 
@@ -234,7 +234,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       Thread.sleep(3000)
       val jsonUser1 = new FormicJsonObject((_) => {}, user1)
       Thread.sleep(1000) //send the CreateRequest to the server
-      user2.requestDataType(jsonUser1.dataTypeInstanceId)
+      user2.requestDataType(jsonUser1.dataStructureInstanceId)
       awaitCond(user2Callback.dataTypes.nonEmpty, 7.seconds)
       val jsonUser2 = user2Callback.dataTypes.head.asInstanceOf[FormicJsonObject]
 
@@ -395,7 +395,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
         latch.countDown()
       }, user1)
       Thread.sleep(1000) //send the CreateRequest to the server
-      user2.requestDataType(stringUser1.dataTypeInstanceId)
+      user2.requestDataType(stringUser1.dataStructureInstanceId)
       awaitCond(user2Callback.dataTypes.nonEmpty, 5.seconds)
       val stringUser2 = user2Callback.dataTypes.head.asInstanceOf[FormicString]
       stringUser2.callback = (_) => latch.countDown()
@@ -433,7 +433,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       //insert root node
       treeUser1.insert("1", AccessPath())
       Thread.sleep(1000) //send the CreateRequest to the server
-      user2.requestDataType(treeUser1.dataTypeInstanceId)
+      user2.requestDataType(treeUser1.dataStructureInstanceId)
       awaitCond(user2Callback.dataTypes.nonEmpty, 5.seconds)
       val treeUser2 = user2Callback.dataTypes.head.asInstanceOf[FormicStringTree]
       //because we add the root node, we set the correct callbacks here
@@ -471,7 +471,7 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       Thread.sleep(3000)
       val jsonUser1 = new FormicJsonObject((_) => {}, user1)
       Thread.sleep(1000) //send the CreateRequest to the server
-      user2.requestDataType(jsonUser1.dataTypeInstanceId)
+      user2.requestDataType(jsonUser1.dataStructureInstanceId)
       awaitCond(user2Callback.dataTypes.nonEmpty, 5.seconds)
       val jsonUser2 = user2Callback.dataTypes.head.asInstanceOf[FormicJsonObject]
       //because we add the root node, we set the correct callbacks here
@@ -513,8 +513,8 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       Thread.sleep(3000)
       val stringUser1 = new FormicString((_) => {}, user1)
       Thread.sleep(1000) //send the CreateRequest to the server
-      user2.requestDataType(stringUser1.dataTypeInstanceId)
-      user3.requestDataType(stringUser1.dataTypeInstanceId)
+      user2.requestDataType(stringUser1.dataStructureInstanceId)
+      user3.requestDataType(stringUser1.dataStructureInstanceId)
       awaitCond(user2Callback.dataTypes.nonEmpty, 5.seconds)
       awaitCond(user3Callback.dataTypes.nonEmpty, 5.seconds)
       val stringUser2 = user2Callback.dataTypes.head.asInstanceOf[FormicString]
@@ -565,10 +565,10 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       Thread.sleep(3000)
       val stringUser1 = new FormicString((_) => {}, user1)
       Thread.sleep(1000) //send the CreateRequest to the server
-      user2.requestDataType(stringUser1.dataTypeInstanceId)
-      user3.requestDataType(stringUser1.dataTypeInstanceId)
-      user4.requestDataType(stringUser1.dataTypeInstanceId)
-      user5.requestDataType(stringUser1.dataTypeInstanceId)
+      user2.requestDataType(stringUser1.dataStructureInstanceId)
+      user3.requestDataType(stringUser1.dataStructureInstanceId)
+      user4.requestDataType(stringUser1.dataStructureInstanceId)
+      user5.requestDataType(stringUser1.dataStructureInstanceId)
       awaitCond(user2Callback.dataTypes.nonEmpty, 5.seconds)
       awaitCond(user4Callback.dataTypes.nonEmpty, 5.seconds)
       awaitCond(user5Callback.dataTypes.nonEmpty, 5.seconds)

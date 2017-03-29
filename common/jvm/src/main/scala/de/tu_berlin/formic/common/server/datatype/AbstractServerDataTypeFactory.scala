@@ -2,7 +2,7 @@ package de.tu_berlin.formic.common.server.datatype
 
 import akka.actor.{ActorLogging, Props}
 import akka.persistence.{PersistentActor, RecoveryCompleted}
-import de.tu_berlin.formic.common.DataStructureInstanceId$
+import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.message.CreateRequest
 
@@ -20,21 +20,21 @@ abstract class AbstractServerDataTypeFactory[T <: AbstractServerDataType : Class
     case req: CreateRequest =>
       val logText = s"Factory for $name received CreateRequest: $req"
       log.debug(logText)
-      val newDataType = context.actorOf(Props(create(req.dataTypeInstanceId)), req.dataTypeInstanceId.id)
+      val newDataType = context.actorOf(Props(create(req.dataStructureInstanceId)), req.dataStructureInstanceId.id)
       persist(req) { request =>
-        sender ! NewDataTypeCreated(request.dataTypeInstanceId, newDataType)
+        sender ! NewDataTypeCreated(request.dataStructureInstanceId, newDataType)
       }
   }
 
   val receiveRecover: Receive = {
-    case CreateRequest(_, dataTypeInstanceId, _) =>
-      context.actorOf(Props(create(dataTypeInstanceId)), dataTypeInstanceId.id)
+    case CreateRequest(_, dataStructureInstanceId, _) =>
+      context.actorOf(Props(create(dataStructureInstanceId)), dataStructureInstanceId.id)
     case RecoveryCompleted =>
       val logText = s"Data type factory $name recovered"
       log.info(logText)
   }
 
-  def create(dataTypeInstanceId: DataStructureInstanceId): T
+  def create(dataStructureInstanceId: DataStructureInstanceId): T
 
   val name: DataStructureName
 }

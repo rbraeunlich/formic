@@ -5,7 +5,7 @@ import akka.testkit.{ImplicitSender, TestKit}
 import de.tu_berlin.formic.StopSystemAfterAll
 import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.message.CreateRequest
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{Matchers, WordSpecLike}
 
@@ -25,21 +25,21 @@ class AbstractServerDataTypeFactorySpec extends TestKit(ActorSystem("AbstractSer
   "The factory" must {
     "create a new data type instance when receiving a CreateRequest" in {
       val factory = system.actorOf(Props[TestDataTypeFactory])
-      val dataTypeInstanceId = DataStructureInstanceId()
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, DataStructureName("Test"))
+      val dataStructureInstanceId = DataStructureInstanceId()
+      factory ! CreateRequest(ClientId(), dataStructureInstanceId, DataStructureName("Test"))
 
       val received = expectMsgClass(classOf[NewDataTypeCreated])
-      received.dataTypeInstanceId should be(dataTypeInstanceId)
+      received.dataStructureInstanceId should be(dataStructureInstanceId)
       received.ref shouldNot be(null)
     }
 
     "give a new data type instance the actor name of its datatypeinstance id" in {
       val factory = system.actorOf(Props[TestDataTypeFactory], TestClasses.dataTypeName.name)
-      val dataTypeInstanceId = DataStructureInstanceId()
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, DataStructureName("Test"))
+      val dataStructureInstanceId = DataStructureInstanceId()
+      factory ! CreateRequest(ClientId(), dataStructureInstanceId, DataStructureName("Test"))
       receiveN(1)
 
-      val selection = system.actorSelection(factory.path.child(dataTypeInstanceId.id)).resolveOne(3 seconds)
+      val selection = system.actorSelection(factory.path.child(dataStructureInstanceId.id)).resolveOne(3 seconds)
       ScalaFutures.whenReady(selection) { ref =>
         ref shouldNot be(null)
       }

@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings}
 import akka.testkit.{TestKit, TestProbe}
 import de.tu_berlin.formic.client.WebSocketConnection.{OnConnect, OnMessage}
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import de.tu_berlin.formic.common.message.UpdateRequest
 import org.scalatest.{Matchers, WordSpecLike}
 import upickle.default._

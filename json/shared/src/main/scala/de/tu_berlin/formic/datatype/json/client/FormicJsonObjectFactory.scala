@@ -5,7 +5,7 @@ import de.tu_berlin.formic.common.controlalgo.WaveOTClient
 import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataTypeFactory, ClientDataTypeEvent}
 import de.tu_berlin.formic.common.message.OperationMessage
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.tree.client.RemoteDataTypeInitiator
 
 /**

@@ -4,7 +4,7 @@ import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.server.datatype.NewDataTypeCreated
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 /**
@@ -30,7 +30,7 @@ class TreeDataTypeFactorySpec extends TestKit(ActorSystem("TreeDataTypeFactorySp
 
       val response = expectMsgClass(classOf[NewDataTypeCreated])
 
-      response.dataTypeInstanceId should be(dataTypeInstanceId)
+      response.dataStructureInstanceId should be(dataTypeInstanceId)
       response.ref.path should equal(factory.path.child(dataTypeInstanceId.id))
     }
   }
@@ -44,7 +44,7 @@ class TreeDataTypeFactorySpec extends TestKit(ActorSystem("TreeDataTypeFactorySp
 
       val response = expectMsgClass(classOf[NewDataTypeCreated])
 
-      response.dataTypeInstanceId should be(dataTypeInstanceId)
+      response.dataStructureInstanceId should be(dataTypeInstanceId)
       response.ref.path should equal(factory.path.child(dataTypeInstanceId.id))
     }
   }
@@ -58,7 +58,7 @@ class TreeDataTypeFactorySpec extends TestKit(ActorSystem("TreeDataTypeFactorySp
 
       val response = expectMsgClass(classOf[NewDataTypeCreated])
 
-      response.dataTypeInstanceId should be(dataTypeInstanceId)
+      response.dataStructureInstanceId should be(dataTypeInstanceId)
       response.ref.path should equal(factory.path.child(dataTypeInstanceId.id))
     }
   }
@@ -72,7 +72,7 @@ class TreeDataTypeFactorySpec extends TestKit(ActorSystem("TreeDataTypeFactorySp
 
       val response = expectMsgClass(classOf[NewDataTypeCreated])
 
-      response.dataTypeInstanceId should be(dataTypeInstanceId)
+      response.dataStructureInstanceId should be(dataTypeInstanceId)
       response.ref.path should equal(factory.path.child(dataTypeInstanceId.id))
     }
   }

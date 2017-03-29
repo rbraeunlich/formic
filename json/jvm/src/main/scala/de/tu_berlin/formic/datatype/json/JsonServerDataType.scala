@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.datatype.json
 
-import de.tu_berlin.formic.common.DataStructureInstanceId$
+import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, OperationTransformer}
 import de.tu_berlin.formic.common.server.datatype.AbstractServerDataType

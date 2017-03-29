@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.datatype.linear.server
 
-import de.tu_berlin.formic.common.DataStructureInstanceId$
+import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.common.controlalgo.WaveOTServer
 import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.server.datatype.AbstractServerDataTypeFactory

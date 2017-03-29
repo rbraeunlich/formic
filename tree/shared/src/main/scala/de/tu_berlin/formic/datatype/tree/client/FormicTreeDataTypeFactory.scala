@@ -4,7 +4,7 @@ import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.WaveOTClient
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory
 import de.tu_berlin.formic.common.message.OperationMessage
-import de.tu_berlin.formic.common.{DataStructureInstanceId$, OperationId}
+import de.tu_berlin.formic.common.{DataStructureInstanceId, OperationId}
 import upickle.default._
 /**
   * @author Ronny Bräunlich

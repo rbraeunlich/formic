@@ -14,7 +14,7 @@ import akka.util.ByteString
 import de.tu_berlin.formic.common.datatype.ServerDataTypeProvider
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse, FormicMessage}
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import org.scalatest.{path => _, _}
 import de.tu_berlin.formic.server.datatype.{TestClassProvider, TestClasses}
 import upickle.default._

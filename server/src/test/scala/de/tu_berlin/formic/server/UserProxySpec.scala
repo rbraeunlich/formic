@@ -6,7 +6,7 @@ import de.tu_berlin.formic.StopSystemAfterAll
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message._
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.server.datatype.{TestClasses, TestDataTypeFactory, TestFormicJsonDataTypeProtocol}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 

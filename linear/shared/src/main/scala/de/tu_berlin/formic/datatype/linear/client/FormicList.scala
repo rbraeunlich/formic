@@ -6,7 +6,7 @@ import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, DataTypeInitiator}
 import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataType, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
-import de.tu_berlin.formic.common.{DataStructureInstanceId$, OperationId}
+import de.tu_berlin.formic.common.{DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation}
 import upickle.default._
 
@@ -24,7 +24,7 @@ abstract class FormicList[T](_callback: (ClientDataTypeEvent) => Unit,
                              dataTypeInstanceId: DataStructureInstanceId,
                              dataTypeName: DataStructureName)
                             (implicit val writer: Writer[T], val reader: Reader[T])
-  extends FormicDataType(_callback, dataTypeName, dataTypeInstanceId = dataTypeInstanceId, initiator = initiator ) {
+  extends FormicDataType(_callback, dataTypeName, dataStructureInstanceId = dataTypeInstanceId, initiator = initiator ) {
 
   implicit val timeout: Timeout = 1.seconds
 

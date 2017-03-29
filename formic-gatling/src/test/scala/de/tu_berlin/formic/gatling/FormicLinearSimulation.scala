@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.gatling
 
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import de.tu_berlin.formic.datatype.linear.client.FormicString
 import de.tu_berlin.formic.gatling.Predef._
 import de.tu_berlin.formic.gatling.action.{SessionVariables, TimeMeasureCallback}
@@ -25,27 +25,27 @@ class FormicLinearSimulation extends Simulation {
     .logLevel("info")
 
   //to have a feeder for all scenarios, we create the ids up front and use them
-  val dataTypeInstanceIdFeeder = for (x <- 0.until(NUM_DATATYPES)) yield Map("dataTypeInstanceId" -> DataStructureInstanceId().id)
+  val dataStructureInstanceIdFeeder = for (x <- 0.until(NUM_DATATYPES)) yield Map("dataStructureInstanceId" -> DataStructureInstanceId().id)
 
   val connect = exec(formic("Connection").connect())
     .pause(2)
 
-  val createDataTypes = feed(dataTypeInstanceIdFeeder.iterator) //IMPORTANT, use an iterator or both scenarios will share one, which results in Exceptions
+  val createDataTypes = feed(dataStructureInstanceIdFeeder.iterator) //IMPORTANT, use an iterator or both scenarios will share one, which results in Exceptions
     .exec(formic("Creation")
     .create()
-    .linear("${dataTypeInstanceId}"))
+    .linear("${dataStructureInstanceId}"))
     .pause(5)
 
   val edit = repeat(10, "n") {
       exec(formic("LinearInsertion")
-        .linear("${dataTypeInstanceId}")
+        .linear("${dataStructureInstanceId}")
         .insert('a')
         .index("${n}"))
     }
       .pause(1)
       .repeat(4, "n") {
         exec(formic("LinearDeletion")
-          .linear("${dataTypeInstanceId}")
+          .linear("${dataStructureInstanceId}")
           .remove("${n}"))
       }
       .pause(30)
@@ -56,7 +56,7 @@ class FormicLinearSimulation extends Simulation {
 
     val check = rendezVous(NUM_EDITORS)
     .exec( s => {
-      val formicString = s(dataTypeInstanceIdFeeder.head("dataTypeInstanceId").get).as[FormicString]
+      val formicString = s(dataStructureInstanceIdFeeder.head("dataStructureInstanceId").get).as[FormicString]
       FormicLinearSimulation.addString(formicString)
       s
     })
@@ -68,9 +68,9 @@ class FormicLinearSimulation extends Simulation {
       })
       .rendezVous(NUM_EDITORS)
 
-  val subscribe = feed(dataTypeInstanceIdFeeder.iterator.toArray.circular)
+  val subscribe = feed(dataStructureInstanceIdFeeder.iterator.toArray.circular)
     .exec(formic("Subscription")
-      .subscribe("${dataTypeInstanceId}"))
+      .subscribe("${dataStructureInstanceId}"))
     .pause(1)
 
   val creators = scenario("Creators").exec(connect, createDataTypes)

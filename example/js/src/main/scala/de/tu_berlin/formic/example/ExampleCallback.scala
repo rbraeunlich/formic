@@ -16,9 +16,9 @@ class ExampleCallback(val main: Main) extends NewInstanceCallback {
 
   override def newCallbackFor(instance: FormicDataType, dataType: DataStructureName): (ClientDataTypeEvent) => Unit = {
     instance match {
-      case str: FormicString => main.updateUIForString(instance.dataTypeInstanceId)
-      case tree: FormicIntegerTree => main.updateUIForTree(instance.dataTypeInstanceId)
-      case json: FormicJsonObject => if(isBattleShip) main.newCallbackForBattleship(json) else main.updateUIForJson(instance.dataTypeInstanceId)
+      case str: FormicString => main.updateUIForString(instance.dataStructureInstanceId)
+      case tree: FormicIntegerTree => main.updateUIForTree(instance.dataStructureInstanceId)
+      case json: FormicJsonObject => if(isBattleShip) main.newCallbackForBattleship(json) else main.updateUIForJson(instance.dataStructureInstanceId)
     }
   }
 
@@ -26,19 +26,19 @@ class ExampleCallback(val main: Main) extends NewInstanceCallback {
     instance match {
       case str: FormicString =>
         main.strings += str
-        val id = str.dataTypeInstanceId.id
+        val id = str.dataStructureInstanceId.id
         val inputId = id
         jQuery("body").append("<p>String data type with id " + id + "</p>")
         jQuery("body").append("<textarea rows=\"30\" cols=\"50\" class=\"stringInput\" id=\"" + inputId + "\"></textarea>")
         jQuery("#" + inputId).keypress(main.keyPressHandler(inputId))
-        main.updateUIForString(str.dataTypeInstanceId)(RemoteOperationEvent(null))
+        main.updateUIForString(str.dataStructureInstanceId)(RemoteOperationEvent(null))
 
       case tree: FormicIntegerTree =>
         main.trees += tree
-        if (jQuery("body").has("#" + tree.dataTypeInstanceId.id).length == 0) {
-          main.insertBasicTreeElements(tree.dataTypeInstanceId.id)
+        if (jQuery("body").has("#" + tree.dataStructureInstanceId.id).length == 0) {
+          main.insertBasicTreeElements(tree.dataStructureInstanceId.id)
         }
-        main.updateUIForTree(tree.dataTypeInstanceId)(null)
+        main.updateUIForTree(tree.dataStructureInstanceId)(null)
 
       case json: FormicJsonObject =>
         main.jsons += json
@@ -46,10 +46,10 @@ class ExampleCallback(val main: Main) extends NewInstanceCallback {
           //in order to force Battleship to update the UI we invoke the callback here manually
           json.callback(null)
         } else {
-          if (jQuery("body").has("#" + json.dataTypeInstanceId.id).length == 0) {
-            main.insertJsonManipulationElements(json.dataTypeInstanceId.id)
+          if (jQuery("body").has("#" + json.dataStructureInstanceId.id).length == 0) {
+            main.insertJsonManipulationElements(json.dataStructureInstanceId.id)
           }
-          main.updateUIForJson(json.dataTypeInstanceId)(null)
+          main.updateUIForJson(json.dataStructureInstanceId)(null)
         }
     }
   }

@@ -3,7 +3,7 @@ package de.tu_berlin.formic.client
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import de.tu_berlin.formic.client.Dispatcher._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.NewDataTypeCreated
-import de.tu_berlin.formic.common.DataStructureInstanceId$
+import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.common.message._
 
 /**
@@ -15,14 +15,14 @@ class Dispatcher(val outgoingConnection: ActorRef, val newInstanceCallback: Acto
 
   def receive = {
     case op: OperationMessage =>
-      instances.find(t => t._1 == op.dataTypeInstanceId) match {
+      instances.find(t => t._1 == op.dataStructureInstanceId) match {
         case Some((k, v)) => v ! op
-        case None => log.warning(s"Did not find data type instance with id ${op.dataTypeInstanceId}, dropping message $op")
+        case None => log.warning(s"Did not find data structure instance with id ${op.dataStructureInstanceId}, dropping message $op")
       }
 
     case rep: UpdateResponse =>
-      instances.find(t => t._1 == rep.dataTypeInstanceId) match {
-        case Some(_) => log.debug(s"Ignoring $rep because data type already exists")
+      instances.find(t => t._1 == rep.dataStructureInstanceId) match {
+        case Some(_) => log.debug(s"Ignoring $rep because data structure already exists")
         case None => instantiator ! WrappedUpdateResponse(outgoingConnection, rep)
       }
 
@@ -34,14 +34,14 @@ class Dispatcher(val outgoingConnection: ActorRef, val newInstanceCallback: Acto
 
     case rep: CreateResponse =>
       log.debug(s"Dispatcher received CreateResponse $rep")
-      instances.find(t => t._1 == rep.dataTypeInstanceId) match {
+      instances.find(t => t._1 == rep.dataStructureInstanceId) match {
         case Some((k, v)) => v ! rep
-        case None => log.warning(s"Did not find data type instance with id ${rep.dataTypeInstanceId}, dropping message $rep")
+        case None => log.warning(s"Did not find data structure instance with id ${rep.dataStructureInstanceId}, dropping message $rep")
       }
 
     case (ref:ActorRef, req:CreateRequest) =>
       //this is a little hack to inform the Dispatcher about new, locally created data types
-      instances += (req.dataTypeInstanceId -> ref)
+      instances += (req.dataStructureInstanceId -> ref)
 
     case hist: HistoricOperationRequest => outgoingConnection ! hist
 

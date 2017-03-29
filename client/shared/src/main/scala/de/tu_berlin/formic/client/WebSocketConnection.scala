@@ -103,7 +103,7 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
       knownDataTypeIdsFuture.onComplete{
         case Success(msg) =>
           val ids = msg.asInstanceOf[KnownDataTypeIds].ids
-          ids.filterNot(id => buffer.exists(msg => msg.isInstanceOf[CreateRequest] && msg.asInstanceOf[CreateRequest].dataTypeInstanceId == id))
+          ids.filterNot(id => buffer.exists(msg => msg.isInstanceOf[CreateRequest] && msg.asInstanceOf[CreateRequest].dataStructureInstanceId == id))
             .foreach{
             id => sendMessageViaWebSocket(UpdateRequest(clientId, id))
           }
@@ -142,16 +142,16 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
   def sendMessageViaWebSocket(msg: FormicMessage) = {
     msg match {
       case req: CreateRequest =>
-        webSocketConnection.send(write(CreateRequest(clientId, req.dataTypeInstanceId, req.dataType)))
+        webSocketConnection.send(write(CreateRequest(clientId, req.dataStructureInstanceId, req.dataStructure)))
       case hist: HistoricOperationRequest =>
         log.debug(s"User $clientId sending $hist")
-        webSocketConnection.send(write(HistoricOperationRequest(clientId, hist.dataTypeInstanceId, hist.sinceId)))
+        webSocketConnection.send(write(HistoricOperationRequest(clientId, hist.dataStructureInstanceId, hist.sinceId)))
       case upd: UpdateRequest =>
         log.debug(s"User $clientId sending $upd")
-        webSocketConnection.send(write(UpdateRequest(clientId, upd.dataTypeInstanceId)))
+        webSocketConnection.send(write(UpdateRequest(clientId, upd.dataStructureInstanceId)))
       case op: OperationMessage =>
         log.debug(s"User $clientId sending $op")
-        webSocketConnection.send(write(OperationMessage(clientId, op.dataTypeInstanceId, op.dataType, op.operations)))
+        webSocketConnection.send(write(OperationMessage(clientId, op.dataStructureInstanceId, op.dataStructure, op.operations)))
       case other => throw new IllegalArgumentException(s"Client should not send this type of message: $other")
     }
   }

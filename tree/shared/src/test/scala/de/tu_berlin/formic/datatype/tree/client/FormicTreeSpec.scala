@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.tree.client
 
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.OperationContext
 import de.tu_berlin.formic.common.message.{UpdateRequest, UpdateResponse}
@@ -36,8 +36,8 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
       val localOpMsg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
       val opMsg = localOpMsg.op
-      opMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      opMsg.dataType should equal(tree.dataTypeName)
+      opMsg.dataStructureInstanceId should equal(dataTypeInstanceId)
+      opMsg.dataStructure should equal(tree.dataStructureName)
       opMsg.operations should have size 1
       val operation = opMsg.operations.head.asInstanceOf[TreeInsertOperation]
       operation.clientId should be(clientId)
@@ -57,8 +57,8 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
 
       val localOpMsg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
       val opMsg = localOpMsg.op
-      opMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      opMsg.dataType should equal(tree.dataTypeName)
+      opMsg.dataStructureInstanceId should equal(dataTypeInstanceId)
+      opMsg.dataStructure should equal(tree.dataStructureName)
       opMsg.operations should have size 1
       val operation = opMsg.operations.head.asInstanceOf[TreeDeleteOperation]
       operation.clientId should be(clientId)
@@ -74,7 +74,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF() {
             case up: UpdateRequest =>
-              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              up.dataStructureInstanceId should equal(dataTypeInstanceId)
               up.clientId should equal(clientId)
               sender ! UpdateResponse(dataTypeInstanceId, FormicIntegerTreeFactory.name, "{\"value\":100, \"children\": [{\"value\":25, \"children\": []}]}", Option.empty)
           }
@@ -100,7 +100,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF() {
             case up: UpdateRequest =>
-              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              up.dataStructureInstanceId should equal(dataTypeInstanceId)
               up.clientId should equal(clientId)
               sender ! UpdateResponse(dataTypeInstanceId, FormicIntegerTreeFactory.name, "{\"value\":100, \"children\": []}", Option.empty)
           }
@@ -127,7 +127,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF() {
             case up: UpdateRequest =>
-              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              up.dataStructureInstanceId should equal(dataTypeInstanceId)
               sender ! UpdateResponse(dataTypeInstanceId, FormicBooleanTreeFactory.name, "{\"value\":true, \"children\": []}", Option.empty)
           }
         }
@@ -158,7 +158,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF() {
             case up: UpdateRequest =>
-              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              up.dataStructureInstanceId should equal(dataTypeInstanceId)
               sender ! UpdateResponse(dataTypeInstanceId, FormicDoubleTreeFactory.name, "{\"value\":1.3, \"children\": []}", Option.empty)
           }
         }
@@ -187,7 +187,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF() {
             case up: UpdateRequest =>
-              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              up.dataStructureInstanceId should equal(dataTypeInstanceId)
               sender ! UpdateResponse(dataTypeInstanceId, FormicIntegerTreeFactory.name, "{\"value\":6, \"children\": []}", Option.empty)
           }
         }
@@ -216,7 +216,7 @@ class FormicTreeSpec extends TestKit(ActorSystem("FormicTreeSpec"))
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF() {
             case up: UpdateRequest =>
-              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              up.dataStructureInstanceId should equal(dataTypeInstanceId)
               sender ! UpdateResponse(dataTypeInstanceId, FormicStringTreeFactory.name, "{\"value\":\"def\", \"children\": []}", Option.empty)
           }
         }

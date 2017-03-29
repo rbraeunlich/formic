@@ -5,7 +5,7 @@ import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.RemoteI
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataType}
 import de.tu_berlin.formic.common.message.CreateRequest
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 
 import scala.reflect.ClassTag
 
@@ -18,7 +18,7 @@ abstract class AbstractClientDataTypeFactory[T <: AbstractClientDataType : Class
   override def receive: Receive = {
     case WrappedCreateRequest(outgoingConnection, data, lastOperationId, req, localClientId) =>
       log.debug(s"Factory for $name received CreateRequest: $req from sender: $sender")
-      val id: DataStructureInstanceId = req.dataTypeInstanceId
+      val id: DataStructureInstanceId = req.dataStructureInstanceId
       val initialData = if(data == null || data.isEmpty) Option.empty else Option(data)
       val actor = context.actorOf(Props(createDataType(id, outgoingConnection, initialData, lastOperationId)), id.id)
       val wrapper = createWrapperType(id, actor, localClientId)

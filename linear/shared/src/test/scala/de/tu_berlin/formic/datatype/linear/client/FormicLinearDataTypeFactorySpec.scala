@@ -4,7 +4,7 @@ import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message.CreateRequest
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 /**
@@ -41,9 +41,9 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicBooleanList]
-      wrapper.dataTypeInstanceId should equal(dataTypeInstanceId)
+      wrapper.dataStructureInstanceId should equal(dataTypeInstanceId)
       wrapper.actor should equal(answer.dataTypeActor)
-      wrapper.dataTypeName should equal(FormicBooleanListDataTypeFactory.name)
+      wrapper.dataStructureName should equal(FormicBooleanListDataTypeFactory.name)
       wrapper.clientId should equal(clientId)
       answer.dataTypeActor should not be null
     }
@@ -70,9 +70,9 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicDoubleList]
-      wrapper.dataTypeInstanceId should equal(dataTypeInstanceId)
+      wrapper.dataStructureInstanceId should equal(dataTypeInstanceId)
       wrapper.actor should equal(answer.dataTypeActor)
-      wrapper.dataTypeName should equal(FormicDoubleListDataTypeFactory.name)
+      wrapper.dataStructureName should equal(FormicDoubleListDataTypeFactory.name)
       wrapper.clientId should equal(clientId)
       answer.dataTypeActor should not be null
     }
@@ -99,9 +99,9 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicIntegerList]
-      wrapper.dataTypeInstanceId should equal(dataTypeInstanceId)
+      wrapper.dataStructureInstanceId should equal(dataTypeInstanceId)
       wrapper.actor should equal(answer.dataTypeActor)
-      wrapper.dataTypeName should equal(FormicIntegerListDataTypeFactory.name)
+      wrapper.dataStructureName should equal(FormicIntegerListDataTypeFactory.name)
       wrapper.clientId should equal(clientId)
       answer.dataTypeActor should not be null
     }
@@ -128,9 +128,9 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicString]
-      wrapper.dataTypeInstanceId should equal(dataTypeInstanceId)
+      wrapper.dataStructureInstanceId should equal(dataTypeInstanceId)
       wrapper.actor should equal(answer.dataTypeActor)
-      wrapper.dataTypeName should equal(FormicStringDataTypeFactory.name)
+      wrapper.dataStructureName should equal(FormicStringDataTypeFactory.name)
       wrapper.clientId should equal(clientId)
       answer.dataTypeActor should not be null
     }

@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.linear.client
 
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType.ReceiveCallback
 import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, DataTypeInitiator}
@@ -55,8 +55,8 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
 
       val msg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
       val wrappedMsg = msg.op
-      wrappedMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      wrappedMsg.dataType should equal(list.dataTypeName)
+      wrappedMsg.dataStructureInstanceId should equal(dataTypeInstanceId)
+      wrappedMsg.dataStructure should equal(list.dataStructureName)
       wrappedMsg.operations should have size 1
       val insertOperation = wrappedMsg.operations.head.asInstanceOf[LinearInsertOperation]
       insertOperation.index should be(0)
@@ -78,8 +78,8 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
 
       val msg = dataTypeActor.expectMsgClass(classOf[LocalOperationMessage])
       val wrappedMsg = msg.op
-      wrappedMsg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      wrappedMsg.dataType should equal(list.dataTypeName)
+      wrappedMsg.dataStructureInstanceId should equal(dataTypeInstanceId)
+      wrappedMsg.dataStructure should equal(list.dataStructureName)
       wrappedMsg.operations should have size 1
       val insertOperation = wrappedMsg.operations.head.asInstanceOf[LinearDeleteOperation]
       insertOperation.index should be(0)
@@ -94,7 +94,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF(){
             case up:UpdateRequest =>
-              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              up.dataStructureInstanceId should equal(dataTypeInstanceId)
               sender ! UpdateResponse(dataTypeInstanceId, FormicBooleanListDataTypeFactory.name, "[false]", Option.empty)
           }
         }
@@ -119,7 +119,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF(){
             case up:UpdateRequest =>
-              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              up.dataStructureInstanceId should equal(dataTypeInstanceId)
               sender ! UpdateResponse(dataTypeInstanceId, FormicBooleanListDataTypeFactory.name, "[false, true]", Option.empty)
           }
         }
@@ -148,7 +148,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF(){
             case up:UpdateRequest =>
-              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              up.dataStructureInstanceId should equal(dataTypeInstanceId)
               up.clientId should equal(clientId)
               sender ! UpdateResponse(dataTypeInstanceId, FormicBooleanListDataTypeFactory.name, "[false, true]", Option.empty)
           }
@@ -182,7 +182,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF(){
             case up:UpdateRequest =>
-              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              up.dataStructureInstanceId should equal(dataTypeInstanceId)
               up.clientId should equal(clientId)
               sender ! UpdateResponse(dataTypeInstanceId, FormicDoubleListDataTypeFactory.name, "[0.5, 1.2]", Option.empty)
           }
@@ -216,7 +216,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF(){
             case up:UpdateRequest =>
-              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              up.dataStructureInstanceId should equal(dataTypeInstanceId)
               up.clientId should equal(clientId)
               sender ! UpdateResponse(dataTypeInstanceId, FormicIntegerListDataTypeFactory.name, "[4, 5]", Option.empty)
           }
@@ -250,7 +250,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
         def receiveUpdateRequestAndAnswer() = {
           expectMsgPF(){
             case up:UpdateRequest =>
-              up.dataTypeInstanceId should equal(dataTypeInstanceId)
+              up.dataStructureInstanceId should equal(dataTypeInstanceId)
               up.clientId should equal(clientId)
               sender ! UpdateResponse(dataTypeInstanceId, FormicStringDataTypeFactory.name, "[\"a\", \"b\"]", Option.empty)
           }

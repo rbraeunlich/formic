@@ -12,7 +12,7 @@ import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.testkit.TestKit
 import de.tu_berlin.formic.common.datatype.{OperationContext, ServerDataTypeProvider}
 import de.tu_berlin.formic.common.message._
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.linear.LinearInsertOperation
 import de.tu_berlin.formic.datatype.linear.server.{LinearServerDataTypeProvider, StringDataTypeFactory}
 import org.scalatest.{BeforeAndAfterAll, Matchers, OneInstancePerTest, WordSpecLike}
@@ -84,8 +84,8 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
         case Success(m) =>
           val text = m.get.asTextMessage.getStrictText
           val readMsg = read[FormicMessage](text)
-          readMsg.asInstanceOf[UpdateResponse].dataTypeInstanceId should equal(dataTypeInstanceId)
-          readMsg.asInstanceOf[UpdateResponse].dataType should equal(StringDataTypeFactory.name)
+          readMsg.asInstanceOf[UpdateResponse].dataStructureInstanceId should equal(dataTypeInstanceId)
+          readMsg.asInstanceOf[UpdateResponse].dataStructure should equal(StringDataTypeFactory.name)
           readMsg.asInstanceOf[UpdateResponse].data should equal("[\"3\",\"2\",\"1\",\"c\",\"b\",\"a\"]")
         //the lastOperationId is unimportant here
         case Failure(ex) => fail(ex)
@@ -145,7 +145,7 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
     // 3 acks for u1
 
     val transformedu1op1 = LinearInsertOperation(u1op1.index, u1op1.o, u1op1.id, OperationContext(List(u2op3.id)), user1Id)
-    val transformedu1Msg1 = OperationMessage(user1Id, u1Msg1.dataTypeInstanceId, u1Msg1.dataType, List(transformedu1op1))
+    val transformedu1Msg1 = OperationMessage(user1Id, u1Msg1.dataStructureInstanceId, u1Msg1.dataStructure, List(transformedu1op1))
     verifyEqual(user1Incoming.pull(), transformedu1Msg1)
     verifyEqual(user1Incoming.pull(), u1Msg2)
     verifyEqual(user1Incoming.pull(), u1Msg3)

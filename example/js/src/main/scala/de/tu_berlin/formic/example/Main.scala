@@ -3,7 +3,7 @@ package de.tu_berlin.formic.example
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.FormicSystemFactory
 import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, RemoteOperationEvent}
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import de.tu_berlin.formic.datatype.json.JsonPath
 import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
 import de.tu_berlin.formic.datatype.linear.client.FormicString
@@ -77,7 +77,7 @@ class Main extends ExampleClientDataTypes {
 
   def updateUIForString(id: DataStructureInstanceId): (ClientDataTypeEvent) => Unit = {
     case RemoteOperationEvent(_) =>
-      strings.find(s => s.dataTypeInstanceId == id).get.getAll.foreach {
+      strings.find(s => s.dataStructureInstanceId == id).get.getAll.foreach {
         buff =>
           val textInput = jQuery("#" + id.id)
           textInput.value(buff.mkString)
@@ -86,7 +86,7 @@ class Main extends ExampleClientDataTypes {
   }
 
   def updateUIForTree(id: DataStructureInstanceId): (ClientDataTypeEvent) => Unit = (_) => {
-    trees.find(s => s.dataTypeInstanceId == id).get.getTree().onComplete {
+    trees.find(s => s.dataStructureInstanceId == id).get.getTree().onComplete {
       case Success(rootNode) =>
         val treeDiv = jQuery("#" + id.id)
         treeDiv.empty()
@@ -98,7 +98,7 @@ class Main extends ExampleClientDataTypes {
   }
 
   def updateUIForJson(id: DataStructureInstanceId): (ClientDataTypeEvent) => Unit = (_) => {
-    jsons.find(s => s.dataTypeInstanceId == id).get.getNodeAt(JsonPath()).onComplete {
+    jsons.find(s => s.dataStructureInstanceId == id).get.getNodeAt(JsonPath()).onComplete {
       case Success(rootNode) =>
         val jsonDiv = jQuery("#" + id.id)
         jsonDiv.empty()
@@ -120,10 +120,10 @@ class Main extends ExampleClientDataTypes {
       if (!Main.keysToIgnore.contains(event.which)) {
         val character = event.which.toChar
         println("Inserting new Character: " + character)
-        strings.find(s => s.dataTypeInstanceId.id == elementId).get.add(index, character)
+        strings.find(s => s.dataStructureInstanceId.id == elementId).get.add(index, character)
       } else {
         //since a delete with backspace starts behind the character to delete
-        strings.find(s => s.dataTypeInstanceId.id == elementId).get.remove(index - 1)
+        strings.find(s => s.dataStructureInstanceId.id == elementId).get.remove(index - 1)
       }
     }
   }
@@ -131,7 +131,7 @@ class Main extends ExampleClientDataTypes {
 
   def insertValueToTree(id: String): (JQueryEventObject) => Unit = {
     (eventObject: JQueryEventObject) => {
-      val tree = trees.find(s => s.dataTypeInstanceId.id == id).get
+      val tree = trees.find(s => s.dataStructureInstanceId.id == id).get
       val toInsert = jQuery("#input" + id).value()
       val where = jQuery("#path" + id).`val`().toString.split("/").filter(s => s.nonEmpty).map(s => s.toInt)
       tree.insert(toInsert.toString.toInt, AccessPath(where: _*))
@@ -141,7 +141,7 @@ class Main extends ExampleClientDataTypes {
   def deleteFromTree(id: String): (JQueryEventObject) => Unit = {
     (eventObject: JQueryEventObject) => {
       println("delete value from tree")
-      val tree = trees.find(s => s.dataTypeInstanceId.id == id).get
+      val tree = trees.find(s => s.dataStructureInstanceId.id == id).get
       val where = jQuery("#path" + id).`val`().toString.split("/").filter(s => s.nonEmpty).map(s => s.toInt)
       tree.remove(AccessPath(where: _*))
     }
@@ -172,7 +172,7 @@ class Main extends ExampleClientDataTypes {
 
   def insertValueToJson(id: String): (JQueryEventObject) => Unit = {
     (eventObject: JQueryEventObject) => {
-      val json = jsons.find(s => s.dataTypeInstanceId.id == id).get
+      val json = jsons.find(s => s.dataStructureInstanceId.id == id).get
       val toInsert = jQuery("#inputJson" + id).value()
       val where = jQuery("#pathJson" + id).`val`().toString.split("/").filter(s => s.nonEmpty)
       json.insert(toInsert.toString, JsonPath(where: _*))
@@ -181,7 +181,7 @@ class Main extends ExampleClientDataTypes {
 
   def deleteFromJson(id: String): (JQueryEventObject) => Unit = {
     (eventObject: JQueryEventObject) => {
-      val json = jsons.find(s => s.dataTypeInstanceId.id == id).get
+      val json = jsons.find(s => s.dataStructureInstanceId.id == id).get
       val where = jQuery("#pathJson" + id).`val`().toString.split("/").filter(s => s.nonEmpty)
       json.remove(JsonPath(where: _*))
     }
@@ -189,7 +189,7 @@ class Main extends ExampleClientDataTypes {
 
   def replaceInJson(id: String): (JQueryEventObject) => Unit = {
     (eventObject: JQueryEventObject) => {
-      val json = jsons.find(s => s.dataTypeInstanceId.id == id).get
+      val json = jsons.find(s => s.dataStructureInstanceId.id == id).get
       val toInsert = jQuery("#inputJson" + id).value()
       val where = jQuery("#pathJson" + id).`val`().toString.split("/").filter(s => s.nonEmpty)
       json.replace(toInsert.toString, JsonPath(where: _*))
@@ -220,7 +220,7 @@ class Main extends ExampleClientDataTypes {
       jQuery("#gameInput").value(newId.id)
       val battleship = new Battleship()
       val json: FormicJsonObject = new FormicJsonObject((_) => {
-        battleship.invoke(jsons.find(j => j.dataTypeInstanceId == newId).get)
+        battleship.invoke(jsons.find(j => j.dataStructureInstanceId == newId).get)
       }, system, newId)
       jsons += json
     } else {

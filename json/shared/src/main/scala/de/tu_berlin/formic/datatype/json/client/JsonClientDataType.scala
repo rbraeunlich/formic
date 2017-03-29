@@ -6,7 +6,7 @@ import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataType
 import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.message.{FormicMessage, OperationMessage}
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.json._
 import de.tu_berlin.formic.datatype.json.client.JsonClientDataType._
 import de.tu_berlin.formic.datatype.tree.{TreeDeleteOperation, TreeInsertOperation, TreeStructureOperation}
@@ -50,7 +50,7 @@ class JsonClientDataType(id: DataStructureInstanceId,
       local.op.operations.head match {
         case json: JsonClientOperation =>
           val newOperation = transformJsonOperationsIntoGeneralTreeOperations(json)
-          val newMessage = OperationMessage(local.op.clientId, local.op.dataTypeInstanceId, local.op.dataType, List(newOperation))
+          val newMessage = OperationMessage(local.op.clientId, local.op.dataStructureInstanceId, local.op.dataStructure, List(newOperation))
           super.unacknowledged(callbackWrapper).apply(LocalOperationMessage(newMessage))
         case _ => super.unacknowledged(callbackWrapper).apply(local)
       }
@@ -62,7 +62,7 @@ class JsonClientDataType(id: DataStructureInstanceId,
       local.op.operations.head match {
         case json: JsonClientOperation =>
           val newOperation = transformJsonOperationsIntoGeneralTreeOperations(json)
-          val newMessage = OperationMessage(local.op.clientId, local.op.dataTypeInstanceId, local.op.dataType, List(newOperation))
+          val newMessage = OperationMessage(local.op.clientId, local.op.dataStructureInstanceId, local.op.dataStructure, List(newOperation))
           super.acknowledged(callbackWrapper).apply(LocalOperationMessage(newMessage))
         case _ => super.acknowledged(callbackWrapper).apply(local)
       }

@@ -7,7 +7,7 @@ import de.tu_berlin.formic.common.datatype.FormicDataType.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, DataTypeInitiator}
 import de.tu_berlin.formic.common.datatype.{FormicDataType, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
-import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId$, OperationId}
+import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
 import de.tu_berlin.formic.datatype.json._
 import de.tu_berlin.formic.datatype.json.client.JsonClientDataType._
@@ -24,7 +24,7 @@ import scala.scalajs.js.annotation.JSExportAll
 class FormicJsonObject(callback: (ClientDataTypeEvent) => Unit,
                        initiator: DataTypeInitiator,
                        dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId())
-  extends FormicDataType(callback, FormicJsonObjectFactory.name, dataTypeInstanceId = dataTypeInstanceId, initiator = initiator) {
+  extends FormicDataType(callback, FormicJsonObjectFactory.name, dataStructureInstanceId = dataTypeInstanceId, initiator = initiator) {
 
   implicit val timeout: Timeout = 1.seconds
 
@@ -63,7 +63,7 @@ class FormicJsonObject(callback: (ClientDataTypeEvent) => Unit,
   private def sendInsertOperation(toInsert: JsonTreeNode[_], path: JsonPath): OperationId = {
     val opId = OperationId()
     actor ! LocalOperationMessage(
-      OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(
+      OperationMessage(clientId, dataTypeInstanceId, dataStructureName, List(
         JsonClientInsertOperation(path, toInsert, opId, OperationContext(), clientId)
       ))
     )
@@ -73,7 +73,7 @@ class FormicJsonObject(callback: (ClientDataTypeEvent) => Unit,
   def remove(path: JsonPath): OperationId = {
     val opId = OperationId()
     actor ! LocalOperationMessage(
-      OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(
+      OperationMessage(clientId, dataTypeInstanceId, dataStructureName, List(
         JsonClientDeleteOperation(path, opId, OperationContext(), clientId)
       ))
     )
@@ -122,7 +122,7 @@ class FormicJsonObject(callback: (ClientDataTypeEvent) => Unit,
   private def sendReplaceOperation(toInsert: JsonTreeNode[_], path: JsonPath): OperationId = {
     val opId = OperationId()
     actor ! LocalOperationMessage(
-      OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(
+      OperationMessage(clientId, dataTypeInstanceId, dataStructureName, List(
         JsonClientReplaceOperation(path, toInsert, opId, OperationContext(), clientId)
       ))
     )

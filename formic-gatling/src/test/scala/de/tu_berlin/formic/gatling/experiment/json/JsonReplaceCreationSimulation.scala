@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.gatling.experiment.json
 
-import de.tu_berlin.formic.common.DataStructureInstanceId$
+import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.gatling.Predef._
 import io.gatling.core.Predef._
 
@@ -17,25 +17,25 @@ class JsonReplaceCreationSimulation extends Simulation {
     .logLevel("info")
 
   //to have a feeder for all scenarios, we create the ids up front and use them
-  val dataTypeInstanceIdFeeder = for (x <- 0.until(NUM_DATATYPES)) yield Map("dataTypeInstanceId" -> DataStructureInstanceId().id)
+  val dataStructureInstanceIdFeeder = for (x <- 0.until(NUM_DATATYPES)) yield Map("dataStructureInstanceId" -> DataStructureInstanceId().id)
 
   val connect = exec(formic("Connection").connect())
     .pause(2)
 
-  val createWarmupDataType = feed(dataTypeInstanceIdFeeder.iterator) //IMPORTANT, use an iterator or both scenarios will share one, which results in Exceptions
+  val createWarmupDataType = feed(dataStructureInstanceIdFeeder.iterator) //IMPORTANT, use an iterator or both scenarios will share one, which results in Exceptions
     .exec(formic("Creation")
     .create()
-    .json("${dataTypeInstanceId}"))
+    .json("${dataStructureInstanceId}"))
     .pause(5)
 
   val edit = repeat(101, "n") {
       exec(formic("jsonInsertion")
-        .json("${dataTypeInstanceId}")
+        .json("${dataStructureInstanceId}")
         .insert("foo")
         .path(Seq("${n}")))
     }.pause(10)
     .exec(s => {
-      print(" " + s("dataTypeInstanceId").as[String])
+      print(" " + s("dataStructureInstanceId").as[String])
       s
     })
     .pause(1)

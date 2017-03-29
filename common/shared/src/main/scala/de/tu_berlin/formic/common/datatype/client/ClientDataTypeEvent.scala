@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.datatype.client
 
-import de.tu_berlin.formic.common.DataStructureInstanceId$
+import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.common.datatype.DataTypeOperation
 
 /**

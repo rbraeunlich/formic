@@ -12,6 +12,6 @@ class NewInstanceCallbackActorWrapper(val callback: NewInstanceCallback) extends
 
   def receive = {
     case created: NewDataTypeCreated =>
-      callback.newInstanceCreated(created.wrapper, created.wrapper.dataTypeName)
+      callback.newInstanceCreated(created.wrapper, created.wrapper.dataStructureName)
   }
 }

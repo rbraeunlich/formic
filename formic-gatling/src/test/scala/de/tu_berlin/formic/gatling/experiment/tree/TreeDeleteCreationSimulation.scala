@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.gatling.experiment.tree
 
-import de.tu_berlin.formic.common.DataStructureInstanceId$
+import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.gatling.Predef._
 import io.gatling.core.Predef._
 
@@ -17,31 +17,31 @@ class TreeDeleteCreationSimulation extends Simulation {
     .logLevel("info")
 
   //to have a feeder for all scenarios, we create the ids up front and use them
-  val dataTypeInstanceIdFeeder = for (x <- 0.until(NUM_DATATYPES)) yield Map("dataTypeInstanceId" -> DataStructureInstanceId().id)
+  val dataStructureInstanceIdFeeder = for (x <- 0.until(NUM_DATATYPES)) yield Map("dataStructureInstanceId" -> DataStructureInstanceId().id)
 
   val connect = exec(formic("Connection").connect())
     .pause(2)
 
 
   val createTestDataType =
-    feed(dataTypeInstanceIdFeeder.iterator)
+    feed(dataStructureInstanceIdFeeder.iterator)
       .exec(formic("DataType")
         .create()
-        .tree("${dataTypeInstanceId}"))
+        .tree("${dataStructureInstanceId}"))
       .pause(1)
       .exec(formic("Root insertion")
-        .tree("${dataTypeInstanceId}")
+        .tree("${dataStructureInstanceId}")
         .insert(0)
         .path(Seq.empty))
       .repeat(110, "n") {
         exec(formic("LinearInsertion")
-          .tree("${dataTypeInstanceId}")
+          .tree("${dataStructureInstanceId}")
           .insert(1)
           .path(Seq(0)))
       }.pause(10)
       .pause(1)
       .exec(s => {
-        print(s("dataTypeInstanceId").as[String] + " ")
+        print(s("dataStructureInstanceId").as[String] + " ")
         s
       })
 
