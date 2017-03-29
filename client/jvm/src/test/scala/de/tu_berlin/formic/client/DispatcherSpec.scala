@@ -5,7 +5,7 @@ import akka.testkit.{EventFilter, ImplicitSender, TestActorRef, TestKit, TestPro
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.Dispatcher.{ErrorMessage, KnownDataTypeIds, RequestKnownDataTypeIds, WrappedUpdateResponse}
 import de.tu_berlin.formic.common.datatype.DataStructureName
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{NewDataTypeCreated, WrappedCreateRequest}
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.{NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest.{Matchers, WordSpecLike}
@@ -33,7 +33,7 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
     }
 
     "create a new data type instance and remember it when receiving an UpdateResponse" in {
-      val testFactory = TestActorRef(Props(new TestDataTypeFactory))
+      val testFactory = TestActorRef(Props(new TestDataStructureFactory))
       val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
       val instantiator = TestActorRef(Props(new DataStructureInstantiator(testFactories, ClientId())))
       val newInstanceCallback = TestProbe()
@@ -129,7 +129,7 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
     }
 
     "ignore UpdateResponses for data types it already knows about" in {
-      val testFactory: TestActorRef[TestDataTypeFactory] = TestActorRef(Props(new TestDataTypeFactory))
+      val testFactory: TestActorRef[TestDataStructureFactory] = TestActorRef(Props(new TestDataStructureFactory))
       val instantiator = new TestProbe(system)
       val newInstanceCallback = TestProbe()
 
@@ -148,7 +148,7 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
     }
 
     "answer the RequestKnownDataTypeIds message" in {
-      val testFactory: TestActorRef[TestDataTypeFactory] = TestActorRef(Props(new TestDataTypeFactory))
+      val testFactory: TestActorRef[TestDataStructureFactory] = TestActorRef(Props(new TestDataStructureFactory))
       val instantiator = new TestProbe(system){
         def answerWrappedUpdateResponse() = {
           expectMsgPF(){

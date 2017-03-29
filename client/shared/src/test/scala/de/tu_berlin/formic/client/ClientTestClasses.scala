@@ -3,7 +3,7 @@ package de.tu_berlin.formic.client
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype._
-import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataStructure, AbstractClientDataTypeFactory, DataStructureInitiator}
+import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataStructure, AbstractClientDataStructureFactory, DataStructureInitiator}
 import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest.Assertions._
@@ -13,7 +13,7 @@ import upickle.Js
   * @author Ronny Bräunlich
   */
 
-class TestDataTypeFactory extends AbstractClientDataTypeFactory[TestClientDataStructure, TestFormicDataStructure] {
+class TestDataStructureFactory extends AbstractClientDataStructureFactory[TestClientDataStructure, TestFormicDataStructure] {
 
   override val name: DataStructureName = TestClasses.dataTypeName
 

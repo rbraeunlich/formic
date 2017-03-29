@@ -2,7 +2,7 @@ package de.tu_berlin.formic.common.datatype.client
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure.RemoteInstantiation
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataStructure}
 import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
@@ -13,7 +13,7 @@ import scala.reflect.ClassTag
   * @author Ronny Bräunlich
   */
 //Why the ClassTag? See http://stackoverflow.com/questions/18692265/no-classtag-available-for-t-not-for-array
-abstract class AbstractClientDataTypeFactory[T <: AbstractClientDataStructure : ClassTag, S <: FormicDataStructure : ClassTag] extends Actor with ActorLogging {
+abstract class AbstractClientDataStructureFactory[T <: AbstractClientDataStructure : ClassTag, S <: FormicDataStructure : ClassTag] extends Actor with ActorLogging {
 
   override def receive: Receive = {
     case WrappedCreateRequest(outgoingConnection, data, lastOperationId, req, localClientId) =>
@@ -48,7 +48,7 @@ abstract class AbstractClientDataTypeFactory[T <: AbstractClientDataStructure : 
   val name: DataStructureName
 }
 
-object AbstractClientDataTypeFactory {
+object AbstractClientDataStructureFactory {
 
   /**
     * Local means that a client created the FormicDataType itself by calling new and using FormicSystem.init().

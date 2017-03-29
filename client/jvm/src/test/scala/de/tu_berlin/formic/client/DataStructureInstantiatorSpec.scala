@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{EventFilter, ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.Dispatcher.WrappedUpdateResponse
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.NewDataTypeCreated
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure.ReceiveCallback
@@ -27,7 +27,7 @@ class DataStructureInstantiatorSpec extends TestKit(ActorSystem("DataStructureIn
 
     "create a new data type instance upon receiving an UpdateResponse" in {
       val clientId = ClientId()
-      val testFactory = TestActorRef(Props(new TestDataTypeFactory))
+      val testFactory = TestActorRef(Props(new TestDataStructureFactory))
       val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
       val instantiator = system.actorOf(Props(new DataStructureInstantiator(testFactories, clientId)))
       val outgoingConnection = TestProbe()
@@ -43,7 +43,7 @@ class DataStructureInstantiatorSpec extends TestKit(ActorSystem("DataStructureIn
 
     "create a new data type instance upon receiving an UpdateResponse with the contained data" in {
       val clientId = ClientId()
-      val testFactory = TestActorRef(Props(new TestDataTypeFactory))
+      val testFactory = TestActorRef(Props(new TestDataStructureFactory))
       val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
       val instantiator = system.actorOf(Props(new DataStructureInstantiator(testFactories, clientId)))
       val outgoingConnection = TestProbe()

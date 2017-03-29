@@ -9,7 +9,7 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-class FormicBooleanTreeFactory extends FormicTreeDataTypeFactory[Boolean] {
+class FormicBooleanTreeFactory extends FormicTreeDataStructureFactory[Boolean] {
 
   override def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): FormicTree[Boolean] = {
     new FormicBooleanTree((ClientDataTypeEvent) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataType, localClientId)

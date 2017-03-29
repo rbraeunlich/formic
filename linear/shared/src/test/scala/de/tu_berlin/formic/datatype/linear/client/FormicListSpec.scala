@@ -95,7 +95,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
           expectMsgPF(){
             case up:UpdateRequest =>
               up.dataStructureInstanceId should equal(dataTypeInstanceId)
-              sender ! UpdateResponse(dataTypeInstanceId, FormicBooleanListDataTypeFactory.name, "[false]", Option.empty)
+              sender ! UpdateResponse(dataTypeInstanceId, FormicBooleanListDataStructureFactory.name, "[false]", Option.empty)
           }
         }
       }
@@ -120,7 +120,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
           expectMsgPF(){
             case up:UpdateRequest =>
               up.dataStructureInstanceId should equal(dataTypeInstanceId)
-              sender ! UpdateResponse(dataTypeInstanceId, FormicBooleanListDataTypeFactory.name, "[false, true]", Option.empty)
+              sender ! UpdateResponse(dataTypeInstanceId, FormicBooleanListDataStructureFactory.name, "[false, true]", Option.empty)
           }
         }
       }
@@ -150,7 +150,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
             case up:UpdateRequest =>
               up.dataStructureInstanceId should equal(dataTypeInstanceId)
               up.clientId should equal(clientId)
-              sender ! UpdateResponse(dataTypeInstanceId, FormicBooleanListDataTypeFactory.name, "[false, true]", Option.empty)
+              sender ! UpdateResponse(dataTypeInstanceId, FormicBooleanListDataStructureFactory.name, "[false, true]", Option.empty)
           }
         }
       }
@@ -184,7 +184,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
             case up:UpdateRequest =>
               up.dataStructureInstanceId should equal(dataTypeInstanceId)
               up.clientId should equal(clientId)
-              sender ! UpdateResponse(dataTypeInstanceId, FormicDoubleListDataTypeFactory.name, "[0.5, 1.2]", Option.empty)
+              sender ! UpdateResponse(dataTypeInstanceId, FormicDoubleListDataStructureFactory.name, "[0.5, 1.2]", Option.empty)
           }
         }
       }
@@ -218,7 +218,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
             case up:UpdateRequest =>
               up.dataStructureInstanceId should equal(dataTypeInstanceId)
               up.clientId should equal(clientId)
-              sender ! UpdateResponse(dataTypeInstanceId, FormicIntegerListDataTypeFactory.name, "[4, 5]", Option.empty)
+              sender ! UpdateResponse(dataTypeInstanceId, FormicIntegerListDataStructureFactory.name, "[4, 5]", Option.empty)
           }
         }
       }
@@ -252,7 +252,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
             case up:UpdateRequest =>
               up.dataStructureInstanceId should equal(dataTypeInstanceId)
               up.clientId should equal(clientId)
-              sender ! UpdateResponse(dataTypeInstanceId, FormicStringDataTypeFactory.name, "[\"a\", \"b\"]", Option.empty)
+              sender ! UpdateResponse(dataTypeInstanceId, FormicStringDataStructureFactory.name, "[\"a\", \"b\"]", Option.empty)
           }
         }
       }

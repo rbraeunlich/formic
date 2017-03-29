@@ -8,15 +8,15 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-class FormicBooleanListDataTypeFactory extends FormicLinearDataTypeFactory[Boolean] {
+class FormicBooleanListDataStructureFactory extends FormicLinearDataStructureFactory[Boolean] {
 
   override def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): FormicList[Boolean] = {
     new FormicBooleanList((ClientDataTypeEvent) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 
-  override val name: DataStructureName = FormicBooleanListDataTypeFactory.name
+  override val name: DataStructureName = FormicBooleanListDataStructureFactory.name
 }
 
-object FormicBooleanListDataTypeFactory {
+object FormicBooleanListDataStructureFactory {
   val name = DataStructureName("BooleanList")
 }

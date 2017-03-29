@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorRef}
 import de.tu_berlin.formic.client.Dispatcher.WrappedUpdateResponse
 import de.tu_berlin.formic.common.ClientId
 import de.tu_berlin.formic.common.datatype.DataStructureName
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.WrappedCreateRequest
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.WrappedCreateRequest
 import de.tu_berlin.formic.common.message.CreateRequest
 
 /**

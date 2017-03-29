@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype._
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataTypeFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest.{Matchers, WordSpecLike}
@@ -21,7 +21,7 @@ class AbstractClientDataTypeFactorySpec extends TestKit(ActorSystem("AbstractCli
   "AbstractClientDataTypeFactory" must {
 
     "create a data type and data type wrapper when receiving a WrappedCreateRequest" in {
-      val factory = system.actorOf(Props(new AbstractClientDataTypeFactorySpecFactory))
+      val factory = system.actorOf(Props(new AbstractClientDataStructureFactorySpecFactory))
       val outgoing = TestProbe()
       val instanceId = DataStructureInstanceId()
       val clientId = ClientId()
@@ -36,7 +36,7 @@ class AbstractClientDataTypeFactorySpec extends TestKit(ActorSystem("AbstractCli
     }
 
     "create only a data type when receiving a LocalCreateRequest" in {
-      val factory = system.actorOf(Props(new AbstractClientDataTypeFactorySpecFactory))
+      val factory = system.actorOf(Props(new AbstractClientDataStructureFactorySpecFactory))
       val outgoing = TestProbe()
       val instanceId = DataStructureInstanceId()
 
@@ -80,7 +80,7 @@ class AbstractClientDataTypeFactorySpecFormicDataStructure(clientId: ClientId) e
 }) {
 }
 
-class AbstractClientDataTypeFactorySpecFactory extends AbstractClientDataTypeFactory[AbstractClientDataTypeFactorySpecServerDataStructure, AbstractClientDataTypeFactorySpecFormicDataStructure] {
+class AbstractClientDataStructureFactorySpecFactory extends AbstractClientDataStructureFactory[AbstractClientDataTypeFactorySpecServerDataStructure, AbstractClientDataTypeFactorySpecFormicDataStructure] {
 
   override val name: DataStructureName = DataStructureName("AbstractClientDataTypeFactorySpec")
 

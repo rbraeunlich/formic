@@ -3,15 +3,15 @@ package de.tu_berlin.formic.datatype.json.client
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.WaveOTClient
 import de.tu_berlin.formic.common.datatype.DataStructureName
-import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataTypeFactory, ClientDataTypeEvent}
+import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataStructureFactory, ClientDataTypeEvent}
 import de.tu_berlin.formic.common.message.OperationMessage
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
-import de.tu_berlin.formic.datatype.tree.client.{RemoteDataStructureInitiator}
+import de.tu_berlin.formic.datatype.tree.client.RemoteDataStructureInitiator
 
 /**
   * @author Ronny Bräunlich
   */
-class FormicJsonObjectFactory extends AbstractClientDataTypeFactory[JsonClientDataStructure, FormicJsonObject]{
+class FormicJsonObjectFactory extends AbstractClientDataStructureFactory[JsonClientDataStructure, FormicJsonObject]{
 
   override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): JsonClientDataStructure = {
     JsonClientDataStructure(
