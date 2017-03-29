@@ -20,7 +20,7 @@ class JsonServerDataTypeProviderSpec extends TestKit(ActorSystem("JsonServerData
 
   "The JsonServerDataTypeProviderSpec" must {
     "create a factory actor for every list type" in {
-      val provider = JsonServerDataTypeProvider()
+      val provider = JsonServerDataStructureProvider()
       val factoryMap = provider.initFactories(system)
 
       factoryMap.keySet should contain(JsonServerDataTypeFactory.name)
@@ -31,9 +31,9 @@ class JsonServerDataTypeProviderSpec extends TestKit(ActorSystem("JsonServerData
 
     "register a FormicJsonDataTypeProtocols for each list type" in {
       val protocol = new FormicJsonProtocol
-      val provider = JsonServerDataTypeProvider()
+      val provider = JsonServerDataStructureProvider()
 
-      provider.registerFormicJsonDataTypeProtocols(protocol)
+      provider.registerFormicJsonDataStructureProtocols(protocol)
 
       val registered = protocol.dataTypeOperationJsonProtocols
 

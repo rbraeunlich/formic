@@ -6,8 +6,8 @@ import akka.testkit.TestKit
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client._
 import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
-import de.tu_berlin.formic.common.datatype.{ClientDataTypeProvider, DataStructureName, FormicDataType}
-import de.tu_berlin.formic.datatype.linear.client.{FormicString, LinearClientDataTypeProvider}
+import de.tu_berlin.formic.common.datatype.{ClientDataStructureProvider, DataStructureName, FormicDataType}
+import de.tu_berlin.formic.datatype.linear.client.{FormicString, LinearClientDataStructureProvider}
 import de.tu_berlin.formic.example.OfflineCapabilitySpec.{CollectingCallback, DropNextNMessages, TestWebSocketFactoryJVM}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
@@ -39,10 +39,10 @@ class OfflineCapabilitySpec extends TestKit(ActorSystem("ParallelEditingSpec"))
 
   "A FormicClient" must {
     "be able to handle disconnection from the server" in {
-      val user = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
+      val user = FormicSystemFactory.create(config, Set(LinearClientDataStructureProvider()))
       //the online possibility to check the exchange with the server is to use a second user,
       // else we cannot distinguish between online and offline, which is intentional
-      val userForCheck = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
+      val userForCheck = FormicSystemFactory.create(config, Set(LinearClientDataStructureProvider()))
       val userCallback = new CollectingCallback
       user.init(userCallback)
       val checkUserCallback = new CollectingCallback
@@ -92,11 +92,11 @@ class OfflineCapabilitySpec extends TestKit(ActorSystem("ParallelEditingSpec"))
         serverThread.run()
         Thread.sleep(5000)
       }
-      val user1 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
+      val user1 = FormicSystemFactory.create(config, Set(LinearClientDataStructureProvider()))
       //we need a special wrapper for user2 so we can intentionally drop messages
       val user2WebSocketFactory = new TestWebSocketFactoryJVM()
       val user2 = new FormicSystem(config, user2WebSocketFactory) with ClientDataTypes {
-        override val dataTypeProvider: Set[ClientDataTypeProvider] = Set(LinearClientDataTypeProvider())
+        override val dataTypeProvider: Set[ClientDataStructureProvider] = Set(LinearClientDataStructureProvider())
       }
       val user1Callback = new CollectingCallback
       user1.init(user1Callback)

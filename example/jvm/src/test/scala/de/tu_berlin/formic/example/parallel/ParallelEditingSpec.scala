@@ -11,9 +11,9 @@ import de.tu_berlin.formic.common.ClientId
 import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
 import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataType}
 import de.tu_berlin.formic.datatype.json._
-import de.tu_berlin.formic.datatype.json.client.{FormicJsonObject, JsonClientDataTypeProvider}
-import de.tu_berlin.formic.datatype.linear.client.{FormicString, LinearClientDataTypeProvider}
-import de.tu_berlin.formic.datatype.tree.client.{FormicIntegerTree, FormicStringTree, FormicTree, TreeClientDataTypeProvider}
+import de.tu_berlin.formic.datatype.json.client.{FormicJsonObject, JsonClientDataStructureProvider}
+import de.tu_berlin.formic.datatype.linear.client.{FormicString, LinearClientDataStructureProvider}
+import de.tu_berlin.formic.datatype.tree.client.{FormicIntegerTree, FormicStringTree, FormicTree, TreeClientDataStructureProvider}
 import de.tu_berlin.formic.datatype.tree.{AccessPath, TreeNode, ValueTreeNode}
 import de.tu_berlin.formic.example.{PersistenceCleanup, ServerThread}
 import de.tu_berlin.formic.example.parallel.ParallelEditingSpec.CollectingCallback
@@ -58,8 +58,8 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
     "result in a consistent linear structure when parallel edits happen" in {
       val user1Id = ClientId("2")
       val user2Id = ClientId("1") //important user1 > user2
-      val user1 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
-      val user2 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
+      val user1 = FormicSystemFactory.create(config, Set(LinearClientDataStructureProvider()))
+      val user2 = FormicSystemFactory.create(config, Set(LinearClientDataStructureProvider()))
       val user1Callback = new CollectingCallback
       val user2Callback = new CollectingCallback
       user1.init(user1Callback, user1Id)
@@ -135,8 +135,8 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
     "result in a consistent tree when parallel edits happen" in {
       val user1Id = ClientId("4")
       val user2Id = ClientId("3") //important user1 > user2
-      val user1 = FormicSystemFactory.create(config, Set(TreeClientDataTypeProvider()))
-      val user2 = FormicSystemFactory.create(config, Set(TreeClientDataTypeProvider()))
+      val user1 = FormicSystemFactory.create(config, Set(TreeClientDataStructureProvider()))
+      val user2 = FormicSystemFactory.create(config, Set(TreeClientDataStructureProvider()))
       val user1Callback = new CollectingCallback
       val user2Callback = new CollectingCallback
       user1.init(user1Callback, user1Id)
@@ -225,8 +225,8 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
     "result in a consistent JSON when parallel edits happen" in {
       val user1Id = ClientId("6")
       val user2Id = ClientId("5") //important user1 > user2
-      val user1 = FormicSystemFactory.create(config, Set(JsonClientDataTypeProvider()))
-      val user2 = FormicSystemFactory.create(config, Set(JsonClientDataTypeProvider()))
+      val user1 = FormicSystemFactory.create(config, Set(JsonClientDataStructureProvider()))
+      val user2 = FormicSystemFactory.create(config, Set(JsonClientDataStructureProvider()))
       val user1Callback = new CollectingCallback
       val user2Callback = new CollectingCallback
       user1.init(user1Callback, user1Id)
@@ -383,8 +383,8 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       val iterations = 1000
       val user1Id = ClientId("8")
       val user2Id = ClientId("7") //important user1 > user2
-      val user1 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
-      val user2 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
+      val user1 = FormicSystemFactory.create(config, Set(LinearClientDataStructureProvider()))
+      val user2 = FormicSystemFactory.create(config, Set(LinearClientDataStructureProvider()))
       val user1Callback = new CollectingCallback
       val user2Callback = new CollectingCallback
       val latch = new CountDownLatch((iterations * 2 + iterations) * 2 + 1) //every local operation results in two callback invocations, every remote one in one and that for two users and one CreateResponse
@@ -420,8 +420,8 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       val iterations = 1000
       val user1Id = ClientId("11")
       val user2Id = ClientId("10") //important user1 > user2
-      val user1 = FormicSystemFactory.create(config, Set(TreeClientDataTypeProvider()))
-      val user2 = FormicSystemFactory.create(config, Set(TreeClientDataTypeProvider()))
+      val user1 = FormicSystemFactory.create(config, Set(TreeClientDataStructureProvider()))
+      val user2 = FormicSystemFactory.create(config, Set(TreeClientDataStructureProvider()))
       val user1Callback = new CollectingCallback
       val user2Callback = new CollectingCallback
       val latch = new CountDownLatch((iterations * 2 + iterations) * 2 + 1) //every local operation results in two callback invocations, every remote one in one and that for two users and one CreateResponse
@@ -461,8 +461,8 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       val iterations = 1000
       val user1Id = ClientId("13")
       val user2Id = ClientId("12") //important user1 > user2
-      val user1 = FormicSystemFactory.create(config, Set(JsonClientDataTypeProvider()))
-      val user2 = FormicSystemFactory.create(config, Set(JsonClientDataTypeProvider()))
+      val user1 = FormicSystemFactory.create(config, Set(JsonClientDataStructureProvider()))
+      val user2 = FormicSystemFactory.create(config, Set(JsonClientDataStructureProvider()))
       val user1Callback = new CollectingCallback
       val user2Callback = new CollectingCallback
       val latch = new CountDownLatch((iterations * 2 + iterations) * 2) //every local operation results in two callback invocations, every remote one in one and that for two users
@@ -501,9 +501,9 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       val user1Id = ClientId("14")
       val user2Id = ClientId("15")
       val user3Id = ClientId("16")
-      val user1 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
-      val user2 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
-      val user3 = FormicSystemFactory.create(debugConfig, Set(LinearClientDataTypeProvider()))
+      val user1 = FormicSystemFactory.create(config, Set(LinearClientDataStructureProvider()))
+      val user2 = FormicSystemFactory.create(config, Set(LinearClientDataStructureProvider()))
+      val user3 = FormicSystemFactory.create(debugConfig, Set(LinearClientDataStructureProvider()))
       val user1Callback = new CollectingCallback
       val user2Callback = new CollectingCallback
       val user3Callback = new CollectingCallback
@@ -547,11 +547,11 @@ class ParallelEditingSpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       val user3Id = ClientId()
       val user4Id = ClientId()
       val user5Id = ClientId()
-      val user1 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
-      val user2 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
-      val user3 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
-      val user4 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
-      val user5 = FormicSystemFactory.create(config, Set(LinearClientDataTypeProvider()))
+      val user1 = FormicSystemFactory.create(config, Set(LinearClientDataStructureProvider()))
+      val user2 = FormicSystemFactory.create(config, Set(LinearClientDataStructureProvider()))
+      val user3 = FormicSystemFactory.create(config, Set(LinearClientDataStructureProvider()))
+      val user4 = FormicSystemFactory.create(config, Set(LinearClientDataStructureProvider()))
+      val user5 = FormicSystemFactory.create(config, Set(LinearClientDataStructureProvider()))
       val user1Callback = new CollectingCallback
       val user2Callback = new CollectingCallback
       val user3Callback = new CollectingCallback

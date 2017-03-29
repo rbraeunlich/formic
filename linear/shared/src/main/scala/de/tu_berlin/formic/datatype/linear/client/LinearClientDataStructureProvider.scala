@@ -1,14 +1,14 @@
 package de.tu_berlin.formic.datatype.linear.client
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import de.tu_berlin.formic.common.datatype.{ClientDataTypeProvider, DataStructureName}
+import de.tu_berlin.formic.common.datatype.{ClientDataStructureProvider, DataStructureName}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataTypeProtocol
 
 /**
   * @author Ronny Bräunlich
   */
-class LinearClientDataTypeProvider extends ClientDataTypeProvider {
+class LinearClientDataStructureProvider extends ClientDataStructureProvider {
 
   override def initFactories(actorSystem: ActorSystem): Map[DataStructureName, ActorRef] = {
     var factories: Map[DataStructureName, ActorRef] = Map.empty
@@ -24,7 +24,7 @@ class LinearClientDataTypeProvider extends ClientDataTypeProvider {
     factories
   }
 
-  override def registerFormicJsonDataTypeProtocols(formicJsonProtocol: FormicJsonProtocol): Unit = {
+  override def registerFormicJsonDataStructureProtocols(formicJsonProtocol: FormicJsonProtocol): Unit = {
     formicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Boolean](FormicBooleanListDataTypeFactory.name))
     formicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Double](FormicDoubleListDataTypeFactory.name))
     formicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Int](FormicIntegerListDataTypeFactory.name))
@@ -32,6 +32,6 @@ class LinearClientDataTypeProvider extends ClientDataTypeProvider {
   }
 }
 
-object LinearClientDataTypeProvider {
-  def apply(): LinearClientDataTypeProvider = new LinearClientDataTypeProvider()
+object LinearClientDataStructureProvider {
+  def apply(): LinearClientDataStructureProvider = new LinearClientDataStructureProvider()
 }

@@ -7,10 +7,10 @@ import de.tu_berlin.formic.client.FormicSystemIntegrationSpec.MockWebSocketFacto
 import de.tu_berlin.formic.client.WebSocketConnection.{OnConnect, OnMessage}
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
-import de.tu_berlin.formic.common.datatype.{ClientDataTypeProvider, DataStructureName, FormicDataType, OperationContext}
+import de.tu_berlin.formic.common.datatype.{ClientDataStructureProvider, DataStructureName, FormicDataType, OperationContext}
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.datatype.linear.{LinearInsertOperation, LinearNoOperation}
-import de.tu_berlin.formic.datatype.linear.client.{FormicString, LinearClientDataTypeProvider}
+import de.tu_berlin.formic.datatype.linear.client.{FormicString, LinearClientDataStructureProvider}
 import org.scalatest.{Matchers, WordSpecLike}
 import upickle.default._
 
@@ -27,7 +27,7 @@ class FormicSystemIntegrationSpec extends TestKit(ActorSystem("FormicSystemInteg
     "send NoOperation messages to the server if the transformations resulted in one for a linear structure" in {
       val mockSocketFactory = MockWebSocketFactory()
       val formicSystem = new FormicSystem(ConfigFactory.load(), mockSocketFactory) with ClientDataTypes{
-        override val dataTypeProvider: Set[ClientDataTypeProvider] = Set(new LinearClientDataTypeProvider)
+        override val dataTypeProvider: Set[ClientDataStructureProvider] = Set(new LinearClientDataStructureProvider)
       }
       formicSystem.init(new NewInstanceCallback {
 

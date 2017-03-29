@@ -1,14 +1,14 @@
 package de.tu_berlin.formic.datatype.linear.server
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import de.tu_berlin.formic.common.datatype.{DataStructureName, ServerDataTypeProvider}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, ServerDataStructureProvider}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataTypeProtocol
 
 /**
   * @author Ronny Bräunlich
   */
-class LinearServerDataTypeProvider extends ServerDataTypeProvider {
+class LinearServerDataStructureProvider extends ServerDataStructureProvider {
   
   override def initFactories(actorSystem: ActorSystem): Map[DataStructureName, ActorRef] = {
     var factories: Map[DataStructureName, ActorRef] = Map.empty
@@ -25,7 +25,7 @@ class LinearServerDataTypeProvider extends ServerDataTypeProvider {
     factories
   }
 
-  override def registerFormicJsonDataTypeProtocols(formicJsonProtocol: FormicJsonProtocol): Unit = {
+  override def registerFormicJsonDataStructureProtocols(formicJsonProtocol: FormicJsonProtocol): Unit = {
     formicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Boolean](BooleanListDataTypeFactory.name))
     formicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Double](DoubleListDataTypeFactory.name))
     formicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Int](IntegerListDataTypeFactory.name))
@@ -33,6 +33,6 @@ class LinearServerDataTypeProvider extends ServerDataTypeProvider {
   }
 }
 
-object LinearServerDataTypeProvider {
-  def apply(): LinearServerDataTypeProvider = new LinearServerDataTypeProvider()
+object LinearServerDataStructureProvider {
+  def apply(): LinearServerDataStructureProvider = new LinearServerDataStructureProvider()
 }

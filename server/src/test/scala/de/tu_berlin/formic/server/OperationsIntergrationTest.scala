@@ -10,11 +10,11 @@ import akka.http.scaladsl.server.Directives._
 import akka.stream.scaladsl.{Flow, Keep, Sink, SinkQueueWithCancel, Source, SourceQueueWithComplete}
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.testkit.TestKit
-import de.tu_berlin.formic.common.datatype.{OperationContext, ServerDataTypeProvider}
+import de.tu_berlin.formic.common.datatype.{OperationContext, ServerDataStructureProvider}
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.linear.LinearInsertOperation
-import de.tu_berlin.formic.datatype.linear.server.{LinearServerDataTypeProvider, StringDataTypeFactory}
+import de.tu_berlin.formic.datatype.linear.server.{LinearServerDataStructureProvider, StringDataTypeFactory}
 import org.scalatest.{BeforeAndAfterAll, Matchers, OneInstancePerTest, WordSpecLike}
 import upickle.default._
 
@@ -33,7 +33,7 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
   with BeforeAndAfterAll {
 
   val formicServer = new FormicServer with ServerDataTypes {
-    override val dataTypeProvider: Set[ServerDataTypeProvider] = Set(LinearServerDataTypeProvider())
+    override val dataTypeProvider: Set[ServerDataStructureProvider] = Set(LinearServerDataStructureProvider())
   }
 
   implicit val writer = formicServer.jsonProtocol.writer

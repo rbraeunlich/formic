@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.client
 
-import de.tu_berlin.formic.common.datatype.ClientDataTypeProvider
+import de.tu_berlin.formic.common.datatype.ClientDataStructureProvider
 
 /**
   * Cake-pattern trait to be able to initialize a FormicSystem with the data types
@@ -10,6 +10,6 @@ import de.tu_berlin.formic.common.datatype.ClientDataTypeProvider
   */
 trait ClientDataTypes {
 
-  val dataTypeProvider: Set[ClientDataTypeProvider]
+  val dataTypeProvider: Set[ClientDataStructureProvider]
 
 }

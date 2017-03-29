@@ -1,14 +1,14 @@
 package de.tu_berlin.formic.datatype.tree.client
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import de.tu_berlin.formic.common.datatype.{ClientDataTypeProvider, DataStructureName}
+import de.tu_berlin.formic.common.datatype.{ClientDataStructureProvider, DataStructureName}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.datatype.tree.TreeFormicJsonDataTypeProtocol
 
 /**
   * @author Ronny Bräunlich
   */
-class TreeClientDataTypeProvider extends ClientDataTypeProvider {
+class TreeClientDataStructureProvider extends ClientDataStructureProvider {
 
   override def initFactories(actorSystem: ActorSystem): Map[DataStructureName, ActorRef] = {
     var factories: Map[DataStructureName, ActorRef] = Map.empty
@@ -24,7 +24,7 @@ class TreeClientDataTypeProvider extends ClientDataTypeProvider {
     factories
   }
 
-  override def registerFormicJsonDataTypeProtocols(formicJsonProtocol: FormicJsonProtocol): Unit = {
+  override def registerFormicJsonDataStructureProtocols(formicJsonProtocol: FormicJsonProtocol): Unit = {
     formicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Boolean](FormicBooleanTreeFactory.name))
     formicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Double](FormicDoubleTreeFactory.name))
     formicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Int](FormicIntegerTreeFactory.name))
@@ -32,6 +32,6 @@ class TreeClientDataTypeProvider extends ClientDataTypeProvider {
   }
 }
 
-object TreeClientDataTypeProvider {
-  def apply(): TreeClientDataTypeProvider = new TreeClientDataTypeProvider()
+object TreeClientDataStructureProvider {
+  def apply(): TreeClientDataStructureProvider = new TreeClientDataStructureProvider()
 }

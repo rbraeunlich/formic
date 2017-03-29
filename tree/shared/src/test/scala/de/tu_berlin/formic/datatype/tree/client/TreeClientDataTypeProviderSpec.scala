@@ -20,7 +20,7 @@ class TreeClientDataTypeProviderSpec extends TestKit(ActorSystem("TreeClientData
 
   "The TreeClientDataTypeProvider" must {
     "create a factory actor for every list type" in {
-      val provider = TreeClientDataTypeProvider()
+      val provider = TreeClientDataStructureProvider()
       val factoryMap = provider.initFactories(system)
 
       factoryMap.keySet should contain allOf(
@@ -40,9 +40,9 @@ class TreeClientDataTypeProviderSpec extends TestKit(ActorSystem("TreeClientData
 
     "register a FormicJsonDataTypeProtocols for each list type" in {
       val protocol = new FormicJsonProtocol
-      val provider = TreeClientDataTypeProvider()
+      val provider = TreeClientDataStructureProvider()
 
-      provider.registerFormicJsonDataTypeProtocols(protocol)
+      provider.registerFormicJsonDataStructureProtocols(protocol)
 
       val registered = protocol.dataTypeOperationJsonProtocols
 

@@ -11,7 +11,7 @@ import akka.stream.scaladsl.{Flow, Keep, Sink, SinkQueueWithCancel, Source, Sour
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.testkit.TestKit
 import akka.util.ByteString
-import de.tu_berlin.formic.common.datatype.ServerDataTypeProvider
+import de.tu_berlin.formic.common.datatype.ServerDataStructureProvider
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse, FormicMessage}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
@@ -47,7 +47,7 @@ class ExceptionHandlingIntegrationTest extends TestKit(ActorSystem("ExceptionHan
 
   before {
     val server = new FormicServer() with ServerDataTypes{
-      override val dataTypeProvider: Set[ServerDataTypeProvider] = Set(TestClassProvider)
+      override val dataTypeProvider: Set[ServerDataStructureProvider] = Set(TestClassProvider)
     }
     val testRoute = path("formic") {
       extractCredentials {

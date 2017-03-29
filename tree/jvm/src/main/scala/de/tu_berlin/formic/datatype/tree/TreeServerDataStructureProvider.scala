@@ -1,13 +1,13 @@
 package de.tu_berlin.formic.datatype.tree
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import de.tu_berlin.formic.common.datatype.{DataStructureName, ServerDataTypeProvider}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, ServerDataStructureProvider}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 
 /**
   * @author Ronny Bräunlich
   */
-class TreeServerDataTypeProvider extends ServerDataTypeProvider {
+class TreeServerDataStructureProvider extends ServerDataStructureProvider {
 
   override def initFactories(actorSystem: ActorSystem): Map[DataStructureName, ActorRef] = {
     var factories: Map[DataStructureName, ActorRef] = Map.empty
@@ -23,7 +23,7 @@ class TreeServerDataTypeProvider extends ServerDataTypeProvider {
     factories
   }
 
-  override def registerFormicJsonDataTypeProtocols(formicJsonProtocol: FormicJsonProtocol): Unit = {
+  override def registerFormicJsonDataStructureProtocols(formicJsonProtocol: FormicJsonProtocol): Unit = {
     formicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Boolean](BooleanTreeDataTypeFactory.name))
     formicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Double](DoubleTreeDataTypeFactory.name))
     formicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Int](IntegerTreeDataTypeFactory.name))
@@ -31,6 +31,6 @@ class TreeServerDataTypeProvider extends ServerDataTypeProvider {
   }
 }
 
-object TreeServerDataTypeProvider {
-  def apply(): TreeServerDataTypeProvider = new TreeServerDataTypeProvider()
+object TreeServerDataStructureProvider {
+  def apply(): TreeServerDataStructureProvider = new TreeServerDataStructureProvider()
 }

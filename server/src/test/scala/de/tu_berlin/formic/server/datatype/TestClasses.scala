@@ -83,13 +83,13 @@ object TestClasses {
   val dataTypeName = DataStructureName("Test")
 }
 
-object TestClassProvider extends ServerDataTypeProvider {
+object TestClassProvider extends ServerDataStructureProvider {
   override def initFactories(actorSystem: ActorSystem): Map[DataStructureName, ActorRef] = {
     val actor = actorSystem.actorOf(Props(new TestDataTypeFactory), TestClasses.dataTypeName.name)
     Map(TestClasses.dataTypeName -> actor)
   }
 
-  override def registerFormicJsonDataTypeProtocols(formicJsonProtocol: FormicJsonProtocol): Unit = {
+  override def registerFormicJsonDataStructureProtocols(formicJsonProtocol: FormicJsonProtocol): Unit = {
     formicJsonProtocol.registerProtocol(new TestFormicJsonDataTypeProtocol)
   }
 }

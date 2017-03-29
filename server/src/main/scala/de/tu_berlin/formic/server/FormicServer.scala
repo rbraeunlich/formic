@@ -50,7 +50,7 @@ class FormicServer {
   def initDataTypes() = {
     dataTypeProvider.foreach{ provider =>
       factories ++= provider.initFactories(system)
-      provider.registerFormicJsonDataTypeProtocols(jsonProtocol)
+      provider.registerFormicJsonDataStructureProtocols(jsonProtocol)
     }
   }
 

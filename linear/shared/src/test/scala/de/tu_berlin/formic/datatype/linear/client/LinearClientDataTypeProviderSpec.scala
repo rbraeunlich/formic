@@ -20,7 +20,7 @@ class LinearClientDataTypeProviderSpec extends TestKit(ActorSystem("LinearClient
 
   "The LinearClientDataTypeProvider" must {
     "create a factory actor for every list type" in {
-      val provider = LinearClientDataTypeProvider()
+      val provider = LinearClientDataStructureProvider()
       val factoryMap = provider.initFactories(system)
 
       factoryMap.keySet should contain allOf(
@@ -40,9 +40,9 @@ class LinearClientDataTypeProviderSpec extends TestKit(ActorSystem("LinearClient
 
     "register a FormicJsonDataTypeProtocols for each list type" in {
       val protocol = new FormicJsonProtocol
-      val provider = LinearClientDataTypeProvider()
+      val provider = LinearClientDataStructureProvider()
 
-      provider.registerFormicJsonDataTypeProtocols(protocol)
+      provider.registerFormicJsonDataStructureProtocols(protocol)
 
       val registered = protocol.dataTypeOperationJsonProtocols
 
