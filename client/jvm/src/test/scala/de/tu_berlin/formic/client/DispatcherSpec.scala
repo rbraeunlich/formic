@@ -73,7 +73,7 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
 
     "log a warning if it does not know the data type instance of an operation message" in {
       val message = OperationMessage(ClientId(), DataStructureInstanceId(), TestClasses.dataTypeName, List.empty)
-      val warningText = s"Did not find data type instance with id ${message.dataStructureInstanceId}, dropping message $message"
+      val warningText = s"Did not find data structure instance with id ${message.dataStructureInstanceId}, dropping message $message"
       val dispatcher = system.actorOf(Props(new Dispatcher(null, TestProbe().ref, TestProbe().ref)))
 
       EventFilter.warning(message = warningText, occurrences = 1) intercept {
