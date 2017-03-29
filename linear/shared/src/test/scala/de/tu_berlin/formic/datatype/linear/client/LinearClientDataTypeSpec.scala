@@ -164,14 +164,14 @@ class LinearClientDataTypeSpecControlAlgoClient extends ControlAlgorithmClient {
 
   var context: List[OperationId] = List.empty
 
-  override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = {
+  override def canLocalOperationBeApplied(op: DataStructureOperation): Boolean = {
     context = List(op.id)
     true
   }
 
-  override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = true
+  override def canBeApplied(op: DataStructureOperation, history: HistoryBuffer): Boolean = true
 
-  override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = {
+  override def transform(op: DataStructureOperation, history: HistoryBuffer, transformer: OperationTransformer): DataStructureOperation = {
     context = List(op.id)
     op
   }

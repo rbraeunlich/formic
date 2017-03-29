@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.message
 
-import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, DataStructureOperation}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 
 /**
@@ -55,4 +55,4 @@ case class UpdateRequest(clientId: ClientId, dataStructureInstanceId: DataStruct
   * @param dataStructure the structure of the data structure that changed, needed for JSON deserialization
   * @param operations the operation/s that shall be applied
   */
-case class OperationMessage(clientId: ClientId, dataStructureInstanceId: DataStructureInstanceId, dataStructure: DataStructureName, operations: List[DataTypeOperation]) extends FormicMessage
+case class OperationMessage(clientId: ClientId, dataStructureInstanceId: DataStructureInstanceId, dataStructure: DataStructureName, operations: List[DataStructureOperation]) extends FormicMessage

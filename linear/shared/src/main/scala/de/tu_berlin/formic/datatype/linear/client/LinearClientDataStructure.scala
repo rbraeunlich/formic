@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.linear.client
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure
-import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, OperationContext, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, DataStructureOperation, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.{DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation, LinearNoOperation, LinearTransformer}
 import upickle.default._
@@ -29,7 +29,7 @@ class LinearClientDataStructure[T](id: DataStructureInstanceId,
 
   def data = privateData
 
-  override def apply(op: DataTypeOperation): Unit = {
+  override def apply(op: DataStructureOperation): Unit = {
     log.debug(s"Applying operation: $op")
     op match {
       case LinearInsertOperation(index, o, _, _, _) => privateData.insert(index, o.asInstanceOf[T])
@@ -42,7 +42,7 @@ class LinearClientDataStructure[T](id: DataStructureInstanceId,
     write(data)
   }
 
-  override def cloneOperationWithNewContext(op: DataTypeOperation, context: OperationContext): DataTypeOperation = {
+  override def cloneOperationWithNewContext(op: DataStructureOperation, context: OperationContext): DataStructureOperation = {
     op match {
       case in: LinearInsertOperation => LinearInsertOperation(in.index, in.o, in.id, context, in.clientId)
       case del: LinearDeleteOperation => LinearDeleteOperation(del.index, del.id, context, del.clientId)

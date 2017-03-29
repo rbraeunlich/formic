@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.message
 
-import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, OperationContext}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, DataStructureOperation, OperationContext}
 import de.tu_berlin.formic.common.json.{FormicJsonDataTypeProtocol, FormicJsonProtocol}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
@@ -15,12 +15,12 @@ import upickle.default._
   */
 class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
 
-  case class TestOperation(id: OperationId, operationContext: OperationContext,var clientId: ClientId) extends DataTypeOperation
+  case class TestOperation(id: OperationId, operationContext: OperationContext,var clientId: ClientId) extends DataStructureOperation
 
   val testProtocol = new FormicJsonDataTypeProtocol {
     override val name: DataStructureName = DataStructureName("test")
 
-    override def serializeOperation(op: DataTypeOperation): String = {
+    override def serializeOperation(op: DataStructureOperation): String = {
       Js.Obj(
         ("operationId", Js.Str(op.id.id)),
         ("operationContext", Js.Arr(op.operationContext.operations.map(o => Js.Str(o.id)): _*)),
@@ -28,7 +28,7 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
       ).toString()
     }
 
-    override def deserializeOperation(json: String): DataTypeOperation = {
+    override def deserializeOperation(json: String): DataStructureOperation = {
       val valueMap = upickle.json.read(json).obj
       TestOperation(
         OperationId(valueMap("operationId").str),

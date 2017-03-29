@@ -47,16 +47,16 @@ object AbstractServerDataTypeFactoryPersistenceSpec {
   class AbstractServerDataTypeFactoryPersistenceSpecServerDataStructure(id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataStructure(id, controlAlgorithm) {
 
     val transformer = new OperationTransformer {
-      override def transform(pair: (DataTypeOperation, DataTypeOperation)): DataTypeOperation = pair._1
+      override def transform(pair: (DataStructureOperation, DataStructureOperation)): DataStructureOperation = pair._1
 
-      override def bulkTransform(operation: DataTypeOperation, bridge: List[DataTypeOperation]): List[DataTypeOperation] = bridge
+      override def bulkTransform(operation: DataStructureOperation, bridge: List[DataStructureOperation]): List[DataStructureOperation] = bridge
 
-      override protected def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = pair._1
+      override protected def transformInternal(pair: (DataStructureOperation, DataStructureOperation), withNewContext: Boolean): DataStructureOperation = pair._1
     }
 
     var data = ""
 
-    override def apply(op: DataTypeOperation): Unit = {
+    override def apply(op: DataStructureOperation): Unit = {
       op match {
         case _ => fail
       }

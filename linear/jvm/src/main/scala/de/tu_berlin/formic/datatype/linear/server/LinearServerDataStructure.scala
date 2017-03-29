@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.linear.server
 
 import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
-import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, DataStructureOperation, OperationTransformer}
 import de.tu_berlin.formic.common.server.datatype.AbstractServerDataStructure
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation, LinearNoOperation, LinearTransformer}
 import upickle.default._
@@ -22,7 +22,7 @@ class LinearServerDataStructure[T](id: DataStructureInstanceId, controlAlgorithm
 
   def data = privateData
 
-  override def apply(op: DataTypeOperation): Unit = {
+  override def apply(op: DataStructureOperation): Unit = {
     log.debug(s"Applying operation: $op")
     op match {
       case LinearInsertOperation(index, o, _, _, _) => privateData.insert(index, o.asInstanceOf[T])

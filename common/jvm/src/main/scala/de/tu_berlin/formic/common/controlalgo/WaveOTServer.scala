@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.controlalgo
 
-import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataStructureOperation, HistoryBuffer, OperationTransformer}
 
 /**
   * The implementation of the Wave OT algorithm on the server side
@@ -16,7 +16,7 @@ class WaveOTServer extends ControlAlgorithm {
     * @param history the history of already applied operations of the data type instance
     * @return true if the operation can be applied
     */
-  override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = {
+  override def canBeApplied(op: DataStructureOperation, history: HistoryBuffer): Boolean = {
     val directAncestorOperation = op.operationContext.operations.headOption
     directAncestorOperation match {
       case None => true
@@ -37,7 +37,7 @@ class WaveOTServer extends ControlAlgorithm {
     * @param transformer the transformer that knows the transformation rules
     * @return an operation that can be applied to the data type instance
     */
-  override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = {
+  override def transform(op: DataStructureOperation, history: HistoryBuffer, transformer: OperationTransformer): DataStructureOperation = {
     val directAncestorOperation = op.operationContext.operations.headOption
     val parallelOperations = directAncestorOperation match {
       case None => history.history

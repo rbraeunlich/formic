@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.controlalgo
 
-import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataStructureOperation, HistoryBuffer, OperationTransformer}
 
 /**
   * Common trait for all control algorithms
@@ -16,7 +16,7 @@ trait ControlAlgorithm {
     * @param history the history of already applied operations of the data type instance
     * @return true if the operation can be applied
     */
-  def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean
+  def canBeApplied(op: DataStructureOperation, history: HistoryBuffer): Boolean
 
   /**
     * Performs operational transformation on an operation if necessary
@@ -25,6 +25,6 @@ trait ControlAlgorithm {
     * @param transformer the transformer that knows the transformation rules
     * @return an operation that can be applied to the data type instance
     */
-  def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation
+  def transform(op: DataStructureOperation, history: HistoryBuffer, transformer: OperationTransformer): DataStructureOperation
 
 }

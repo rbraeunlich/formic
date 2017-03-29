@@ -1,9 +1,9 @@
 package de.tu_berlin.formic.datatype.linear
 
-import de.tu_berlin.formic.common.datatype.{DataTypeOperation, OperationContext, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataStructureOperation, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 
-trait LinearStructureOperation extends DataTypeOperation {
+trait LinearStructureOperation extends DataStructureOperation {
   val index: Int
 }
 
@@ -29,11 +29,11 @@ object LinearTransformer extends OperationTransformer {
     * @param pair A pair of operations. In order to use pattern matching it is a tuple.
     * @return The first operation that includes the effect of the second one.
     */
-  override def transform(pair: (DataTypeOperation, DataTypeOperation)): DataTypeOperation = {
+  override def transform(pair: (DataStructureOperation, DataStructureOperation)): DataStructureOperation = {
     transformInternal(pair, withNewContext = true)
   }
 
-  protected def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = {
+  protected def transformInternal(pair: (DataStructureOperation, DataStructureOperation), withNewContext: Boolean): DataStructureOperation = {
     val context = if (withNewContext) OperationContext(List(pair._2.id)) else pair._1.operationContext
     pair match {
       case (op1: LinearDeleteOperation, op2: LinearDeleteOperation) => transform(op1, op2, context)

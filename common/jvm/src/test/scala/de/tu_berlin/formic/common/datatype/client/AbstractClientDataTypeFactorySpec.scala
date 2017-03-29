@@ -54,11 +54,11 @@ class AbstractClientDataTypeFactorySpec extends TestKit(ActorSystem("AbstractCli
 
 object AbstractClientDataTypeSpecControlAlgorithm extends ControlAlgorithmClient {
 
-  override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = true
+  override def canLocalOperationBeApplied(op: DataStructureOperation): Boolean = true
 
-  override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = true
+  override def canBeApplied(op: DataStructureOperation, history: HistoryBuffer): Boolean = true
 
-  override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = op
+  override def transform(op: DataStructureOperation, history: HistoryBuffer, transformer: OperationTransformer): DataStructureOperation = op
 
   override def currentOperationContext: OperationContext = OperationContext(List.empty)
 }
@@ -68,11 +68,11 @@ class AbstractClientDataTypeFactorySpecServerDataStructure(outgoingConnection: A
 
   override val transformer: OperationTransformer = null
 
-  override def apply(op: DataTypeOperation): Unit = {}
+  override def apply(op: DataStructureOperation): Unit = {}
 
   override def getDataAsJson: String = ""
 
-  override def cloneOperationWithNewContext(op: DataTypeOperation, context: OperationContext): DataTypeOperation = op
+  override def cloneOperationWithNewContext(op: DataStructureOperation, context: OperationContext): DataStructureOperation = op
 }
 
 class AbstractClientDataTypeFactorySpecFormicDataStructure(clientId: ClientId) extends FormicDataStructure(null, DataStructureName("AbstractClientDataTypeFactorySpec"),null,clientId, DataStructureInstanceId(), new DataStructureInitiator {

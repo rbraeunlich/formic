@@ -4,7 +4,7 @@ import akka.actor.ActorLogging
 import akka.persistence.{PersistentActor, RecoveryCompleted}
 import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
-import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, HistoryBuffer, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, DataStructureOperation, HistoryBuffer, OperationTransformer}
 import de.tu_berlin.formic.common.message.{HistoricOperationRequest, OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.server.datatype.AbstractServerDataStructure._
 /**
@@ -45,18 +45,18 @@ abstract class AbstractServerDataStructure(val id: DataStructureInstanceId, val 
   }
 
   val receiveRecover: Receive = {
-    case operation: DataTypeOperation => applyOperation(operation)
+    case operation: DataStructureOperation => applyOperation(operation)
     case RecoveryCompleted => log.info(s"Data type ${id.id} $dataTypeName recovered")
   }
 
-  private def applyOperation(dataTypeOperation: DataTypeOperation) = {
+  private def applyOperation(dataTypeOperation: DataStructureOperation) = {
     val transformed = controlAlgorithm.transform(dataTypeOperation, historyBuffer, transformer)
     apply(transformed)
     historyBuffer.addOperation(transformed)
     context.system.eventStream.publish(OperationMessage(transformed.clientId, id, dataTypeName, List(transformed)))
   }
 
-  def apply(op: DataTypeOperation)
+  def apply(op: DataStructureOperation)
 
   def getDataAsJson: String
 

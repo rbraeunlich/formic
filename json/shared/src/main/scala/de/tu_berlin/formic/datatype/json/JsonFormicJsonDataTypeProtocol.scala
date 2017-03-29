@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.datatype.json
 
-import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, OperationContext}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, DataStructureOperation, OperationContext}
 import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import de.tu_berlin.formic.datatype.tree._
@@ -16,7 +16,7 @@ import upickle.default._
   */
 case class JsonFormicJsonDataTypeProtocol(name: DataStructureName)(implicit val reader: Reader[ObjectNode], val writer: Writer[ObjectNode]) extends FormicJsonDataTypeProtocol {
 
-  override def deserializeOperation(json: String): DataTypeOperation = {
+  override def deserializeOperation(json: String): DataStructureOperation = {
     val valueMap = upickle.json.read(json).obj
     val operationId = OperationId(valueMap("operationId").str)
     val operationContext = valueMap("operationContext").arr.map(v => OperationId(v.str)).toList
@@ -34,7 +34,7 @@ case class JsonFormicJsonDataTypeProtocol(name: DataStructureName)(implicit val 
     }
   }
 
-  override def serializeOperation(op: DataTypeOperation): String = {
+  override def serializeOperation(op: DataStructureOperation): String = {
     op match {
       case ins: TreeInsertOperation =>
         write(

@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.common.datatype.client
 
 import de.tu_berlin.formic.common.DataStructureInstanceId
-import de.tu_berlin.formic.common.datatype.DataTypeOperation
+import de.tu_berlin.formic.common.datatype.DataStructureOperation
 
 /**
   * Events the AbstractClientDataType uses to pass information to its callback interface.
@@ -9,10 +9,10 @@ import de.tu_berlin.formic.common.datatype.DataTypeOperation
   */
 sealed trait ClientDataTypeEvent
 
-case class LocalOperationEvent(operation: DataTypeOperation) extends  ClientDataTypeEvent
+case class LocalOperationEvent(operation: DataStructureOperation) extends  ClientDataTypeEvent
 
-case class RemoteOperationEvent(operation: DataTypeOperation) extends ClientDataTypeEvent
+case class RemoteOperationEvent(operation: DataStructureOperation) extends ClientDataTypeEvent
 
 case class CreateResponseEvent(dataTypeInstanceId: DataStructureInstanceId) extends ClientDataTypeEvent
 
-case class AcknowledgementEvent(operation: DataTypeOperation) extends ClientDataTypeEvent
+case class AcknowledgementEvent(operation: DataStructureOperation) extends ClientDataTypeEvent

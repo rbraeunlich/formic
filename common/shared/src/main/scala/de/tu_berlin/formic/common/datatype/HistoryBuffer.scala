@@ -7,7 +7,7 @@ import de.tu_berlin.formic.common.OperationId
   *
   * @author Ronny Bräunlich
   */
-class HistoryBuffer(private var privateHistory: List[DataTypeOperation] = List.empty) {
+class HistoryBuffer(private var privateHistory: List[DataStructureOperation] = List.empty) {
 
   def history = privateHistory
 
@@ -18,7 +18,7 @@ class HistoryBuffer(private var privateHistory: List[DataTypeOperation] = List.e
     * @param id the operation id
     * @return
     */
-  def findOperation(id: OperationId): Option[DataTypeOperation] = {
+  def findOperation(id: OperationId): Option[DataStructureOperation] = {
     history.find(op => op.id == id)
   }
 
@@ -29,7 +29,7 @@ class HistoryBuffer(private var privateHistory: List[DataTypeOperation] = List.e
     * @return A list containing all the operations that took place after the given one in descending
     *         order, i.e. the first operation in the list is the newest one. The list might be empty.
     */
-  def findAllOperationsAfter(id: OperationId): List[DataTypeOperation] = {
+  def findAllOperationsAfter(id: OperationId): List[DataStructureOperation] = {
     if (id == null) history
     else {
       val index = history.map(op => op.id).indexOf(id)
@@ -42,5 +42,5 @@ class HistoryBuffer(private var privateHistory: List[DataTypeOperation] = List.e
     *
     * @param op the lastest operation
     */
-  def addOperation(op: DataTypeOperation) = privateHistory = op :: privateHistory
+  def addOperation(op: DataStructureOperation) = privateHistory = op :: privateHistory
 }

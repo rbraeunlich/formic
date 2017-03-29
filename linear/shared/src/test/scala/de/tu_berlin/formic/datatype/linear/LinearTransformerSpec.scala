@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.datatype.linear
 
 import de.tu_berlin.formic.common.controlalgo.WaveOTClient
-import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, OperationContext}
+import de.tu_berlin.formic.common.datatype.{DataStructureOperation, HistoryBuffer, OperationContext}
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import org.scalatest._
 import upickle.default._
@@ -334,7 +334,7 @@ class LinearTransformerSpec extends FlatSpec with Matchers {
   }
 
   it should "make send WaveOTClient a noop to the server after receiving an ack for the inFlightOperation" in {
-    var sentOperations: List[DataTypeOperation] = List.empty
+    var sentOperations: List[DataStructureOperation] = List.empty
     val controlAlgo = new WaveOTClient(op => {sentOperations = sentOperations :+ op})
     val op1 = LinearInsertOperation(10, "z", OperationId(), OperationContext(), ClientId("2"))
     val op2 = LinearInsertOperation(1, "z", OperationId(), OperationContext(List(op1.id)), ClientId("2"))

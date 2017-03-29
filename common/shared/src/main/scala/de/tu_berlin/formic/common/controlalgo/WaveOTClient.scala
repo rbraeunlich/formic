@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.common.controlalgo
 
 import de.tu_berlin.formic.common.OperationId
-import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, OperationContext, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataStructureOperation, HistoryBuffer, OperationContext, OperationTransformer}
 
 /**
   * The client implementation of the Wave OT algorithm. In order to keep it free from
@@ -10,11 +10,11 @@ import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, Op
   *
   * @author Ronny Bräunlich
   */
-class WaveOTClient(sendToServerFunction: (DataTypeOperation) => Unit) extends ControlAlgorithmClient {
+class WaveOTClient(sendToServerFunction: (DataStructureOperation) => Unit) extends ControlAlgorithmClient {
 
-  var buffer: List[DataTypeOperation] = List.empty
+  var buffer: List[DataStructureOperation] = List.empty
 
-  var inFlightOperation: DataTypeOperation = _
+  var inFlightOperation: DataStructureOperation = _
 
   var currentContext: List[OperationId] = List.empty
 
@@ -26,7 +26,7 @@ class WaveOTClient(sendToServerFunction: (DataTypeOperation) => Unit) extends Co
     * @param history the history of already applied operations of the data type instance
     * @return true if the operation can be applied
     */
-  override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = {
+  override def canBeApplied(op: DataStructureOperation, history: HistoryBuffer): Boolean = {
     if (isAcknowledgement(op)) {
       if (buffer.nonEmpty) {
         inFlightOperation = buffer.head
@@ -49,7 +49,7 @@ class WaveOTClient(sendToServerFunction: (DataTypeOperation) => Unit) extends Co
     * @param transformer the transformer that knows the transformation rules
     * @return an operation that can be applied to the data type instance
     */
-  override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = {
+  override def transform(op: DataStructureOperation, history: HistoryBuffer, transformer: OperationTransformer): DataStructureOperation = {
     var transformed = op
     if (inFlightOperation != null) {
       transformed = (inFlightOperation +: buffer).foldLeft(transformed)((o1, o2) => transformer.transform((o1, o2)))
@@ -69,7 +69,7 @@ class WaveOTClient(sendToServerFunction: (DataTypeOperation) => Unit) extends Co
     * @param op      the operation that shall be applied
     * @return true if the operation can be applieds
     */
-  override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = {
+  override def canLocalOperationBeApplied(op: DataStructureOperation): Boolean = {
     if (inFlightOperation == null) {
       inFlightOperation = op
       sendToServerFunction(inFlightOperation)
@@ -80,7 +80,7 @@ class WaveOTClient(sendToServerFunction: (DataTypeOperation) => Unit) extends Co
     true
   }
 
-  def isAcknowledgement(op: DataTypeOperation): Boolean = {
+  def isAcknowledgement(op: DataStructureOperation): Boolean = {
     //acknowledgements can never come out of order
     inFlightOperation != null && op.id == inFlightOperation.id
   }

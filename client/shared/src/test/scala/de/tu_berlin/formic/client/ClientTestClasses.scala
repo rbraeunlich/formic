@@ -26,7 +26,7 @@ class TestClientDataStructure(override val historyBuffer: HistoryBuffer, val dat
 
   var data = initialData.getOrElse("{data}")
 
-  override def apply(op: DataTypeOperation): Unit = {
+  override def apply(op: DataStructureOperation): Unit = {
     op match {
       case test: TestOperation => data = "{received}"
       case _ => fail
@@ -39,7 +39,7 @@ class TestClientDataStructure(override val historyBuffer: HistoryBuffer, val dat
 
   override val transformer: OperationTransformer = TestTransformer
 
-  override def cloneOperationWithNewContext(op: DataTypeOperation, context: OperationContext): DataTypeOperation = op
+  override def cloneOperationWithNewContext(op: DataStructureOperation, context: OperationContext): DataStructureOperation = op
 }
 
 class TestFormicDataStructure(actor: ActorRef = null) extends FormicDataStructure((_) => {}, TestClasses.dataTypeName, actor, ClientId(), DataStructureInstanceId(), new DataStructureInitiator {
@@ -47,11 +47,11 @@ class TestFormicDataStructure(actor: ActorRef = null) extends FormicDataStructur
 }) {
 }
 
-case class TestOperation(id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends DataTypeOperation
+case class TestOperation(id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends DataStructureOperation
 
 class TestFormicJsonDataTypeProtocol extends FormicJsonDataTypeProtocol {
 
-  override def deserializeOperation(json: String): DataTypeOperation = {
+  override def deserializeOperation(json: String): DataStructureOperation = {
     val valueMap = upickle.json.read(json).obj
     TestOperation(
       OperationId(valueMap("operationId").str),
@@ -61,7 +61,7 @@ class TestFormicJsonDataTypeProtocol extends FormicJsonDataTypeProtocol {
 
   override val name: DataStructureName = TestClasses.dataTypeName
 
-  override def serializeOperation(op: DataTypeOperation): String = {
+  override def serializeOperation(op: DataStructureOperation): String = {
     Js.Obj(
       ("operationId", Js.Str(op.id.id)),
       ("operationContext", Js.Arr(op.operationContext.operations.map(o => Js.Str(o.id)): _*)),
@@ -72,22 +72,22 @@ class TestFormicJsonDataTypeProtocol extends FormicJsonDataTypeProtocol {
 
 object TestControlAlgorithm extends ControlAlgorithmClient {
 
-  override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = true
+  override def canBeApplied(op: DataStructureOperation, history: HistoryBuffer): Boolean = true
 
-  override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = op
+  override def transform(op: DataStructureOperation, history: HistoryBuffer, transformer: OperationTransformer): DataStructureOperation = op
 
-  override def canLocalOperationBeApplied(op: DataTypeOperation): Boolean = true
+  override def canLocalOperationBeApplied(op: DataStructureOperation): Boolean = true
 
   override def currentOperationContext: OperationContext = OperationContext(List.empty)
 }
 
 object TestTransformer extends OperationTransformer {
 
-  override def transform(pair: (DataTypeOperation, DataTypeOperation)): DataTypeOperation = pair._1
+  override def transform(pair: (DataStructureOperation, DataStructureOperation)): DataStructureOperation = pair._1
 
-  override def bulkTransform(operation: DataTypeOperation, bridge: List[DataTypeOperation]): List[DataTypeOperation] = bridge
+  override def bulkTransform(operation: DataStructureOperation, bridge: List[DataStructureOperation]): List[DataStructureOperation] = bridge
 
-  override protected def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = pair._2
+  override protected def transformInternal(pair: (DataStructureOperation, DataStructureOperation), withNewContext: Boolean): DataStructureOperation = pair._2
 }
 
 object TestClasses {

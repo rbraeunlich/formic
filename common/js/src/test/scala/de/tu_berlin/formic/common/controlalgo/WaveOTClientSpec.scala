@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.controlalgo
 
-import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, OperationContext, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataStructureOperation, HistoryBuffer, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import org.scalatest.{Matchers, WordSpec}
 
@@ -147,11 +147,11 @@ class WaveOTClientSpec extends WordSpec with Matchers {
 }
 
 
-case class WaveOTClientTestOperation(id: OperationId, operationContext: OperationContext, var clientId: ClientId, transformations: Int = 0) extends DataTypeOperation
+case class WaveOTClientTestOperation(id: OperationId, operationContext: OperationContext, var clientId: ClientId, transformations: Int = 0) extends DataStructureOperation
 
 object WaveOTClientTestTransformer extends OperationTransformer {
 
-  override def transform(pair: (DataTypeOperation, DataTypeOperation)): DataTypeOperation = {
+  override def transform(pair: (DataStructureOperation, DataStructureOperation)): DataStructureOperation = {
     val toTransform = pair._1.asInstanceOf[WaveOTClientTestOperation]
     WaveOTClientTestOperation(toTransform.id, OperationContext(List(pair._2.id)), toTransform.clientId, toTransform.transformations + 1)
   }
@@ -164,12 +164,12 @@ object WaveOTClientTestTransformer extends OperationTransformer {
     * @param operation the operation that is transformed against the bridge
     * @param bridge    the operations that have to be transformed
     */
-  override def bulkTransform(operation: DataTypeOperation, bridge: List[DataTypeOperation]): List[DataTypeOperation] = {
+  override def bulkTransform(operation: DataStructureOperation, bridge: List[DataStructureOperation]): List[DataStructureOperation] = {
     if(bridge.isEmpty) bridge
     val last = bridge.lastOption.map(op => WaveOTClientTestOperation(op.id, OperationContext(List(operation.id)), op.clientId, op.asInstanceOf[WaveOTClientTestOperation].transformations + 1)).get
     val transformed = bridge.take(bridge.size - 1).map(op => WaveOTClientTestOperation(op.id, op.operationContext, op.clientId, op.asInstanceOf[WaveOTClientTestOperation].transformations + 1))
     transformed :+ last
   }
 
-  override protected def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = pair._1
+  override protected def transformInternal(pair: (DataStructureOperation, DataStructureOperation), withNewContext: Boolean): DataStructureOperation = pair._1
 }

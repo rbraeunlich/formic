@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.tree
 
 import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
-import de.tu_berlin.formic.common.datatype.{DataStructureName, DataTypeOperation, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataStructureName, DataStructureOperation, OperationTransformer}
 import de.tu_berlin.formic.common.server.datatype.AbstractServerDataStructure
 import upickle.default._
 
@@ -15,7 +15,7 @@ class TreeServerDataStructure[T](id: DataStructureInstanceId, controlAlgorithm: 
 
   override val transformer: OperationTransformer = new TreeTransformer
 
-  override def apply(op: DataTypeOperation): Unit = {
+  override def apply(op: DataStructureOperation): Unit = {
     log.debug(s"Applying operation: $op")
     data = data.applyOperation(op.asInstanceOf[TreeStructureOperation])
   }

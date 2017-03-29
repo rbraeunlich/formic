@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.controlalgo
 
-import de.tu_berlin.formic.common.datatype.{DataTypeOperation, OperationContext}
+import de.tu_berlin.formic.common.datatype.{DataStructureOperation, OperationContext}
 
 /**
   * Client and server control algorithms may be different. Therefore we have this interface.
@@ -15,7 +15,7 @@ trait ControlAlgorithmClient extends ControlAlgorithm {
     * @param op      the operation that shall be applied
     * @return true if the operation can be applied
     */
-  def canLocalOperationBeApplied(op: DataTypeOperation): Boolean
+  def canLocalOperationBeApplied(op: DataStructureOperation): Boolean
 
   /**
     * On the client it is not necessarily the history that defines the current operation context.

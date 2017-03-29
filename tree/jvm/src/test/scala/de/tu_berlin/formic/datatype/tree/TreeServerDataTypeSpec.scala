@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.tree
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
-import de.tu_berlin.formic.common.datatype.{DataTypeOperation, HistoryBuffer, OperationContext, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataStructureOperation, HistoryBuffer, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
@@ -87,7 +87,7 @@ class TreeServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
 
 object TreeServerDataTypeSpecControlAlgorithm extends ControlAlgorithm {
 
-  override def canBeApplied(op: DataTypeOperation, history: HistoryBuffer): Boolean = true
+  override def canBeApplied(op: DataStructureOperation, history: HistoryBuffer): Boolean = true
 
-  override def transform(op: DataTypeOperation, history: HistoryBuffer, transformer: OperationTransformer): DataTypeOperation = op
+  override def transform(op: DataStructureOperation, history: HistoryBuffer, transformer: OperationTransformer): DataStructureOperation = op
 }

@@ -1,9 +1,9 @@
 package de.tu_berlin.formic.datatype.tree
 
-import de.tu_berlin.formic.common.datatype.{DataTypeOperation, OperationContext, OperationTransformer}
+import de.tu_berlin.formic.common.datatype.{DataStructureOperation, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 
-trait TreeStructureOperation extends DataTypeOperation {
+trait TreeStructureOperation extends DataStructureOperation {
   val accessPath: AccessPath
 }
 
@@ -34,11 +34,11 @@ class TreeTransformer extends OperationTransformer {
     else false
   }
 
-  override def transform(pair: (DataTypeOperation, DataTypeOperation)): DataTypeOperation = {
+  override def transform(pair: (DataStructureOperation, DataStructureOperation)): DataStructureOperation = {
     transformInternal(pair, withNewContext = true)
   }
 
-  protected def transformInternal(pair: (DataTypeOperation, DataTypeOperation), withNewContext: Boolean): DataTypeOperation = {
+  protected def transformInternal(pair: (DataStructureOperation, DataStructureOperation), withNewContext: Boolean): DataStructureOperation = {
     val context = if (withNewContext) OperationContext(List(pair._2.id)) else pair._1.operationContext
     pair match {
       case (op1: TreeInsertOperation, op2: TreeInsertOperation) => transform(op1, op2, context)
@@ -60,7 +60,7 @@ class TreeTransformer extends OperationTransformer {
     AccessPath(accessPath.path.zipWithIndex.map(t => if (t._2 == tp) t._1 - 1 else t._1):_*)
   }
 
-  private def transform(op1: TreeInsertOperation, op2: TreeInsertOperation, context: OperationContext): DataTypeOperation = {
+  private def transform(op1: TreeInsertOperation, op2: TreeInsertOperation, context: OperationContext): DataStructureOperation = {
     if (isEffectIndependent(op1.accessPath, op2.accessPath)) {
       return TreeInsertOperation(op1.accessPath, op1.tree, op1.id, context, op1.clientId)
     }
@@ -90,7 +90,7 @@ class TreeTransformer extends OperationTransformer {
     TreeInsertOperation(newPath, op1.tree, op1.id, context, op1.clientId)
   }
 
-  private def transform(op1: TreeDeleteOperation, op2: TreeDeleteOperation, context: OperationContext): DataTypeOperation = {
+  private def transform(op1: TreeDeleteOperation, op2: TreeDeleteOperation, context: OperationContext): DataStructureOperation = {
     if (isEffectIndependent(op1.accessPath, op2.accessPath)) {
       return TreeDeleteOperation(op1.accessPath, op1.id, context, op1.clientId)
     }
@@ -111,7 +111,7 @@ class TreeTransformer extends OperationTransformer {
     TreeNoOperation(op1.id, context, op1.clientId)
   }
 
-  private def transform(op1: TreeInsertOperation, op2: TreeDeleteOperation, context: OperationContext): DataTypeOperation = {
+  private def transform(op1: TreeInsertOperation, op2: TreeDeleteOperation, context: OperationContext): DataStructureOperation = {
     if (isEffectIndependent(op1.accessPath, op2.accessPath)) {
       return TreeInsertOperation(op1.accessPath, op1.tree, op1.id, context, op1.clientId)
     }
@@ -129,7 +129,7 @@ class TreeTransformer extends OperationTransformer {
     TreeInsertOperation(op1.accessPath, op1.tree, op1.id, context, op1.clientId)
   }
 
-  private def transform(op1: TreeDeleteOperation, op2: TreeInsertOperation, context: OperationContext): DataTypeOperation = {
+  private def transform(op1: TreeDeleteOperation, op2: TreeInsertOperation, context: OperationContext): DataStructureOperation = {
     if (isEffectIndependent(op1.accessPath, op2.accessPath)) {
       return TreeDeleteOperation(op1.accessPath, op1.id, context, op1.clientId)
     }

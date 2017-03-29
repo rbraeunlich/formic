@@ -152,13 +152,13 @@ abstract class AbstractClientDataStructure(val id: DataStructureInstanceId,
       sender ! UpdateResponse(id, dataTypeName, getDataAsJson, operationId)
   }
 
-  private def applyOperation(dataTypeOperation: DataTypeOperation) = {
+  private def applyOperation(dataTypeOperation: DataStructureOperation) = {
     val transformed = controlAlgorithm.transform(dataTypeOperation, historyBuffer, transformer)
     apply(transformed)
     historyBuffer.addOperation(transformed)
   }
 
-  def apply(op: DataTypeOperation)
+  def apply(op: DataStructureOperation)
 
   /**
     * An operation context shall not be modifiable. But since a wrapper cannot directly access
@@ -173,7 +173,7 @@ abstract class AbstractClientDataStructure(val id: DataStructureInstanceId,
     * Therefore, for <b>local</b> operations, the data type needs to set the operation context, or in
     * this case clone the operation with a new one.
     */
-  def cloneOperationWithNewContext(op: DataTypeOperation, context: OperationContext): DataTypeOperation
+  def cloneOperationWithNewContext(op: DataStructureOperation, context: OperationContext): DataStructureOperation
 
   def getDataAsJson: String
 
@@ -186,7 +186,7 @@ abstract class AbstractClientDataStructure(val id: DataStructureInstanceId,
     * @param historyBuffer the buffer containing all previous operations
     * @return true, if the operation from the operation context is present, false otherwise
     */
-  def isPreviousOperationPresent(op: DataTypeOperation, historyBuffer: HistoryBuffer): Boolean = {
+  def isPreviousOperationPresent(op: DataStructureOperation, historyBuffer: HistoryBuffer): Boolean = {
     if (op.operationContext.operations.isEmpty) true
     else if(lastOperationId.contains(op.operationContext.operations.head)) true
     else historyBuffer.findOperation(op.operationContext.operations.head).isDefined
@@ -197,7 +197,7 @@ abstract class AbstractClientDataStructure(val id: DataStructureInstanceId,
     * if that operation is present, either in the other operations or in the history. If not, the
     * operation cannot be applied.
     */
-  def existsOperationWithDirectContextDependencyMissing(operations: List[DataTypeOperation], historyBuffer: HistoryBuffer): Boolean = {
+  def existsOperationWithDirectContextDependencyMissing(operations: List[DataStructureOperation], historyBuffer: HistoryBuffer): Boolean = {
     operations.
       filterNot(op => isPreviousOperationPresent(op, historyBuffer)).
       exists(op => !operations.exists(
