@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.linear.server
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse}
-import de.tu_berlin.formic.common.server.datatype.NewDataTypeCreated
+import de.tu_berlin.formic.common.server.datatype.NewDataStructureCreated
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
@@ -32,7 +32,7 @@ class LinearDataStructureFactorySpec extends TestKit(ActorSystem("LinearDataStru
       val dataTypeInstanceId = DataStructureInstanceId()
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, BooleanListDataStructureFactory.name)
 
-      val response = expectMsgClass(classOf[NewDataTypeCreated])
+      val response = expectMsgClass(classOf[NewDataStructureCreated])
 
       response.dataStructureInstanceId should be(dataTypeInstanceId)
       response.ref.path should equal(factory.path.child(dataTypeInstanceId.id))
@@ -46,7 +46,7 @@ class LinearDataStructureFactorySpec extends TestKit(ActorSystem("LinearDataStru
       val dataTypeInstanceId = DataStructureInstanceId()
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, DoubleListDataStructureFactory.name)
 
-      val response = expectMsgClass(classOf[NewDataTypeCreated])
+      val response = expectMsgClass(classOf[NewDataStructureCreated])
 
       response.dataStructureInstanceId should be(dataTypeInstanceId)
       response.ref.path should equal(factory.path.child(dataTypeInstanceId.id))
@@ -60,7 +60,7 @@ class LinearDataStructureFactorySpec extends TestKit(ActorSystem("LinearDataStru
       val dataTypeInstanceId = DataStructureInstanceId()
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, IntegerListDataStructureFactory.name)
 
-      val response = expectMsgClass(classOf[NewDataTypeCreated])
+      val response = expectMsgClass(classOf[NewDataStructureCreated])
 
       response.dataStructureInstanceId should be(dataTypeInstanceId)
       response.ref.path should equal(factory.path.child(dataTypeInstanceId.id))
@@ -74,7 +74,7 @@ class LinearDataStructureFactorySpec extends TestKit(ActorSystem("LinearDataStru
       val dataTypeInstanceId = DataStructureInstanceId()
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, StringDataStructureFactory.name)
 
-      val response = expectMsgClass(classOf[NewDataTypeCreated])
+      val response = expectMsgClass(classOf[NewDataStructureCreated])
 
       response.dataStructureInstanceId should be(dataTypeInstanceId)
       response.ref.path should equal(factory.path.child(dataTypeInstanceId.id))

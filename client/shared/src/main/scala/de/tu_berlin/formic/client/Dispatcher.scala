@@ -2,7 +2,7 @@ package de.tu_berlin.formic.client
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import de.tu_berlin.formic.client.Dispatcher._
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.NewDataTypeCreated
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.NewDataStructureCreated
 import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.common.message._
 
@@ -26,7 +26,7 @@ class Dispatcher(val outgoingConnection: ActorRef, val newInstanceCallback: Acto
         case None => instantiator ! WrappedUpdateResponse(outgoingConnection, rep)
       }
 
-    case created: NewDataTypeCreated =>
+    case created: NewDataStructureCreated =>
       instances += (created.dataTypeInstanceId -> created.dataTypeActor)
       newInstanceCallback ! created
 
@@ -45,7 +45,7 @@ class Dispatcher(val outgoingConnection: ActorRef, val newInstanceCallback: Acto
 
     case hist: HistoricOperationRequest => outgoingConnection ! hist
 
-    case RequestKnownDataTypeIds => sender ! KnownDataTypeIds(instances.keySet)
+    case RequestKnownDataStructureIds => sender ! KnownDataStructureIds(instances.keySet)
   }
 }
 
@@ -61,10 +61,10 @@ object Dispatcher {
   /**
     * Message to enable the WebSocketConnection to ask the Dispatcher for all the data types that exist on the client.
     */
-  case object RequestKnownDataTypeIds
+  case object RequestKnownDataStructureIds
 
   /**
     * Answer to the RequestKnownDataTypeId message
     */
-  case class KnownDataTypeIds(ids: Set[DataStructureInstanceId])
+  case class KnownDataStructureIds(ids: Set[DataStructureInstanceId])
 }

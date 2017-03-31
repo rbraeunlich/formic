@@ -3,9 +3,9 @@ package de.tu_berlin.formic.client
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{EventFilter, ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
-import de.tu_berlin.formic.client.Dispatcher.{ErrorMessage, KnownDataTypeIds, RequestKnownDataTypeIds, WrappedUpdateResponse}
+import de.tu_berlin.formic.client.Dispatcher.{ErrorMessage, KnownDataStructureIds, RequestKnownDataStructureIds, WrappedUpdateResponse}
 import de.tu_berlin.formic.common.datatype.DataStructureName
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.{NewDataTypeCreated, WrappedCreateRequest}
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.{NewDataStructureCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest.{Matchers, WordSpecLike}
@@ -44,7 +44,7 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
 
       dispatcher.underlyingActor.instances should contain key dataTypeInstanceId
-      newInstanceCallback.expectMsgClass(classOf[NewDataTypeCreated])
+      newInstanceCallback.expectMsgClass(classOf[NewDataStructureCreated])
     }
 
     "forward an operation message to the correct data type instance" in {
@@ -60,10 +60,10 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       //create two data types
       dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
       testFactory.expectMsg(WrappedCreateRequest(null, "a", Option.empty,CreateRequest(null, dataTypeInstanceId, TestClasses.dataTypeName), clientId))
-      testFactory.reply(NewDataTypeCreated(dataTypeInstanceId, testDataType.ref, new TestFormicDataStructure))
+      testFactory.reply(NewDataStructureCreated(dataTypeInstanceId, testDataType.ref, new TestFormicDataStructure))
       dispatcher ! UpdateResponse(dataTypeInstanceId2, TestClasses.dataTypeName, "a", Option.empty)
       testFactory.expectMsg(WrappedCreateRequest(null, "a", Option.empty, CreateRequest(null, dataTypeInstanceId2, TestClasses.dataTypeName), clientId))
-      testFactory.reply(NewDataTypeCreated(dataTypeInstanceId2, testDataType2.ref, new TestFormicDataStructure))
+      testFactory.reply(NewDataStructureCreated(dataTypeInstanceId2, testDataType2.ref, new TestFormicDataStructure))
 
       val opMessage = OperationMessage(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName, List.empty)
       dispatcher ! opMessage
@@ -117,10 +117,10 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       //create two data types
       dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
       testFactory.expectMsg(WrappedCreateRequest(null, "a", Option.empty,CreateRequest(null, dataTypeInstanceId, TestClasses.dataTypeName), clientId))
-      testFactory.reply(NewDataTypeCreated(dataTypeInstanceId, testDataType.ref, new TestFormicDataStructure))
+      testFactory.reply(NewDataStructureCreated(dataTypeInstanceId, testDataType.ref, new TestFormicDataStructure))
       dispatcher ! UpdateResponse(dataTypeInstanceId2, TestClasses.dataTypeName, "a", Option.empty)
       testFactory.expectMsg(WrappedCreateRequest(null, "a", Option.empty, CreateRequest(null, dataTypeInstanceId2, TestClasses.dataTypeName), clientId))
-      testFactory.reply(NewDataTypeCreated(dataTypeInstanceId2, testDataType2.ref, new TestFormicDataStructure))
+      testFactory.reply(NewDataStructureCreated(dataTypeInstanceId2, testDataType2.ref, new TestFormicDataStructure))
       val response = CreateResponse(dataTypeInstanceId2)
 
       dispatcher ! response
@@ -168,9 +168,9 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       dispatcher ! UpdateResponse(dataTypeInstanceId2, TestClasses.dataTypeName, "a", Option.empty)
       instantiator.answerWrappedUpdateResponse()
 
-      dispatcher ! RequestKnownDataTypeIds
+      dispatcher ! RequestKnownDataStructureIds
 
-      expectMsg(KnownDataTypeIds(Set(dataTypeInstanceId, dataTypeInstanceId2)))
+      expectMsg(KnownDataStructureIds(Set(dataTypeInstanceId, dataTypeInstanceId2)))
     }
   }
 }

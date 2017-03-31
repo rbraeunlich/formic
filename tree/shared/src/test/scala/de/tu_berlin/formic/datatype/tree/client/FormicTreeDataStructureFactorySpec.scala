@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.tree.client
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.{NewDataTypeCreated, WrappedCreateRequest}
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.{NewDataStructureCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
@@ -37,7 +37,7 @@ class FormicTreeDataStructureFactorySpec extends TestKit(ActorSystem("FormicTree
         ClientId(), dataTypeInstanceId, FormicBooleanTreeFactory.name
       ), clientId)
 
-      val answer = expectMsgClass(classOf[NewDataTypeCreated])
+      val answer = expectMsgClass(classOf[NewDataStructureCreated])
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicBooleanTree]
@@ -66,7 +66,7 @@ class FormicTreeDataStructureFactorySpec extends TestKit(ActorSystem("FormicTree
         ClientId(), dataTypeInstanceId, FormicBooleanTreeFactory.name
       ), clientId)
 
-      val answer = expectMsgClass(classOf[NewDataTypeCreated])
+      val answer = expectMsgClass(classOf[NewDataStructureCreated])
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicDoubleTree]
@@ -95,7 +95,7 @@ class FormicTreeDataStructureFactorySpec extends TestKit(ActorSystem("FormicTree
         ClientId(), dataTypeInstanceId, FormicBooleanTreeFactory.name
       ), clientId)
 
-      val answer = expectMsgClass(classOf[NewDataTypeCreated])
+      val answer = expectMsgClass(classOf[NewDataStructureCreated])
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicIntegerTree]
@@ -124,7 +124,7 @@ class FormicTreeDataStructureFactorySpec extends TestKit(ActorSystem("FormicTree
         ClientId(), dataTypeInstanceId, FormicBooleanTreeFactory.name
       ), clientId)
 
-      val answer = expectMsgClass(classOf[NewDataTypeCreated])
+      val answer = expectMsgClass(classOf[NewDataStructureCreated])
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicStringTree]

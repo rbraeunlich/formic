@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.tree
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import de.tu_berlin.formic.common.message.CreateRequest
-import de.tu_berlin.formic.common.server.datatype.NewDataTypeCreated
+import de.tu_berlin.formic.common.server.datatype.NewDataStructureCreated
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
@@ -28,7 +28,7 @@ class TreeDataStructureFactorySpec extends TestKit(ActorSystem("TreeDataStructur
       val dataTypeInstanceId = DataStructureInstanceId()
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, BooleanTreeDataStructureFactory.name)
 
-      val response = expectMsgClass(classOf[NewDataTypeCreated])
+      val response = expectMsgClass(classOf[NewDataStructureCreated])
 
       response.dataStructureInstanceId should be(dataTypeInstanceId)
       response.ref.path should equal(factory.path.child(dataTypeInstanceId.id))
@@ -42,7 +42,7 @@ class TreeDataStructureFactorySpec extends TestKit(ActorSystem("TreeDataStructur
       val dataTypeInstanceId = DataStructureInstanceId()
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, DoubleTreeDataStructureFactory.name)
 
-      val response = expectMsgClass(classOf[NewDataTypeCreated])
+      val response = expectMsgClass(classOf[NewDataStructureCreated])
 
       response.dataStructureInstanceId should be(dataTypeInstanceId)
       response.ref.path should equal(factory.path.child(dataTypeInstanceId.id))
@@ -56,7 +56,7 @@ class TreeDataStructureFactorySpec extends TestKit(ActorSystem("TreeDataStructur
       val dataTypeInstanceId = DataStructureInstanceId()
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, IntegerTreeDataStructureFactory.name)
 
-      val response = expectMsgClass(classOf[NewDataTypeCreated])
+      val response = expectMsgClass(classOf[NewDataStructureCreated])
 
       response.dataStructureInstanceId should be(dataTypeInstanceId)
       response.ref.path should equal(factory.path.child(dataTypeInstanceId.id))
@@ -70,7 +70,7 @@ class TreeDataStructureFactorySpec extends TestKit(ActorSystem("TreeDataStructur
       val dataTypeInstanceId = DataStructureInstanceId()
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, StringTreeDataStructureFactory.name)
 
-      val response = expectMsgClass(classOf[NewDataTypeCreated])
+      val response = expectMsgClass(classOf[NewDataStructureCreated])
 
       response.dataStructureInstanceId should be(dataTypeInstanceId)
       response.ref.path should equal(factory.path.child(dataTypeInstanceId.id))

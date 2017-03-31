@@ -4,9 +4,9 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import de.tu_berlin.formic.common.server.datatype.AbstractServerDataStructure.HistoricOperationsAnswer
 import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.message._
-import de.tu_berlin.formic.common.server.datatype.NewDataTypeCreated
+import de.tu_berlin.formic.common.server.datatype.NewDataStructureCreated
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
-import de.tu_berlin.formic.server.UserProxy.NewDataTypeSubscription
+import de.tu_berlin.formic.server.UserProxy.NewDataStructureSubscription
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -40,9 +40,9 @@ class UserProxy(val factories: Map[DataStructureName, ActorRef], val id: ClientI
         case None => throw new IllegalArgumentException("Unknown data type")
       }
 
-    case NewDataTypeCreated(dataTypeInstanceId, ref) =>
+    case NewDataStructureCreated(dataTypeInstanceId, ref) =>
       watchlist += (dataTypeInstanceId -> ref)
-      subscriber ! NewDataTypeSubscription(dataTypeInstanceId, ref)
+      subscriber ! NewDataStructureSubscription(dataTypeInstanceId, ref)
       log.debug(s"Sending CreateResponse for $dataTypeInstanceId")
       outgoing ! CreateResponse(dataTypeInstanceId)
 
@@ -69,7 +69,7 @@ class UserProxy(val factories: Map[DataStructureName, ActorRef], val id: ClientI
 
     case rep: UpdateResponse =>
       log.debug(s"Sending UpdateResponse to user $id: $rep")
-      subscriber ! NewDataTypeSubscription(rep.dataStructureInstanceId, sender)
+      subscriber ! NewDataStructureSubscription(rep.dataStructureInstanceId, sender)
       outgoing ! rep
 
     case operationMessage: OperationMessage =>
@@ -100,13 +100,13 @@ class OperationMessageSubscriber(val outgoingConnection: ActorRef, val clientId:
         case None => //Client is not interested in the data type that changed
       }
 
-    case NewDataTypeSubscription(dataTypeInstanceId, actorRef) =>
+    case NewDataStructureSubscription(dataTypeInstanceId, actorRef) =>
       watchlist += (dataTypeInstanceId -> actorRef)
   }
 }
 
 object UserProxy {
 
-  case class NewDataTypeSubscription(dataTypeInstanceId: DataStructureInstanceId, actorRef: ActorRef)
+  case class NewDataStructureSubscription(dataTypeInstanceId: DataStructureInstanceId, actorRef: ActorRef)
 
 }

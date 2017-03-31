@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.linear.client
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.{NewDataTypeCreated, WrappedCreateRequest}
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.{NewDataStructureCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
@@ -37,7 +37,7 @@ class FormicLinearDataStructureFactorySpec extends TestKit(ActorSystem("FormicLi
         ClientId(), dataTypeInstanceId, FormicBooleanListDataStructureFactory.name
       ), clientId)
 
-      val answer = expectMsgClass(classOf[NewDataTypeCreated])
+      val answer = expectMsgClass(classOf[NewDataStructureCreated])
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicBooleanList]
@@ -66,7 +66,7 @@ class FormicLinearDataStructureFactorySpec extends TestKit(ActorSystem("FormicLi
         ClientId(), dataTypeInstanceId, FormicDoubleListDataStructureFactory.name
       ), clientId)
 
-      val answer = expectMsgClass(classOf[NewDataTypeCreated])
+      val answer = expectMsgClass(classOf[NewDataStructureCreated])
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicDoubleList]
@@ -95,7 +95,7 @@ class FormicLinearDataStructureFactorySpec extends TestKit(ActorSystem("FormicLi
         ClientId(), dataTypeInstanceId, FormicBooleanListDataStructureFactory.name
       ), clientId)
 
-      val answer = expectMsgClass(classOf[NewDataTypeCreated])
+      val answer = expectMsgClass(classOf[NewDataStructureCreated])
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicIntegerList]
@@ -124,7 +124,7 @@ class FormicLinearDataStructureFactorySpec extends TestKit(ActorSystem("FormicLi
         ClientId(), dataTypeInstanceId, FormicStringDataStructureFactory.name
       ), clientId)
 
-      val answer = expectMsgClass(classOf[NewDataTypeCreated])
+      val answer = expectMsgClass(classOf[NewDataStructureCreated])
       answer.dataTypeInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicString]

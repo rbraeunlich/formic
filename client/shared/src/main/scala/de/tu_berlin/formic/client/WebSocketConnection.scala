@@ -99,10 +99,10 @@ class WebSocketConnection(val newInstanceCallback: ActorRef,
       connectionTry.cancel
       webSocketConnection = ws
       implicit val timeout: Timeout = 3.seconds
-      val knownDataTypeIdsFuture = dispatcher ? RequestKnownDataTypeIds
+      val knownDataTypeIdsFuture = dispatcher ? RequestKnownDataStructureIds
       knownDataTypeIdsFuture.onComplete{
         case Success(msg) =>
-          val ids = msg.asInstanceOf[KnownDataTypeIds].ids
+          val ids = msg.asInstanceOf[KnownDataStructureIds].ids
           ids.filterNot(id => buffer.exists(msg => msg.isInstanceOf[CreateRequest] && msg.asInstanceOf[CreateRequest].dataStructureInstanceId == id))
             .foreach{
             id => sendMessageViaWebSocket(UpdateRequest(clientId, id))

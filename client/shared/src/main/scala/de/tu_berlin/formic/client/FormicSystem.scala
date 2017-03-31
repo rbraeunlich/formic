@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.ask
 import com.typesafe.config.Config
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure.ReceiveCallback
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.{LocalCreateRequest, NewDataTypeCreated}
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.{LocalCreateRequest, NewDataStructureCreated}
 import de.tu_berlin.formic.common.datatype.client.DataStructureInitiator
 import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataStructure}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
@@ -71,7 +71,7 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
       case Some((k, v)) =>
         val request = CreateRequest(id, dataType.dataStructureInstanceId, name)
         ask(v, LocalCreateRequest(connection, dataType.dataStructureInstanceId))(2.seconds)
-          .mapTo[NewDataTypeCreated]
+          .mapTo[NewDataStructureCreated]
           .map(msg => msg.dataTypeActor)
           .onComplete {
             case Success(actor) =>

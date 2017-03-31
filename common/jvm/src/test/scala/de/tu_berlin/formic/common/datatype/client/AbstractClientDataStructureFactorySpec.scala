@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype._
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.{LocalCreateRequest, NewDataStructureCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest.{Matchers, WordSpecLike}
@@ -28,7 +28,7 @@ class AbstractClientDataStructureFactorySpec extends TestKit(ActorSystem("Abstra
 
       factory ! WrappedCreateRequest(outgoing.ref, null, Option.empty,CreateRequest(ClientId(), instanceId, DataStructureName("AbstractClientDataTypeFactorySpec") ), clientId)
 
-      val msg = expectMsgClass(classOf[NewDataTypeCreated])
+      val msg = expectMsgClass(classOf[NewDataStructureCreated])
       msg.dataTypeInstanceId should equal(instanceId)
       msg.dataTypeActor should not equal null
       msg.wrapper shouldBe a[AbstractClientDataStructureFactorySpecFormicDataStructure]
@@ -42,7 +42,7 @@ class AbstractClientDataStructureFactorySpec extends TestKit(ActorSystem("Abstra
 
       factory ! LocalCreateRequest(outgoing.ref, instanceId)
 
-      val msg = expectMsgClass(classOf[NewDataTypeCreated])
+      val msg = expectMsgClass(classOf[NewDataStructureCreated])
       msg.dataTypeInstanceId should equal(instanceId)
       msg.dataTypeActor should not equal null
       msg.wrapper should be(null)

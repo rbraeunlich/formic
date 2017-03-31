@@ -8,4 +8,4 @@ import de.tu_berlin.formic.common.DataStructureInstanceId
   */
 sealed trait FactoryMessage
 
-case class NewDataTypeCreated(dataStructureInstanceId: DataStructureInstanceId, ref: ActorRef) extends  FactoryMessage
+case class NewDataStructureCreated(dataStructureInstanceId: DataStructureInstanceId, ref: ActorRef) extends  FactoryMessage

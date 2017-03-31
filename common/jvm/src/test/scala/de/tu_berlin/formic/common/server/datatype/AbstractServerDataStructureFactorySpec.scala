@@ -28,7 +28,7 @@ class AbstractServerDataStructureFactorySpec extends TestKit(ActorSystem("Abstra
       val dataStructureInstanceId = DataStructureInstanceId()
       factory ! CreateRequest(ClientId(), dataStructureInstanceId, DataStructureName("Test"))
 
-      val received = expectMsgClass(classOf[NewDataTypeCreated])
+      val received = expectMsgClass(classOf[NewDataStructureCreated])
       received.dataStructureInstanceId should be(dataStructureInstanceId)
       received.ref shouldNot be(null)
     }

@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{EventFilter, ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.Dispatcher.WrappedUpdateResponse
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.NewDataTypeCreated
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.NewDataStructureCreated
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.common.datatype.DataStructureName
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure.ReceiveCallback
@@ -36,7 +36,7 @@ class DataStructureInstantiatorSpec extends TestKit(ActorSystem("DataStructureIn
 
       instantiator ! WrappedUpdateResponse(outgoingConnection.ref, updateResponse)
 
-      val msg = expectMsgClass(classOf[NewDataTypeCreated])
+      val msg = expectMsgClass(classOf[NewDataStructureCreated])
       msg.dataTypeInstanceId should equal(dataTypeInstanceId)
       msg.dataTypeActor shouldNot be(null)
     }
@@ -54,7 +54,7 @@ class DataStructureInstantiatorSpec extends TestKit(ActorSystem("DataStructureIn
 
       instantiator ! WrappedUpdateResponse(outgoingConnection.ref, updateResponse)
 
-      val msg = expectMsgClass(classOf[NewDataTypeCreated])
+      val msg = expectMsgClass(classOf[NewDataStructureCreated])
 
       msg.dataTypeActor ! ReceiveCallback((_) => {})
 

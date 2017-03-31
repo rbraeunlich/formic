@@ -22,7 +22,7 @@ abstract class AbstractServerDataStructureFactory[T <: AbstractServerDataStructu
       log.debug(logText)
       val newDataType = context.actorOf(Props(create(req.dataStructureInstanceId)), req.dataStructureInstanceId.id)
       persist(req) { request =>
-        sender ! NewDataTypeCreated(request.dataStructureInstanceId, newDataType)
+        sender ! NewDataStructureCreated(request.dataStructureInstanceId, newDataType)
       }
   }
 

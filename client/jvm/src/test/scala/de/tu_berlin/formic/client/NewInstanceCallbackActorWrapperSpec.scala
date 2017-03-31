@@ -2,7 +2,7 @@ package de.tu_berlin.formic.client
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.NewDataTypeCreated
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.NewDataStructureCreated
 import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.common.datatype.client.ClientDataStructureEvent
 import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataStructure}
@@ -23,7 +23,7 @@ class NewInstanceCallbackActorWrapperSpec extends TestKit(ActorSystem("Dispatche
       val wrapper = system.actorOf(Props(new NewInstanceCallbackActorWrapper(callback)))
       val dataTypeWrapper = new TestFormicDataStructure(wrapper)
 
-      wrapper ! NewDataTypeCreated(DataStructureInstanceId(), TestProbe().ref, dataTypeWrapper)
+      wrapper ! NewDataStructureCreated(DataStructureInstanceId(), TestProbe().ref, dataTypeWrapper)
 
       Thread.sleep(1000)
       callback.called should be(true)

@@ -2,7 +2,7 @@ package de.tu_berlin.formic.common.datatype.client
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure.RemoteInstantiation
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.{LocalCreateRequest, NewDataTypeCreated, WrappedCreateRequest}
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.{LocalCreateRequest, NewDataStructureCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataStructure}
 import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
@@ -23,13 +23,13 @@ abstract class AbstractClientDataStructureFactory[T <: AbstractClientDataStructu
       val actor = context.actorOf(Props(createDataType(id, outgoingConnection, initialData, lastOperationId)), id.id)
       val wrapper = createWrapperType(id, actor, localClientId)
       actor ! RemoteInstantiation
-      sender ! NewDataTypeCreated(id, actor, wrapper)
+      sender ! NewDataStructureCreated(id, actor, wrapper)
 
     case local: LocalCreateRequest =>
       log.debug(s"Factory for $name received LocalCreateRequest: $local from sender: $sender")
       val id: DataStructureInstanceId = local.dataTypeInstanceId
       val actor = context.actorOf(Props(createDataType(id, local.outgoingConnection, Option.empty, Option.empty)), id.id)
-      sender ! NewDataTypeCreated(id, actor, null)
+      sender ! NewDataStructureCreated(id, actor, null)
   }
 
   /**
@@ -56,7 +56,7 @@ object AbstractClientDataStructureFactory {
     */
   case class LocalCreateRequest(outgoingConnection: ActorRef, dataTypeInstanceId: DataStructureInstanceId)
 
-  case class NewDataTypeCreated(dataTypeInstanceId: DataStructureInstanceId, dataTypeActor: ActorRef, wrapper: FormicDataStructure)
+  case class NewDataStructureCreated(dataTypeInstanceId: DataStructureInstanceId, dataTypeActor: ActorRef, wrapper: FormicDataStructure)
 
   /**
     * To be able to pass the outgoing connection and the initial data to the factory, the CreateRequest has to be wrapped.

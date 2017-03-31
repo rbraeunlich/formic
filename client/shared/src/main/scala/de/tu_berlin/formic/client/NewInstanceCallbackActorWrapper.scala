@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.client
 
 import akka.actor.Actor
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.NewDataTypeCreated
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.NewDataStructureCreated
 
 /**
   * An actor implementation that wraps the NewInstanceCallbacks the client provides. The client shall
@@ -11,7 +11,7 @@ import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFac
 class NewInstanceCallbackActorWrapper(val callback: NewInstanceCallback) extends Actor {
 
   def receive = {
-    case created: NewDataTypeCreated =>
+    case created: NewDataStructureCreated =>
       callback.newInstanceCreated(created.wrapper, created.wrapper.dataStructureName)
   }
 }

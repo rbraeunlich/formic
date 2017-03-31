@@ -4,7 +4,7 @@ import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import de.tu_berlin.formic.common.message.CreateRequest
-import de.tu_berlin.formic.common.server.datatype.NewDataTypeCreated
+import de.tu_berlin.formic.common.server.datatype.NewDataStructureCreated
 import de.tu_berlin.formic.datatype.tree.BooleanTreeDataStructureFactory
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
@@ -28,7 +28,7 @@ class JsonDataStructureFactorySpec extends TestKit(ActorSystem("JsonDataStructur
       val dataTypeInstanceId = DataStructureInstanceId()
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, JsonServerDataStructureFactory.name)
 
-      val response = expectMsgClass(classOf[NewDataTypeCreated])
+      val response = expectMsgClass(classOf[NewDataStructureCreated])
 
       response.dataStructureInstanceId should be(dataTypeInstanceId)
       response.ref.path should equal(factory.path.child(dataTypeInstanceId.id))

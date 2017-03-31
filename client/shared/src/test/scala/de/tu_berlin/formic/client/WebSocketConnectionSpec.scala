@@ -6,7 +6,7 @@ import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.Dispatcher.WrappedUpdateResponse
 import de.tu_berlin.formic.client.WebSocketConnection._
 import de.tu_berlin.formic.common.datatype.OperationContext
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.NewDataTypeCreated
+import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.NewDataStructureCreated
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
@@ -108,7 +108,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       system.scheduler.scheduleOnce(0.millis) {
         connection ! OnConnect(factory.mock)
         val dispatcher = connection.getSingleChild("dispatcher")
-        dispatcher ! NewDataTypeCreated(dataTypeInstanceId, dataType.ref, new TestFormicDataStructure())
+        dispatcher ! NewDataStructureCreated(dataTypeInstanceId, dataType.ref, new TestFormicDataStructure())
 
         connection ! OnMessage(write(createResponse))
       }
@@ -138,7 +138,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
           expectMsgPF(timeout) {
             case rep: WrappedUpdateResponse => rep.updateResponse should equal(updateResponse)
           }
-          sender ! NewDataTypeCreated(dataTypeInstanceId, dataTypeInstance.ref, null)
+          sender ! NewDataStructureCreated(dataTypeInstanceId, dataTypeInstance.ref, null)
         }
       }
       val operationMessage = OperationMessage(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName, List.empty)
