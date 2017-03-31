@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.linear.server
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
-import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataTypeProtocol
+import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataStructureProtocol
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 /**
@@ -47,10 +47,10 @@ class LinearServerDataTypeProviderSpec extends TestKit(ActorSystem("LinearServer
       val registered = protocol.dataTypeOperationJsonProtocols
 
       registered should contain allOf(
-        BooleanListDataStructureFactory.name -> new LinearFormicJsonDataTypeProtocol[Boolean](BooleanListDataStructureFactory.name),
-        IntegerListDataStructureFactory.name -> new LinearFormicJsonDataTypeProtocol[Int](IntegerListDataStructureFactory.name),
-        DoubleListDataStructureFactory.name -> new LinearFormicJsonDataTypeProtocol[Double](DoubleListDataStructureFactory.name),
-        StringDataStructureFactory.name -> new LinearFormicJsonDataTypeProtocol[Char](StringDataStructureFactory.name)
+        BooleanListDataStructureFactory.name -> new LinearFormicJsonDataStructureProtocol[Boolean](BooleanListDataStructureFactory.name),
+        IntegerListDataStructureFactory.name -> new LinearFormicJsonDataStructureProtocol[Int](IntegerListDataStructureFactory.name),
+        DoubleListDataStructureFactory.name -> new LinearFormicJsonDataStructureProtocol[Double](DoubleListDataStructureFactory.name),
+        StringDataStructureFactory.name -> new LinearFormicJsonDataStructureProtocol[Char](StringDataStructureFactory.name)
         )
 
     }

@@ -8,7 +8,7 @@ import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure.ReceiveCallback
 import de.tu_berlin.formic.common.message.{CreateResponse, OperationMessage}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
-import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
+import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataStructureProtocol._
 import de.tu_berlin.formic.datatype.json._
 import de.tu_berlin.formic.datatype.tree.{AccessPath, TreeDeleteOperation, TreeInsertOperation, TreeNoOperation}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}

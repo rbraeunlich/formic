@@ -24,10 +24,10 @@ class TreeServerDataStructureProvider extends ServerDataStructureProvider {
   }
 
   override def registerFormicJsonDataStructureProtocols(formicJsonProtocol: FormicJsonProtocol): Unit = {
-    formicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Boolean](BooleanTreeDataStructureFactory.name))
-    formicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Double](DoubleTreeDataStructureFactory.name))
-    formicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Int](IntegerTreeDataStructureFactory.name))
-    formicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[String](StringTreeDataStructureFactory.name))
+    formicJsonProtocol.registerProtocol(new TreeFormicJsonDataStructureProtocol[Boolean](BooleanTreeDataStructureFactory.name))
+    formicJsonProtocol.registerProtocol(new TreeFormicJsonDataStructureProtocol[Double](DoubleTreeDataStructureFactory.name))
+    formicJsonProtocol.registerProtocol(new TreeFormicJsonDataStructureProtocol[Int](IntegerTreeDataStructureFactory.name))
+    formicJsonProtocol.registerProtocol(new TreeFormicJsonDataStructureProtocol[String](StringTreeDataStructureFactory.name))
   }
 }
 

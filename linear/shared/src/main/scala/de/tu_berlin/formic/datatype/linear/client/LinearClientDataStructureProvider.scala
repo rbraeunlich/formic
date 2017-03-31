@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.linear.client
 import akka.actor.{ActorRef, ActorSystem, Props}
 import de.tu_berlin.formic.common.datatype.{ClientDataStructureProvider, DataStructureName}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
-import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataTypeProtocol
+import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataStructureProtocol
 
 /**
   * @author Ronny Bräunlich
@@ -25,10 +25,10 @@ class LinearClientDataStructureProvider extends ClientDataStructureProvider {
   }
 
   override def registerFormicJsonDataStructureProtocols(formicJsonProtocol: FormicJsonProtocol): Unit = {
-    formicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Boolean](FormicBooleanListDataStructureFactory.name))
-    formicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Double](FormicDoubleListDataStructureFactory.name))
-    formicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Int](FormicIntegerListDataStructureFactory.name))
-    formicJsonProtocol.registerProtocol(new LinearFormicJsonDataTypeProtocol[Char](FormicStringDataStructureFactory.name))
+    formicJsonProtocol.registerProtocol(new LinearFormicJsonDataStructureProtocol[Boolean](FormicBooleanListDataStructureFactory.name))
+    formicJsonProtocol.registerProtocol(new LinearFormicJsonDataStructureProtocol[Double](FormicDoubleListDataStructureFactory.name))
+    formicJsonProtocol.registerProtocol(new LinearFormicJsonDataStructureProtocol[Int](FormicIntegerListDataStructureFactory.name))
+    formicJsonProtocol.registerProtocol(new LinearFormicJsonDataStructureProtocol[Char](FormicStringDataStructureFactory.name))
   }
 }
 

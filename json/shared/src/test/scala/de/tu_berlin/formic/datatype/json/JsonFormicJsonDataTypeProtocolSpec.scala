@@ -5,7 +5,7 @@ import de.tu_berlin.formic.common.{ClientId, OperationId}
 import de.tu_berlin.formic.datatype.tree._
 import org.scalatest.{FlatSpec, Matchers}
 import upickle.default._
-import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
+import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataStructureProtocol._
 
 /**
   * @author Ronny Bräunlich
@@ -106,7 +106,7 @@ class JsonFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   "JsonFormicJsonDataTypeProtocol" should "serialize an insert operation" in {
     val operationId = OperationId()
     val clientId = ClientId()
-    val protocol = new JsonFormicJsonDataTypeProtocol(DataStructureName("json"))
+    val protocol = new JsonFormicJsonDataStructureProtocol(DataStructureName("json"))
     val operation = TreeInsertOperation(AccessPath(0, 1), ObjectNode(null, List(NumberNode("foo", 5.2))), operationId, OperationContext(), clientId)
 
     val serialized = protocol.serializeOperation(operation)
@@ -117,7 +117,7 @@ class JsonFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   it should "serialize a delete operation" in {
     val operationId = OperationId()
     val clientId = ClientId()
-    val protocol = new JsonFormicJsonDataTypeProtocol(DataStructureName("json"))
+    val protocol = new JsonFormicJsonDataStructureProtocol(DataStructureName("json"))
     val operation = TreeDeleteOperation(AccessPath(0), operationId, OperationContext(), clientId)
 
     val serialized = protocol.serializeOperation(operation)
@@ -128,7 +128,7 @@ class JsonFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   it should "serialize a no operation" in {
     val operationId = OperationId()
     val clientId = ClientId()
-    val protocol = new JsonFormicJsonDataTypeProtocol(DataStructureName("json"))
+    val protocol = new JsonFormicJsonDataStructureProtocol(DataStructureName("json"))
     val operation = TreeNoOperation(operationId, OperationContext(), clientId)
 
     val serialized = protocol.serializeOperation(operation)
@@ -139,7 +139,7 @@ class JsonFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   it should "serialize a replace operation" in {
     val operationId = OperationId()
     val clientId = ClientId()
-    val protocol = new JsonFormicJsonDataTypeProtocol(DataStructureName("json"))
+    val protocol = new JsonFormicJsonDataStructureProtocol(DataStructureName("json"))
     val operation = JsonReplaceOperation(AccessPath(0, 1), NumberNode("foo", 5.2), operationId, OperationContext(), clientId)
 
     val serialized = protocol.serializeOperation(operation)
@@ -150,7 +150,7 @@ class JsonFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   it should "deserialize an insert operation" in {
     val operationId = OperationId()
     val clientId = ClientId()
-    val protocol = new JsonFormicJsonDataTypeProtocol(DataStructureName("json"))
+    val protocol = new JsonFormicJsonDataStructureProtocol(DataStructureName("json"))
     val json = s"""{\"accessPath\":[0,1],\"object\":{\"foo\":5.2},\"operationId\":\"${operationId.id}\",\"operationContext\":[],\"clientId\":\"${clientId.id}\"}"""
 
     val deserialized = protocol.deserializeOperation(json)
@@ -161,7 +161,7 @@ class JsonFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   it should "deserialize a delete operation" in {
     val operationId = OperationId()
     val clientId = ClientId()
-    val protocol = new JsonFormicJsonDataTypeProtocol(DataStructureName("json"))
+    val protocol = new JsonFormicJsonDataStructureProtocol(DataStructureName("json"))
     val json = s"""{\"accessPath\":[5,6],\"operationId\":\"${operationId.id}\",\"operationContext\":[],\"clientId\":\"${clientId.id}\"}"""
 
     val deserialized = protocol.deserializeOperation(json)
@@ -172,7 +172,7 @@ class JsonFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   it should "deserialize a no operation" in {
     val operationId = OperationId()
     val clientId = ClientId()
-    val protocol = new JsonFormicJsonDataTypeProtocol(DataStructureName("json"))
+    val protocol = new JsonFormicJsonDataStructureProtocol(DataStructureName("json"))
     val json = s"""{\"accessPath\":[-1],\"operationId\":\"${operationId.id}\",\"operationContext\":[],\"clientId\":\"${clientId.id}\"}"""
 
     val deserialized = protocol.deserializeOperation(json)
@@ -183,7 +183,7 @@ class JsonFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   it should "deserialize a replace operation" in {
     val operationId = OperationId()
     val clientId = ClientId()
-    val protocol = new JsonFormicJsonDataTypeProtocol(DataStructureName("json"))
+    val protocol = new JsonFormicJsonDataStructureProtocol(DataStructureName("json"))
     val json = s"""{\"type\":\"replace\",\"accessPath\":[0,1],\"object\":{\"foo\":5.2},\"operationId\":\"${operationId.id}\",\"operationContext\":[],\"clientId\":\"${clientId.id}\"}"""
 
     val deserialized = protocol.deserializeOperation(json)

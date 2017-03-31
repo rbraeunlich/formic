@@ -4,7 +4,7 @@ import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataStructure, AbstractClientDataStructureFactory, DataStructureInitiator}
-import de.tu_berlin.formic.common.json.FormicJsonDataTypeProtocol
+import de.tu_berlin.formic.common.json.FormicJsonDataStructureProtocol
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest.Assertions._
 import upickle.Js
@@ -49,7 +49,7 @@ class TestFormicDataStructure(actor: ActorRef = null) extends FormicDataStructur
 
 case class TestOperation(id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends DataStructureOperation
 
-class TestFormicJsonDataTypeProtocol extends FormicJsonDataTypeProtocol {
+class TestFormicJsonDataStructureProtocol extends FormicJsonDataStructureProtocol {
 
   override def deserializeOperation(json: String): DataStructureOperation = {
     val valueMap = upickle.json.read(json).obj

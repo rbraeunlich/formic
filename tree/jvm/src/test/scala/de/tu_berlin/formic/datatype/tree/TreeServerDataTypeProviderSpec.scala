@@ -46,10 +46,10 @@ class TreeServerDataTypeProviderSpec extends TestKit(ActorSystem("TreeServerData
       val registered = protocol.dataTypeOperationJsonProtocols
 
       registered should contain allOf(
-        BooleanTreeDataStructureFactory.name -> new TreeFormicJsonDataTypeProtocol[Boolean](BooleanTreeDataStructureFactory.name),
-        IntegerTreeDataStructureFactory.name -> new TreeFormicJsonDataTypeProtocol[Int](IntegerTreeDataStructureFactory.name),
-        DoubleTreeDataStructureFactory.name -> new TreeFormicJsonDataTypeProtocol[Double](DoubleTreeDataStructureFactory.name),
-        StringTreeDataStructureFactory.name -> new TreeFormicJsonDataTypeProtocol[Char](StringTreeDataStructureFactory.name)
+        BooleanTreeDataStructureFactory.name -> new TreeFormicJsonDataStructureProtocol[Boolean](BooleanTreeDataStructureFactory.name),
+        IntegerTreeDataStructureFactory.name -> new TreeFormicJsonDataStructureProtocol[Int](IntegerTreeDataStructureFactory.name),
+        DoubleTreeDataStructureFactory.name -> new TreeFormicJsonDataStructureProtocol[Double](DoubleTreeDataStructureFactory.name),
+        StringTreeDataStructureFactory.name -> new TreeFormicJsonDataStructureProtocol[Char](StringTreeDataStructureFactory.name)
         )
 
     }

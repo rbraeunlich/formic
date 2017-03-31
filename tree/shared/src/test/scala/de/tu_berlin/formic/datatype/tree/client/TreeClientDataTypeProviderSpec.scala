@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.tree.client
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
-import de.tu_berlin.formic.datatype.tree.TreeFormicJsonDataTypeProtocol
+import de.tu_berlin.formic.datatype.tree.TreeFormicJsonDataStructureProtocol
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 /**
@@ -47,10 +47,10 @@ class TreeClientDataTypeProviderSpec extends TestKit(ActorSystem("TreeClientData
       val registered = protocol.dataTypeOperationJsonProtocols
 
       registered should contain allOf(
-        FormicBooleanTreeFactory.name -> new TreeFormicJsonDataTypeProtocol[Boolean](FormicBooleanTreeFactory.name),
-        FormicIntegerTreeFactory.name -> new TreeFormicJsonDataTypeProtocol[Int](FormicIntegerTreeFactory.name),
-        FormicDoubleTreeFactory.name -> new TreeFormicJsonDataTypeProtocol[Double](FormicDoubleTreeFactory.name),
-        FormicStringTreeFactory.name -> new TreeFormicJsonDataTypeProtocol[Char](FormicStringTreeFactory.name)
+        FormicBooleanTreeFactory.name -> new TreeFormicJsonDataStructureProtocol[Boolean](FormicBooleanTreeFactory.name),
+        FormicIntegerTreeFactory.name -> new TreeFormicJsonDataStructureProtocol[Int](FormicIntegerTreeFactory.name),
+        FormicDoubleTreeFactory.name -> new TreeFormicJsonDataStructureProtocol[Double](FormicDoubleTreeFactory.name),
+        FormicStringTreeFactory.name -> new TreeFormicJsonDataStructureProtocol[Char](FormicStringTreeFactory.name)
         )
 
     }

@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.common.message
 
 import de.tu_berlin.formic.common.datatype.{DataStructureName, DataStructureOperation, OperationContext}
-import de.tu_berlin.formic.common.json.{FormicJsonDataTypeProtocol, FormicJsonProtocol}
+import de.tu_berlin.formic.common.json.{FormicJsonDataStructureProtocol, FormicJsonProtocol}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest._
@@ -17,7 +17,7 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
 
   case class TestOperation(id: OperationId, operationContext: OperationContext,var clientId: ClientId) extends DataStructureOperation
 
-  val testProtocol = new FormicJsonDataTypeProtocol {
+  val testProtocol = new FormicJsonDataStructureProtocol {
     override val name: DataStructureName = DataStructureName("test")
 
     override def serializeOperation(op: DataStructureOperation): String = {

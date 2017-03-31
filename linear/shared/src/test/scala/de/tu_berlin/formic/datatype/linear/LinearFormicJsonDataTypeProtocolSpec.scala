@@ -11,7 +11,7 @@ import upickle.default._
 class LinearFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
 
   "Linear JSON protocol" should "serialize a linear insert operation" in {
-    val protocol = new LinearFormicJsonDataTypeProtocol[Char](DataStructureName("string"))
+    val protocol = new LinearFormicJsonDataStructureProtocol[Char](DataStructureName("string"))
     val index = 0
     val value = Integer.valueOf(1)
     val operationId = OperationId()
@@ -25,7 +25,7 @@ class LinearFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   }
 
   it should "serialize a linear delete operation" in {
-    val protocol = new LinearFormicJsonDataTypeProtocol[Char](DataStructureName("string"))
+    val protocol = new LinearFormicJsonDataStructureProtocol[Char](DataStructureName("string"))
     val index = 0
     val operationId = OperationId()
     val context = OperationContext(List.empty)
@@ -38,7 +38,7 @@ class LinearFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   }
 
   it should "serialize a no operation" in {
-    val protocol = new LinearFormicJsonDataTypeProtocol[Char](DataStructureName("string"))
+    val protocol = new LinearFormicJsonDataStructureProtocol[Char](DataStructureName("string"))
     val operationId = OperationId()
     val context = OperationContext(List.empty)
     val clientId = ClientId()
@@ -50,7 +50,7 @@ class LinearFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   }
 
   it should "deserialize a linear insert operation" in {
-    val protocol = new LinearFormicJsonDataTypeProtocol[Char](DataStructureName("string"))
+    val protocol = new LinearFormicJsonDataStructureProtocol[Char](DataStructureName("string"))
     val json = "{\"index\":0,\"object\":\"a\",\"operationId\":\"1\",\"operationContext\":[],\"clientId\":\"123\"}"
 
     val op = protocol.deserializeOperation(json)
@@ -59,7 +59,7 @@ class LinearFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   }
 
   it should "deserialize a linear delete operation" in {
-    val protocol = new LinearFormicJsonDataTypeProtocol[Char](DataStructureName("string"))
+    val protocol = new LinearFormicJsonDataStructureProtocol[Char](DataStructureName("string"))
     val json = "{\"index\":0,\"operationId\":\"1\",\"operationContext\":[],\"clientId\":\"123\"}"
 
     val op = protocol.deserializeOperation(json)
@@ -68,7 +68,7 @@ class LinearFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
   }
 
   it should "deserialize a no operation" in {
-    val protocol = new LinearFormicJsonDataTypeProtocol[Char](DataStructureName("string"))
+    val protocol = new LinearFormicJsonDataStructureProtocol[Char](DataStructureName("string"))
     val json = s"""{\"index\":-1,\"operationId\":\"567\",\"operationContext\":[],\"clientId\":\"89\"}"""
 
     val op = protocol.deserializeOperation(json)

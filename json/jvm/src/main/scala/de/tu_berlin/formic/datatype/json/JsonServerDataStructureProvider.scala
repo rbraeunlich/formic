@@ -15,7 +15,7 @@ class JsonServerDataStructureProvider extends ServerDataStructureProvider {
   }
 
   override def registerFormicJsonDataStructureProtocols(formicJsonProtocol: FormicJsonProtocol): Unit = {
-    formicJsonProtocol.registerProtocol(new JsonFormicJsonDataTypeProtocol(JsonServerDataStructureFactory.name)(JsonFormicJsonDataTypeProtocol.reader, JsonFormicJsonDataTypeProtocol.writer))
+    formicJsonProtocol.registerProtocol(new JsonFormicJsonDataStructureProtocol(JsonServerDataStructureFactory.name)(JsonFormicJsonDataStructureProtocol.reader, JsonFormicJsonDataStructureProtocol.writer))
   }
 }
 

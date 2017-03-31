@@ -8,7 +8,7 @@ import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, DataStru
 import de.tu_berlin.formic.common.datatype.{FormicDataStructure, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
-import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
+import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataStructureProtocol._
 import de.tu_berlin.formic.datatype.json._
 import de.tu_berlin.formic.datatype.json.client.JsonClientDataStructure._
 import upickle.default._

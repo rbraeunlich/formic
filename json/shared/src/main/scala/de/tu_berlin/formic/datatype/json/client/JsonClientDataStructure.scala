@@ -11,7 +11,7 @@ import de.tu_berlin.formic.datatype.json._
 import de.tu_berlin.formic.datatype.json.client.JsonClientDataStructure._
 import de.tu_berlin.formic.datatype.tree.{TreeDeleteOperation, TreeInsertOperation, TreeStructureOperation}
 import upickle.default._
-import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
+import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataStructureProtocol._
 
 /**
   * @author Ronny Bräunlich

@@ -3,9 +3,9 @@ package de.tu_berlin.formic.datatype.json.client
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
-import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol
+import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataStructureProtocol
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
-import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
+import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataStructureProtocol._
 
 /**
   * @author Ronny Bräunlich
@@ -38,7 +38,7 @@ class JsonClientDataTypeProviderSpec extends TestKit(ActorSystem("JsonClientData
 
       val registered = protocol.dataTypeOperationJsonProtocols
 
-      registered should contain(FormicJsonObjectFactory.name -> new JsonFormicJsonDataTypeProtocol(FormicJsonObjectFactory.name))
+      registered should contain(FormicJsonObjectFactory.name -> new JsonFormicJsonDataStructureProtocol(FormicJsonObjectFactory.name))
     }
   }
 }

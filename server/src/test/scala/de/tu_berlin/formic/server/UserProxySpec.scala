@@ -7,7 +7,7 @@ import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
-import de.tu_berlin.formic.server.datatype.{TestClasses, TestDataStructureFactory, TestFormicJsonDataTypeProtocol}
+import de.tu_berlin.formic.server.datatype.{TestClasses, TestDataStructureFactory, TestFormicJsonDataStructureProtocol}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 import scala.concurrent.duration._
@@ -24,7 +24,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
   with BeforeAndAfterAll {
 
   val jsonProtocol = FormicJsonProtocol()
-  jsonProtocol.registerProtocol(new TestFormicJsonDataTypeProtocol())
+  jsonProtocol.registerProtocol(new TestFormicJsonDataStructureProtocol())
 
   implicit val writer = jsonProtocol.writer
   implicit val reader = jsonProtocol.reader

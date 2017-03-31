@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.tree.client
 import akka.actor.{ActorRef, ActorSystem, Props}
 import de.tu_berlin.formic.common.datatype.{ClientDataStructureProvider, DataStructureName}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
-import de.tu_berlin.formic.datatype.tree.TreeFormicJsonDataTypeProtocol
+import de.tu_berlin.formic.datatype.tree.TreeFormicJsonDataStructureProtocol
 
 /**
   * @author Ronny Bräunlich
@@ -25,10 +25,10 @@ class TreeClientDataStructureProvider extends ClientDataStructureProvider {
   }
 
   override def registerFormicJsonDataStructureProtocols(formicJsonProtocol: FormicJsonProtocol): Unit = {
-    formicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Boolean](FormicBooleanTreeFactory.name))
-    formicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Double](FormicDoubleTreeFactory.name))
-    formicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[Int](FormicIntegerTreeFactory.name))
-    formicJsonProtocol.registerProtocol(new TreeFormicJsonDataTypeProtocol[String](FormicStringTreeFactory.name))
+    formicJsonProtocol.registerProtocol(new TreeFormicJsonDataStructureProtocol[Boolean](FormicBooleanTreeFactory.name))
+    formicJsonProtocol.registerProtocol(new TreeFormicJsonDataStructureProtocol[Double](FormicDoubleTreeFactory.name))
+    formicJsonProtocol.registerProtocol(new TreeFormicJsonDataStructureProtocol[Int](FormicIntegerTreeFactory.name))
+    formicJsonProtocol.registerProtocol(new TreeFormicJsonDataStructureProtocol[String](FormicStringTreeFactory.name))
   }
 }
 

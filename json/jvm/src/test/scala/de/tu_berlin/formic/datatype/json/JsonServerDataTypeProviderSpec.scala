@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
-import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataTypeProtocol._
+import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataStructureProtocol._
 
 /**
   * @author Ronny Bräunlich
@@ -37,7 +37,7 @@ class JsonServerDataTypeProviderSpec extends TestKit(ActorSystem("JsonServerData
 
       val registered = protocol.dataTypeOperationJsonProtocols
 
-      registered should contain(JsonServerDataStructureFactory.name -> new JsonFormicJsonDataTypeProtocol(JsonServerDataStructureFactory.name))
+      registered should contain(JsonServerDataStructureFactory.name -> new JsonFormicJsonDataStructureProtocol(JsonServerDataStructureFactory.name))
     }
   }
 }

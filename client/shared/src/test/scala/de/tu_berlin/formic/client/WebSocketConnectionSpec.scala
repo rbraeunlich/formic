@@ -40,7 +40,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
   }
 
   val jsonProtocol = FormicJsonProtocol()
-  jsonProtocol.registerProtocol(new TestFormicJsonDataTypeProtocol)
+  jsonProtocol.registerProtocol(new TestFormicJsonDataStructureProtocol)
 
   implicit val writer = jsonProtocol.writer
   implicit val reader = jsonProtocol.reader
