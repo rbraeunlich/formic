@@ -8,7 +8,7 @@ import de.tu_berlin.formic.server.FormicServer
   */
 class ExampleServer {
 
-  val server = new FormicServer with ExampleServerDataTypes
+  val server = new FormicServer with ExampleServerDataStructures
 
   def start(): Http.ServerBinding = {
     implicit val system = server.system

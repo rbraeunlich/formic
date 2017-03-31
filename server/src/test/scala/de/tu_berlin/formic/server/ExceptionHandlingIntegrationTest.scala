@@ -46,8 +46,8 @@ class ExceptionHandlingIntegrationTest extends TestKit(ActorSystem("ExceptionHan
 
 
   before {
-    val server = new FormicServer() with ServerDataTypes{
-      override val dataTypeProvider: Set[ServerDataStructureProvider] = Set(TestClassProvider)
+    val server = new FormicServer() with ServerDataStructures{
+      override val dataStructureProvider: Set[ServerDataStructureProvider] = Set(TestClassProvider)
     }
     val testRoute = path("formic") {
       extractCredentials {

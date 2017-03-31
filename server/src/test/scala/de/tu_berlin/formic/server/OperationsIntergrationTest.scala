@@ -32,8 +32,8 @@ class OperationsIntergrationTest extends TestKit(ActorSystem("OperationsIntergra
   with OneInstancePerTest
   with BeforeAndAfterAll {
 
-  val formicServer = new FormicServer with ServerDataTypes {
-    override val dataTypeProvider: Set[ServerDataStructureProvider] = Set(LinearServerDataStructureProvider())
+  val formicServer = new FormicServer with ServerDataStructures {
+    override val dataStructureProvider: Set[ServerDataStructureProvider] = Set(LinearServerDataStructureProvider())
   }
 
   implicit val writer = formicServer.jsonProtocol.writer

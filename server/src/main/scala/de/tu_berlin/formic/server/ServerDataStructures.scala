@@ -4,13 +4,13 @@ import akka.actor.ActorRef
 import de.tu_berlin.formic.common.datatype.{DataStructureName, ServerDataStructureProvider}
 
 /**
-  * Cake-pattern trait to be able to initialize a FormicServer with the data types
+  * Cake-pattern trait to be able to initialize a FormicServer with the data structures
   * the user wants.
   *
   * @author Ronny Bräunlich
   */
-trait ServerDataTypes {
+trait ServerDataStructures {
 
-  val dataTypeProvider: Set[ServerDataStructureProvider]
+  val dataStructureProvider: Set[ServerDataStructureProvider]
 
 }

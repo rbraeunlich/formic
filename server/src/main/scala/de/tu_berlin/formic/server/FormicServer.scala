@@ -26,7 +26,7 @@ import scala.language.postfixOps
   */
 class FormicServer {
 
-  this: ServerDataTypes =>
+  this: ServerDataStructures =>
 
   var factories: Map[DataStructureName, ActorRef] = Map.empty
 
@@ -48,7 +48,7 @@ class FormicServer {
   implicit val reader = jsonProtocol.reader
 
   def initDataTypes() = {
-    dataTypeProvider.foreach{ provider =>
+    dataStructureProvider.foreach{ provider =>
       factories ++= provider.initFactories(system)
       provider.registerFormicJsonDataStructureProtocols(jsonProtocol)
     }
