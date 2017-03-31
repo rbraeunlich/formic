@@ -23,17 +23,17 @@ class TreeServerDataTypeProviderSpec extends TestKit(ActorSystem("TreeServerData
       val factoryMap = provider.initFactories(system)
 
       factoryMap.keySet should contain allOf(
-        BooleanTreeDataTypeFactory.name,
-        IntegerTreeDataTypeFactory.name,
-        DoubleTreeDataTypeFactory.name,
-        StringTreeDataTypeFactory.name)
+        BooleanTreeDataStructureFactory.name,
+        IntegerTreeDataStructureFactory.name,
+        DoubleTreeDataStructureFactory.name,
+        StringTreeDataStructureFactory.name)
 
       val actorPaths = factoryMap.values.map(ref => ref.path.name.toString)
       actorPaths should contain allOf(
-        BooleanTreeDataTypeFactory.name.name,
-        IntegerTreeDataTypeFactory.name.name,
-        DoubleTreeDataTypeFactory.name.name,
-        StringTreeDataTypeFactory.name.name
+        BooleanTreeDataStructureFactory.name.name,
+        IntegerTreeDataStructureFactory.name.name,
+        DoubleTreeDataStructureFactory.name.name,
+        StringTreeDataStructureFactory.name.name
         )
     }
 
@@ -46,10 +46,10 @@ class TreeServerDataTypeProviderSpec extends TestKit(ActorSystem("TreeServerData
       val registered = protocol.dataTypeOperationJsonProtocols
 
       registered should contain allOf(
-        BooleanTreeDataTypeFactory.name -> new TreeFormicJsonDataTypeProtocol[Boolean](BooleanTreeDataTypeFactory.name),
-        IntegerTreeDataTypeFactory.name -> new TreeFormicJsonDataTypeProtocol[Int](IntegerTreeDataTypeFactory.name),
-        DoubleTreeDataTypeFactory.name -> new TreeFormicJsonDataTypeProtocol[Double](DoubleTreeDataTypeFactory.name),
-        StringTreeDataTypeFactory.name -> new TreeFormicJsonDataTypeProtocol[Char](StringTreeDataTypeFactory.name)
+        BooleanTreeDataStructureFactory.name -> new TreeFormicJsonDataTypeProtocol[Boolean](BooleanTreeDataStructureFactory.name),
+        IntegerTreeDataStructureFactory.name -> new TreeFormicJsonDataTypeProtocol[Int](IntegerTreeDataStructureFactory.name),
+        DoubleTreeDataStructureFactory.name -> new TreeFormicJsonDataTypeProtocol[Double](DoubleTreeDataStructureFactory.name),
+        StringTreeDataStructureFactory.name -> new TreeFormicJsonDataTypeProtocol[Char](StringTreeDataStructureFactory.name)
         )
 
     }

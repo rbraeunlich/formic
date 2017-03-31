@@ -28,9 +28,9 @@ class LinearDataTypeFactorySpec extends TestKit(ActorSystem("LinearDataTypeFacto
   "BooleanListDataTypeFactory" must {
     "create linear data types" in {
 
-      val factory = system.actorOf(Props(new BooleanListDataTypeFactory()), "bool")
+      val factory = system.actorOf(Props(new BooleanListDataStructureFactory()), "bool")
       val dataTypeInstanceId = DataStructureInstanceId()
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, BooleanListDataTypeFactory.name)
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, BooleanListDataStructureFactory.name)
 
       val response = expectMsgClass(classOf[NewDataTypeCreated])
 
@@ -42,9 +42,9 @@ class LinearDataTypeFactorySpec extends TestKit(ActorSystem("LinearDataTypeFacto
   "DoubleListDataTypeFactory" must {
     "create linear data types" in {
 
-      val factory = system.actorOf(Props(new DoubleListDataTypeFactory()), "double")
+      val factory = system.actorOf(Props(new DoubleListDataStructureFactory()), "double")
       val dataTypeInstanceId = DataStructureInstanceId()
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, DoubleListDataTypeFactory.name)
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, DoubleListDataStructureFactory.name)
 
       val response = expectMsgClass(classOf[NewDataTypeCreated])
 
@@ -56,9 +56,9 @@ class LinearDataTypeFactorySpec extends TestKit(ActorSystem("LinearDataTypeFacto
   "IntegerListDataTypeFactory" must {
     "create linear data types" in {
 
-      val factory = system.actorOf(Props(new IntegerListDataTypeFactory()), "int")
+      val factory = system.actorOf(Props(new IntegerListDataStructureFactory()), "int")
       val dataTypeInstanceId = DataStructureInstanceId()
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, IntegerListDataTypeFactory.name)
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, IntegerListDataStructureFactory.name)
 
       val response = expectMsgClass(classOf[NewDataTypeCreated])
 
@@ -70,9 +70,9 @@ class LinearDataTypeFactorySpec extends TestKit(ActorSystem("LinearDataTypeFacto
   "StringDataTypeFactory" must {
     "create linear data types" in {
 
-      val factory = system.actorOf(Props(new StringDataTypeFactory()), "string")
+      val factory = system.actorOf(Props(new StringDataStructureFactory()), "string")
       val dataTypeInstanceId = DataStructureInstanceId()
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, StringDataTypeFactory.name)
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, StringDataStructureFactory.name)
 
       val response = expectMsgClass(classOf[NewDataTypeCreated])
 

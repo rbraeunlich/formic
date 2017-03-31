@@ -6,10 +6,10 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-class DoubleListDataTypeFactory extends LinearServerDataTypeFactory[Double] {
-  override val name: DataStructureName = DoubleListDataTypeFactory.name
+class DoubleListDataStructureFactory extends LinearServerDataStructureFactory[Double] {
+  override val name: DataStructureName = DoubleListDataStructureFactory.name
 }
 
-object DoubleListDataTypeFactory {
+object DoubleListDataStructureFactory {
   val name = DataStructureName("DoubleList")
 }

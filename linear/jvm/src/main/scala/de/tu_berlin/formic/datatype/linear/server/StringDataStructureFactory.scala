@@ -6,10 +6,10 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-class StringDataTypeFactory extends LinearServerDataTypeFactory[Char] {
-  override val name: DataStructureName = StringDataTypeFactory.name
+class StringDataStructureFactory extends LinearServerDataStructureFactory[Char] {
+  override val name: DataStructureName = StringDataStructureFactory.name
 }
 
-object StringDataTypeFactory {
+object StringDataStructureFactory {
   val name = DataStructureName("string")
 }

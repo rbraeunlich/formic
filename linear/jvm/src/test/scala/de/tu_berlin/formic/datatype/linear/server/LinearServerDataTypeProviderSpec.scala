@@ -24,17 +24,17 @@ class LinearServerDataTypeProviderSpec extends TestKit(ActorSystem("LinearServer
       val factoryMap = provider.initFactories(system)
 
       factoryMap.keySet should contain allOf(
-        BooleanListDataTypeFactory.name,
-        IntegerListDataTypeFactory.name,
-        DoubleListDataTypeFactory.name,
-        StringDataTypeFactory.name)
+        BooleanListDataStructureFactory.name,
+        IntegerListDataStructureFactory.name,
+        DoubleListDataStructureFactory.name,
+        StringDataStructureFactory.name)
 
       val actorPaths = factoryMap.values.map(ref => ref.path.name.toString)
       actorPaths should contain allOf(
-        BooleanListDataTypeFactory.name.name,
-        IntegerListDataTypeFactory.name.name,
-        DoubleListDataTypeFactory.name.name,
-        StringDataTypeFactory.name.name
+        BooleanListDataStructureFactory.name.name,
+        IntegerListDataStructureFactory.name.name,
+        DoubleListDataStructureFactory.name.name,
+        StringDataStructureFactory.name.name
         )
     }
 
@@ -47,10 +47,10 @@ class LinearServerDataTypeProviderSpec extends TestKit(ActorSystem("LinearServer
       val registered = protocol.dataTypeOperationJsonProtocols
 
       registered should contain allOf(
-        BooleanListDataTypeFactory.name -> new LinearFormicJsonDataTypeProtocol[Boolean](BooleanListDataTypeFactory.name),
-        IntegerListDataTypeFactory.name -> new LinearFormicJsonDataTypeProtocol[Int](IntegerListDataTypeFactory.name),
-        DoubleListDataTypeFactory.name -> new LinearFormicJsonDataTypeProtocol[Double](DoubleListDataTypeFactory.name),
-        StringDataTypeFactory.name -> new LinearFormicJsonDataTypeProtocol[Char](StringDataTypeFactory.name)
+        BooleanListDataStructureFactory.name -> new LinearFormicJsonDataTypeProtocol[Boolean](BooleanListDataStructureFactory.name),
+        IntegerListDataStructureFactory.name -> new LinearFormicJsonDataTypeProtocol[Int](IntegerListDataStructureFactory.name),
+        DoubleListDataStructureFactory.name -> new LinearFormicJsonDataTypeProtocol[Double](DoubleListDataStructureFactory.name),
+        StringDataStructureFactory.name -> new LinearFormicJsonDataTypeProtocol[Char](StringDataStructureFactory.name)
         )
 
     }

@@ -6,10 +6,10 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-class IntegerListDataTypeFactory extends LinearServerDataTypeFactory[Int] {
-  override val name: DataStructureName = IntegerListDataTypeFactory.name
+class IntegerListDataStructureFactory extends LinearServerDataStructureFactory[Int] {
+  override val name: DataStructureName = IntegerListDataStructureFactory.name
 }
 
-object IntegerListDataTypeFactory {
+object IntegerListDataStructureFactory {
   val name = DataStructureName("IntegerList")
 }

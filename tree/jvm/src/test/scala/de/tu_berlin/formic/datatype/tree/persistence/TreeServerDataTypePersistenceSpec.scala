@@ -20,7 +20,7 @@ class TreeServerDataTypePersistenceSpec extends PersistenceSpec(ActorSystem("Tre
       val probe = TestProbe()
       system.eventStream.subscribe(probe.ref, classOf[OperationMessage])
       val id = DataStructureInstanceId()
-      val dataTypeName: DataStructureName = StringTreeDataTypeFactory.name
+      val dataTypeName: DataStructureName = StringTreeDataStructureFactory.name
       val dataType = system.actorOf(Props(new TreeServerDataStructure[String](id, new WaveOTServer(), dataTypeName)), id.id)
       val op1 = TreeInsertOperation(AccessPath(), ValueTreeNode("root"), OperationId(), OperationContext(), ClientId())
       val op2 = TreeInsertOperation(AccessPath(0), ValueTreeNode("child"), OperationId(), OperationContext(List(op1.id)), ClientId())

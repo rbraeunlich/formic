@@ -24,9 +24,9 @@ class TreeDataTypeFactorySpec extends TestKit(ActorSystem("TreeDataTypeFactorySp
   "BooleanTreeDataTypeFactory" must {
     "create tree data types" in {
 
-      val factory = system.actorOf(Props(new BooleanTreeDataTypeFactory()), "bool")
+      val factory = system.actorOf(Props(new BooleanTreeDataStructureFactory()), "bool")
       val dataTypeInstanceId = DataStructureInstanceId()
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, BooleanTreeDataTypeFactory.name)
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, BooleanTreeDataStructureFactory.name)
 
       val response = expectMsgClass(classOf[NewDataTypeCreated])
 
@@ -38,9 +38,9 @@ class TreeDataTypeFactorySpec extends TestKit(ActorSystem("TreeDataTypeFactorySp
   "DoubleTreeDataTypeFactory" must {
     "create tree data types" in {
 
-      val factory = system.actorOf(Props(new DoubleTreeDataTypeFactory()), "double")
+      val factory = system.actorOf(Props(new DoubleTreeDataStructureFactory()), "double")
       val dataTypeInstanceId = DataStructureInstanceId()
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, DoubleTreeDataTypeFactory.name)
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, DoubleTreeDataStructureFactory.name)
 
       val response = expectMsgClass(classOf[NewDataTypeCreated])
 
@@ -52,9 +52,9 @@ class TreeDataTypeFactorySpec extends TestKit(ActorSystem("TreeDataTypeFactorySp
   "IntegerTreeDataTypeFactory" must {
     "create tree data types" in {
 
-      val factory = system.actorOf(Props(new IntegerTreeDataTypeFactory()), "int")
+      val factory = system.actorOf(Props(new IntegerTreeDataStructureFactory()), "int")
       val dataTypeInstanceId = DataStructureInstanceId()
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, IntegerTreeDataTypeFactory.name)
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, IntegerTreeDataStructureFactory.name)
 
       val response = expectMsgClass(classOf[NewDataTypeCreated])
 
@@ -66,9 +66,9 @@ class TreeDataTypeFactorySpec extends TestKit(ActorSystem("TreeDataTypeFactorySp
   "StringDataTypeFactory" must {
     "create tree data types" in {
 
-      val factory = system.actorOf(Props(new StringTreeDataTypeFactory()), "string")
+      val factory = system.actorOf(Props(new StringTreeDataStructureFactory()), "string")
       val dataTypeInstanceId = DataStructureInstanceId()
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, StringTreeDataTypeFactory.name)
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, StringTreeDataStructureFactory.name)
 
       val response = expectMsgClass(classOf[NewDataTypeCreated])
 

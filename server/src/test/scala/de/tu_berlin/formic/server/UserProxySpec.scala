@@ -7,7 +7,7 @@ import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
-import de.tu_berlin.formic.server.datatype.{TestClasses, TestDataTypeFactory, TestFormicJsonDataTypeProtocol}
+import de.tu_berlin.formic.server.datatype.{TestClasses, TestDataStructureFactory, TestFormicJsonDataTypeProtocol}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 import scala.concurrent.duration._
@@ -39,7 +39,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
 
 
     "creates new data type instance after receiving CreateRequest, adds it to its data type set and send a CreateResponse" in {
-      val factory = system.actorOf(Props[datatype.TestDataTypeFactory])
+      val factory = system.actorOf(Props[datatype.TestDataStructureFactory])
       val userProxy: TestActorRef[UserProxy] = TestActorRef(Props(new UserProxy(Map(datatype.TestClasses.dataTypeName -> factory))))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
@@ -52,7 +52,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
     }
 
     "register for changes of data type it created and forward OperationMessages" in {
-      val factory = system.actorOf(Props[datatype.TestDataTypeFactory])
+      val factory = system.actorOf(Props[datatype.TestDataStructureFactory])
       val userProxy = system.actorOf(Props(new UserProxy(Map(datatype.TestClasses.dataTypeName -> factory))))
       val outgoingProbe = TestProbe()
       val publisherProbe = TestProbe()
@@ -77,7 +77,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
     }
 
     "forward OperationMessages that were applied from other users" in {
-      val factory = system.actorOf(Props[datatype.TestDataTypeFactory])
+      val factory = system.actorOf(Props[datatype.TestDataStructureFactory])
       val userProxy = system.actorOf(Props(new UserProxy(Map(datatype.TestClasses.dataTypeName -> factory))))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
@@ -97,7 +97,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
     }
 
     "ignore OperationMessages for data types it is not interested in" in {
-      val factory = system.actorOf(Props[datatype.TestDataTypeFactory])
+      val factory = system.actorOf(Props[datatype.TestDataStructureFactory])
       val userProxy = system.actorOf(Props(new UserProxy(Map(datatype.TestClasses.dataTypeName -> factory))))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
@@ -116,7 +116,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
     }
 
     "forward HistoricOperationRequests to the correct data type" in {
-      val factory = system.actorOf(Props[TestDataTypeFactory])
+      val factory = system.actorOf(Props[TestDataStructureFactory])
       val userProxy = system.actorOf(Props(new UserProxy(Map(TestClasses.dataTypeName -> factory))))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
@@ -155,7 +155,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
 
     "forward an UpdateRequest to the correct data type and save the data type instance id" in {
       val dataTypeInstanceId = DataStructureInstanceId()
-      val factory = system.actorOf(Props[TestDataTypeFactory])
+      val factory = system.actorOf(Props[TestDataStructureFactory])
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName)
       Thread.sleep(500) //give the server time to create the data type
       val userProxy: TestActorRef[UserProxy] = TestActorRef(Props(new UserProxy(Map.empty)))

@@ -21,7 +21,7 @@ class JsonServerDataTypePersistenceSpec extends PersistenceSpec(ActorSystem("Jso
       val probe = TestProbe()
       system.eventStream.subscribe(probe.ref, classOf[OperationMessage])
       val id = DataStructureInstanceId()
-      val dataTypeName: DataStructureName = JsonServerDataTypeFactory.name
+      val dataTypeName: DataStructureName = JsonServerDataStructureFactory.name
       val dataType = system.actorOf(Props(new JsonServerDataStructure(id, new WaveOTServer(), dataTypeName)), id.id)
       val op1 = TreeInsertOperation(AccessPath(0), BooleanNode("bool", value = true), OperationId(), OperationContext(), ClientId())
       val op2 = TreeInsertOperation(AccessPath(1), NumberNode("num", 12), OperationId(), OperationContext(List(op1.id)), ClientId())

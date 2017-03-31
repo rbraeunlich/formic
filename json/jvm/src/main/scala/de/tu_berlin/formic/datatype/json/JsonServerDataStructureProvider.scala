@@ -10,12 +10,12 @@ import de.tu_berlin.formic.common.json.FormicJsonProtocol
 class JsonServerDataStructureProvider extends ServerDataStructureProvider {
 
   override def initFactories(actorSystem: ActorSystem): Map[DataStructureName, ActorRef] = {
-    val factory = actorSystem.actorOf(Props[JsonServerDataTypeFactory], JsonServerDataTypeFactory.name.name)
-    Map(JsonServerDataTypeFactory.name -> factory)
+    val factory = actorSystem.actorOf(Props[JsonServerDataStructureFactory], JsonServerDataStructureFactory.name.name)
+    Map(JsonServerDataStructureFactory.name -> factory)
   }
 
   override def registerFormicJsonDataStructureProtocols(formicJsonProtocol: FormicJsonProtocol): Unit = {
-    formicJsonProtocol.registerProtocol(new JsonFormicJsonDataTypeProtocol(JsonServerDataTypeFactory.name)(JsonFormicJsonDataTypeProtocol.reader, JsonFormicJsonDataTypeProtocol.writer))
+    formicJsonProtocol.registerProtocol(new JsonFormicJsonDataTypeProtocol(JsonServerDataStructureFactory.name)(JsonFormicJsonDataTypeProtocol.reader, JsonFormicJsonDataTypeProtocol.writer))
   }
 }
 

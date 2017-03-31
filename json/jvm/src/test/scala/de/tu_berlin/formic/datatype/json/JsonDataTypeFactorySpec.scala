@@ -5,7 +5,7 @@ import akka.testkit.{ImplicitSender, TestKit}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.server.datatype.NewDataTypeCreated
-import de.tu_berlin.formic.datatype.tree.BooleanTreeDataTypeFactory
+import de.tu_berlin.formic.datatype.tree.BooleanTreeDataStructureFactory
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 /**
@@ -24,9 +24,9 @@ class JsonDataTypeFactorySpec extends TestKit(ActorSystem("JsonDataTypeFactorySp
 
   "A JsonDataTypeFactory" must {
     "create Json data types" in {
-      val factory = system.actorOf(Props(new JsonServerDataTypeFactory()), "jsonFactory")
+      val factory = system.actorOf(Props(new JsonServerDataStructureFactory()), "jsonFactory")
       val dataTypeInstanceId = DataStructureInstanceId()
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, JsonServerDataTypeFactory.name)
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, JsonServerDataStructureFactory.name)
 
       val response = expectMsgClass(classOf[NewDataTypeCreated])
 

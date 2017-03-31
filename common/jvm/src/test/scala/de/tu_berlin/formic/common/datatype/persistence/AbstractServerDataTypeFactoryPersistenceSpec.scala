@@ -4,9 +4,9 @@ import akka.actor.{ActorSystem, Props}
 import de.tu_berlin.formic.common.controlalgo.{ControlAlgorithm, WaveOTServer}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.common.datatype._
-import de.tu_berlin.formic.common.datatype.persistence.AbstractServerDataTypeFactoryPersistenceSpec.AbstractServerDataTypeFactoryPersistenceSpecFactory
+import de.tu_berlin.formic.common.datatype.persistence.AbstractServerDataTypeFactoryPersistenceSpec.AbstractServerDataStructureFactoryPersistenceSpecFactory
 import de.tu_berlin.formic.common.message.CreateRequest
-import de.tu_berlin.formic.common.server.datatype.{AbstractServerDataStructure, AbstractServerDataTypeFactory}
+import de.tu_berlin.formic.common.server.datatype.{AbstractServerDataStructure, AbstractServerDataStructureFactory}
 import org.scalatest.Assertions._
 
 import scala.concurrent.Await
@@ -20,7 +20,7 @@ class AbstractServerDataTypeFactoryPersistenceSpec extends PersistenceSpec(Actor
 
   "An AbstractServerDataTypeFactory" should {
     "re-apply stored operations after recovery" in {
-      val factory = system.actorOf(Props(new AbstractServerDataTypeFactoryPersistenceSpecFactory), AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName.name)
+      val factory = system.actorOf(Props(new AbstractServerDataStructureFactoryPersistenceSpecFactory), AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName.name)
       val dataTypeInstanceId = DataStructureInstanceId()
       val dataTypeInstanceId2 = DataStructureInstanceId()
       factory ! CreateRequest(ClientId(), dataTypeInstanceId, AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName)
@@ -29,7 +29,7 @@ class AbstractServerDataTypeFactoryPersistenceSpec extends PersistenceSpec(Actor
 
       killActors(factory)
 
-      val recoveredFactory = system.actorOf(Props(new AbstractServerDataTypeFactoryPersistenceSpecFactory), AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName.name)
+      val recoveredFactory = system.actorOf(Props(new AbstractServerDataStructureFactoryPersistenceSpecFactory), AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName.name)
       Thread.sleep(2000)
       val dataType = system.actorSelection(recoveredFactory.path.child(dataTypeInstanceId.id)).resolveOne(5.seconds)
       Await.result(dataType, 5.seconds) shouldNot be(null)
@@ -67,8 +67,8 @@ object AbstractServerDataTypeFactoryPersistenceSpec {
     override def getDataAsJson: String = data
   }
 
-  class AbstractServerDataTypeFactoryPersistenceSpecFactory
-    extends AbstractServerDataTypeFactory[AbstractServerDataTypeFactoryPersistenceSpecServerDataStructure] {
+  class AbstractServerDataStructureFactoryPersistenceSpecFactory
+    extends AbstractServerDataStructureFactory[AbstractServerDataTypeFactoryPersistenceSpecServerDataStructure] {
     override def create(dataTypeInstanceId: DataStructureInstanceId): AbstractServerDataTypeFactoryPersistenceSpecServerDataStructure = {
       new AbstractServerDataTypeFactoryPersistenceSpecServerDataStructure(dataTypeInstanceId, new WaveOTServer())
     }

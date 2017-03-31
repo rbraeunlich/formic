@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype._
 import de.tu_berlin.formic.common.json.{FormicJsonDataTypeProtocol, FormicJsonProtocol}
-import de.tu_berlin.formic.common.server.datatype.{AbstractServerDataStructure, AbstractServerDataTypeFactory}
+import de.tu_berlin.formic.common.server.datatype.{AbstractServerDataStructure, AbstractServerDataStructureFactory}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest.Assertions._
 import upickle.Js
@@ -13,7 +13,7 @@ import upickle.Js
   * @author Ronny Bräunlich
   */
 
-class TestDataTypeFactory extends AbstractServerDataTypeFactory[TestServerDataStructure] {
+class TestDataStructureFactory extends AbstractServerDataStructureFactory[TestServerDataStructure] {
 
   override def create(dataTypeInstanceId: DataStructureInstanceId): TestServerDataStructure = new TestServerDataStructure(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm)
 
@@ -85,7 +85,7 @@ object TestClasses {
 
 object TestClassProvider extends ServerDataStructureProvider {
   override def initFactories(actorSystem: ActorSystem): Map[DataStructureName, ActorRef] = {
-    val actor = actorSystem.actorOf(Props(new TestDataTypeFactory), TestClasses.dataTypeName.name)
+    val actor = actorSystem.actorOf(Props(new TestDataStructureFactory), TestClasses.dataTypeName.name)
     Map(TestClasses.dataTypeName -> actor)
   }
 
