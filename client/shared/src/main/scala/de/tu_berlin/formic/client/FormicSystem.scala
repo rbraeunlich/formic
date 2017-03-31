@@ -21,7 +21,7 @@ import scala.util.{Failure, Success}
 @JSExport
 class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) extends DataStructureInitiator {
 
-  this: ClientDataTypes =>
+  this: ClientDataStructures =>
 
   def this(webSocketFactory: WebSocketFactory) = this(null, webSocketFactory)
 
@@ -86,7 +86,7 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
   }
 
   def initDataTypes(): Unit = {
-    dataTypeProvider.foreach { provider =>
+    dataStructureProvider.foreach { provider =>
       factories ++= provider.initFactories(system)
       provider.registerFormicJsonDataStructureProtocols(jsonProtocol)
     }

@@ -8,8 +8,8 @@ import de.tu_berlin.formic.common.datatype.ClientDataStructureProvider
   */
 object FormicSystemFactory {
 
-  def create(config: Config, dataTypes: Set[ClientDataStructureProvider]): FormicSystem = new FormicSystem(config, WebSocketFactoryJS) with ClientDataTypes {
-    override val dataTypeProvider: Set[ClientDataStructureProvider] = dataTypes
+  def create(config: Config, dataTypes: Set[ClientDataStructureProvider]): FormicSystem = new FormicSystem(config, WebSocketFactoryJS) with ClientDataStructures {
+    override val dataStructureProvider: Set[ClientDataStructureProvider] = dataTypes
   }
   
 }

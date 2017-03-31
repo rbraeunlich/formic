@@ -26,8 +26,8 @@ class FormicSystemIntegrationSpec extends TestKit(ActorSystem("FormicSystemInteg
   "FormicSystem" must {
     "send NoOperation messages to the server if the transformations resulted in one for a linear structure" in {
       val mockSocketFactory = MockWebSocketFactory()
-      val formicSystem = new FormicSystem(ConfigFactory.load(), mockSocketFactory) with ClientDataTypes{
-        override val dataTypeProvider: Set[ClientDataStructureProvider] = Set(new LinearClientDataStructureProvider)
+      val formicSystem = new FormicSystem(ConfigFactory.load(), mockSocketFactory) with ClientDataStructures{
+        override val dataStructureProvider: Set[ClientDataStructureProvider] = Set(new LinearClientDataStructureProvider)
       }
       formicSystem.init(new NewInstanceCallback {
 

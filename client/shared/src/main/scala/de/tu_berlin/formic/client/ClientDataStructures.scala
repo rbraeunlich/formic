@@ -8,8 +8,8 @@ import de.tu_berlin.formic.common.datatype.ClientDataStructureProvider
   *
   * @author Ronny Bräunlich
   */
-trait ClientDataTypes {
+trait ClientDataStructures {
 
-  val dataTypeProvider: Set[ClientDataStructureProvider]
+  val dataStructureProvider: Set[ClientDataStructureProvider]
 
 }

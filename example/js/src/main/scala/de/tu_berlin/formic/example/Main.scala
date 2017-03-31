@@ -21,11 +21,11 @@ import scala.util.{Failure, Success}
   * @author Ronny Bräunlich
   */
 
-class Main extends ExampleClientDataTypes {
+class Main extends ExampleClientDataStructures {
 
   val config = ConfigFactory.parseString("akka {\n  loglevel = debug\n  http.client.idle-timeout = 10 minutes\n}\n\nformic {\n  server {\n    address = \"127.0.0.1\"\n    port = 8080\n  }\n  client {\n    buffersize = 100\n  }\n}")
 
-  val system = FormicSystemFactory.create(config, dataTypeProvider)
+  val system = FormicSystemFactory.create(config, dataStructureProvider)
 
   implicit val ec = system.system.dispatcher
 

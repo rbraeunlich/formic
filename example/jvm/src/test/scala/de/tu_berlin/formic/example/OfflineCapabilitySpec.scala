@@ -95,8 +95,8 @@ class OfflineCapabilitySpec extends TestKit(ActorSystem("ParallelEditingSpec"))
       val user1 = FormicSystemFactory.create(config, Set(LinearClientDataStructureProvider()))
       //we need a special wrapper for user2 so we can intentionally drop messages
       val user2WebSocketFactory = new TestWebSocketFactoryJVM()
-      val user2 = new FormicSystem(config, user2WebSocketFactory) with ClientDataTypes {
-        override val dataTypeProvider: Set[ClientDataStructureProvider] = Set(LinearClientDataStructureProvider())
+      val user2 = new FormicSystem(config, user2WebSocketFactory) with ClientDataStructures {
+        override val dataStructureProvider: Set[ClientDataStructureProvider] = Set(LinearClientDataStructureProvider())
       }
       val user1Callback = new CollectingCallback
       user1.init(user1Callback)

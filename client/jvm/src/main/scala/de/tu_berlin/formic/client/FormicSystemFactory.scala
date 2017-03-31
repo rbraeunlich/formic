@@ -12,8 +12,8 @@ object FormicSystemFactory {
 
   def create(config: Config, dataTypes: Set[ClientDataStructureProvider]): FormicSystem = {
     val webSocketFactory = new WebSocketFactoryJVM()
-    val system = new FormicSystem(config, webSocketFactory) with ClientDataTypes {
-      override val dataTypeProvider: Set[ClientDataStructureProvider] = dataTypes
+    val system = new FormicSystem(config, webSocketFactory) with ClientDataStructures {
+      override val dataStructureProvider: Set[ClientDataStructureProvider] = dataTypes
     }
     //unfortunately, there is no other way
     implicit val actorSystem = system.system
