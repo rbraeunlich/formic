@@ -1,8 +1,8 @@
 package de.tu_berlin.formic.gatling.action
 
 import de.tu_berlin.formic.client.NewInstanceCallback
-import de.tu_berlin.formic.common.datatype.client.ClientDataStructureEvent
-import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataStructure}
+import de.tu_berlin.formic.common.datastructure.client.ClientDataStructureEvent
+import de.tu_berlin.formic.common.datastructure.{DataStructureName, FormicDataStructure}
 
 import scala.concurrent.Promise
 

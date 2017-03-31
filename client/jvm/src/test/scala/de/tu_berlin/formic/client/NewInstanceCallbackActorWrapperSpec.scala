@@ -2,10 +2,10 @@ package de.tu_berlin.formic.client
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.NewDataStructureCreated
+import de.tu_berlin.formic.common.datastructure.client.AbstractClientDataStructureFactory.NewDataStructureCreated
 import de.tu_berlin.formic.common.DataStructureInstanceId
-import de.tu_berlin.formic.common.datatype.client.ClientDataStructureEvent
-import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataStructure}
+import de.tu_berlin.formic.common.datastructure.client.ClientDataStructureEvent
+import de.tu_berlin.formic.common.datastructure.{DataStructureName, FormicDataStructure}
 import org.scalatest.{Matchers, WordSpecLike}
 
 /**

@@ -2,9 +2,9 @@ package de.tu_berlin.formic.server.datatype
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
-import de.tu_berlin.formic.common.datatype._
+import de.tu_berlin.formic.common.datastructure._
 import de.tu_berlin.formic.common.json.{FormicJsonDataStructureProtocol, FormicJsonProtocol}
-import de.tu_berlin.formic.common.server.datatype.{AbstractServerDataStructure, AbstractServerDataStructureFactory}
+import de.tu_berlin.formic.common.server.datastructure.{AbstractServerDataStructure, AbstractServerDataStructureFactory}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest.Assertions._
 import upickle.Js

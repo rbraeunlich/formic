@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.common.controlalgo
 
 import de.tu_berlin.formic.common.OperationId
-import de.tu_berlin.formic.common.datatype.{DataStructureOperation, HistoryBuffer, OperationContext, OperationTransformer}
+import de.tu_berlin.formic.common.datastructure.{DataStructureOperation, HistoryBuffer, OperationContext, OperationTransformer}
 
 /**
   * The client implementation of the Wave OT algorithm. In order to keep it free from

@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.datatype.tree
 
-import de.tu_berlin.formic.common.datatype.{DataStructureOperation, OperationContext, OperationTransformer}
+import de.tu_berlin.formic.common.datastructure.{DataStructureOperation, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 
 trait TreeStructureOperation extends DataStructureOperation {

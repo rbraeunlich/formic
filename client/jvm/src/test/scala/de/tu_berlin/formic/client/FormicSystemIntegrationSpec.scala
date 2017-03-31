@@ -6,8 +6,8 @@ import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.FormicSystemIntegrationSpec.MockWebSocketFactory
 import de.tu_berlin.formic.client.WebSocketConnection.{OnConnect, OnMessage}
 import de.tu_berlin.formic.common.{ClientId, OperationId}
-import de.tu_berlin.formic.common.datatype.client.ClientDataStructureEvent
-import de.tu_berlin.formic.common.datatype.{ClientDataStructureProvider, DataStructureName, FormicDataStructure, OperationContext}
+import de.tu_berlin.formic.common.datastructure.client.ClientDataStructureEvent
+import de.tu_berlin.formic.common.datastructure.{ClientDataStructureProvider, DataStructureName, FormicDataStructure, OperationContext}
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.datatype.linear.{LinearInsertOperation, LinearNoOperation}
 import de.tu_berlin.formic.datatype.linear.client.{FormicString, LinearClientDataStructureProvider}

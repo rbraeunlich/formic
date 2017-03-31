@@ -4,8 +4,8 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{EventFilter, ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.Dispatcher.{ErrorMessage, KnownDataStructureIds, RequestKnownDataStructureIds, WrappedUpdateResponse}
-import de.tu_berlin.formic.common.datatype.DataStructureName
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.{NewDataStructureCreated, WrappedCreateRequest}
+import de.tu_berlin.formic.common.datastructure.DataStructureName
+import de.tu_berlin.formic.common.datastructure.client.AbstractClientDataStructureFactory.{NewDataStructureCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest.{Matchers, WordSpecLike}

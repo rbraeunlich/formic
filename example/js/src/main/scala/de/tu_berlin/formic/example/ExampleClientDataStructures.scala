@@ -1,8 +1,8 @@
 package de.tu_berlin.formic.example
 
 import de.tu_berlin.formic.client.ClientDataStructures
-import de.tu_berlin.formic.common.datatype.ClientDataStructureProvider
-import de.tu_berlin.formic.datatype.json.client.JsonClientDataStructureProvider
+import de.tu_berlin.formic.common.datastructure.ClientDataStructureProvider
+import de.tu_berlin.formic.datastructure.json.client.JsonClientDataStructureProvider
 import de.tu_berlin.formic.datatype.linear.client.LinearClientDataStructureProvider
 import de.tu_berlin.formic.datatype.tree.client.TreeClientDataStructureProvider
 

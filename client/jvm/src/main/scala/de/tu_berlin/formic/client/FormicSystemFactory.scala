@@ -3,7 +3,7 @@ package de.tu_berlin.formic.client
 import akka.actor.ActorSystem
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings}
 import com.typesafe.config.Config
-import de.tu_berlin.formic.common.datatype.ClientDataStructureProvider
+import de.tu_berlin.formic.common.datastructure.ClientDataStructureProvider
 
 /**
   * @author Ronny Bräunlich

@@ -2,8 +2,8 @@ package de.tu_berlin.formic.datatype.linear.client
 
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure
-import de.tu_berlin.formic.common.datatype.{DataStructureName, DataStructureOperation, OperationContext, OperationTransformer}
+import de.tu_berlin.formic.common.datastructure.client.AbstractClientDataStructure
+import de.tu_berlin.formic.common.datastructure.{DataStructureName, DataStructureOperation, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.{DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation, LinearNoOperation, LinearTransformer}
 import upickle.default._

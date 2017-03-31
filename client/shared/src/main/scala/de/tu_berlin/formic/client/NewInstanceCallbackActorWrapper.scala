@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.client
 
 import akka.actor.Actor
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.NewDataStructureCreated
+import de.tu_berlin.formic.common.datastructure.client.AbstractClientDataStructureFactory.NewDataStructureCreated
 
 /**
   * An actor implementation that wraps the NewInstanceCallbacks the client provides. The client shall

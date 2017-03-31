@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.linear.server
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
-import de.tu_berlin.formic.common.datatype.{DataStructureOperation, HistoryBuffer, OperationContext, OperationTransformer}
+import de.tu_berlin.formic.common.datastructure.{DataStructureOperation, HistoryBuffer, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation, LinearNoOperation}

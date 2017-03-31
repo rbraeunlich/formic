@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.controlalgo
 
-import de.tu_berlin.formic.common.datatype.{DataStructureOperation, HistoryBuffer, OperationTransformer}
+import de.tu_berlin.formic.common.datastructure.{DataStructureOperation, HistoryBuffer, OperationTransformer}
 
 /**
   * The implementation of the Wave OT algorithm on the server side

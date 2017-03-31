@@ -2,7 +2,7 @@ package de.tu_berlin.formic.client
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import de.tu_berlin.formic.client.Dispatcher._
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.NewDataStructureCreated
+import de.tu_berlin.formic.common.datastructure.client.AbstractClientDataStructureFactory.NewDataStructureCreated
 import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.common.message._
 

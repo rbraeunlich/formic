@@ -4,7 +4,7 @@ import java.util.concurrent.{CountDownLatch, TimeUnit}
 
 import de.tu_berlin.formic.client.FormicSystem
 import de.tu_berlin.formic.common.DataStructureInstanceId
-import de.tu_berlin.formic.common.datatype.FormicDataStructure
+import de.tu_berlin.formic.common.datastructure.FormicDataStructure
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.action.{Action, ChainableAction}
 import io.gatling.core.session.{Expression, Session}

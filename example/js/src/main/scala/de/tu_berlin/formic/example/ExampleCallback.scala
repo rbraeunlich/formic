@@ -1,9 +1,9 @@
 package de.tu_berlin.formic.example
 
 import de.tu_berlin.formic.client.NewInstanceCallback
-import de.tu_berlin.formic.common.datatype.client.{ClientDataStructureEvent, RemoteOperationEvent}
-import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataStructure}
-import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
+import de.tu_berlin.formic.common.datastructure.client.{ClientDataStructureEvent, RemoteOperationEvent}
+import de.tu_berlin.formic.common.datastructure.{DataStructureName, FormicDataStructure}
+import de.tu_berlin.formic.datastructure.json.client.FormicJsonObject
 import de.tu_berlin.formic.datatype.linear.client.FormicString
 import de.tu_berlin.formic.datatype.tree.client.FormicIntegerTree
 import org.scalajs.dom.document

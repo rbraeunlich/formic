@@ -12,7 +12,7 @@ import akka.http.scaladsl.server.ExceptionHandler
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings, OverflowStrategy, Supervision}
 import de.tu_berlin.formic.common.ClientId
-import de.tu_berlin.formic.common.datatype.DataStructureName
+import de.tu_berlin.formic.common.datastructure.DataStructureName
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message.FormicMessage
 import upickle.default._

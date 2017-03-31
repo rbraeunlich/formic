@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datatype.tree.persistence
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.TestProbe
 import de.tu_berlin.formic.common.controlalgo.WaveOTServer
-import de.tu_berlin.formic.common.datatype.{DataStructureName, OperationContext}
+import de.tu_berlin.formic.common.datastructure.{DataStructureName, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.tree._

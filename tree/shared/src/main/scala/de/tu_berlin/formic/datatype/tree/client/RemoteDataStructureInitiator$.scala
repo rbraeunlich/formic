@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.datatype.tree.client
 
-import de.tu_berlin.formic.common.datatype.FormicDataStructure
-import de.tu_berlin.formic.common.datatype.client.DataStructureInitiator
+import de.tu_berlin.formic.common.datastructure.FormicDataStructure
+import de.tu_berlin.formic.common.datastructure.client.DataStructureInitiator
 
 /**
   * Data types that are instantiated because they were created remote (i.e. not by calling new whatever

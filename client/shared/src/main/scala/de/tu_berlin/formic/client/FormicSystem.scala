@@ -3,10 +3,10 @@ package de.tu_berlin.formic.client
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.ask
 import com.typesafe.config.Config
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure.ReceiveCallback
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.{LocalCreateRequest, NewDataStructureCreated}
-import de.tu_berlin.formic.common.datatype.client.DataStructureInitiator
-import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataStructure}
+import de.tu_berlin.formic.common.datastructure.client.AbstractClientDataStructure.ReceiveCallback
+import de.tu_berlin.formic.common.datastructure.client.AbstractClientDataStructureFactory.{LocalCreateRequest, NewDataStructureCreated}
+import de.tu_berlin.formic.common.datastructure.client.DataStructureInitiator
+import de.tu_berlin.formic.common.datastructure.{DataStructureName, FormicDataStructure}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message.{CreateRequest, UpdateRequest}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}

@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.message
 
-import de.tu_berlin.formic.common.datatype.{DataStructureName, DataStructureOperation, OperationContext}
+import de.tu_berlin.formic.common.datastructure.{DataStructureName, DataStructureOperation, OperationContext}
 import de.tu_berlin.formic.common.json.{FormicJsonDataStructureProtocol, FormicJsonProtocol}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol._
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
@@ -50,7 +50,7 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
   it should "serialize a CreateRequest to JSON" in {
     val serialized = write(CreateRequest(ClientId.valueOf("678"), DataStructureInstanceId.valueOf("91011"), DataStructureName("test")))
 
-    serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.CreateRequest\",\"clientId\":{\"id\":\"678\"},\"dataStructureInstanceId\":{\"id\":\"91011\"},\"dataStructure\":{\"$type\":\"de.tu_berlin.formic.common.datatype.DataStructureName\",\"name\":\"test\"}}")
+    serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.CreateRequest\",\"clientId\":{\"id\":\"678\"},\"dataStructureInstanceId\":{\"id\":\"91011\"},\"dataStructure\":{\"$type\":\"de.tu_berlin.formic.common.datastructure.DataStructureName\",\"name\":\"test\"}}")
   }
 
   it should "serialize a HistoricOperationRequest with sinceId to JSON" in {
@@ -68,7 +68,7 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
   it should "serialize an UpdateResponse to JSON" in {
     val serialized = write(UpdateResponse(DataStructureInstanceId.valueOf("1"), DataStructureName("test"), "{data}", Option(OperationId("567"))))
 
-    serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.UpdateResponse\",\"dataStructureInstanceId\":{\"id\":\"1\"},\"dataStructure\":{\"$type\":\"de.tu_berlin.formic.common.datatype.DataStructureName\",\"name\":\"test\"},\"data\":\"{data}\",\"lastOperationId\":[{\"id\":\"567\"}]}")
+    serialized should be("{\"$type\":\"de.tu_berlin.formic.common.message.UpdateResponse\",\"dataStructureInstanceId\":{\"id\":\"1\"},\"dataStructure\":{\"$type\":\"de.tu_berlin.formic.common.datastructure.DataStructureName\",\"name\":\"test\"},\"data\":\"{data}\",\"lastOperationId\":[{\"id\":\"567\"}]}")
   }
 
   it should "serialize an UpdateRequest to JSON" in {
@@ -103,7 +103,7 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
   }
 
   it should "deserialize a CreateRequest" in {
-    val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.CreateRequest\",\"clientId\":{\"id\":\"678\"},\"dataStructureInstanceId\":{\"id\":\"91011\"},\"dataStructure\":{\"$type\":\"de.tu_berlin.formic.datatype.common.datatype.DataStructureName\",\"name\":\"test\"}}")
+    val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.CreateRequest\",\"clientId\":{\"id\":\"678\"},\"dataStructureInstanceId\":{\"id\":\"91011\"},\"dataStructure\":{\"$type\":\"de.tu_berlin.formic.datastructure.common.datastructure.DataStructureName\",\"name\":\"test\"}}")
 
     deserialized shouldBe a[CreateRequest]
     deserialized.asInstanceOf[CreateRequest].clientId should be(ClientId("678"))
@@ -130,7 +130,7 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
   }
 
   it should "deserialize an UpdateResponse with lastOperationId" in {
-    val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.UpdateResponse\",\"dataStructureInstanceId\":{\"id\":\"1\"},\"dataStructure\":{\"$type\":\"de.tu_berlin.formic.datatype.common.datatype.DataStructureName\",\"name\":\"test\"},\"data\":\"{data}\", \"lastOperationId\":[{\"id\":\"1\"}]}")
+    val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.UpdateResponse\",\"dataStructureInstanceId\":{\"id\":\"1\"},\"dataStructure\":{\"$type\":\"de.tu_berlin.formic.datastructure.common.datastructure.DataStructureName\",\"name\":\"test\"},\"data\":\"{data}\", \"lastOperationId\":[{\"id\":\"1\"}]}")
 
     deserialized shouldBe a[UpdateResponse]
     deserialized.asInstanceOf[UpdateResponse].dataStructureInstanceId should be(DataStructureInstanceId("1"))
@@ -140,7 +140,7 @@ class FormicMessageJsonSerializationSpec extends FlatSpec with Matchers {
   }
 
   it should "deserialize an UpdateResponse without lastOperationId" in {
-    val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.UpdateResponse\",\"dataStructureInstanceId\":{\"id\":\"1\"},\"dataStructure\":{\"$type\":\"de.tu_berlin.formic.datatype.common.datatype.DataStructureName\",\"name\":\"test\"},\"data\":\"{data}\", \"lastOperationId\": []}")
+    val deserialized = read[FormicMessage]("{\"$type\":\"de.tu_berlin.formic.common.message.UpdateResponse\",\"dataStructureInstanceId\":{\"id\":\"1\"},\"dataStructure\":{\"$type\":\"de.tu_berlin.formic.datastructure.common.datastructure.DataStructureName\",\"name\":\"test\"},\"data\":\"{data}\", \"lastOperationId\": []}")
 
     deserialized shouldBe a[UpdateResponse]
     deserialized.asInstanceOf[UpdateResponse].dataStructureInstanceId should be(DataStructureInstanceId("1"))

@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.datatype.tree
 
-import de.tu_berlin.formic.common.datatype.OperationContext
+import de.tu_berlin.formic.common.datastructure.OperationContext
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import org.scalatest.{FlatSpec, Matchers}
 

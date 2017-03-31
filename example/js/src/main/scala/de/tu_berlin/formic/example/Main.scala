@@ -2,10 +2,10 @@ package de.tu_berlin.formic.example
 
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.FormicSystemFactory
-import de.tu_berlin.formic.common.datatype.client.{ClientDataStructureEvent, RemoteOperationEvent}
+import de.tu_berlin.formic.common.datastructure.client.{ClientDataStructureEvent, RemoteOperationEvent}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
-import de.tu_berlin.formic.datatype.json.JsonPath
-import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
+import de.tu_berlin.formic.datastructure.json.JsonPath
+import de.tu_berlin.formic.datastructure.json.client.FormicJsonObject
 import de.tu_berlin.formic.datatype.linear.client.FormicString
 import de.tu_berlin.formic.datatype.tree.AccessPath
 import de.tu_berlin.formic.datatype.tree.client.FormicIntegerTree

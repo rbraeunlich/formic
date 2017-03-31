@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.linear.client
 
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
-import de.tu_berlin.formic.common.datatype.client.{ClientDataStructureEvent, DataStructureInitiator}
+import de.tu_berlin.formic.common.datastructure.client.{ClientDataStructureEvent, DataStructureInitiator}
 import upickle.default._
 
 import scala.scalajs.js.annotation.JSExport

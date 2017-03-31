@@ -1,8 +1,8 @@
 package de.tu_berlin.formic.client
 
 import akka.actor.Actor
-import de.tu_berlin.formic.common.datatype.client.ClientDataStructureEvent
-import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataStructure}
+import de.tu_berlin.formic.common.datastructure.client.ClientDataStructureEvent
+import de.tu_berlin.formic.common.datastructure.{DataStructureName, FormicDataStructure}
 
 /**
   * @author Ronny Bräunlich

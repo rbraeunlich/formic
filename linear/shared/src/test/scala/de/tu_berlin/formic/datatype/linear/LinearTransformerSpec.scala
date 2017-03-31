@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.datatype.linear
 
 import de.tu_berlin.formic.common.controlalgo.WaveOTClient
-import de.tu_berlin.formic.common.datatype.{DataStructureOperation, HistoryBuffer, OperationContext}
+import de.tu_berlin.formic.common.datastructure.{DataStructureOperation, HistoryBuffer, OperationContext}
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import org.scalatest._
 import upickle.default._

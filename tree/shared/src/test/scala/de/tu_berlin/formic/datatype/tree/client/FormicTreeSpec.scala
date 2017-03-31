@@ -3,8 +3,8 @@ package de.tu_berlin.formic.datatype.tree.client
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
-import de.tu_berlin.formic.common.datatype.FormicDataStructure.LocalOperationMessage
-import de.tu_berlin.formic.common.datatype.OperationContext
+import de.tu_berlin.formic.common.datastructure.FormicDataStructure.LocalOperationMessage
+import de.tu_berlin.formic.common.datastructure.OperationContext
 import de.tu_berlin.formic.common.message.{UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.datatype.tree._
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}

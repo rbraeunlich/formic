@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.datatype.tree
 
-import de.tu_berlin.formic.common.datatype.DataStructureName
+import de.tu_berlin.formic.common.datastructure.DataStructureName
 
 /**
   * @author Ronny Bräunlich

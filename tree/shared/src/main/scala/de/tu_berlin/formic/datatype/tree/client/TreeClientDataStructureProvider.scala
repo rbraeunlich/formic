@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.datatype.tree.client
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import de.tu_berlin.formic.common.datatype.{ClientDataStructureProvider, DataStructureName}
+import de.tu_berlin.formic.common.datastructure.{ClientDataStructureProvider, DataStructureName}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.datatype.tree.TreeFormicJsonDataStructureProtocol
 

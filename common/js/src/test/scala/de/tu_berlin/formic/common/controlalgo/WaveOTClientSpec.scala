@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.controlalgo
 
-import de.tu_berlin.formic.common.datatype.{DataStructureOperation, HistoryBuffer, OperationContext, OperationTransformer}
+import de.tu_berlin.formic.common.datastructure.{DataStructureOperation, HistoryBuffer, OperationContext, OperationTransformer}
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import org.scalatest.{Matchers, WordSpec}
 

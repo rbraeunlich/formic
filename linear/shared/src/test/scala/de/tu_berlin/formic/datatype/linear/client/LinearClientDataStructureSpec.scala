@@ -3,9 +3,9 @@ package de.tu_berlin.formic.datatype.linear.client
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
-import de.tu_berlin.formic.common.datatype.FormicDataStructure.LocalOperationMessage
-import de.tu_berlin.formic.common.datatype._
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure.ReceiveCallback
+import de.tu_berlin.formic.common.datastructure.FormicDataStructure.LocalOperationMessage
+import de.tu_berlin.formic.common.datastructure._
+import de.tu_berlin.formic.common.datastructure.client.AbstractClientDataStructure.ReceiveCallback
 import de.tu_berlin.formic.common.message.{CreateResponse, OperationMessage}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation, LinearNoOperation}

@@ -5,8 +5,8 @@ import akka.testkit.{EventFilter, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.Dispatcher.WrappedUpdateResponse
 import de.tu_berlin.formic.client.WebSocketConnection._
-import de.tu_berlin.formic.common.datatype.OperationContext
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.NewDataStructureCreated
+import de.tu_berlin.formic.common.datastructure.OperationContext
+import de.tu_berlin.formic.common.datastructure.client.AbstractClientDataStructureFactory.NewDataStructureCreated
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}

@@ -1,10 +1,10 @@
 package de.tu_berlin.formic.server
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import de.tu_berlin.formic.common.server.datatype.AbstractServerDataStructure.HistoricOperationsAnswer
-import de.tu_berlin.formic.common.datatype.DataStructureName
+import de.tu_berlin.formic.common.server.datastructure.AbstractServerDataStructure.HistoricOperationsAnswer
+import de.tu_berlin.formic.common.datastructure.DataStructureName
 import de.tu_berlin.formic.common.message._
-import de.tu_berlin.formic.common.server.datatype.NewDataStructureCreated
+import de.tu_berlin.formic.common.server.datastructure.NewDataStructureCreated
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import de.tu_berlin.formic.server.UserProxy.NewDataStructureSubscription
 

@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.gatling.action
 
 import de.tu_berlin.formic.common.{DataStructureInstanceId, OperationId}
-import de.tu_berlin.formic.common.datatype.client.{AcknowledgementEvent, ClientDataStructureEvent, CreateResponseEvent}
+import de.tu_berlin.formic.common.datastructure.client.{AcknowledgementEvent, ClientDataStructureEvent, CreateResponseEvent}
 import de.tu_berlin.formic.gatling.action.TimeMeasureCallback.{RemoteOperationTimeMeasureListener, TimeMeasureListener}
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.session.Session

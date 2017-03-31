@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.tree.client
 
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
-import de.tu_berlin.formic.common.datatype.client.{ClientDataStructureEvent, DataStructureInitiator}
+import de.tu_berlin.formic.common.datastructure.client.{ClientDataStructureEvent, DataStructureInitiator}
 
 /**
   * @author Ronny Bräunlich

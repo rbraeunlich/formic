@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.message
 
-import de.tu_berlin.formic.common.datatype.{DataStructureName, DataStructureOperation}
+import de.tu_berlin.formic.common.datastructure.{DataStructureName, DataStructureOperation}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 
 /**

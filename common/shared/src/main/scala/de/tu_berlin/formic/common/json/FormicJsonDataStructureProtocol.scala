@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.json
 
-import de.tu_berlin.formic.common.datatype.{DataStructureName, DataStructureOperation}
+import de.tu_berlin.formic.common.datastructure.{DataStructureName, DataStructureOperation}
 
 /**
   * Only the concrete data structures can know about the structure of their operations. Therefore,

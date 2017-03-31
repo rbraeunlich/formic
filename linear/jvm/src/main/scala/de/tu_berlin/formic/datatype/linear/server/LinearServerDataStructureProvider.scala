@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.datatype.linear.server
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import de.tu_berlin.formic.common.datatype.{DataStructureName, ServerDataStructureProvider}
+import de.tu_berlin.formic.common.datastructure.{DataStructureName, ServerDataStructureProvider}
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.datatype.linear.LinearFormicJsonDataStructureProtocol
 

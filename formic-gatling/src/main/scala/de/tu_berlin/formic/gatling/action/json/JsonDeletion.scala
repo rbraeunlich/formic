@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.gatling.action.json
 
-import de.tu_berlin.formic.datatype.json.JsonPath
-import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
+import de.tu_berlin.formic.datastructure.json.JsonPath
+import de.tu_berlin.formic.datastructure.json.client.FormicJsonObject
 import de.tu_berlin.formic.gatling.action.{SessionVariables, TimeMeasureCallback}
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.action.{Action, ChainableAction}

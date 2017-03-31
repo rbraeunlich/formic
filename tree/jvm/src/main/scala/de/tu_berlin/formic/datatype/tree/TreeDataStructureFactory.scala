@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.tree
 
 import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.common.controlalgo.WaveOTServer
-import de.tu_berlin.formic.common.server.datatype.AbstractServerDataStructureFactory
+import de.tu_berlin.formic.common.server.datastructure.AbstractServerDataStructureFactory
 import upickle.default._
 
 /**

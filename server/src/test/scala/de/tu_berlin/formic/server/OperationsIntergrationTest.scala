@@ -10,7 +10,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.stream.scaladsl.{Flow, Keep, Sink, SinkQueueWithCancel, Source, SourceQueueWithComplete}
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.testkit.TestKit
-import de.tu_berlin.formic.common.datatype.{OperationContext, ServerDataStructureProvider}
+import de.tu_berlin.formic.common.datastructure.{OperationContext, ServerDataStructureProvider}
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.linear.LinearInsertOperation

@@ -3,8 +3,8 @@ package de.tu_berlin.formic.client
 import akka.actor.{Actor, ActorRef}
 import de.tu_berlin.formic.client.Dispatcher.WrappedUpdateResponse
 import de.tu_berlin.formic.common.ClientId
-import de.tu_berlin.formic.common.datatype.DataStructureName
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.WrappedCreateRequest
+import de.tu_berlin.formic.common.datastructure.DataStructureName
+import de.tu_berlin.formic.common.datastructure.client.AbstractClientDataStructureFactory.WrappedCreateRequest
 import de.tu_berlin.formic.common.message.CreateRequest
 
 /**

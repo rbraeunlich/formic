@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.datatype.linear
 
-import de.tu_berlin.formic.common.datatype.{DataStructureName, DataStructureOperation, OperationContext}
+import de.tu_berlin.formic.common.datastructure.{DataStructureName, DataStructureOperation, OperationContext}
 import de.tu_berlin.formic.common.json.FormicJsonDataStructureProtocol
 import de.tu_berlin.formic.common.{ClientId, OperationId}
 import upickle.Js

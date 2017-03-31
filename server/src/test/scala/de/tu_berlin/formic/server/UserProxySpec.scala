@@ -3,7 +3,7 @@ package de.tu_berlin.formic.server
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import de.tu_berlin.formic.StopSystemAfterAll
-import de.tu_berlin.formic.common.datatype._
+import de.tu_berlin.formic.common.datastructure._
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}

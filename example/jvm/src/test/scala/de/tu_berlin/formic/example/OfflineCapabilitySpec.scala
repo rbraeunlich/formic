@@ -5,8 +5,8 @@ import akka.stream.{ActorMaterializer, ActorMaterializerSettings}
 import akka.testkit.TestKit
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client._
-import de.tu_berlin.formic.common.datatype.client.ClientDataStructureEvent
-import de.tu_berlin.formic.common.datatype.{ClientDataStructureProvider, DataStructureName, FormicDataStructure}
+import de.tu_berlin.formic.common.datastructure.client.ClientDataStructureEvent
+import de.tu_berlin.formic.common.datastructure.{ClientDataStructureProvider, DataStructureName, FormicDataStructure}
 import de.tu_berlin.formic.datatype.linear.client.{FormicString, LinearClientDataStructureProvider}
 import de.tu_berlin.formic.example.OfflineCapabilitySpec.{CollectingCallback, DropNextNMessages, TestWebSocketFactoryJVM}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}

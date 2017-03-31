@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datatype.linear.client
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.{NewDataStructureCreated, WrappedCreateRequest}
+import de.tu_berlin.formic.common.datastructure.client.AbstractClientDataStructureFactory.{NewDataStructureCreated, WrappedCreateRequest}
 import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}

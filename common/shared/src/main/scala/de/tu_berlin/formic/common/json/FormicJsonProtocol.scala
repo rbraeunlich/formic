@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.common.json
 
-import de.tu_berlin.formic.common.datatype.DataStructureName
+import de.tu_berlin.formic.common.datastructure.DataStructureName
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import upickle.Js

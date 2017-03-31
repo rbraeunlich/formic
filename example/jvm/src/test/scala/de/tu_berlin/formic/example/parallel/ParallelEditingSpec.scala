@@ -8,10 +8,12 @@ import akka.testkit.TestKit
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.{FormicSystemFactory, NewInstanceCallback}
 import de.tu_berlin.formic.common.ClientId
-import de.tu_berlin.formic.common.datatype.client.ClientDataStructureEvent
-import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataStructure}
-import de.tu_berlin.formic.datatype.json._
-import de.tu_berlin.formic.datatype.json.client.{FormicJsonObject, JsonClientDataStructureProvider}
+import de.tu_berlin.formic.common.datastructure.client.ClientDataStructureEvent
+import de.tu_berlin.formic.common.datastructure.{DataStructureName, FormicDataStructure}
+import de.tu_berlin.formic.datastructure.json.JsonPath
+import de.tu_berlin.formic.datastructure.json.client.{FormicJsonObject, JsonClientDataStructureProvider}
+import de.tu_berlin.formic.datastructure.json._
+import de.tu_berlin.formic.datastructure.json.client.JsonClientDataStructureProvider
 import de.tu_berlin.formic.datatype.linear.client.{FormicString, LinearClientDataStructureProvider}
 import de.tu_berlin.formic.datatype.tree.client.{FormicIntegerTree, FormicStringTree, FormicTree, TreeClientDataStructureProvider}
 import de.tu_berlin.formic.datatype.tree.{AccessPath, TreeNode, ValueTreeNode}

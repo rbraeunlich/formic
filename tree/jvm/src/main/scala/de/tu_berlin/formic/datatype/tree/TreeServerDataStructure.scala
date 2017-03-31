@@ -2,8 +2,8 @@ package de.tu_berlin.formic.datatype.tree
 
 import de.tu_berlin.formic.common.DataStructureInstanceId
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
-import de.tu_berlin.formic.common.datatype.{DataStructureName, DataStructureOperation, OperationTransformer}
-import de.tu_berlin.formic.common.server.datatype.AbstractServerDataStructure
+import de.tu_berlin.formic.common.datastructure.{DataStructureName, DataStructureOperation, OperationTransformer}
+import de.tu_berlin.formic.common.server.datastructure.AbstractServerDataStructure
 import upickle.default._
 
 /**

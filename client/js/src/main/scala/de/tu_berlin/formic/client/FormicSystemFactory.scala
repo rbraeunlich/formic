@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.client
 
 import com.typesafe.config.Config
-import de.tu_berlin.formic.common.datatype.ClientDataStructureProvider
+import de.tu_berlin.formic.common.datastructure.ClientDataStructureProvider
 
 /**
   * @author Ronny Bräunlich

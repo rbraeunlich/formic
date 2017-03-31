@@ -11,7 +11,7 @@ import akka.stream.scaladsl.{Flow, Keep, Sink, SinkQueueWithCancel, Source, Sour
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.testkit.TestKit
 import akka.util.ByteString
-import de.tu_berlin.formic.common.datatype.ServerDataStructureProvider
+import de.tu_berlin.formic.common.datastructure.ServerDataStructureProvider
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse, FormicMessage}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}

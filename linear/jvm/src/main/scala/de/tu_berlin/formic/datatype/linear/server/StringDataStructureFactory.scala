@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.datatype.linear.server
 
-import de.tu_berlin.formic.common.datatype.DataStructureName
+import de.tu_berlin.formic.common.datastructure.DataStructureName
 import upickle.default._
 
 /**

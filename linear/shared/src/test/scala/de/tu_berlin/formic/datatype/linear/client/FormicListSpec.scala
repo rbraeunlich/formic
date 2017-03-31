@@ -3,10 +3,10 @@ package de.tu_berlin.formic.datatype.linear.client
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
-import de.tu_berlin.formic.common.datatype.FormicDataStructure.LocalOperationMessage
-import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure.ReceiveCallback
-import de.tu_berlin.formic.common.datatype.client.{ClientDataStructureEvent, DataStructureInitiator}
-import de.tu_berlin.formic.common.datatype.{FormicDataStructure, OperationContext}
+import de.tu_berlin.formic.common.datastructure.FormicDataStructure.LocalOperationMessage
+import de.tu_berlin.formic.common.datastructure.client.AbstractClientDataStructure.ReceiveCallback
+import de.tu_berlin.formic.common.datastructure.client.{ClientDataStructureEvent, DataStructureInitiator}
+import de.tu_berlin.formic.common.datastructure.{FormicDataStructure, OperationContext}
 import de.tu_berlin.formic.common.message.{UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation}
 import org.scalatest._

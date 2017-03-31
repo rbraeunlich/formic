@@ -2,8 +2,8 @@ package de.tu_berlin.formic.client
 
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithmClient
-import de.tu_berlin.formic.common.datatype._
-import de.tu_berlin.formic.common.datatype.client.{AbstractClientDataStructure, AbstractClientDataStructureFactory, DataStructureInitiator}
+import de.tu_berlin.formic.common.datastructure._
+import de.tu_berlin.formic.common.datastructure.client.{AbstractClientDataStructure, AbstractClientDataStructureFactory, DataStructureInitiator}
 import de.tu_berlin.formic.common.json.FormicJsonDataStructureProtocol
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import org.scalatest.Assertions._

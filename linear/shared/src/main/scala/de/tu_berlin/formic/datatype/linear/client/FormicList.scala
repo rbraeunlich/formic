@@ -2,9 +2,9 @@ package de.tu_berlin.formic.datatype.linear.client
 
 import akka.pattern._
 import akka.util.Timeout
-import de.tu_berlin.formic.common.datatype.FormicDataStructure.LocalOperationMessage
-import de.tu_berlin.formic.common.datatype.client.{ClientDataStructureEvent, DataStructureInitiator}
-import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataStructure, OperationContext}
+import de.tu_berlin.formic.common.datastructure.FormicDataStructure.LocalOperationMessage
+import de.tu_berlin.formic.common.datastructure.client.{ClientDataStructureEvent, DataStructureInitiator}
+import de.tu_berlin.formic.common.datastructure.{DataStructureName, FormicDataStructure, OperationContext}
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation}
