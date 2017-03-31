@@ -692,7 +692,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val operation = AbstractClientDataStructureSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId(), data)
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataStructure] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataStructure(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
+      dataType ! ReceiveCallback((event: ClientDataStructureEvent) => {
         event.asInstanceOf[LocalOperationEvent].operation should equal(operation)
         latch.countDown()
       })
@@ -717,7 +717,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataStructure] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataStructure(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
       dataType ! RemoteInstantiation
-      dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
+      dataType ! ReceiveCallback((event: ClientDataStructureEvent) => {
         event.asInstanceOf[LocalOperationEvent].operation should equal(operation)
         latch.countDown()
       })
@@ -742,7 +742,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataStructure] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataStructure(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
       dataType ! RemoteInstantiation
-      dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
+      dataType ! ReceiveCallback((event: ClientDataStructureEvent) => {
         event.asInstanceOf[RemoteOperationEvent].operation should equal(operation)
         latch.countDown()
       })
@@ -765,7 +765,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val latch = new CountDownLatch(1)
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataStructure] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataStructure(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient, outgoingConnection = TestProbe().ref)))
-      dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
+      dataType ! ReceiveCallback((event: ClientDataStructureEvent) => {
         event should equal(CreateResponseEvent(dataTypeInstanceId))
         latch.countDown()
       })
@@ -784,7 +784,7 @@ class AbstractClientDataTypeSpec extends TestKit(ActorSystem("AbstractClientData
       val dataType: TestActorRef[AbstractClientDataTypeTestClientDataStructure] = TestActorRef(
         Props(new AbstractClientDataTypeTestClientDataStructure(dataTypeInstanceId, new AbstractClientDataTypeSpecControlAlgorithmClient(canRemoteBeApplied = false), outgoingConnection = TestProbe().ref)))
       dataType ! RemoteInstantiation
-      dataType ! ReceiveCallback((event: ClientDataTypeEvent) => {
+      dataType ! ReceiveCallback((event: ClientDataStructureEvent) => {
         event.asInstanceOf[AcknowledgementEvent].operation should equal(operation)
         latch.countDown()
       })

@@ -4,7 +4,7 @@ import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructureFactory.NewDataTypeCreated
 import de.tu_berlin.formic.common.DataStructureInstanceId
-import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
+import de.tu_berlin.formic.common.datatype.client.ClientDataStructureEvent
 import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataStructure}
 import org.scalatest.{Matchers, WordSpecLike}
 
@@ -36,9 +36,9 @@ class TestNewInstanceCallback extends NewInstanceCallback {
 
   var called = false
 
-  val method = (_:ClientDataTypeEvent) => {}
+  val method = (_:ClientDataStructureEvent) => {}
 
-  override def newCallbackFor(instance: FormicDataStructure, dataType: DataStructureName): (ClientDataTypeEvent) => Unit = method
+  override def newCallbackFor(instance: FormicDataStructure, dataType: DataStructureName): (ClientDataStructureEvent) => Unit = method
 
   override def doNewInstanceCreated(instance: FormicDataStructure, dataType: DataStructureName): Unit = {
     called = true

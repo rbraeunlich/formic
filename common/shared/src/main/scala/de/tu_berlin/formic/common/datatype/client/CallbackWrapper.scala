@@ -6,7 +6,7 @@ import de.tu_berlin.formic.common.datatype.client.CallbackWrapper.Invoke
 /**
   * @author Ronny Bräunlich
   */
-class CallbackWrapper(callback: (ClientDataTypeEvent) => Unit) extends Actor {
+class CallbackWrapper(callback: (ClientDataStructureEvent) => Unit) extends Actor {
 
   def receive = {
     case Invoke(event) => callback(event)
@@ -15,5 +15,5 @@ class CallbackWrapper(callback: (ClientDataTypeEvent) => Unit) extends Actor {
 }
 
 object CallbackWrapper {
-  case class Invoke(event: ClientDataTypeEvent)
+  case class Invoke(event: ClientDataStructureEvent)
 }

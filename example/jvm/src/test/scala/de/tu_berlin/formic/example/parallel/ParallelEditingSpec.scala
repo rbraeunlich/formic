@@ -8,7 +8,7 @@ import akka.testkit.TestKit
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.{FormicSystemFactory, NewInstanceCallback}
 import de.tu_berlin.formic.common.ClientId
-import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
+import de.tu_berlin.formic.common.datatype.client.ClientDataStructureEvent
 import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataStructure}
 import de.tu_berlin.formic.datatype.json._
 import de.tu_berlin.formic.datatype.json.client.{FormicJsonObject, JsonClientDataStructureProvider}
@@ -617,7 +617,7 @@ object ParallelEditingSpec {
     /**
       * Set a new callback interface at a data type instance that was created remotely.
       */
-    override def newCallbackFor(instance: FormicDataStructure, dataType: DataStructureName): (ClientDataTypeEvent) => Unit = (_) => Unit
+    override def newCallbackFor(instance: FormicDataStructure, dataType: DataStructureName): (ClientDataStructureEvent) => Unit = (_) => Unit
 
     /**
       * Perform any initializations necessary for a new, remote data type.

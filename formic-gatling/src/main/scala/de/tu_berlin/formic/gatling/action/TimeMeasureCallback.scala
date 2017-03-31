@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.gatling.action
 
 import de.tu_berlin.formic.common.{DataStructureInstanceId, OperationId}
-import de.tu_berlin.formic.common.datatype.client.{AcknowledgementEvent, ClientDataTypeEvent, CreateResponseEvent}
+import de.tu_berlin.formic.common.datatype.client.{AcknowledgementEvent, ClientDataStructureEvent, CreateResponseEvent}
 import de.tu_berlin.formic.gatling.action.TimeMeasureCallback.{RemoteOperationTimeMeasureListener, TimeMeasureListener}
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.session.Session
@@ -19,7 +19,7 @@ class TimeMeasureCallback {
 
   val listener = new java.util.concurrent.CopyOnWriteArrayList[TimeMeasureListener]()
 
-  def callbackMethod(event: ClientDataTypeEvent): Unit = {
+  def callbackMethod(event: ClientDataStructureEvent): Unit = {
     val end = TimeHelper.nowMillis
     val matched = listener.asScala.filter(listener => listener.isOperation(event))
     matched.foreach(t => t.logOk(end))
@@ -44,7 +44,7 @@ object TimeMeasureCallback {
     val statsEngine: StatsEngine
     val name: String
 
-    def isOperation(e: ClientDataTypeEvent): Boolean
+    def isOperation(e: ClientDataStructureEvent): Boolean
 
     def logOk(end: Long) = {
       FormicActions.logOkTimingValues(start, end, session, statsEngine, name)
@@ -57,7 +57,7 @@ object TimeMeasureCallback {
 
   case class RemoteOperationTimeMeasureListener(operationId: OperationId, start: Long, session: Session, statsEngine: StatsEngine, name: String) extends TimeMeasureListener {
 
-    def isOperation(e: ClientDataTypeEvent): Boolean = {
+    def isOperation(e: ClientDataStructureEvent): Boolean = {
       e.isInstanceOf[AcknowledgementEvent] && e.asInstanceOf[AcknowledgementEvent].operation.id == operationId
     }
 
@@ -65,7 +65,7 @@ object TimeMeasureCallback {
 
   case class CreateResponseTimeMeasureListener(dataTypeInstanceId: DataStructureInstanceId, start: Long, session: Session, statsEngine: StatsEngine, name: String) extends TimeMeasureListener {
 
-    def isOperation(e: ClientDataTypeEvent): Boolean = {
+    def isOperation(e: ClientDataStructureEvent): Boolean = {
       e.isInstanceOf[CreateResponseEvent] && e.asInstanceOf[CreateResponseEvent].dataTypeInstanceId == dataTypeInstanceId
     }
   }

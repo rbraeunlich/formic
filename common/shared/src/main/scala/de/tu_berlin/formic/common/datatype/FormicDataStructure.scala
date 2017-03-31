@@ -3,7 +3,7 @@ package de.tu_berlin.formic.common.datatype
 import akka.actor.ActorRef
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure.ReceiveCallback
-import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, DataStructureInitiator}
+import de.tu_berlin.formic.common.datatype.client.{ClientDataStructureEvent, DataStructureInitiator}
 import de.tu_berlin.formic.common.message.OperationMessage
 
 /**
@@ -11,7 +11,7 @@ import de.tu_berlin.formic.common.message.OperationMessage
   *
   * @author Ronny Bräunlich
   */
-abstract class FormicDataStructure(private var _callback: (ClientDataTypeEvent) => Unit,
+abstract class FormicDataStructure(private var _callback: (ClientDataStructureEvent) => Unit,
                                    val dataStructureName: DataStructureName,
                                    var actor: ActorRef = null,
                                    var clientId: ClientId = null,
@@ -20,7 +20,7 @@ abstract class FormicDataStructure(private var _callback: (ClientDataTypeEvent) 
 
   def callback = _callback
 
-  def callback_=(newCallback: (ClientDataTypeEvent) => Unit) {
+  def callback_=(newCallback: (ClientDataStructureEvent) => Unit) {
     _callback = newCallback
     actor ! ReceiveCallback(newCallback)
   }

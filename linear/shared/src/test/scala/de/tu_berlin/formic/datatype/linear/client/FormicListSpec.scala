@@ -5,7 +5,7 @@ import akka.testkit.{TestKit, TestProbe}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import de.tu_berlin.formic.common.datatype.FormicDataStructure.LocalOperationMessage
 import de.tu_berlin.formic.common.datatype.client.AbstractClientDataStructure.ReceiveCallback
-import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, DataStructureInitiator}
+import de.tu_berlin.formic.common.datatype.client.{ClientDataStructureEvent, DataStructureInitiator}
 import de.tu_berlin.formic.common.datatype.{FormicDataStructure, OperationContext}
 import de.tu_berlin.formic.common.message.{UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.datatype.linear.{LinearDeleteOperation, LinearInsertOperation}
@@ -39,7 +39,7 @@ class FormicListSpec extends TestKit(ActorSystem("FormicListSpec"))
       val dataTypeActor = TestProbe()
       val list = new FormicBooleanList((_) => {}, RemoteDataStructureInitiator)
       list.actor = dataTypeActor.ref
-      val newCallback: (ClientDataTypeEvent) => Unit = (_) => {println("test")}
+      val newCallback: (ClientDataStructureEvent) => Unit = (_) => {println("test")}
 
       list.callback = newCallback
 

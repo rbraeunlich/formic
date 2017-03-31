@@ -214,6 +214,6 @@ object AbstractClientDataStructure {
     */
   case object RemoteInstantiation
 
-  case class ReceiveCallback(callback: (ClientDataTypeEvent) => Unit)
+  case class ReceiveCallback(callback: (ClientDataStructureEvent) => Unit)
 
 }

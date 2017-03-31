@@ -2,7 +2,7 @@ package de.tu_berlin.formic.example
 
 import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client.FormicSystemFactory
-import de.tu_berlin.formic.common.datatype.client.{ClientDataTypeEvent, RemoteOperationEvent}
+import de.tu_berlin.formic.common.datatype.client.{ClientDataStructureEvent, RemoteOperationEvent}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import de.tu_berlin.formic.datatype.json.JsonPath
 import de.tu_berlin.formic.datatype.json.client.FormicJsonObject
@@ -75,7 +75,7 @@ class Main extends ExampleClientDataTypes {
     insertJsonManipulationElements(id.id)
   }
 
-  def updateUIForString(id: DataStructureInstanceId): (ClientDataTypeEvent) => Unit = {
+  def updateUIForString(id: DataStructureInstanceId): (ClientDataStructureEvent) => Unit = {
     case RemoteOperationEvent(_) =>
       strings.find(s => s.dataStructureInstanceId == id).get.getAll.foreach {
         buff =>
@@ -85,7 +85,7 @@ class Main extends ExampleClientDataTypes {
     case rest => //do nothing
   }
 
-  def updateUIForTree(id: DataStructureInstanceId): (ClientDataTypeEvent) => Unit = (_) => {
+  def updateUIForTree(id: DataStructureInstanceId): (ClientDataStructureEvent) => Unit = (_) => {
     trees.find(s => s.dataStructureInstanceId == id).get.getTree().onComplete {
       case Success(rootNode) =>
         val treeDiv = jQuery("#" + id.id)
@@ -97,7 +97,7 @@ class Main extends ExampleClientDataTypes {
     }
   }
 
-  def updateUIForJson(id: DataStructureInstanceId): (ClientDataTypeEvent) => Unit = (_) => {
+  def updateUIForJson(id: DataStructureInstanceId): (ClientDataStructureEvent) => Unit = (_) => {
     jsons.find(s => s.dataStructureInstanceId == id).get.getNodeAt(JsonPath()).onComplete {
       case Success(rootNode) =>
         val jsonDiv = jQuery("#" + id.id)
@@ -233,7 +233,7 @@ class Main extends ExampleClientDataTypes {
 
   }
 
-  def newCallbackForBattleship(jsonObject: FormicJsonObject): (ClientDataTypeEvent) => Unit = {
+  def newCallbackForBattleship(jsonObject: FormicJsonObject): (ClientDataStructureEvent) => Unit = {
     val battleship = new Battleship()
     battleship.init(jsonObject, withNewModel = false)
     (_) => {

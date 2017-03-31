@@ -1,7 +1,7 @@
 package de.tu_berlin.formic.client
 
 import akka.actor.Actor
-import de.tu_berlin.formic.common.datatype.client.ClientDataTypeEvent
+import de.tu_berlin.formic.common.datatype.client.ClientDataStructureEvent
 import de.tu_berlin.formic.common.datatype.{DataStructureName, FormicDataStructure}
 
 /**
@@ -12,7 +12,7 @@ trait NewInstanceCallback {
   /**
     * Set a new callback interface at a data type instance that was created remotely.
     */
-  def newCallbackFor(instance: FormicDataStructure, dataType: DataStructureName): (ClientDataTypeEvent) => Unit
+  def newCallbackFor(instance: FormicDataStructure, dataType: DataStructureName): (ClientDataStructureEvent) => Unit
 
   /**
     * Perform any initializations necessary for a new, remote data type.
