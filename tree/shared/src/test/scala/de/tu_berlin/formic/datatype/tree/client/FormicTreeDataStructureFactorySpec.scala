@@ -10,7 +10,7 @@ import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 /**
   * @author Ronny Bräunlich
   */
-class FormicTreeDataTypeFactorySpec extends TestKit(ActorSystem("FormicTreeDataTypeFactorySpec"))
+class FormicTreeDataStructureFactorySpec extends TestKit(ActorSystem("FormicTreeDataStructureFactorySpec"))
   with WordSpecLike
   with BeforeAndAfterAll
   with Matchers

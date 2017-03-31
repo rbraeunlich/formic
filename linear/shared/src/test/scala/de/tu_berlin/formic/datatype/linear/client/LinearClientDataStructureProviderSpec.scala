@@ -9,7 +9,7 @@ import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 /**
   * @author Ronny Bräunlich
   */
-class LinearClientDataTypeProviderSpec extends TestKit(ActorSystem("LinearClientDataTypeProviderSpec"))
+class LinearClientDataStructureProviderSpec extends TestKit(ActorSystem("LinearClientDataStructureProviderSpec"))
   with WordSpecLike
   with Matchers
   with BeforeAndAfterAll {
@@ -18,7 +18,7 @@ class LinearClientDataTypeProviderSpec extends TestKit(ActorSystem("LinearClient
     system.terminate()
   }
 
-  "The LinearClientDataTypeProvider" must {
+  "The LinearClientDataStructureProvider" must {
     "create a factory actor for every list type" in {
       val provider = LinearClientDataStructureProvider()
       val factoryMap = provider.initFactories(system)

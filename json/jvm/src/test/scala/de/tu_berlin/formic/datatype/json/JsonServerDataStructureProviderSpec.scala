@@ -1,16 +1,15 @@
-package de.tu_berlin.formic.datatype.json.client
+package de.tu_berlin.formic.datatype.json
 
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import de.tu_berlin.formic.common.json.FormicJsonProtocol
-import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataStructureProtocol
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataStructureProtocol._
 
 /**
   * @author Ronny Bräunlich
   */
-class JsonClientDataTypeProviderSpec extends TestKit(ActorSystem("JsonClientDataTypeProviderSpec"))
+class JsonServerDataStructureProviderSpec extends TestKit(ActorSystem("JsonServerDataStructureProviderSpec"))
   with WordSpecLike
   with Matchers
   with BeforeAndAfterAll {
@@ -19,26 +18,26 @@ class JsonClientDataTypeProviderSpec extends TestKit(ActorSystem("JsonClientData
     system.terminate()
   }
 
-  "The JsonClientDataTypeProviderSpec" must {
+  "The JsonServerDataStructureProvider" must {
     "create a factory actor for every list type" in {
-      val provider = JsonClientDataStructureProvider()
+      val provider = JsonServerDataStructureProvider()
       val factoryMap = provider.initFactories(system)
 
-      factoryMap.keySet should contain(FormicJsonObjectFactory.name)
+      factoryMap.keySet should contain(JsonServerDataStructureFactory.name)
 
       val actorPaths = factoryMap.values.map(ref => ref.path.name.toString)
-      actorPaths should contain(FormicJsonObjectFactory.name.name)
+      actorPaths should contain(JsonServerDataStructureFactory.name.name)
     }
 
-    "register a FormicJsonDataTypeProtocols for each list type" in {
+    "register a FormicJsonDataStructureProtocols for each list type" in {
       val protocol = new FormicJsonProtocol
-      val provider = JsonClientDataStructureProvider()
+      val provider = JsonServerDataStructureProvider()
 
       provider.registerFormicJsonDataStructureProtocols(protocol)
 
       val registered = protocol.dataTypeOperationJsonProtocols
 
-      registered should contain(FormicJsonObjectFactory.name -> new JsonFormicJsonDataStructureProtocol(FormicJsonObjectFactory.name))
+      registered should contain(JsonServerDataStructureFactory.name -> new JsonFormicJsonDataStructureProtocol(JsonServerDataStructureFactory.name))
     }
   }
 }

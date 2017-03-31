@@ -14,7 +14,7 @@ import scala.util.{Failure, Success}
 /**
   * @author Ronny Bräunlich
   */
-class LinearDataTypeFactorySpec extends TestKit(ActorSystem("LinearDataTypeFactorySpec"))
+class LinearDataStructureFactorySpec extends TestKit(ActorSystem("LinearDataStructureFactorySpec"))
   with WordSpecLike
   with ImplicitSender
   with Matchers
@@ -25,7 +25,7 @@ class LinearDataTypeFactorySpec extends TestKit(ActorSystem("LinearDataTypeFacto
     system.terminate()
   }
 
-  "BooleanListDataTypeFactory" must {
+  "BooleanListDataStructureFactory" must {
     "create linear data types" in {
 
       val factory = system.actorOf(Props(new BooleanListDataStructureFactory()), "bool")
@@ -39,7 +39,7 @@ class LinearDataTypeFactorySpec extends TestKit(ActorSystem("LinearDataTypeFacto
     }
   }
 
-  "DoubleListDataTypeFactory" must {
+  "DoubleListDataStructureFactory" must {
     "create linear data types" in {
 
       val factory = system.actorOf(Props(new DoubleListDataStructureFactory()), "double")
@@ -53,7 +53,7 @@ class LinearDataTypeFactorySpec extends TestKit(ActorSystem("LinearDataTypeFacto
     }
   }
 
-  "IntegerListDataTypeFactory" must {
+  "IntegerListDataStructureFactory" must {
     "create linear data types" in {
 
       val factory = system.actorOf(Props(new IntegerListDataStructureFactory()), "int")
@@ -67,7 +67,7 @@ class LinearDataTypeFactorySpec extends TestKit(ActorSystem("LinearDataTypeFacto
     }
   }
 
-  "StringDataTypeFactory" must {
+  "StringDataStructureFactory" must {
     "create linear data types" in {
 
       val factory = system.actorOf(Props(new StringDataStructureFactory()), "string")

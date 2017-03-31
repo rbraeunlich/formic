@@ -13,10 +13,10 @@ import scala.concurrent.duration._
 /**
   * @author Ronny Bräunlich
   */
-class LinearServerDataTypePersistenceSpec extends PersistenceSpec(ActorSystem("LinearServerDataTypePersistenceSpec"))
+class LinearServerDataStructurePersistenceSpec extends PersistenceSpec(ActorSystem("LinearServerDataStructurePersistenceSpec"))
   with PersistenceCleanup {
 
-  "An LinearServerDataType" should {
+  "An LinearServerDataStructure" should {
     "re-apply stored operations after recovery" in {
       val probe = TestProbe()
       system.eventStream.subscribe(probe.ref, classOf[OperationMessage])

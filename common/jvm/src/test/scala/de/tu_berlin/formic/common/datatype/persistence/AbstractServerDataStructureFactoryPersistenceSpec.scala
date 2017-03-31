@@ -4,7 +4,7 @@ import akka.actor.{ActorSystem, Props}
 import de.tu_berlin.formic.common.controlalgo.{ControlAlgorithm, WaveOTServer}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.common.datatype._
-import de.tu_berlin.formic.common.datatype.persistence.AbstractServerDataTypeFactoryPersistenceSpec.AbstractServerDataStructureFactoryPersistenceSpecFactory
+import de.tu_berlin.formic.common.datatype.persistence.AbstractServerDataStructureFactoryPersistenceSpec.AbstractServerDataStructureFactoryPersistenceSpecFactory
 import de.tu_berlin.formic.common.message.CreateRequest
 import de.tu_berlin.formic.common.server.datatype.{AbstractServerDataStructure, AbstractServerDataStructureFactory}
 import org.scalatest.Assertions._
@@ -15,21 +15,21 @@ import scala.concurrent.duration._
 /**
   * @author Ronny Bräunlich
   */
-class AbstractServerDataTypeFactoryPersistenceSpec extends PersistenceSpec(ActorSystem("AbstractServerDataTypeFactoryPersistenceSpec"))
+class AbstractServerDataStructureFactoryPersistenceSpec extends PersistenceSpec(ActorSystem("AbstractServerDataStructureFactoryPersistenceSpec"))
   with PersistenceCleanup {
 
-  "An AbstractServerDataTypeFactory" should {
+  "An AbstractServerDataStructureFactoryPersistenceSpec" should {
     "re-apply stored operations after recovery" in {
-      val factory = system.actorOf(Props(new AbstractServerDataStructureFactoryPersistenceSpecFactory), AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName.name)
+      val factory = system.actorOf(Props(new AbstractServerDataStructureFactoryPersistenceSpecFactory), AbstractServerDataStructureFactoryPersistenceSpec.dataTypeName.name)
       val dataTypeInstanceId = DataStructureInstanceId()
       val dataTypeInstanceId2 = DataStructureInstanceId()
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName)
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId2, AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName)
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, AbstractServerDataStructureFactoryPersistenceSpec.dataTypeName)
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId2, AbstractServerDataStructureFactoryPersistenceSpec.dataTypeName)
       receiveN(2)
 
       killActors(factory)
 
-      val recoveredFactory = system.actorOf(Props(new AbstractServerDataStructureFactoryPersistenceSpecFactory), AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName.name)
+      val recoveredFactory = system.actorOf(Props(new AbstractServerDataStructureFactoryPersistenceSpecFactory), AbstractServerDataStructureFactoryPersistenceSpec.dataTypeName.name)
       Thread.sleep(2000)
       val dataType = system.actorSelection(recoveredFactory.path.child(dataTypeInstanceId.id)).resolveOne(5.seconds)
       Await.result(dataType, 5.seconds) shouldNot be(null)
@@ -40,11 +40,11 @@ class AbstractServerDataTypeFactoryPersistenceSpec extends PersistenceSpec(Actor
 
 }
 
-object AbstractServerDataTypeFactoryPersistenceSpec {
+object AbstractServerDataStructureFactoryPersistenceSpec {
 
   val dataTypeName = DataStructureName("persistenceFactory")
 
-  class AbstractServerDataTypeFactoryPersistenceSpecServerDataStructure(id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataStructure(id, controlAlgorithm) {
+  class AbstractServerDataStructureFactoryPersistenceSpecServerDataStructure(id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataStructure(id, controlAlgorithm) {
 
     val transformer = new OperationTransformer {
       override def transform(pair: (DataStructureOperation, DataStructureOperation)): DataStructureOperation = pair._1
@@ -62,18 +62,18 @@ object AbstractServerDataTypeFactoryPersistenceSpec {
       }
     }
 
-    override val dataTypeName: DataStructureName = AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName
+    override val dataTypeName: DataStructureName = AbstractServerDataStructureFactoryPersistenceSpec.dataTypeName
 
     override def getDataAsJson: String = data
   }
 
   class AbstractServerDataStructureFactoryPersistenceSpecFactory
-    extends AbstractServerDataStructureFactory[AbstractServerDataTypeFactoryPersistenceSpecServerDataStructure] {
-    override def create(dataTypeInstanceId: DataStructureInstanceId): AbstractServerDataTypeFactoryPersistenceSpecServerDataStructure = {
-      new AbstractServerDataTypeFactoryPersistenceSpecServerDataStructure(dataTypeInstanceId, new WaveOTServer())
+    extends AbstractServerDataStructureFactory[AbstractServerDataStructureFactoryPersistenceSpecServerDataStructure] {
+    override def create(dataTypeInstanceId: DataStructureInstanceId): AbstractServerDataStructureFactoryPersistenceSpecServerDataStructure = {
+      new AbstractServerDataStructureFactoryPersistenceSpecServerDataStructure(dataTypeInstanceId, new WaveOTServer())
     }
 
-    override val name: DataStructureName = AbstractServerDataTypeFactoryPersistenceSpec.dataTypeName
+    override val name: DataStructureName = AbstractServerDataStructureFactoryPersistenceSpec.dataTypeName
   }
 
 }

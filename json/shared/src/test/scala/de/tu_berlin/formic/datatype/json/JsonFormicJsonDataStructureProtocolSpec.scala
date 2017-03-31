@@ -10,7 +10,7 @@ import de.tu_berlin.formic.datatype.json.JsonFormicJsonDataStructureProtocol._
 /**
   * @author Ronny Bräunlich
   */
-class JsonFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
+class JsonFormicJsonDataStructureProtocolSpec extends FlatSpec with Matchers {
 
   "A JsonTreeNodeWriter" should "serialize a NumberNode within an Objectnode" in {
     val writer = new JsonTreeNodeWriter

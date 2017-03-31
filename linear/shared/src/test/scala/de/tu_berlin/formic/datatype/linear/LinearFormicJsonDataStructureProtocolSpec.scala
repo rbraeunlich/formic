@@ -8,7 +8,7 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-class LinearFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
+class LinearFormicJsonDataStructureProtocolSpec extends FlatSpec with Matchers {
 
   "Linear JSON protocol" should "serialize a linear insert operation" in {
     val protocol = new LinearFormicJsonDataStructureProtocol[Char](DataStructureName("string"))

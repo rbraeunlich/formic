@@ -12,7 +12,7 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-class TreeServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec"))
+class TreeServerDataStructureSpec extends TestKit(ActorSystem("TreeServerDataStructureSpec"))
   with WordSpecLike
   with ImplicitSender
   with Matchers
@@ -24,10 +24,10 @@ class TreeServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
 
   implicit val reader = new ValueTreeNodeReader[Boolean]()
 
-  "TreeServerDataType" must {
+  "TreeServerDataStructure" must {
     "insert data" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
-      val tree = system.actorOf(Props(new TreeServerDataStructure[Boolean](dataTypeInstanceId, TreeServerDataTypeSpecControlAlgorithm, BooleanTreeDataStructureFactory.name)))
+      val tree = system.actorOf(Props(new TreeServerDataStructure[Boolean](dataTypeInstanceId, TreeServerDataStructureSpecControlAlgorithm, BooleanTreeDataStructureFactory.name)))
       val op1 = TreeInsertOperation(AccessPath(), ValueTreeNode(true, List(ValueTreeNode(false))), OperationId(), OperationContext(), ClientId())
       val op2 = TreeInsertOperation(AccessPath(1), ValueTreeNode(true), OperationId(), OperationContext(), ClientId())
       val op3 = TreeInsertOperation(AccessPath(1, 0), ValueTreeNode(false), OperationId(), OperationContext(), ClientId())
@@ -42,7 +42,7 @@ class TreeServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
 
     "delete data" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
-      val tree = system.actorOf(Props(new TreeServerDataStructure[Boolean](dataTypeInstanceId, TreeServerDataTypeSpecControlAlgorithm, BooleanTreeDataStructureFactory.name)))
+      val tree = system.actorOf(Props(new TreeServerDataStructure[Boolean](dataTypeInstanceId, TreeServerDataStructureSpecControlAlgorithm, BooleanTreeDataStructureFactory.name)))
       val op1 = TreeInsertOperation(AccessPath(), ValueTreeNode(true, List(ValueTreeNode(false))), OperationId(), OperationContext(), ClientId())
       val op2 = TreeInsertOperation(AccessPath(1), ValueTreeNode(true), OperationId(), OperationContext(), ClientId())
       val op3 = TreeInsertOperation(AccessPath(1, 0), ValueTreeNode(false), OperationId(), OperationContext(), ClientId())
@@ -59,7 +59,7 @@ class TreeServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
 
     "not change after no-operation" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
-      val tree = system.actorOf(Props(new TreeServerDataStructure[Boolean](dataTypeInstanceId, TreeServerDataTypeSpecControlAlgorithm, BooleanTreeDataStructureFactory.name)))
+      val tree = system.actorOf(Props(new TreeServerDataStructure[Boolean](dataTypeInstanceId, TreeServerDataStructureSpecControlAlgorithm, BooleanTreeDataStructureFactory.name)))
       val op = TreeInsertOperation(AccessPath(), ValueTreeNode(true, List(ValueTreeNode(false))), OperationId(), OperationContext(), ClientId())
       val noop = TreeNoOperation(OperationId(), OperationContext(), ClientId())
       tree ! OperationMessage(ClientId(), dataTypeInstanceId, BooleanTreeDataStructureFactory.name, List(op))
@@ -72,7 +72,7 @@ class TreeServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
 
     "result in valid JSON representation" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
-      val tree = system.actorOf(Props(new TreeServerDataStructure[Boolean](dataTypeInstanceId, TreeServerDataTypeSpecControlAlgorithm, BooleanTreeDataStructureFactory.name)))
+      val tree = system.actorOf(Props(new TreeServerDataStructure[Boolean](dataTypeInstanceId, TreeServerDataStructureSpecControlAlgorithm, BooleanTreeDataStructureFactory.name)))
       val op1 = TreeInsertOperation(AccessPath(), ValueTreeNode(true, List(ValueTreeNode(false))), OperationId(), OperationContext(), ClientId())
       val op2 = TreeInsertOperation(AccessPath(1), ValueTreeNode(true), OperationId(), OperationContext(), ClientId())
 
@@ -85,7 +85,7 @@ class TreeServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
   }
 }
 
-object TreeServerDataTypeSpecControlAlgorithm extends ControlAlgorithm {
+object TreeServerDataStructureSpecControlAlgorithm extends ControlAlgorithm {
 
   override def canBeApplied(op: DataStructureOperation, history: HistoryBuffer): Boolean = true
 

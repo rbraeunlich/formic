@@ -11,7 +11,7 @@ import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 /**
   * @author Ronny Bräunlich
   */
-class JsonDataTypeFactorySpec extends TestKit(ActorSystem("JsonDataTypeFactorySpec"))
+class JsonDataStructureFactorySpec extends TestKit(ActorSystem("JsonDataStructureFactorySpec"))
   with WordSpecLike
   with ImplicitSender
   with Matchers
@@ -22,7 +22,7 @@ class JsonDataTypeFactorySpec extends TestKit(ActorSystem("JsonDataTypeFactorySp
     system.terminate()
   }
 
-  "A JsonDataTypeFactory" must {
+  "A JsonDataStructureFactory" must {
     "create Json data types" in {
       val factory = system.actorOf(Props(new JsonServerDataStructureFactory()), "jsonFactory")
       val dataTypeInstanceId = DataStructureInstanceId()

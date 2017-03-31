@@ -9,7 +9,7 @@ import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 /**
   * @author Ronny Bräunlich
   */
-class TreeClientDataTypeProviderSpec extends TestKit(ActorSystem("TreeClientDataTypeProviderSpec"))
+class TreeClientDataStructureProviderSpec extends TestKit(ActorSystem("TreeClientDataStructureProviderSpec"))
   with WordSpecLike
   with Matchers
   with BeforeAndAfterAll {
@@ -18,7 +18,7 @@ class TreeClientDataTypeProviderSpec extends TestKit(ActorSystem("TreeClientData
     system.terminate()
   }
 
-  "The TreeClientDataTypeProvider" must {
+  "The TreeClientDataStructureProvider" must {
     "create a factory actor for every list type" in {
       val provider = TreeClientDataStructureProvider()
       val factoryMap = provider.initFactories(system)

@@ -14,7 +14,7 @@ import scala.collection.mutable.ArrayBuffer
 /**
   * @author Ronny Bräunlich
   */
-class LinearServerDataTypeSpec extends TestKit(ActorSystem("LinearServerDataTypeSpec"))
+class LinearServerDataStructureSpec extends TestKit(ActorSystem("LinearServerDataStructureSpec"))
   with WordSpecLike
   with ImplicitSender
   with Matchers
@@ -24,11 +24,11 @@ class LinearServerDataTypeSpec extends TestKit(ActorSystem("LinearServerDataType
     system.terminate()
   }
 
-  "LinearDataType" must {
+  "LinearDataStructure" must {
 
     "insert data" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
-      val dataType = system.actorOf(Props(LinearServerDataStructure[Int](dataTypeInstanceId, LinearDataTypeSpecControlAlgorithm, IntegerListDataStructureFactory.name)))
+      val dataType = system.actorOf(Props(LinearServerDataStructure[Int](dataTypeInstanceId, LinearDataStructureSpecControlAlgorithm, IntegerListDataStructureFactory.name)))
       val op = LinearInsertOperation(0, Integer.valueOf(1), OperationId(), OperationContext(List.empty), ClientId())
       val op2 = LinearInsertOperation(1, Integer.valueOf(3), OperationId(), OperationContext(List.empty), ClientId())
       val op3 = LinearInsertOperation(0, Integer.valueOf(0), OperationId(), OperationContext(List.empty), ClientId())
@@ -43,7 +43,7 @@ class LinearServerDataTypeSpec extends TestKit(ActorSystem("LinearServerDataType
 
     "delete data" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
-      val dataType = system.actorOf(Props(LinearServerDataStructure[Int](dataTypeInstanceId, LinearDataTypeSpecControlAlgorithm, IntegerListDataStructureFactory.name)))
+      val dataType = system.actorOf(Props(LinearServerDataStructure[Int](dataTypeInstanceId, LinearDataStructureSpecControlAlgorithm, IntegerListDataStructureFactory.name)))
       val op = LinearInsertOperation(0, Integer.valueOf(1), OperationId(), OperationContext(List.empty), ClientId())
       val op2 = LinearInsertOperation(1, Integer.valueOf(3), OperationId(), OperationContext(List.empty), ClientId())
       val op3 = LinearInsertOperation(0, Integer.valueOf(0), OperationId(), OperationContext(List.empty), ClientId())
@@ -61,7 +61,7 @@ class LinearServerDataTypeSpec extends TestKit(ActorSystem("LinearServerDataType
 
     "not change when receiving no-op operation" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
-      val dataType = system.actorOf(Props(LinearServerDataStructure[Int](dataTypeInstanceId, LinearDataTypeSpecControlAlgorithm, IntegerListDataStructureFactory.name)))
+      val dataType = system.actorOf(Props(LinearServerDataStructure[Int](dataTypeInstanceId, LinearDataStructureSpecControlAlgorithm, IntegerListDataStructureFactory.name)))
       //insert some data
       val op = LinearInsertOperation(0, Integer.valueOf(1), OperationId(), OperationContext(List.empty), ClientId())
       val op2 = LinearInsertOperation(1, Integer.valueOf(3), OperationId(), OperationContext(List.empty), ClientId())
@@ -77,7 +77,7 @@ class LinearServerDataTypeSpec extends TestKit(ActorSystem("LinearServerDataType
 
     "result in a valid JSON representation" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
-      val dataType = system.actorOf(Props(LinearServerDataStructure[Int](dataTypeInstanceId, LinearDataTypeSpecControlAlgorithm, IntegerListDataStructureFactory.name)))
+      val dataType = system.actorOf(Props(LinearServerDataStructure[Int](dataTypeInstanceId, LinearDataStructureSpecControlAlgorithm, IntegerListDataStructureFactory.name)))
       val op = LinearInsertOperation(0, Integer.valueOf(1), OperationId(), OperationContext(List.empty), ClientId())
       val op2 = LinearInsertOperation(1, Integer.valueOf(3), OperationId(), OperationContext(List.empty), ClientId())
       val op3 = LinearInsertOperation(0, Integer.valueOf(0), OperationId(), OperationContext(List.empty), ClientId())
@@ -91,7 +91,7 @@ class LinearServerDataTypeSpec extends TestKit(ActorSystem("LinearServerDataType
 
   }
 }
-object LinearDataTypeSpecControlAlgorithm extends ControlAlgorithm {
+object LinearDataStructureSpecControlAlgorithm extends ControlAlgorithm {
 
   override def canBeApplied(op: DataStructureOperation, history: HistoryBuffer): Boolean = true
 

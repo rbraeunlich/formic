@@ -10,7 +10,7 @@ import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 /**
   * @author Ronny Bräunlich
   */
-class TreeDataTypeFactorySpec extends TestKit(ActorSystem("TreeDataTypeFactorySpec"))
+class TreeDataStructureFactorySpec extends TestKit(ActorSystem("TreeDataStructureFactorySpec"))
   with WordSpecLike
   with ImplicitSender
   with Matchers
@@ -21,7 +21,7 @@ class TreeDataTypeFactorySpec extends TestKit(ActorSystem("TreeDataTypeFactorySp
     system.terminate()
   }
 
-  "BooleanTreeDataTypeFactory" must {
+  "BooleanTreeDataStructureFactory" must {
     "create tree data types" in {
 
       val factory = system.actorOf(Props(new BooleanTreeDataStructureFactory()), "bool")
@@ -35,7 +35,7 @@ class TreeDataTypeFactorySpec extends TestKit(ActorSystem("TreeDataTypeFactorySp
     }
   }
 
-  "DoubleTreeDataTypeFactory" must {
+  "DoubleTreeDataStructureFactory" must {
     "create tree data types" in {
 
       val factory = system.actorOf(Props(new DoubleTreeDataStructureFactory()), "double")
@@ -49,7 +49,7 @@ class TreeDataTypeFactorySpec extends TestKit(ActorSystem("TreeDataTypeFactorySp
     }
   }
 
-  "IntegerTreeDataTypeFactory" must {
+  "IntegerTreeDataStructureFactory" must {
     "create tree data types" in {
 
       val factory = system.actorOf(Props(new IntegerTreeDataStructureFactory()), "int")
@@ -63,7 +63,7 @@ class TreeDataTypeFactorySpec extends TestKit(ActorSystem("TreeDataTypeFactorySp
     }
   }
 
-  "StringDataTypeFactory" must {
+  "StringDataStructureFactory" must {
     "create tree data types" in {
 
       val factory = system.actorOf(Props(new StringTreeDataStructureFactory()), "string")

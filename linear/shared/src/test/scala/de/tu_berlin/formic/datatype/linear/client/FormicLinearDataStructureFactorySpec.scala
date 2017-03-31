@@ -10,7 +10,7 @@ import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 /**
   * @author Ronny Bräunlich
   */
-class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearDataTypeFactorySpec"))
+class FormicLinearDataStructureFactorySpec extends TestKit(ActorSystem("FormicLinearDataStructureFactorySpec"))
   with WordSpecLike
   with BeforeAndAfterAll
   with Matchers
@@ -20,7 +20,7 @@ class FormicLinearDataTypeFactorySpec extends TestKit(ActorSystem("FormicLinearD
     system.terminate()
   }
 
-  "FormicBooleanListDataTypeFactory" must {
+  "FormicLinearDataStructureFactorySpec" must {
     "have correct data type name" in {
       val factory: TestActorRef[FormicBooleanListDataStructureFactory] = TestActorRef(Props(new FormicBooleanListDataStructureFactory()))
 

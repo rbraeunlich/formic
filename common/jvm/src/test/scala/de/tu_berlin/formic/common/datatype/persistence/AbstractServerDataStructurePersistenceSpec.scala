@@ -4,7 +4,7 @@ import akka.actor.{ActorSystem, Props}
 import akka.testkit.TestProbe
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
 import de.tu_berlin.formic.common.datatype._
-import de.tu_berlin.formic.common.datatype.persistence.AbstractServerDataTypePersistenceSpec._
+import de.tu_berlin.formic.common.datatype.persistence.AbstractServerDataStructurePersistenceSpec._
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.server.datatype.AbstractServerDataStructure
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
@@ -13,15 +13,15 @@ import org.scalatest.Assertions._
 /**
   * @author Ronny Bräunlich
   */
-class AbstractServerDataTypePersistenceSpec extends PersistenceSpec(ActorSystem("AbstractServerDataTypePersistenceSpec"))
+class AbstractServerDataStructurePersistenceSpec extends PersistenceSpec(ActorSystem("AbstractServerDataStructurePersistenceSpec"))
   with PersistenceCleanup {
 
-  "An AbstractServerDataType" should {
+  "An AbstractServerDataStructurePersistenceSpec" should {
     "re-apply stored operations after recovery" in {
       val probe = TestProbe()
       system.eventStream.subscribe(probe.ref, classOf[OperationMessage])
       val id = DataStructureInstanceId()
-      val dataType = system.actorOf(Props(new AbstractServerDataTypePersistenceSpec.AbstractServerDataTypePersistenceSpecServerDataStructure(id, new AbstractServerDataTypePersistenceSpecControlAlgorithm)), id.id)
+      val dataType = system.actorOf(Props(new AbstractServerDataStructurePersistenceSpec.AbstractServerDataStructurePersistenceSpecServerDataStructure(id, new AbstractServerDataStructurePersistenceSpecControlAlgorithm)), id.id)
       val op1 = AbstractServerDataStructurePersistenceSpecOperation(OperationId(), OperationContext(), ClientId())
       val op2 = AbstractServerDataStructurePersistenceSpecOperation(OperationId(), OperationContext(List(op1.id)), ClientId())
       val msg1 = OperationMessage(ClientId(), id, dataTypeName ,List(op1))
@@ -33,7 +33,7 @@ class AbstractServerDataTypePersistenceSpec extends PersistenceSpec(ActorSystem(
 
       killActors(dataType)
 
-      val recoveredActor = system.actorOf(Props(new AbstractServerDataTypePersistenceSpec.AbstractServerDataTypePersistenceSpecServerDataStructure(id, new AbstractServerDataTypePersistenceSpecControlAlgorithm)), id.id)
+      val recoveredActor = system.actorOf(Props(new AbstractServerDataStructurePersistenceSpec.AbstractServerDataStructurePersistenceSpecServerDataStructure(id, new AbstractServerDataStructurePersistenceSpecControlAlgorithm)), id.id)
 
       recoveredActor ! UpdateRequest(ClientId(), id)
 
@@ -42,20 +42,20 @@ class AbstractServerDataTypePersistenceSpec extends PersistenceSpec(ActorSystem(
   }
 }
 
-object AbstractServerDataTypePersistenceSpec {
+object AbstractServerDataStructurePersistenceSpec {
 
   val dataTypeName = DataStructureName("persistence")
 
   case class AbstractServerDataStructurePersistenceSpecOperation(id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends DataStructureOperation
 
-  class AbstractServerDataTypePersistenceSpecControlAlgorithm(var canBeApplied: Boolean = true) extends ControlAlgorithm {
+  class AbstractServerDataStructurePersistenceSpecControlAlgorithm(var canBeApplied: Boolean = true) extends ControlAlgorithm {
 
     override def canBeApplied(op: DataStructureOperation, history: HistoryBuffer): Boolean = canBeApplied
 
     override def transform(op: DataStructureOperation, history: HistoryBuffer, transformer: OperationTransformer): DataStructureOperation = op
   }
 
-  class AbstractServerDataTypePersistenceSpecServerDataStructure(id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataStructure(id, controlAlgorithm) {
+  class AbstractServerDataStructurePersistenceSpecServerDataStructure(id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataStructure(id, controlAlgorithm) {
 
     val transformer = new OperationTransformer {
       override def transform(pair: (DataStructureOperation, DataStructureOperation)): DataStructureOperation = pair._1
@@ -74,7 +74,7 @@ object AbstractServerDataTypePersistenceSpec {
       }
     }
 
-    override val dataTypeName: DataStructureName = AbstractServerDataTypePersistenceSpec.dataTypeName
+    override val dataTypeName: DataStructureName = AbstractServerDataStructurePersistenceSpec.dataTypeName
 
     override def getDataAsJson: String = data
   }

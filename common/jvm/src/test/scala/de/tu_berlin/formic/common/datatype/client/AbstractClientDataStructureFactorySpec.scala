@@ -12,13 +12,13 @@ import org.scalatest.{Matchers, WordSpecLike}
 /**
   * @author Ronny Bräunlich
   */
-class AbstractClientDataTypeFactorySpec extends TestKit(ActorSystem("AbstractClientDataTypeFactorySpec"))
+class AbstractClientDataStructureFactorySpec extends TestKit(ActorSystem("AbstractClientDataStructureFactorySpec"))
   with WordSpecLike
   with ImplicitSender
   with StopSystemAfterAll
   with Matchers {
 
-  "AbstractClientDataTypeFactory" must {
+  "AbstractClientDataStructureFactorySpec" must {
 
     "create a data type and data type wrapper when receiving a WrappedCreateRequest" in {
       val factory = system.actorOf(Props(new AbstractClientDataStructureFactorySpecFactory))
@@ -31,7 +31,7 @@ class AbstractClientDataTypeFactorySpec extends TestKit(ActorSystem("AbstractCli
       val msg = expectMsgClass(classOf[NewDataTypeCreated])
       msg.dataTypeInstanceId should equal(instanceId)
       msg.dataTypeActor should not equal null
-      msg.wrapper shouldBe a[AbstractClientDataTypeFactorySpecFormicDataStructure]
+      msg.wrapper shouldBe a[AbstractClientDataStructureFactorySpecFormicDataStructure]
       msg.wrapper.clientId should equal(clientId)
     }
 
@@ -52,7 +52,7 @@ class AbstractClientDataTypeFactorySpec extends TestKit(ActorSystem("AbstractCli
 
 }
 
-object AbstractClientDataTypeSpecControlAlgorithm extends ControlAlgorithmClient {
+object AbstractClientDataStructureSpecControlAlgorithm extends ControlAlgorithmClient {
 
   override def canLocalOperationBeApplied(op: DataStructureOperation): Boolean = true
 
@@ -63,7 +63,7 @@ object AbstractClientDataTypeSpecControlAlgorithm extends ControlAlgorithmClient
   override def currentOperationContext: OperationContext = OperationContext(List.empty)
 }
 
-class AbstractClientDataTypeFactorySpecServerDataStructure(outgoingConnection: ActorRef) extends AbstractClientDataStructure(DataStructureInstanceId(), AbstractClientDataTypeSpecControlAlgorithm, Option.empty, outgoingConnection) {
+class AbstractClientDataStructureFactorySpecServerDataStructure(outgoingConnection: ActorRef) extends AbstractClientDataStructure(DataStructureInstanceId(), AbstractClientDataStructureSpecControlAlgorithm, Option.empty, outgoingConnection) {
   override val dataTypeName: DataStructureName = DataStructureName("AbstractClientDataTypeFactorySpec")
 
   override val transformer: OperationTransformer = null
@@ -75,20 +75,20 @@ class AbstractClientDataTypeFactorySpecServerDataStructure(outgoingConnection: A
   override def cloneOperationWithNewContext(op: DataStructureOperation, context: OperationContext): DataStructureOperation = op
 }
 
-class AbstractClientDataTypeFactorySpecFormicDataStructure(clientId: ClientId) extends FormicDataStructure(null, DataStructureName("AbstractClientDataTypeFactorySpec"),null,clientId, DataStructureInstanceId(), new DataStructureInitiator {
+class AbstractClientDataStructureFactorySpecFormicDataStructure(clientId: ClientId) extends FormicDataStructure(null, DataStructureName("AbstractClientDataTypeFactorySpec"),null,clientId, DataStructureInstanceId(), new DataStructureInitiator {
   override def initDataStructure(dataType: FormicDataStructure): Unit = {}
 }) {
 }
 
-class AbstractClientDataStructureFactorySpecFactory extends AbstractClientDataStructureFactory[AbstractClientDataTypeFactorySpecServerDataStructure, AbstractClientDataTypeFactorySpecFormicDataStructure] {
+class AbstractClientDataStructureFactorySpecFactory extends AbstractClientDataStructureFactory[AbstractClientDataStructureFactorySpecServerDataStructure, AbstractClientDataStructureFactorySpecFormicDataStructure] {
 
   override val name: DataStructureName = DataStructureName("AbstractClientDataTypeFactorySpec")
 
-  override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): AbstractClientDataTypeFactorySpecServerDataStructure = {
-    new AbstractClientDataTypeFactorySpecServerDataStructure(outgoingConnection)
+  override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): AbstractClientDataStructureFactorySpecServerDataStructure = {
+    new AbstractClientDataStructureFactorySpecServerDataStructure(outgoingConnection)
   }
 
-  override def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): AbstractClientDataTypeFactorySpecFormicDataStructure = {
-    new AbstractClientDataTypeFactorySpecFormicDataStructure(localClientId)
+  override def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): AbstractClientDataStructureFactorySpecFormicDataStructure = {
+    new AbstractClientDataStructureFactorySpecFormicDataStructure(localClientId)
   }
 }

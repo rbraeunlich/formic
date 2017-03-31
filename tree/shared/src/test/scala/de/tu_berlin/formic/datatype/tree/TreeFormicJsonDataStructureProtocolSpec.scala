@@ -7,9 +7,9 @@ import org.scalatest.{FlatSpec, Matchers}
 /**
   * @author Ronny Bräunlich
   */
-class TreeFormicJsonDataTypeProtocolSpec extends FlatSpec with Matchers {
+class TreeFormicJsonDataStructureProtocolSpec extends FlatSpec with Matchers {
 
-  "Tree Formic JSON data type protocol" should "serialize an insert operation" in {
+  "Tree Formic JSON data structure protocol" should "serialize an insert operation" in {
     val operationId = OperationId()
     val clientId = ClientId()
     val protocol = new TreeFormicJsonDataStructureProtocol[Int](DataStructureName("intTree"))

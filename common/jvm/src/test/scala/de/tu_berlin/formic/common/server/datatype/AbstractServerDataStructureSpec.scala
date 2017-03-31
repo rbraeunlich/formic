@@ -10,7 +10,7 @@ import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationI
 import org.scalatest.Assertions._
 import org.scalatest.{Matchers, WordSpecLike}
 
-class AbstractServerDataTypeSpecTestServerDataStructure(override val historyBuffer: HistoryBuffer, id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataStructure(id, controlAlgorithm) {
+class AbstractServerDataStructureSpecTestServerDataStructure(override val historyBuffer: HistoryBuffer, id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataStructure(id, controlAlgorithm) {
 
   val transformer = new OperationTransformer {
     override def transform(pair: (DataStructureOperation, DataStructureOperation)): DataStructureOperation = pair._1
@@ -28,14 +28,14 @@ class AbstractServerDataTypeSpecTestServerDataStructure(override val historyBuff
     }
   }
 
-  override val dataTypeName: DataStructureName = AbstractServerDataTypeSpec.dataTypeName
+  override val dataTypeName: DataStructureName = AbstractServerDataStructureSpec.dataTypeName
 
   override def getDataAsJson: String = data
 }
 
 case class AbstractServerDataStructureSpecTestOperation(id: OperationId, operationContext: OperationContext, var clientId: ClientId) extends DataStructureOperation
 
-class AbstractServerDataTypeSpecTestControlAlgorithm(applied: Boolean = true) extends ControlAlgorithm {
+class AbstractServerDataStructureSpecTestControlAlgorithm(applied: Boolean = true) extends ControlAlgorithm {
 
   override def canBeApplied(op: DataStructureOperation, history: HistoryBuffer): Boolean = applied
 
@@ -45,22 +45,22 @@ class AbstractServerDataTypeSpecTestControlAlgorithm(applied: Boolean = true) ex
 /**
   * @author Ronny Bräunlich
   */
-class AbstractServerDataTypeSpec extends TestKit(ActorSystem("AbstractServerDataTypeSpec"))
+class AbstractServerDataStructureSpec extends TestKit(ActorSystem("AbstractServerDataStructureSpec"))
   with WordSpecLike
   with ImplicitSender
   with StopSystemAfterAll
   with Matchers {
 
-  "An AbstractDataType" must {
+  "An AbstractDataStructure" must {
 
     "publish an UpdateResponse after creation" in {
       val probe = TestProbe()
       system.eventStream.subscribe(probe.ref, classOf[UpdateResponse])
 
-      system.actorOf(Props(new AbstractServerDataTypeSpecTestServerDataStructure(new HistoryBuffer, DataStructureInstanceId(), new AbstractServerDataTypeSpecTestControlAlgorithm)))
+      system.actorOf(Props(new AbstractServerDataStructureSpecTestServerDataStructure(new HistoryBuffer, DataStructureInstanceId(), new AbstractServerDataStructureSpecTestControlAlgorithm)))
 
       val msg = probe.expectMsgClass(classOf[UpdateResponse])
-      msg.dataStructure should be(AbstractServerDataTypeSpec.dataTypeName)
+      msg.dataStructure should be(AbstractServerDataStructureSpec.dataTypeName)
       msg.data should be("{data}")
       msg.lastOperationId shouldBe empty
     }
@@ -70,11 +70,11 @@ class AbstractServerDataTypeSpec extends TestKit(ActorSystem("AbstractServerData
       system.eventStream.subscribe(probe.ref, classOf[OperationMessage])
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
       val clientId: ClientId = ClientId()
-      val dataStructure = system.actorOf(Props(new AbstractServerDataTypeSpecTestServerDataStructure(new HistoryBuffer, dataTypeInstanceId, new AbstractServerDataTypeSpecTestControlAlgorithm)))
+      val dataStructure = system.actorOf(Props(new AbstractServerDataStructureSpecTestServerDataStructure(new HistoryBuffer, dataTypeInstanceId, new AbstractServerDataStructureSpecTestControlAlgorithm)))
       val message = OperationMessage(
         clientId,
         dataTypeInstanceId,
-        AbstractServerDataTypeSpec.dataTypeName,
+        AbstractServerDataStructureSpec.dataTypeName,
         List(AbstractServerDataStructureSpecTestOperation(OperationId(), OperationContext(List.empty), clientId))
       )
       dataStructure ! message
@@ -85,12 +85,12 @@ class AbstractServerDataTypeSpec extends TestKit(ActorSystem("AbstractServerData
     "add applied operations to the history buffer" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
       val clientId: ClientId = ClientId()
-      val dataType = system.actorOf(Props(new AbstractServerDataTypeSpecTestServerDataStructure(new HistoryBuffer, dataTypeInstanceId, new AbstractServerDataTypeSpecTestControlAlgorithm)))
+      val dataType = system.actorOf(Props(new AbstractServerDataStructureSpecTestServerDataStructure(new HistoryBuffer, dataTypeInstanceId, new AbstractServerDataStructureSpecTestControlAlgorithm)))
       val operation = AbstractServerDataStructureSpecTestOperation(OperationId(), OperationContext(List.empty), clientId)
       val message = OperationMessage(
         clientId,
         dataTypeInstanceId,
-        AbstractServerDataTypeSpec.dataTypeName,
+        AbstractServerDataStructureSpec.dataTypeName,
         List(operation)
       )
       dataType ! message
@@ -110,40 +110,40 @@ class AbstractServerDataTypeSpec extends TestKit(ActorSystem("AbstractServerData
       historyBuffer.addOperation(op1)
       historyBuffer.addOperation(op2)
       val clientId = ClientId()
-      val dataType = system.actorOf(Props(new AbstractServerDataTypeSpecTestServerDataStructure(historyBuffer, DataStructureInstanceId(), new AbstractServerDataTypeSpecTestControlAlgorithm)))
+      val dataType = system.actorOf(Props(new AbstractServerDataStructureSpecTestServerDataStructure(historyBuffer, DataStructureInstanceId(), new AbstractServerDataStructureSpecTestControlAlgorithm)))
       val msg = probe.expectMsgClass(classOf[UpdateResponse])
       val dataStructureInstanceId = msg.dataStructureInstanceId
 
       dataType ! HistoricOperationRequest(clientId, dataStructureInstanceId, op1.id)
 
-      expectMsg(HistoricOperationsAnswer(OperationMessage(clientId, dataStructureInstanceId, AbstractServerDataTypeSpec.dataTypeName, List(op2))))
+      expectMsg(HistoricOperationsAnswer(OperationMessage(clientId, dataStructureInstanceId, AbstractServerDataStructureSpec.dataTypeName, List(op2))))
     }
 
     "answer an UpdateRequest with its full data in an UpdateResponse" in {
       val probe = TestProbe()
       system.eventStream.subscribe(probe.ref, classOf[UpdateResponse])
       val clientId = ClientId()
-      val dataType = system.actorOf(Props(new AbstractServerDataTypeSpecTestServerDataStructure(new HistoryBuffer, DataStructureInstanceId(), new AbstractServerDataTypeSpecTestControlAlgorithm)))
+      val dataType = system.actorOf(Props(new AbstractServerDataStructureSpecTestServerDataStructure(new HistoryBuffer, DataStructureInstanceId(), new AbstractServerDataStructureSpecTestControlAlgorithm)))
       val msg = probe.expectMsgClass(classOf[UpdateResponse])
       val dataStructureInstanceId = msg.dataStructureInstanceId
       //add something to the history
       val operationId = OperationId()
       val operation = AbstractServerDataStructureSpecTestOperation(operationId, OperationContext(List.empty), ClientId())
-      val operationMessage = OperationMessage(ClientId(), DataStructureInstanceId(), AbstractServerDataTypeSpec.dataTypeName, List(operation))
+      val operationMessage = OperationMessage(ClientId(), DataStructureInstanceId(), AbstractServerDataStructureSpec.dataTypeName, List(operation))
       dataType ! operationMessage
 
       dataType ! UpdateRequest(clientId, dataStructureInstanceId)
 
-      expectMsg(UpdateResponse(dataStructureInstanceId, AbstractServerDataTypeSpec.dataTypeName, "{received}", Option(operationId)))
+      expectMsg(UpdateResponse(dataStructureInstanceId, AbstractServerDataStructureSpec.dataTypeName, "{received}", Option(operationId)))
     }
 
     "not apply operations when the ControlAlgorithm states they are not ready" in {
-      val dataType: TestActorRef[AbstractServerDataStructure] = TestActorRef(Props(new AbstractServerDataTypeSpecTestServerDataStructure(new HistoryBuffer, DataStructureInstanceId(), new AbstractServerDataTypeSpecTestControlAlgorithm(false))))
+      val dataType: TestActorRef[AbstractServerDataStructure] = TestActorRef(Props(new AbstractServerDataStructureSpecTestServerDataStructure(new HistoryBuffer, DataStructureInstanceId(), new AbstractServerDataStructureSpecTestControlAlgorithm(false))))
       val operation = AbstractServerDataStructureSpecTestOperation(OperationId(), OperationContext(List(OperationId())), ClientId())
       val message = OperationMessage(
         ClientId(),
         DataStructureInstanceId(),
-        AbstractServerDataTypeSpec.dataTypeName,
+        AbstractServerDataStructureSpec.dataTypeName,
         List(operation)
       )
       dataType ! message
@@ -164,12 +164,12 @@ class AbstractServerDataTypeSpec extends TestKit(ActorSystem("AbstractServerData
         }
       }
 
-      val dataType = system.actorOf(Props(new AbstractServerDataTypeSpecTestServerDataStructure(new HistoryBuffer, DataStructureInstanceId(), controlAlgo)))
+      val dataType = system.actorOf(Props(new AbstractServerDataStructureSpecTestServerDataStructure(new HistoryBuffer, DataStructureInstanceId(), controlAlgo)))
       val operation = AbstractServerDataStructureSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId())
       val message = OperationMessage(
         ClientId(),
         DataStructureInstanceId(),
-        AbstractServerDataTypeSpec.dataTypeName,
+        AbstractServerDataStructureSpec.dataTypeName,
         List(operation)
       )
 
@@ -179,12 +179,12 @@ class AbstractServerDataTypeSpec extends TestKit(ActorSystem("AbstractServerData
     }
 
     "ignore duplicated operation messages" in {
-      val dataType = system.actorOf(Props(new AbstractServerDataTypeSpecTestServerDataStructure(new HistoryBuffer, DataStructureInstanceId(), new AbstractServerDataTypeSpecTestControlAlgorithm)))
+      val dataType = system.actorOf(Props(new AbstractServerDataStructureSpecTestServerDataStructure(new HistoryBuffer, DataStructureInstanceId(), new AbstractServerDataStructureSpecTestControlAlgorithm)))
       val operation = AbstractServerDataStructureSpecTestOperation(OperationId(), OperationContext(List.empty), ClientId())
       val message = OperationMessage(
         ClientId(),
         DataStructureInstanceId(),
-        AbstractServerDataTypeSpec.dataTypeName,
+        AbstractServerDataStructureSpec.dataTypeName,
         List(operation)
       )
 
@@ -209,8 +209,8 @@ class AbstractServerDataTypeSpec extends TestKit(ActorSystem("AbstractServerData
         override def canBeApplied(op: DataStructureOperation, history: HistoryBuffer): Boolean = true
 
       }
-      val dataType = system.actorOf(Props(new AbstractServerDataTypeSpecTestServerDataStructure(new HistoryBuffer, dataTypeInstanceId, controlAlgorithm)))
-      val message = OperationMessage(clientId, dataTypeInstanceId, AbstractServerDataTypeSpec.dataTypeName, List(originalOperation))
+      val dataType = system.actorOf(Props(new AbstractServerDataStructureSpecTestServerDataStructure(new HistoryBuffer, dataTypeInstanceId, controlAlgorithm)))
+      val message = OperationMessage(clientId, dataTypeInstanceId, AbstractServerDataStructureSpec.dataTypeName, List(originalOperation))
       dataType ! message
 
       probe.expectMsg(OperationMessage(message.clientId, message.dataStructureInstanceId, message.dataStructure, List(transformedOperation)))
@@ -218,6 +218,6 @@ class AbstractServerDataTypeSpec extends TestKit(ActorSystem("AbstractServerData
   }
 }
 
-object AbstractServerDataTypeSpec {
+object AbstractServerDataStructureSpec {
   val dataTypeName = DataStructureName("Test")
 }

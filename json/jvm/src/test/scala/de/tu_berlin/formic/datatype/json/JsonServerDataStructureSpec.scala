@@ -14,7 +14,7 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-class JsonServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec"))
+class JsonServerDataStructureSpec extends TestKit(ActorSystem("JsonServerDataStructureSpec"))
   with WordSpecLike
   with ImplicitSender
   with Matchers
@@ -24,11 +24,11 @@ class JsonServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
     system.terminate()
   }
 
-  "A Json server data type" must {
+  "A Json server data structure" must {
 
     "insert data" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
-      val json = system.actorOf(Props(JsonServerDataStructure(dataTypeInstanceId, JsonServerDataTypeSpecControlAlgorithm, JsonServerDataStructureFactory.name)))
+      val json = system.actorOf(Props(JsonServerDataStructure(dataTypeInstanceId, JsonServerDataStructureSpecControlAlgorithm, JsonServerDataStructureFactory.name)))
       val node1 = StringNode("text", List(CharacterNode(null, 'a'), CharacterNode(null, 'b')))
       val node2 = NumberNode("num", 1)
       val node3 = BooleanNode("true?", value = true)
@@ -46,7 +46,7 @@ class JsonServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
 
     "delete data" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
-      val json = system.actorOf(Props(JsonServerDataStructure(dataTypeInstanceId, JsonServerDataTypeSpecControlAlgorithm, JsonServerDataStructureFactory.name)))
+      val json = system.actorOf(Props(JsonServerDataStructure(dataTypeInstanceId, JsonServerDataStructureSpecControlAlgorithm, JsonServerDataStructureFactory.name)))
       val node1 = StringNode("text", List(CharacterNode(null, 'a'), CharacterNode(null, 'b')))
       val node2 = NumberNode("num", 1)
       val op1 = TreeInsertOperation(AccessPath(0), node1, OperationId(), OperationContext(), ClientId())
@@ -63,7 +63,7 @@ class JsonServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
 
     "replace data" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
-      val json = system.actorOf(Props(JsonServerDataStructure(dataTypeInstanceId, JsonServerDataTypeSpecControlAlgorithm, JsonServerDataStructureFactory.name)))
+      val json = system.actorOf(Props(JsonServerDataStructure(dataTypeInstanceId, JsonServerDataStructureSpecControlAlgorithm, JsonServerDataStructureFactory.name)))
       val node1 = StringNode("text", List(CharacterNode(null, 'a'), CharacterNode(null, 'b')))
       val op1 = TreeInsertOperation(AccessPath(0), node1, OperationId(), OperationContext(), ClientId())
       val replacement = CharacterNode(null, 'z')
@@ -78,7 +78,7 @@ class JsonServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
 
     "not change after no operation" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
-      val json = system.actorOf(Props(JsonServerDataStructure(dataTypeInstanceId, JsonServerDataTypeSpecControlAlgorithm, JsonServerDataStructureFactory.name)))
+      val json = system.actorOf(Props(JsonServerDataStructure(dataTypeInstanceId, JsonServerDataStructureSpecControlAlgorithm, JsonServerDataStructureFactory.name)))
       val node1 = StringNode("text", List(CharacterNode(null, 'a'), CharacterNode(null, 'b')))
       val op1 = TreeInsertOperation(AccessPath(0), node1, OperationId(), OperationContext(), ClientId())
       json ! OperationMessage(ClientId(), dataTypeInstanceId, JsonServerDataStructureFactory.name, List(op1))
@@ -91,7 +91,7 @@ class JsonServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
 
     "result in valid JSON representation" in {
       val dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId()
-      val json = system.actorOf(Props(JsonServerDataStructure(dataTypeInstanceId, JsonServerDataTypeSpecControlAlgorithm, JsonServerDataStructureFactory.name)))
+      val json = system.actorOf(Props(JsonServerDataStructure(dataTypeInstanceId, JsonServerDataStructureSpecControlAlgorithm, JsonServerDataStructureFactory.name)))
       val node = ObjectNode("node", List(
         BooleanNode("bool", value = true),
         NumberNode("num", 1), StringNode("str",
@@ -108,7 +108,7 @@ class JsonServerDataTypeSpec extends TestKit(ActorSystem("TreeServerDataTypeSpec
 
 }
 
-object JsonServerDataTypeSpecControlAlgorithm extends ControlAlgorithm {
+object JsonServerDataStructureSpecControlAlgorithm extends ControlAlgorithm {
 
   override def canBeApplied(op: DataStructureOperation, history: HistoryBuffer): Boolean = true
 
