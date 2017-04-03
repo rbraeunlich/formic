@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.datastructure.json
 
-import de.tu_berlin.formic.datatype.tree._
+import de.tu_berlin.formic.datastructure.tree._
 
 /**
   * @author Ronny Bräunlich

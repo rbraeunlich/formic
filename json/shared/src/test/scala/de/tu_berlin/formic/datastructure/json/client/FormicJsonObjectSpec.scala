@@ -8,7 +8,7 @@ import de.tu_berlin.formic.common.message.{UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import de.tu_berlin.formic.datastructure.json._
 import de.tu_berlin.formic.datastructure.json.client.JsonClientDataStructure._
-import de.tu_berlin.formic.datatype.tree.client.RemoteDataStructureInitiator
+import de.tu_berlin.formic.datastructure.tree.client.RemoteDataStructureInitiator
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 import scala.concurrent.Future

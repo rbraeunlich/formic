@@ -7,8 +7,8 @@ import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import de.tu_berlin.formic.datastructure.json.JsonPath
 import de.tu_berlin.formic.datastructure.json.client.FormicJsonObject
 import de.tu_berlin.formic.datastructure.linear.client.FormicString
-import de.tu_berlin.formic.datatype.tree.AccessPath
-import de.tu_berlin.formic.datatype.tree.client.FormicIntegerTree
+import de.tu_berlin.formic.datastructure.tree.AccessPath
+import de.tu_berlin.formic.datastructure.tree.client.FormicIntegerTree
 import org.scalajs.dom.document
 import org.scalajs.dom.raw.HTMLInputElement
 import org.scalajs.jquery.{JQueryEventObject, jQuery}

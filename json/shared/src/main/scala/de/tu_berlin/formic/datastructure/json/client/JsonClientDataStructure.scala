@@ -9,8 +9,8 @@ import de.tu_berlin.formic.common.message.{FormicMessage, OperationMessage}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datastructure.json._
 import de.tu_berlin.formic.datastructure.json.client.JsonClientDataStructure._
-import de.tu_berlin.formic.datatype.tree.{TreeDeleteOperation, TreeInsertOperation, TreeStructureOperation}
 import de.tu_berlin.formic.datastructure.json.JsonFormicJsonDataStructureProtocol._
+import de.tu_berlin.formic.datastructure.tree.{TreeDeleteOperation, TreeInsertOperation, TreeStructureOperation}
 import upickle.default._
 
 /**

@@ -5,7 +5,7 @@ import de.tu_berlin.formic.client.FormicSystemFactory
 import de.tu_berlin.formic.common.ClientId
 import de.tu_berlin.formic.datastructure.json.client.JsonClientDataStructureProvider
 import de.tu_berlin.formic.datastructure.linear.client.LinearClientDataStructureProvider
-import de.tu_berlin.formic.datatype.tree.client.TreeClientDataStructureProvider
+import de.tu_berlin.formic.datastructure.tree.client.TreeClientDataStructureProvider
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.action.{Action, ChainableAction}
 import io.gatling.core.session.Session

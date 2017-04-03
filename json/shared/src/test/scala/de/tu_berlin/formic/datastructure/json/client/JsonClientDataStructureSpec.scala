@@ -10,10 +10,10 @@ import de.tu_berlin.formic.common.message.{CreateResponse, OperationMessage}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datastructure.json.client.JsonClientDataStructure._
 import de.tu_berlin.formic.datastructure.json._
-import de.tu_berlin.formic.datatype.tree.{AccessPath, TreeDeleteOperation, TreeInsertOperation, TreeNoOperation}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 import upickle.default._
 import de.tu_berlin.formic.datastructure.json.JsonFormicJsonDataStructureProtocol._
+import de.tu_berlin.formic.datastructure.tree.{AccessPath, TreeDeleteOperation, TreeInsertOperation, TreeNoOperation}
 
 /**
   * @author Ronny Bräunlich

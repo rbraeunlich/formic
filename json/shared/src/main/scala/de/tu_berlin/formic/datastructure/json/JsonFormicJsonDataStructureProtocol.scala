@@ -3,7 +3,7 @@ package de.tu_berlin.formic.datastructure.json
 import de.tu_berlin.formic.common.datastructure.{DataStructureName, DataStructureOperation, OperationContext}
 import de.tu_berlin.formic.common.json.FormicJsonDataStructureProtocol
 import de.tu_berlin.formic.common.{ClientId, OperationId}
-import de.tu_berlin.formic.datatype.tree._
+import de.tu_berlin.formic.datastructure.tree._
 import upickle.Js
 import upickle.Js.Value
 import upickle.default._

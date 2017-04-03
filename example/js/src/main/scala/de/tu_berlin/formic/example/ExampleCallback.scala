@@ -5,7 +5,7 @@ import de.tu_berlin.formic.common.datastructure.client.{ClientDataStructureEvent
 import de.tu_berlin.formic.common.datastructure.{DataStructureName, FormicDataStructure}
 import de.tu_berlin.formic.datastructure.json.client.FormicJsonObject
 import de.tu_berlin.formic.datastructure.linear.client.FormicString
-import de.tu_berlin.formic.datatype.tree.client.FormicIntegerTree
+import de.tu_berlin.formic.datastructure.tree.client.FormicIntegerTree
 import org.scalajs.dom.document
 import org.scalajs.jquery.jQuery
 

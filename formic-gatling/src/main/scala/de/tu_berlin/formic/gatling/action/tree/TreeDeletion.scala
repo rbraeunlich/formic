@@ -1,7 +1,8 @@
 package de.tu_berlin.formic.gatling.action.tree
 
-import de.tu_berlin.formic.datatype.tree.AccessPath
-import de.tu_berlin.formic.datatype.tree.client.{FormicIntegerTree, FormicTree}
+import de.tu_berlin.formic.datastructure.tree.AccessPath
+import de.tu_berlin.formic.datastructure.tree.client.FormicIntegerTree
+import de.tu_berlin.formic.datastructure.tree.client.FormicTree
 import de.tu_berlin.formic.gatling.action.{SessionVariables, TimeMeasureCallback}
 import io.gatling.commons.util.TimeHelper
 import io.gatling.core.action.{Action, ChainableAction}

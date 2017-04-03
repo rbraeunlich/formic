@@ -7,7 +7,7 @@ import de.tu_berlin.formic.common.datastructure.{DataStructureName, OperationCon
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import de.tu_berlin.formic.datastructure.json._
-import de.tu_berlin.formic.datatype.tree._
+import de.tu_berlin.formic.datastructure.tree._
 
 import scala.concurrent.duration._
 

@@ -2,10 +2,10 @@ package de.tu_berlin.formic.datastructure.json
 
 import de.tu_berlin.formic.common.datastructure.{DataStructureName, OperationContext}
 import de.tu_berlin.formic.common.{ClientId, OperationId}
-import de.tu_berlin.formic.datatype.tree._
 import org.scalatest.{FlatSpec, Matchers}
 import upickle.default._
 import de.tu_berlin.formic.datastructure.json.JsonFormicJsonDataStructureProtocol._
+import de.tu_berlin.formic.datastructure.tree._
 
 /**
   * @author Ronny Bräunlich

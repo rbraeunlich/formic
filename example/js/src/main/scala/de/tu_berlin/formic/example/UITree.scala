@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.example
 
-import de.tu_berlin.formic.datatype.tree.{AccessPath, EmptyTreeNode, TreeNode, ValueTreeNode}
+import de.tu_berlin.formic.datastructure.tree.{AccessPath, EmptyTreeNode, TreeNode, ValueTreeNode}
 import org.scalajs.jquery._
 
 /**

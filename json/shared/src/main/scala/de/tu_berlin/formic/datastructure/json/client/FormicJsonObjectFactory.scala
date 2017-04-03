@@ -6,7 +6,7 @@ import de.tu_berlin.formic.common.datastructure.DataStructureName
 import de.tu_berlin.formic.common.datastructure.client.AbstractClientDataStructureFactory
 import de.tu_berlin.formic.common.message.OperationMessage
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
-import de.tu_berlin.formic.datatype.tree.client.RemoteDataStructureInitiator
+import de.tu_berlin.formic.datastructure.tree.client.RemoteDataStructureInitiator
 
 /**
   * @author Ronny Bräunlich

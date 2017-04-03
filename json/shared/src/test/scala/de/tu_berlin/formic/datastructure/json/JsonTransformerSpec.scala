@@ -2,7 +2,7 @@ package de.tu_berlin.formic.datastructure.json
 
 import de.tu_berlin.formic.common.datastructure.OperationContext
 import de.tu_berlin.formic.common.{ClientId, OperationId}
-import de.tu_berlin.formic.datatype.tree.{AccessPath, TreeDeleteOperation, TreeInsertOperation, TreeNoOperation}
+import de.tu_berlin.formic.datastructure.tree.{AccessPath, TreeDeleteOperation, TreeInsertOperation, TreeNoOperation}
 import org.scalatest.{FlatSpec, Matchers}
 
 /**

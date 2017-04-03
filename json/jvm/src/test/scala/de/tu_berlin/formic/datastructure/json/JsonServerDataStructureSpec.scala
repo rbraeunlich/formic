@@ -7,7 +7,7 @@ import de.tu_berlin.formic.common.datastructure.{DataStructureOperation, History
 import de.tu_berlin.formic.common.message.{OperationMessage, UpdateRequest, UpdateResponse}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
 import JsonFormicJsonDataStructureProtocol._
-import de.tu_berlin.formic.datatype.tree.{AccessPath, TreeDeleteOperation, TreeInsertOperation, TreeNoOperation}
+import de.tu_berlin.formic.datastructure.tree.{AccessPath, TreeDeleteOperation, TreeInsertOperation, TreeNoOperation}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 import upickle.default._
 

@@ -1,8 +1,8 @@
 package de.tu_berlin.formic.gatling.experiment.tree
 
 import de.tu_berlin.formic.datastructure.linear.client.FormicString
-import de.tu_berlin.formic.datatype.tree.TreeNode
-import de.tu_berlin.formic.datatype.tree.client.FormicIntegerTree
+import de.tu_berlin.formic.datastructure.tree.TreeNode
+import de.tu_berlin.formic.datastructure.tree.client.FormicIntegerTree
 import de.tu_berlin.formic.gatling.Predef._
 import de.tu_berlin.formic.gatling.action.{SessionVariables, TimeMeasureCallback}
 import io.gatling.core.Predef._
