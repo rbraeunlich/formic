@@ -2,7 +2,7 @@ package de.tu_berlin.formic.gatling.action.linear
 
 import de.tu_berlin.formic.client.FormicSystem
 import de.tu_berlin.formic.common.DataStructureInstanceId
-import de.tu_berlin.formic.datatype.linear.client.FormicString
+import de.tu_berlin.formic.datastructure.linear.client.FormicString
 import de.tu_berlin.formic.gatling.action.TimeMeasureCallback.CreateResponseTimeMeasureListener
 import de.tu_berlin.formic.gatling.action.{SessionVariables, TimeMeasureCallback}
 import io.gatling.commons.util.TimeHelper

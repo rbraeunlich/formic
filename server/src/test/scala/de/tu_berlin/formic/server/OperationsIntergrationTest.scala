@@ -13,8 +13,9 @@ import akka.testkit.TestKit
 import de.tu_berlin.formic.common.datastructure.{OperationContext, ServerDataStructureProvider}
 import de.tu_berlin.formic.common.message._
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId, OperationId}
-import de.tu_berlin.formic.datatype.linear.LinearInsertOperation
-import de.tu_berlin.formic.datatype.linear.server.{LinearServerDataStructureProvider, StringDataStructureFactory}
+import de.tu_berlin.formic.datastructure.linear.server.{LinearServerDataStructureProvider, StringDataStructureFactory}
+import de.tu_berlin.formic.datastructure.linear.LinearInsertOperation
+import de.tu_berlin.formic.datastructure.linear.server.StringDataStructureFactory
 import org.scalatest.{BeforeAndAfterAll, Matchers, OneInstancePerTest, WordSpecLike}
 import upickle.default._
 

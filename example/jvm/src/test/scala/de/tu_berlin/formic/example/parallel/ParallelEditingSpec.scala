@@ -14,7 +14,8 @@ import de.tu_berlin.formic.datastructure.json.JsonPath
 import de.tu_berlin.formic.datastructure.json.client.{FormicJsonObject, JsonClientDataStructureProvider}
 import de.tu_berlin.formic.datastructure.json._
 import de.tu_berlin.formic.datastructure.json.client.JsonClientDataStructureProvider
-import de.tu_berlin.formic.datatype.linear.client.{FormicString, LinearClientDataStructureProvider}
+import de.tu_berlin.formic.datastructure.linear.client.FormicString
+import de.tu_berlin.formic.datastructure.linear.client.LinearClientDataStructureProvider
 import de.tu_berlin.formic.datatype.tree.client.{FormicIntegerTree, FormicStringTree, FormicTree, TreeClientDataStructureProvider}
 import de.tu_berlin.formic.datatype.tree.{AccessPath, TreeNode, ValueTreeNode}
 import de.tu_berlin.formic.example.{PersistenceCleanup, ServerThread}

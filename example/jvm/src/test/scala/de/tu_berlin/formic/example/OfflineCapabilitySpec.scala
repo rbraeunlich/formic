@@ -7,7 +7,8 @@ import com.typesafe.config.ConfigFactory
 import de.tu_berlin.formic.client._
 import de.tu_berlin.formic.common.datastructure.client.ClientDataStructureEvent
 import de.tu_berlin.formic.common.datastructure.{ClientDataStructureProvider, DataStructureName, FormicDataStructure}
-import de.tu_berlin.formic.datatype.linear.client.{FormicString, LinearClientDataStructureProvider}
+import de.tu_berlin.formic.datastructure.linear.client.FormicString
+import de.tu_berlin.formic.datastructure.linear.client.LinearClientDataStructureProvider
 import de.tu_berlin.formic.example.OfflineCapabilitySpec.{CollectingCallback, DropNextNMessages, TestWebSocketFactoryJVM}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 

@@ -1,6 +1,6 @@
 package de.tu_berlin.formic.gatling.experiment.linear
 
-import de.tu_berlin.formic.datatype.linear.client.FormicString
+import de.tu_berlin.formic.datastructure.linear.client.FormicString
 import de.tu_berlin.formic.gatling.Predef._
 import de.tu_berlin.formic.gatling.action.{SessionVariables, TimeMeasureCallback}
 import io.gatling.core.Predef._

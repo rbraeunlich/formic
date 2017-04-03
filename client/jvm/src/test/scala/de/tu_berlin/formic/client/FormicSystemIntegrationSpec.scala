@@ -9,8 +9,9 @@ import de.tu_berlin.formic.common.{ClientId, OperationId}
 import de.tu_berlin.formic.common.datastructure.client.ClientDataStructureEvent
 import de.tu_berlin.formic.common.datastructure.{ClientDataStructureProvider, DataStructureName, FormicDataStructure, OperationContext}
 import de.tu_berlin.formic.common.message._
-import de.tu_berlin.formic.datatype.linear.{LinearInsertOperation, LinearNoOperation}
-import de.tu_berlin.formic.datatype.linear.client.{FormicString, LinearClientDataStructureProvider}
+import de.tu_berlin.formic.datastructure.linear.client.FormicString
+import de.tu_berlin.formic.datastructure.linear.{LinearInsertOperation, LinearNoOperation}
+import de.tu_berlin.formic.datastructure.linear.client.LinearClientDataStructureProvider
 import org.scalatest.{Matchers, WordSpecLike}
 import upickle.default._
 
