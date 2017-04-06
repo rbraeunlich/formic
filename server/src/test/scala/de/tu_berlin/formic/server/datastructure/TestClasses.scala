@@ -17,7 +17,7 @@ class TestDataStructureFactory extends AbstractServerDataStructureFactory[TestSe
 
   override def create(dataTypeInstanceId: DataStructureInstanceId): TestServerDataStructure = new TestServerDataStructure(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm)
 
-  override val name: DataStructureName = TestClasses.dataTypeName
+  override val name: DataStructureName = TestClasses.dataStructureName
 }
 
 class TestServerDataStructure(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataStructure(dataTypeInstanceId, controlAlgorithm) {
@@ -33,7 +33,7 @@ class TestServerDataStructure(override val historyBuffer: HistoryBuffer, val dat
     }
   }
 
-  override val dataTypeName: DataStructureName = TestClasses.dataTypeName
+  override val dataStructureName: DataStructureName = TestClasses.dataStructureName
 
   override def getDataAsJson: String = data
 
@@ -52,7 +52,7 @@ class TestFormicJsonDataStructureProtocol extends FormicJsonDataStructureProtoco
       ClientId(valueMap("clientId").str))
   }
 
-  override val name: DataStructureName = TestClasses.dataTypeName
+  override val name: DataStructureName = TestClasses.dataStructureName
 
   override def serializeOperation(op: DataStructureOperation): String = {
     Js.Obj(
@@ -80,13 +80,13 @@ object TestTransformer extends OperationTransformer {
 }
 
 object TestClasses {
-  val dataTypeName = DataStructureName("Test")
+  val dataStructureName = DataStructureName("Test")
 }
 
 object TestClassProvider extends ServerDataStructureProvider {
   override def initFactories(actorSystem: ActorSystem): Map[DataStructureName, ActorRef] = {
-    val actor = actorSystem.actorOf(Props(new TestDataStructureFactory), TestClasses.dataTypeName.name)
-    Map(TestClasses.dataTypeName -> actor)
+    val actor = actorSystem.actorOf(Props(new TestDataStructureFactory), TestClasses.dataStructureName.name)
+    Map(TestClasses.dataStructureName -> actor)
   }
 
   override def registerFormicJsonDataStructureProtocols(formicJsonProtocol: FormicJsonProtocol): Unit = {

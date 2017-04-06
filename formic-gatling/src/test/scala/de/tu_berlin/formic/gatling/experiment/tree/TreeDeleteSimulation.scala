@@ -39,7 +39,7 @@ class TreeDeleteSimulation extends Simulation {
     .logLevel("info")
 
   //to have a feeder for all scenarios, we create the ids up front and use them
-  val dataTypeInstanceIdFeeder = Seq(Map("dataTypeInstanceId" -> DATATYPEINSTANCEID))
+  val dataTypeInstanceIdFeeder = Seq(Map("dataStructureInstanceId" -> DATATYPEINSTANCEID))
 
   val indexFeeder = Iterator.continually(Map("index" -> Random.nextInt(10)))
 
@@ -49,7 +49,7 @@ class TreeDeleteSimulation extends Simulation {
   val edit = repeat(NUM_EDITS, "n") {
     feed(indexFeeder)
       .exec(formic("TreeDeletion")
-      .tree("${dataTypeInstanceId}")
+      .tree("${dataStructureInstanceId}")
         .remove(Seq("${index}")))
       .pause(1)
   }
@@ -61,7 +61,7 @@ class TreeDeleteSimulation extends Simulation {
 
   val check = rendezVous(NUM_EDITORS)
     .exec(s => {
-      val formicTree = s(dataTypeInstanceIdFeeder.head("dataTypeInstanceId").get).as[FormicIntegerTree]
+      val formicTree = s(dataTypeInstanceIdFeeder.head("dataStructureInstanceId").get).as[FormicIntegerTree]
       TreeDeleteSimulation.addTree(formicTree)
       s
     })
@@ -76,7 +76,7 @@ class TreeDeleteSimulation extends Simulation {
 
   val subscribe = feed(dataTypeInstanceIdFeeder.iterator.toArray.circular)
     .exec(formic("Subscription")
-      .subscribe("${dataTypeInstanceId}"))
+      .subscribe("${dataStructureInstanceId}"))
     .pause(10)
 
   val editors = scenario("Editors")

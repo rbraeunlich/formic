@@ -10,7 +10,7 @@ import upickle.default._
   */
 class FormicDoubleListDataStructureFactory extends FormicLinearDataStructureFactory[Double] {
 
-  override def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): FormicList[Double] = {
+  override def createWrapper(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): FormicList[Double] = {
     new FormicDoubleList((ClientDataTypeEvent) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 

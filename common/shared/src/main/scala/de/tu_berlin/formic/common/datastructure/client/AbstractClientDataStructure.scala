@@ -20,7 +20,7 @@ abstract class AbstractClientDataStructure(val id: DataStructureInstanceId,
                                            val lastOperationId: Option[OperationId],
                                            val outgoingConnection: ActorRef) extends Actor with ActorLogging {
 
-  val dataTypeName: DataStructureName
+  val dataStructureName: DataStructureName
 
   val transformer: OperationTransformer
 
@@ -88,7 +88,7 @@ abstract class AbstractClientDataStructure(val id: DataStructureInstanceId,
       //this is only called locally from the wrappers
       log.debug(s"DataType $id received UpdateRequest: $req")
       val operationId = if(historyBuffer.history.isEmpty) lastOperationId else historyBuffer.history.headOption.map(op => op.id)
-      sender ! UpdateResponse(id, dataTypeName, getDataAsJson, operationId)
+      sender ! UpdateResponse(id, dataStructureName, getDataAsJson, operationId)
   }
 
   def acknowledged(callbackWrapper: ActorRef): Receive = {
@@ -149,7 +149,7 @@ abstract class AbstractClientDataStructure(val id: DataStructureInstanceId,
       //this is only called locally from the wrappers
       log.debug(s"DataType $id received UpdateRequest: $req")
       val operationId = if(historyBuffer.history.isEmpty) lastOperationId else historyBuffer.history.headOption.map(op => op.id)
-      sender ! UpdateResponse(id, dataTypeName, getDataAsJson, operationId)
+      sender ! UpdateResponse(id, dataStructureName, getDataAsJson, operationId)
   }
 
   private def applyOperation(dataTypeOperation: DataStructureOperation) = {

@@ -9,7 +9,7 @@ import upickle.default._
   */
 class FormicBooleanListDataStructureFactory extends FormicLinearDataStructureFactory[Boolean] {
 
-  override def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): FormicList[Boolean] = {
+  override def createWrapper(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): FormicList[Boolean] = {
     new FormicBooleanList((ClientDataTypeEvent) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 

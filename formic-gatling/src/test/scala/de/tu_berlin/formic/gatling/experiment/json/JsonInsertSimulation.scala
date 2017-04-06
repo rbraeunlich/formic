@@ -39,7 +39,7 @@ class JsonInsertSimulation extends Simulation {
     .logLevel("info")
 
   //to have a feeder for all scenarios, we create the ids up front and use them
-  val dataTypeInstanceIdFeeder = Seq(Map("dataTypeInstanceId" -> DATATYPEINSTANCEID))
+  val dataTypeInstanceIdFeeder = Seq(Map("dataStructureInstanceId" -> DATATYPEINSTANCEID))
   val pathSuffixFeeder = Iterator.range(0, 9).map(i => Map("suffix" -> i)) //as long as the number of users stays < 10 this works
 
   val connect = exec(formic("Connection").connect())
@@ -48,7 +48,7 @@ class JsonInsertSimulation extends Simulation {
   val edit = feed(pathSuffixFeeder)
     .repeat(NUM_EDITS, "n") {
       exec(formic("LinearInsertion")
-        .json("${dataTypeInstanceId}")
+        .json("${dataStructureInstanceId}")
         .insert("text")
         .path(Seq(Integer.toString(WORKER_NR) + "Index${n}${suffix}")))
         .pause(1)
@@ -61,7 +61,7 @@ class JsonInsertSimulation extends Simulation {
 
   val check = rendezVous(NUM_EDITORS)
     .exec(s => {
-      val formicJson = s(dataTypeInstanceIdFeeder.head("dataTypeInstanceId").get).as[FormicJsonObject]
+      val formicJson = s(dataTypeInstanceIdFeeder.head("dataStructureInstanceId").get).as[FormicJsonObject]
       JsonInsertSimulation.addJson(formicJson)
       s
     })
@@ -76,7 +76,7 @@ class JsonInsertSimulation extends Simulation {
 
   val subscribe = feed(dataTypeInstanceIdFeeder.iterator.toArray.circular)
     .exec(formic("Subscription")
-      .subscribe("${dataTypeInstanceId}"))
+      .subscribe("${dataStructureInstanceId}"))
     .pause(10)
 
   val editors = scenario("Editors")

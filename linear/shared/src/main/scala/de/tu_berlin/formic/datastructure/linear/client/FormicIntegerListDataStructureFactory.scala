@@ -10,7 +10,7 @@ import upickle.default._
   */
 class FormicIntegerListDataStructureFactory extends FormicLinearDataStructureFactory[Int] {
 
-  override def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): FormicList[Int] = {
+  override def createWrapper(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): FormicList[Int] = {
     new FormicIntegerList((ClientDataTypeEvent) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 

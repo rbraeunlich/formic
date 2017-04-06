@@ -10,7 +10,7 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-class TreeServerDataStructure[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm, val dataTypeName: DataStructureName)(implicit val writer: Writer[T]) extends AbstractServerDataStructure(id, controlAlgorithm) {
+class TreeServerDataStructure[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm, val dataStructureName: DataStructureName)(implicit val writer: Writer[T]) extends AbstractServerDataStructure(id, controlAlgorithm) {
 
   implicit val treeNodeWriter = new ValueTreeNodeWriter[T]()
 

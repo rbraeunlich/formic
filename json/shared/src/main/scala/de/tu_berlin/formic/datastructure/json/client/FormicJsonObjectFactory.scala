@@ -13,7 +13,7 @@ import de.tu_berlin.formic.datastructure.tree.client.RemoteDataStructureInitiato
   */
 class FormicJsonObjectFactory extends AbstractClientDataStructureFactory[JsonClientDataStructure, FormicJsonObject]{
 
-  override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): JsonClientDataStructure = {
+  override def createDataStructure(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): JsonClientDataStructure = {
     JsonClientDataStructure(
       dataTypeInstanceId,
       new WaveOTClient((op) => outgoingConnection ! OperationMessage(null, dataTypeInstanceId, name, List(op))),
@@ -24,7 +24,7 @@ class FormicJsonObjectFactory extends AbstractClientDataStructureFactory[JsonCli
     )
   }
 
-  override def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): FormicJsonObject = {
+  override def createWrapper(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): FormicJsonObject = {
     new FormicJsonObject((ClientDataTypeEvent) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 

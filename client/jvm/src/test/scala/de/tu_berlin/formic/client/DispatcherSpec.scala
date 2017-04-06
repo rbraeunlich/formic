@@ -34,14 +34,14 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
 
     "create a new data type instance and remember it when receiving an UpdateResponse" in {
       val testFactory = TestActorRef(Props(new TestDataStructureFactory))
-      val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
+      val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataStructureName -> testFactory)
       val instantiator = TestActorRef(Props(new DataStructureInstantiator(testFactories, ClientId())))
       val newInstanceCallback = TestProbe()
 
       val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(null, newInstanceCallback.ref, instantiator)))
       val dataTypeInstanceId = DataStructureInstanceId()
 
-      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
+      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataStructureName, "a", Option.empty)
 
       dispatcher.underlyingActor.instances should contain key dataTypeInstanceId
       newInstanceCallback.expectMsgClass(classOf[NewDataStructureCreated])
@@ -52,27 +52,27 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       val testDataType = TestProbe()
       val testDataType2 = TestProbe()
       val testFactory = TestProbe()
-      val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory.ref)
+      val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataStructureName -> testFactory.ref)
       val instantiator = TestActorRef(Props(new DataStructureInstantiator(testFactories, clientId)))
       val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(null, TestProbe().ref, instantiator)))
       val dataTypeInstanceId = DataStructureInstanceId()
       val dataTypeInstanceId2 = DataStructureInstanceId()
       //create two data types
-      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
-      testFactory.expectMsg(WrappedCreateRequest(null, "a", Option.empty,CreateRequest(null, dataTypeInstanceId, TestClasses.dataTypeName), clientId))
+      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataStructureName, "a", Option.empty)
+      testFactory.expectMsg(WrappedCreateRequest(null, "a", Option.empty,CreateRequest(null, dataTypeInstanceId, TestClasses.dataStructureName), clientId))
       testFactory.reply(NewDataStructureCreated(dataTypeInstanceId, testDataType.ref, new TestFormicDataStructure))
-      dispatcher ! UpdateResponse(dataTypeInstanceId2, TestClasses.dataTypeName, "a", Option.empty)
-      testFactory.expectMsg(WrappedCreateRequest(null, "a", Option.empty, CreateRequest(null, dataTypeInstanceId2, TestClasses.dataTypeName), clientId))
+      dispatcher ! UpdateResponse(dataTypeInstanceId2, TestClasses.dataStructureName, "a", Option.empty)
+      testFactory.expectMsg(WrappedCreateRequest(null, "a", Option.empty, CreateRequest(null, dataTypeInstanceId2, TestClasses.dataStructureName), clientId))
       testFactory.reply(NewDataStructureCreated(dataTypeInstanceId2, testDataType2.ref, new TestFormicDataStructure))
 
-      val opMessage = OperationMessage(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName, List.empty)
+      val opMessage = OperationMessage(ClientId(), dataTypeInstanceId, TestClasses.dataStructureName, List.empty)
       dispatcher ! opMessage
 
       testDataType.expectMsg(opMessage)
     }
 
     "log a warning if it does not know the data type instance of an operation message" in {
-      val message = OperationMessage(ClientId(), DataStructureInstanceId(), TestClasses.dataTypeName, List.empty)
+      val message = OperationMessage(ClientId(), DataStructureInstanceId(), TestClasses.dataStructureName, List.empty)
       val warningText = s"Did not find data structure instance with id ${message.dataStructureInstanceId}, dropping message $message"
       val dispatcher = system.actorOf(Props(new Dispatcher(null, TestProbe().ref, TestProbe().ref)))
 
@@ -84,7 +84,7 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
     "remember the actor when receiving a tuple of actor and CreateRequest" in {
       val instantiator = TestActorRef(Props(new DataStructureInstantiator(Map.empty, ClientId())))
       val dataTypeInstanceId = DataStructureInstanceId()
-      val request = CreateRequest(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName)
+      val request = CreateRequest(ClientId(), dataTypeInstanceId, TestClasses.dataStructureName)
       val actor = TestProbe()
       val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(null, TestProbe().ref, instantiator)))
 
@@ -109,17 +109,17 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       val testDataType2 = TestProbe()
       val testFactory = TestProbe()
       val clientId = ClientId()
-      val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory.ref)
+      val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataStructureName -> testFactory.ref)
       val instantiator = TestActorRef(Props(new DataStructureInstantiator(testFactories, clientId)))
       val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(null, TestProbe().ref, instantiator)))
       val dataTypeInstanceId = DataStructureInstanceId()
       val dataTypeInstanceId2 = DataStructureInstanceId()
       //create two data types
-      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
-      testFactory.expectMsg(WrappedCreateRequest(null, "a", Option.empty,CreateRequest(null, dataTypeInstanceId, TestClasses.dataTypeName), clientId))
+      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataStructureName, "a", Option.empty)
+      testFactory.expectMsg(WrappedCreateRequest(null, "a", Option.empty,CreateRequest(null, dataTypeInstanceId, TestClasses.dataStructureName), clientId))
       testFactory.reply(NewDataStructureCreated(dataTypeInstanceId, testDataType.ref, new TestFormicDataStructure))
-      dispatcher ! UpdateResponse(dataTypeInstanceId2, TestClasses.dataTypeName, "a", Option.empty)
-      testFactory.expectMsg(WrappedCreateRequest(null, "a", Option.empty, CreateRequest(null, dataTypeInstanceId2, TestClasses.dataTypeName), clientId))
+      dispatcher ! UpdateResponse(dataTypeInstanceId2, TestClasses.dataStructureName, "a", Option.empty)
+      testFactory.expectMsg(WrappedCreateRequest(null, "a", Option.empty, CreateRequest(null, dataTypeInstanceId2, TestClasses.dataStructureName), clientId))
       testFactory.reply(NewDataStructureCreated(dataTypeInstanceId2, testDataType2.ref, new TestFormicDataStructure))
       val response = CreateResponse(dataTypeInstanceId2)
 
@@ -136,14 +136,14 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       val dispatcher: TestActorRef[Dispatcher] = TestActorRef(Props(new Dispatcher(null, newInstanceCallback.ref, instantiator.ref)))
       val dataTypeInstanceId = DataStructureInstanceId()
 
-      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
+      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataStructureName, "a", Option.empty)
       instantiator.expectMsgPF(){
         case WrappedUpdateResponse(outgoing, rep) =>
-          instantiator.forward(testFactory, WrappedCreateRequest(outgoing, rep.data, rep.lastOperationId, CreateRequest(null, rep.dataStructureInstanceId, TestClasses.dataTypeName), ClientId()))
+          instantiator.forward(testFactory, WrappedCreateRequest(outgoing, rep.data, rep.lastOperationId, CreateRequest(null, rep.dataStructureInstanceId, TestClasses.dataStructureName), ClientId()))
       }
       dispatcher.underlyingActor.instances should contain key dataTypeInstanceId
 
-      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
+      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataStructureName, "a", Option.empty)
       instantiator.expectNoMsg()
     }
 
@@ -153,7 +153,7 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
         def answerWrappedUpdateResponse() = {
           expectMsgPF(){
             case WrappedUpdateResponse(outgoing, rep) =>
-            forward(testFactory, WrappedCreateRequest(outgoing, rep.data, rep.lastOperationId, CreateRequest(null, rep.dataStructureInstanceId, TestClasses.dataTypeName), ClientId()))
+            forward(testFactory, WrappedCreateRequest(outgoing, rep.data, rep.lastOperationId, CreateRequest(null, rep.dataStructureInstanceId, TestClasses.dataStructureName), ClientId()))
           }
         }
       }
@@ -163,9 +163,9 @@ class DispatcherSpec extends TestKit(ActorSystem("DispatcherSpec", ConfigFactory
       val dataTypeInstanceId = DataStructureInstanceId()
       val dataTypeInstanceId2 = DataStructureInstanceId()
 
-      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "a", Option.empty)
+      dispatcher ! UpdateResponse(dataTypeInstanceId, TestClasses.dataStructureName, "a", Option.empty)
       instantiator.answerWrappedUpdateResponse()
-      dispatcher ! UpdateResponse(dataTypeInstanceId2, TestClasses.dataTypeName, "a", Option.empty)
+      dispatcher ! UpdateResponse(dataTypeInstanceId2, TestClasses.dataStructureName, "a", Option.empty)
       instantiator.answerWrappedUpdateResponse()
 
       dispatcher ! RequestKnownDataStructureIds

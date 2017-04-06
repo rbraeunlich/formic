@@ -62,7 +62,7 @@ object AbstractServerDataStructureFactoryPersistenceSpec {
       }
     }
 
-    override val dataTypeName: DataStructureName = AbstractServerDataStructureFactoryPersistenceSpec.dataTypeName
+    override val dataStructureName: DataStructureName = AbstractServerDataStructureFactoryPersistenceSpec.dataTypeName
 
     override def getDataAsJson: String = data
   }

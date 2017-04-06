@@ -15,7 +15,7 @@ class TestDataStructureFactory extends AbstractServerDataStructureFactory[TestSe
 
   override def create(dataTypeInstanceId: DataStructureInstanceId): TestServerDataStructure = new TestServerDataStructure(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm)
 
-  override val name: DataStructureName = TestClasses.dataTypeName
+  override val name: DataStructureName = TestClasses.dataStructureName
 }
 
 class TestServerDataStructure(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataStructure(dataTypeInstanceId, controlAlgorithm) {
@@ -31,7 +31,7 @@ class TestServerDataStructure(override val historyBuffer: HistoryBuffer, val dat
     }
   }
 
-  override val dataTypeName: DataStructureName = TestClasses.dataTypeName
+  override val dataStructureName: DataStructureName = TestClasses.dataStructureName
 
   override def getDataAsJson: String = data
 
@@ -50,7 +50,7 @@ class TestFormicJsonDataStructureProtocol extends FormicJsonDataStructureProtoco
       ClientId(valueMap("clientId").str))
   }
 
-  override val name: DataStructureName = TestClasses.dataTypeName
+  override val name: DataStructureName = TestClasses.dataStructureName
 
   override def serializeOperation(op: DataStructureOperation): String = {
     Js.Obj(
@@ -78,5 +78,5 @@ object TestTransformer extends OperationTransformer {
 }
 
 object TestClasses {
-  val dataTypeName = DataStructureName("Test")
+  val dataStructureName = DataStructureName("Test")
 }

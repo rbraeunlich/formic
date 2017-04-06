@@ -27,7 +27,7 @@ class Dispatcher(val outgoingConnection: ActorRef, val newInstanceCallback: Acto
       }
 
     case created: NewDataStructureCreated =>
-      instances += (created.dataTypeInstanceId -> created.dataTypeActor)
+      instances += (created.dataStructureInstanceId -> created.dataStructureActor)
       newInstanceCallback ! created
 
     case ErrorMessage(errorText) => log.error("Error from WebSocket connection: " + errorText)

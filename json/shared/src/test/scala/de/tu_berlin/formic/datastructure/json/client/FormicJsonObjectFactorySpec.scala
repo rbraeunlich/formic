@@ -39,14 +39,14 @@ class FormicJsonObjectFactorySpec extends TestKit(ActorSystem("FormicJsonFactory
       ), clientId)
 
       val answer = expectMsgClass(classOf[NewDataStructureCreated])
-      answer.dataTypeInstanceId should equal(dataTypeInstanceId)
+      answer.dataStructureInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicJsonObject]
       wrapper.dataStructureInstanceId should equal(dataTypeInstanceId)
-      wrapper.actor should equal(answer.dataTypeActor)
+      wrapper.actor should equal(answer.dataStructureActor)
       wrapper.dataStructureName should equal(FormicJsonObjectFactory.name)
       wrapper.clientId should equal(clientId)
-      answer.dataTypeActor should not be null
+      answer.dataStructureActor should not be null
     }
   }
 }

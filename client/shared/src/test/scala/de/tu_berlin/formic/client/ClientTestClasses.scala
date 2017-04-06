@@ -15,11 +15,11 @@ import upickle.Js
 
 class TestDataStructureFactory extends AbstractClientDataStructureFactory[TestClientDataStructure, TestFormicDataStructure] {
 
-  override val name: DataStructureName = TestClasses.dataTypeName
+  override val name: DataStructureName = TestClasses.dataStructureName
 
-  override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId] = Option.empty): TestClientDataStructure = new TestClientDataStructure(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm, data, lastOperationId, outgoingConnection)
+  override def createDataStructure(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId] = Option.empty): TestClientDataStructure = new TestClientDataStructure(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm, data, lastOperationId, outgoingConnection)
 
-  override def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, clientId: ClientId): TestFormicDataStructure = new TestFormicDataStructure
+  override def createWrapper(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, clientId: ClientId): TestFormicDataStructure = new TestFormicDataStructure
 }
 
 class TestClientDataStructure(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataStructureInstanceId, controlAlgorithm: ControlAlgorithmClient, initialData: Option[String] = Option.empty, lastOperationId: Option[OperationId], outgoingConnection: ActorRef) extends AbstractClientDataStructure(dataTypeInstanceId, controlAlgorithm, lastOperationId, outgoingConnection) {
@@ -33,7 +33,7 @@ class TestClientDataStructure(override val historyBuffer: HistoryBuffer, val dat
     }
   }
 
-  override val dataTypeName: DataStructureName = TestClasses.dataTypeName
+  override val dataStructureName: DataStructureName = TestClasses.dataStructureName
 
   override def getDataAsJson: String = data
 
@@ -42,7 +42,7 @@ class TestClientDataStructure(override val historyBuffer: HistoryBuffer, val dat
   override def cloneOperationWithNewContext(op: DataStructureOperation, context: OperationContext): DataStructureOperation = op
 }
 
-class TestFormicDataStructure(actor: ActorRef = null) extends FormicDataStructure((_) => {}, TestClasses.dataTypeName, actor, ClientId(), DataStructureInstanceId(), new DataStructureInitiator {
+class TestFormicDataStructure(actor: ActorRef = null) extends FormicDataStructure((_) => {}, TestClasses.dataStructureName, actor, ClientId(), DataStructureInstanceId(), new DataStructureInitiator {
   override def initDataStructure(dataType: FormicDataStructure): Unit = {}
 }) {
 }
@@ -59,7 +59,7 @@ class TestFormicJsonDataStructureProtocol extends FormicJsonDataStructureProtoco
       ClientId(valueMap("clientId").str))
   }
 
-  override val name: DataStructureName = TestClasses.dataTypeName
+  override val name: DataStructureName = TestClasses.dataStructureName
 
   override def serializeOperation(op: DataStructureOperation): String = {
     Js.Obj(
@@ -91,5 +91,5 @@ object TestTransformer extends OperationTransformer {
 }
 
 object TestClasses {
-  val dataTypeName = DataStructureName("Test")
+  val dataStructureName = DataStructureName("Test")
 }

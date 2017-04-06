@@ -38,14 +38,14 @@ class FormicTreeDataStructureFactorySpec extends TestKit(ActorSystem("FormicTree
       ), clientId)
 
       val answer = expectMsgClass(classOf[NewDataStructureCreated])
-      answer.dataTypeInstanceId should equal(dataTypeInstanceId)
+      answer.dataStructureInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicBooleanTree]
       wrapper.dataStructureInstanceId should equal(dataTypeInstanceId)
-      wrapper.actor should equal(answer.dataTypeActor)
+      wrapper.actor should equal(answer.dataStructureActor)
       wrapper.dataStructureName should equal(FormicBooleanTreeFactory.name)
       wrapper.clientId should equal(clientId)
-      answer.dataTypeActor should not be null
+      answer.dataStructureActor should not be null
     }
   }
 
@@ -67,14 +67,14 @@ class FormicTreeDataStructureFactorySpec extends TestKit(ActorSystem("FormicTree
       ), clientId)
 
       val answer = expectMsgClass(classOf[NewDataStructureCreated])
-      answer.dataTypeInstanceId should equal(dataTypeInstanceId)
+      answer.dataStructureInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicDoubleTree]
       wrapper.dataStructureInstanceId should equal(dataTypeInstanceId)
-      wrapper.actor should equal(answer.dataTypeActor)
+      wrapper.actor should equal(answer.dataStructureActor)
       wrapper.dataStructureName should equal(FormicDoubleTreeFactory.name)
       wrapper.clientId should equal(clientId)
-      answer.dataTypeActor should not be null
+      answer.dataStructureActor should not be null
     }
   }
 
@@ -96,14 +96,14 @@ class FormicTreeDataStructureFactorySpec extends TestKit(ActorSystem("FormicTree
       ), clientId)
 
       val answer = expectMsgClass(classOf[NewDataStructureCreated])
-      answer.dataTypeInstanceId should equal(dataTypeInstanceId)
+      answer.dataStructureInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicIntegerTree]
       wrapper.dataStructureInstanceId should equal(dataTypeInstanceId)
-      wrapper.actor should equal(answer.dataTypeActor)
+      wrapper.actor should equal(answer.dataStructureActor)
       wrapper.dataStructureName should equal(FormicIntegerTreeFactory.name)
       wrapper.clientId should equal(clientId)
-      answer.dataTypeActor should not be null
+      answer.dataStructureActor should not be null
     }
   }
 
@@ -125,14 +125,14 @@ class FormicTreeDataStructureFactorySpec extends TestKit(ActorSystem("FormicTree
       ), clientId)
 
       val answer = expectMsgClass(classOf[NewDataStructureCreated])
-      answer.dataTypeInstanceId should equal(dataTypeInstanceId)
+      answer.dataStructureInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicStringTree]
       wrapper.dataStructureInstanceId should equal(dataTypeInstanceId)
-      wrapper.actor should equal(answer.dataTypeActor)
+      wrapper.actor should equal(answer.dataStructureActor)
       wrapper.dataStructureName should equal(FormicStringTreeFactory.name)
       wrapper.clientId should equal(clientId)
-      answer.dataTypeActor should not be null
+      answer.dataStructureActor should not be null
     }
   }
 

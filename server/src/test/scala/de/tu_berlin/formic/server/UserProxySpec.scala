@@ -40,12 +40,12 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
 
     "creates new data type instance after receiving CreateRequest, adds it to its data type set and send a CreateResponse" in {
       val factory = system.actorOf(Props[datastructure.TestDataStructureFactory])
-      val userProxy: TestActorRef[UserProxy] = TestActorRef(Props(new UserProxy(Map(datastructure.TestClasses.dataTypeName -> factory))))
+      val userProxy: TestActorRef[UserProxy] = TestActorRef(Props(new UserProxy(Map(datastructure.TestClasses.dataStructureName -> factory))))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
       val dataTypeInstanceId = DataStructureInstanceId()
 
-      userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, datastructure.TestClasses.dataTypeName)
+      userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, datastructure.TestClasses.dataStructureName)
 
       outgoingProbe.expectMsg(CreateResponse(dataTypeInstanceId))
       userProxy.underlyingActor.watchlist should (have size 1)
@@ -53,19 +53,19 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
 
     "register for changes of data type it created and forward OperationMessages" in {
       val factory = system.actorOf(Props[datastructure.TestDataStructureFactory])
-      val userProxy = system.actorOf(Props(new UserProxy(Map(datastructure.TestClasses.dataTypeName -> factory))))
+      val userProxy = system.actorOf(Props(new UserProxy(Map(datastructure.TestClasses.dataStructureName -> factory))))
       val outgoingProbe = TestProbe()
       val publisherProbe = TestProbe()
       system.eventStream.subscribe(publisherProbe.ref, classOf[OperationMessage])
       userProxy ! Connected(outgoingProbe.ref)
       val dataTypeInstanceId = DataStructureInstanceId()
-      userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, datastructure.TestClasses.dataTypeName)
+      userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, datastructure.TestClasses.dataStructureName)
       outgoingProbe.receiveOne(3 seconds)
       val clientId: ClientId = ClientId()
       val operationMessage = OperationMessage(
         clientId,
         dataTypeInstanceId,
-        datastructure.TestClasses.dataTypeName,
+        datastructure.TestClasses.dataStructureName,
         List(datastructure.TestOperation(OperationId(), OperationContext(List.empty), clientId))
       )
 
@@ -78,16 +78,16 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
 
     "forward OperationMessages that were applied from other users" in {
       val factory = system.actorOf(Props[datastructure.TestDataStructureFactory])
-      val userProxy = system.actorOf(Props(new UserProxy(Map(datastructure.TestClasses.dataTypeName -> factory))))
+      val userProxy = system.actorOf(Props(new UserProxy(Map(datastructure.TestClasses.dataStructureName -> factory))))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
       val dataTypeInstanceId = DataStructureInstanceId()
-      userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, datastructure.TestClasses.dataTypeName)
+      userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, datastructure.TestClasses.dataStructureName)
       outgoingProbe.receiveOne(3 seconds)
       val operationMessage = OperationMessage(
         ClientId(),
         dataTypeInstanceId,
-        datastructure.TestClasses.dataTypeName,
+        datastructure.TestClasses.dataStructureName,
         List(datastructure.TestOperation(OperationId(), OperationContext(List.empty), ClientId()))
       )
 
@@ -98,15 +98,15 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
 
     "ignore OperationMessages for data types it is not interested in" in {
       val factory = system.actorOf(Props[datastructure.TestDataStructureFactory])
-      val userProxy = system.actorOf(Props(new UserProxy(Map(datastructure.TestClasses.dataTypeName -> factory))))
+      val userProxy = system.actorOf(Props(new UserProxy(Map(datastructure.TestClasses.dataStructureName -> factory))))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
-      userProxy ! CreateRequest(ClientId(), DataStructureInstanceId(), datastructure.TestClasses.dataTypeName)
+      userProxy ! CreateRequest(ClientId(), DataStructureInstanceId(), datastructure.TestClasses.dataStructureName)
       outgoingProbe.receiveOne(3 seconds)
       val operationMessage = OperationMessage(
         ClientId(),
         DataStructureInstanceId(),
-        datastructure.TestClasses.dataTypeName,
+        datastructure.TestClasses.dataStructureName,
         List(datastructure.TestOperation(OperationId(), OperationContext(List.empty), ClientId()))
       )
 
@@ -117,17 +117,17 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
 
     "forward HistoricOperationRequests to the correct data type" in {
       val factory = system.actorOf(Props[TestDataStructureFactory])
-      val userProxy = system.actorOf(Props(new UserProxy(Map(TestClasses.dataTypeName -> factory))))
+      val userProxy = system.actorOf(Props(new UserProxy(Map(TestClasses.dataStructureName -> factory))))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
       val dataTypeInstanceId = DataStructureInstanceId()
-      userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName)
+      userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, TestClasses.dataStructureName)
       outgoingProbe.receiveOne(3 seconds)
       val operationId = OperationId()
       val operationMessage = OperationMessage(
         ClientId(),
         dataTypeInstanceId,
-        datastructure.TestClasses.dataTypeName,
+        datastructure.TestClasses.dataStructureName,
         List(datastructure.TestOperation(operationId, OperationContext(List.empty), ClientId()))
       )
       val operationId2 = OperationId()
@@ -135,7 +135,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
       val operationMessage2 = OperationMessage(
         clientId2,
         dataTypeInstanceId,
-        datastructure.TestClasses.dataTypeName,
+        datastructure.TestClasses.dataStructureName,
         List(datastructure.TestOperation(operationId2, OperationContext(List(operationId)), clientId2))
       )
       userProxy ! operationMessage
@@ -148,7 +148,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
       outgoingProbe.expectMsg(OperationMessage(
         requesterClientId,
         dataTypeInstanceId,
-        datastructure.TestClasses.dataTypeName,
+        datastructure.TestClasses.dataStructureName,
         List(datastructure.TestOperation(operationId2, OperationContext(List(operationId)), clientId2))
       ))
     }
@@ -156,7 +156,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
     "forward an UpdateRequest to the correct data type and save the data type instance id" in {
       val dataTypeInstanceId = DataStructureInstanceId()
       val factory = system.actorOf(Props[TestDataStructureFactory])
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName)
+      factory ! CreateRequest(ClientId(), dataTypeInstanceId, TestClasses.dataStructureName)
       Thread.sleep(500) //give the server time to create the data type
       val userProxy: TestActorRef[UserProxy] = TestActorRef(Props(new UserProxy(Map.empty)))
       val outgoingProbe = TestProbe()
@@ -164,7 +164,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
 
       userProxy ! UpdateRequest(ClientId(), dataTypeInstanceId)
 
-      outgoingProbe.expectMsg(UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "{data}", Option.empty))
+      outgoingProbe.expectMsg(UpdateResponse(dataTypeInstanceId, TestClasses.dataStructureName, "{data}", Option.empty))
       userProxy.underlyingActor.watchlist should contain key dataTypeInstanceId
     }
 

@@ -812,7 +812,7 @@ class AbstractClientDataStructureTestClientDataStructure(
 
   var data = "{test}"
 
-  override val dataTypeName: DataStructureName = AbstractClientDataStructureSpec.dataTypeName
+  override val dataStructureName: DataStructureName = AbstractClientDataStructureSpec.dataTypeName
 
   override val transformer: OperationTransformer = new OperationTransformer {
     override def transform(pair: (DataStructureOperation, DataStructureOperation)): DataStructureOperation = pair._1

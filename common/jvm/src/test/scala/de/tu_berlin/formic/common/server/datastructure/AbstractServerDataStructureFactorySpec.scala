@@ -34,7 +34,7 @@ class AbstractServerDataStructureFactorySpec extends TestKit(ActorSystem("Abstra
     }
 
     "give a new data type instance the actor name of its datatypeinstance id" in {
-      val factory = system.actorOf(Props[TestDataStructureFactory], TestClasses.dataTypeName.name)
+      val factory = system.actorOf(Props[TestDataStructureFactory], TestClasses.dataStructureName.name)
       val dataStructureInstanceId = DataStructureInstanceId()
       factory ! CreateRequest(ClientId(), dataStructureInstanceId, DataStructureName("Test"))
       receiveN(1)

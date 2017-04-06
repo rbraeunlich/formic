@@ -13,7 +13,7 @@ import upickle.default._
   */
 class TreeClientDataStructure[T](id: DataStructureInstanceId,
                                  controlAlgorithm: ControlAlgorithmClient,
-                                 val dataTypeName: DataStructureName,
+                                 val dataStructureName: DataStructureName,
                                  initialData: Option[String],
                                  lastOperationId: Option[OperationId],
                                  outgoingConnection: ActorRef)

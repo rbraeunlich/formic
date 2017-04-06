@@ -20,30 +20,30 @@ abstract class AbstractClientDataStructureFactory[T <: AbstractClientDataStructu
       log.debug(s"Factory for $name received CreateRequest: $req from sender: $sender")
       val id: DataStructureInstanceId = req.dataStructureInstanceId
       val initialData = if(data == null || data.isEmpty) Option.empty else Option(data)
-      val actor = context.actorOf(Props(createDataType(id, outgoingConnection, initialData, lastOperationId)), id.id)
-      val wrapper = createWrapperType(id, actor, localClientId)
+      val actor = context.actorOf(Props(createDataStructure(id, outgoingConnection, initialData, lastOperationId)), id.id)
+      val wrapper = createWrapper(id, actor, localClientId)
       actor ! RemoteInstantiation
       sender ! NewDataStructureCreated(id, actor, wrapper)
 
     case local: LocalCreateRequest =>
       log.debug(s"Factory for $name received LocalCreateRequest: $local from sender: $sender")
-      val id: DataStructureInstanceId = local.dataTypeInstanceId
-      val actor = context.actorOf(Props(createDataType(id, local.outgoingConnection, Option.empty, Option.empty)), id.id)
+      val id: DataStructureInstanceId = local.dataStructureInstanceId
+      val actor = context.actorOf(Props(createDataStructure(id, local.outgoingConnection, Option.empty, Option.empty)), id.id)
       sender ! NewDataStructureCreated(id, actor, null)
   }
 
   /**
     * Creates a new data type.
     *
-    * @param dataTypeInstanceId the id of the data type
+    * @param dataStructureInstanceId the id of the data type
     * @param outgoingConnection the connection to send messages to the server
     * @param data the initial data as JSON, might be empty
     * @param lastOperationId the operation id the data is based on, might be empty
     * @return
     */
-  def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): T
+  def createDataStructure(dataStructureInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): T
 
-  def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): S
+  def createWrapper(dataStructureInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): S
 
   val name: DataStructureName
 }
@@ -54,9 +54,9 @@ object AbstractClientDataStructureFactory {
     * Local means that a client created the FormicDataType itself by calling new and using FormicSystem.init().
     * Therefore no wrapper data type needs to be created.
     */
-  case class LocalCreateRequest(outgoingConnection: ActorRef, dataTypeInstanceId: DataStructureInstanceId)
+  case class LocalCreateRequest(outgoingConnection: ActorRef, dataStructureInstanceId: DataStructureInstanceId)
 
-  case class NewDataStructureCreated(dataTypeInstanceId: DataStructureInstanceId, dataTypeActor: ActorRef, wrapper: FormicDataStructure)
+  case class NewDataStructureCreated(dataStructureInstanceId: DataStructureInstanceId, dataStructureActor: ActorRef, wrapper: FormicDataStructure)
 
   /**
     * To be able to pass the outgoing connection and the initial data to the factory, the CreateRequest has to be wrapped.

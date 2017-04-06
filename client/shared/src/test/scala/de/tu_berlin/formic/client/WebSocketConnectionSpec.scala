@@ -116,7 +116,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
     }
 
     "forward UpdateResponses from the WebSocketConnection to the dispatcher" in {
-      val updateResponse = UpdateResponse(DataStructureInstanceId(), TestClasses.dataTypeName, "", Option.empty)
+      val updateResponse = UpdateResponse(DataStructureInstanceId(), TestClasses.dataStructureName, "", Option.empty)
       val newInstanceCallback = TestProbe()
       val instantiator = TestProbe()
       val factory = new TestWebSocketFactory
@@ -132,7 +132,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
     "forward OperationMessages from the WebSocketConnection to the dispatcher" in {
       val dataTypeInstance = TestProbe()
       val dataTypeInstanceId = DataStructureInstanceId()
-      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "", Option.empty)
+      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataStructureName, "", Option.empty)
       val instantiator = new TestProbe(system) {
         def answerUpdateResponse() = {
           expectMsgPF(timeout) {
@@ -141,7 +141,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
           sender ! NewDataStructureCreated(dataTypeInstanceId, dataTypeInstance.ref, null)
         }
       }
-      val operationMessage = OperationMessage(ClientId(), dataTypeInstanceId, TestClasses.dataTypeName, List.empty)
+      val operationMessage = OperationMessage(ClientId(), dataTypeInstanceId, TestClasses.dataStructureName, List.empty)
       val factory = new TestWebSocketFactory
       val newInstanceCallback = TestProbe()
       val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(newInstanceCallback.ref, instantiator.ref, ClientId(), factory, "7", 10, jsonProtocol)))
@@ -179,7 +179,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       val newInstanceCallback = TestProbe()
       val instantiator = TestProbe()
       val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(newInstanceCallback.ref, instantiator.ref, clientId, factory, "14", 10, jsonProtocol)))
-      val request = CreateRequest(clientId, DataStructureInstanceId(), TestClasses.dataTypeName)
+      val request = CreateRequest(clientId, DataStructureInstanceId(), TestClasses.dataStructureName)
       val probe = TestProbe()
       system.scheduler.scheduleOnce(0.millis) {
         connection ! OnConnect(factory.mock)
@@ -193,7 +193,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       connection ! PoisonPill
       val sentMessages = factory.mock.sent
       sentMessages.lastOption match {
-        case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(CreateRequest(clientId, request.dataStructureInstanceId, TestClasses.dataTypeName))
+        case Some(msg) => read[FormicMessage](msg.asInstanceOf[String]) should equal(CreateRequest(clientId, request.dataStructureInstanceId, TestClasses.dataStructureName))
         case None => fail("No message sent via WebSocket")
       }
     }
@@ -252,7 +252,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       val newInstanceCallback = TestProbe()
       val instantiator = TestProbe()
       val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(newInstanceCallback.ref, instantiator.ref, clientId, factory, "17", 10, jsonProtocol)))
-      val message = OperationMessage(clientId, DataStructureInstanceId(), TestClasses.dataTypeName, List(TestOperation(OperationId(), OperationContext(List.empty), clientId)))
+      val message = OperationMessage(clientId, DataStructureInstanceId(), TestClasses.dataStructureName, List(TestOperation(OperationId(), OperationContext(List.empty), clientId)))
       system.scheduler.scheduleOnce(0.millis) {
         connection ! OnConnect(factory.mock)
         connection ! OnClose(1)
@@ -277,7 +277,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
     "add the ClientId to OperationMessages and send them over the WebSocket" in {
       val factory = new TestWebSocketFactory
       val clientId = ClientId()
-      val message = OperationMessage(null, DataStructureInstanceId(), TestClasses.dataTypeName, List(TestOperation(OperationId(), OperationContext(List.empty), clientId)))
+      val message = OperationMessage(null, DataStructureInstanceId(), TestClasses.dataStructureName, List(TestOperation(OperationId(), OperationContext(List.empty), clientId)))
       val newInstanceCallback = TestProbe()
       val instantiator = TestProbe()
       val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(newInstanceCallback.ref, instantiator.ref, clientId, factory, "11", 10, jsonProtocol)))
@@ -299,7 +299,7 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
     }
 
     "add the ClientId to CreateRequests and send them over the WebSocket" in {
-      val request = CreateRequest(null, DataStructureInstanceId(), TestClasses.dataTypeName)
+      val request = CreateRequest(null, DataStructureInstanceId(), TestClasses.dataStructureName)
       val probe = TestProbe()
       val factory = new TestWebSocketFactory
       val clientId = ClientId()
@@ -368,8 +368,8 @@ class WebSocketConnectionSpec extends TestKit(ActorSystem("WebSocketConnectionSp
       val dataType1Id = DataStructureInstanceId()
       val dataType2 = TestProbe()
       val dataType2Id = DataStructureInstanceId()
-      val createRequest1 = CreateRequest(clientId, dataType1Id, TestClasses.dataTypeName)
-      val createRequest2 = CreateRequest(clientId, dataType2Id, TestClasses.dataTypeName)
+      val createRequest1 = CreateRequest(clientId, dataType1Id, TestClasses.dataStructureName)
+      val createRequest2 = CreateRequest(clientId, dataType2Id, TestClasses.dataStructureName)
       val connection: TestActorRef[WebSocketConnection] = TestActorRef(Props(new WebSocketConnection(newInstanceCallback.ref, instantiator.ref, clientId, factory, "14", 10, jsonProtocol)))
       val probe = TestProbe()
       system.scheduler.scheduleOnce(0.millis) {

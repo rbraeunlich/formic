@@ -10,7 +10,7 @@ import upickle.default._
 /**
   * @author Ronny Bräunlich
   */
-class JsonServerDataStructure(id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm, val dataTypeName: DataStructureName) extends AbstractServerDataStructure(id, controlAlgorithm) {
+class JsonServerDataStructure(id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm, val dataStructureName: DataStructureName) extends AbstractServerDataStructure(id, controlAlgorithm) {
 
   var data: TreeNode = ObjectNode(null, List.empty)
 

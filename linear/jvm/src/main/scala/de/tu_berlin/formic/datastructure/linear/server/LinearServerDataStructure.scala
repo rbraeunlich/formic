@@ -14,7 +14,7 @@ import scala.collection.mutable.ArrayBuffer
   *
   * @author Ronny Bräunlich
   */
-class LinearServerDataStructure[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm, val dataTypeName: DataStructureName)(implicit val writer: Writer[T]) extends AbstractServerDataStructure(id, controlAlgorithm) {
+class LinearServerDataStructure[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm, val dataStructureName: DataStructureName)(implicit val writer: Writer[T]) extends AbstractServerDataStructure(id, controlAlgorithm) {
 
   override val transformer: OperationTransformer = LinearTransformer
 

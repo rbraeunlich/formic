@@ -16,12 +16,12 @@ abstract class AbstractServerDataStructure(val id: DataStructureInstanceId, val 
 
   val historyBuffer: HistoryBuffer = new HistoryBuffer()
 
-  val dataTypeName: DataStructureName
+  val dataStructureName: DataStructureName
 
   val transformer: OperationTransformer
 
   override def preStart(): Unit = {
-    context.system.eventStream.publish(UpdateResponse(id, dataTypeName, getDataAsJson, Option.empty))
+    context.system.eventStream.publish(UpdateResponse(id, dataStructureName, getDataAsJson, Option.empty))
   }
 
   val receiveCommand: Receive = {
@@ -35,25 +35,25 @@ abstract class AbstractServerDataStructure(val id: DataStructureInstanceId, val 
 
     case hist: HistoricOperationRequest =>
       log.debug(s"DataStructure $id received HistoricOperationRequest: $hist")
-      sender !  HistoricOperationsAnswer(OperationMessage(hist.clientId, id, dataTypeName, historyBuffer.findAllOperationsAfter(hist.sinceId)))
+      sender !  HistoricOperationsAnswer(OperationMessage(hist.clientId, id, dataStructureName, historyBuffer.findAllOperationsAfter(hist.sinceId)))
 
     case upd: UpdateRequest =>
       log.debug(s"DataStructure $id received UpdateRequest: $upd")
-      sender ! UpdateResponse(id, dataTypeName, getDataAsJson, historyBuffer.history.headOption.map(op => op.id))
+      sender ! UpdateResponse(id, dataStructureName, getDataAsJson, historyBuffer.history.headOption.map(op => op.id))
 
     case GetHistory => sender ! new HistoryBuffer(historyBuffer.history)
   }
 
   val receiveRecover: Receive = {
     case operation: DataStructureOperation => applyOperation(operation)
-    case RecoveryCompleted => log.info(s"Data type ${id.id} $dataTypeName recovered")
+    case RecoveryCompleted => log.info(s"Data type ${id.id} $dataStructureName recovered")
   }
 
   private def applyOperation(dataTypeOperation: DataStructureOperation) = {
     val transformed = controlAlgorithm.transform(dataTypeOperation, historyBuffer, transformer)
     apply(transformed)
     historyBuffer.addOperation(transformed)
-    context.system.eventStream.publish(OperationMessage(transformed.clientId, id, dataTypeName, List(transformed)))
+    context.system.eventStream.publish(OperationMessage(transformed.clientId, id, dataStructureName, List(transformed)))
   }
 
   def apply(op: DataStructureOperation)

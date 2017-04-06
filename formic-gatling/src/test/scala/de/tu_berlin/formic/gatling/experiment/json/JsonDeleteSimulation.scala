@@ -40,7 +40,7 @@ class JsonDeleteSimulation extends Simulation {
     .logLevel("info")
 
   //to have a feeder for all scenarios, we create the ids up front and use them
-  val dataTypeInstanceIdFeeder = Seq(Map("dataTypeInstanceId" -> DATATYPEINSTANCEID))
+  val dataTypeInstanceIdFeeder = Seq(Map("dataStructureInstanceId" -> DATATYPEINSTANCEID))
 
   var count = 0
 
@@ -61,7 +61,7 @@ class JsonDeleteSimulation extends Simulation {
         s.set("m", s("n").validate[Int].map(i => i + s("index").validate[Int].get).get)
       })
         .exec(formic("JsonDeletion")
-          .json("${dataTypeInstanceId}")
+          .json("${dataStructureInstanceId}")
           .remove(Seq("${m}")))
         .pause(1)
     }
@@ -73,7 +73,7 @@ class JsonDeleteSimulation extends Simulation {
 
   val check = rendezVous(NUM_EDITORS)
     .exec(s => {
-      val formicJson = s(dataTypeInstanceIdFeeder.head("dataTypeInstanceId").get).as[FormicJsonObject]
+      val formicJson = s(dataTypeInstanceIdFeeder.head("dataStructureInstanceId").get).as[FormicJsonObject]
       JsonDeleteSimulation.addJson(formicJson)
       s
     })
@@ -88,7 +88,7 @@ class JsonDeleteSimulation extends Simulation {
 
   val subscribe = feed(dataTypeInstanceIdFeeder.iterator.toArray.circular)
     .exec(formic("Subscription")
-      .subscribe("${dataTypeInstanceId}"))
+      .subscribe("${dataStructureInstanceId}"))
     .pause(10)
 
   val editors = scenario("Editors")

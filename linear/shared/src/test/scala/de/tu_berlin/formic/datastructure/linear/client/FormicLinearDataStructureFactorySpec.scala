@@ -38,14 +38,14 @@ class FormicLinearDataStructureFactorySpec extends TestKit(ActorSystem("FormicLi
       ), clientId)
 
       val answer = expectMsgClass(classOf[NewDataStructureCreated])
-      answer.dataTypeInstanceId should equal(dataTypeInstanceId)
+      answer.dataStructureInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicBooleanList]
       wrapper.dataStructureInstanceId should equal(dataTypeInstanceId)
-      wrapper.actor should equal(answer.dataTypeActor)
+      wrapper.actor should equal(answer.dataStructureActor)
       wrapper.dataStructureName should equal(FormicBooleanListDataStructureFactory.name)
       wrapper.clientId should equal(clientId)
-      answer.dataTypeActor should not be null
+      answer.dataStructureActor should not be null
     }
   }
 
@@ -67,14 +67,14 @@ class FormicLinearDataStructureFactorySpec extends TestKit(ActorSystem("FormicLi
       ), clientId)
 
       val answer = expectMsgClass(classOf[NewDataStructureCreated])
-      answer.dataTypeInstanceId should equal(dataTypeInstanceId)
+      answer.dataStructureInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicDoubleList]
       wrapper.dataStructureInstanceId should equal(dataTypeInstanceId)
-      wrapper.actor should equal(answer.dataTypeActor)
+      wrapper.actor should equal(answer.dataStructureActor)
       wrapper.dataStructureName should equal(FormicDoubleListDataStructureFactory.name)
       wrapper.clientId should equal(clientId)
-      answer.dataTypeActor should not be null
+      answer.dataStructureActor should not be null
     }
   }
 
@@ -96,14 +96,14 @@ class FormicLinearDataStructureFactorySpec extends TestKit(ActorSystem("FormicLi
       ), clientId)
 
       val answer = expectMsgClass(classOf[NewDataStructureCreated])
-      answer.dataTypeInstanceId should equal(dataTypeInstanceId)
+      answer.dataStructureInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicIntegerList]
       wrapper.dataStructureInstanceId should equal(dataTypeInstanceId)
-      wrapper.actor should equal(answer.dataTypeActor)
+      wrapper.actor should equal(answer.dataStructureActor)
       wrapper.dataStructureName should equal(FormicIntegerListDataStructureFactory.name)
       wrapper.clientId should equal(clientId)
-      answer.dataTypeActor should not be null
+      answer.dataStructureActor should not be null
     }
   }
 
@@ -125,14 +125,14 @@ class FormicLinearDataStructureFactorySpec extends TestKit(ActorSystem("FormicLi
       ), clientId)
 
       val answer = expectMsgClass(classOf[NewDataStructureCreated])
-      answer.dataTypeInstanceId should equal(dataTypeInstanceId)
+      answer.dataStructureInstanceId should equal(dataTypeInstanceId)
       val wrapper = answer.wrapper
       wrapper shouldBe a[FormicString]
       wrapper.dataStructureInstanceId should equal(dataTypeInstanceId)
-      wrapper.actor should equal(answer.dataTypeActor)
+      wrapper.actor should equal(answer.dataStructureActor)
       wrapper.dataStructureName should equal(FormicStringDataStructureFactory.name)
       wrapper.clientId should equal(clientId)
-      answer.dataTypeActor should not be null
+      answer.dataStructureActor should not be null
     }
   }
 }

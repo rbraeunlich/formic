@@ -28,37 +28,37 @@ class DataStructureInstantiatorSpec extends TestKit(ActorSystem("DataStructureIn
     "create a new data type instance upon receiving an UpdateResponse" in {
       val clientId = ClientId()
       val testFactory = TestActorRef(Props(new TestDataStructureFactory))
-      val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
+      val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataStructureName -> testFactory)
       val instantiator = system.actorOf(Props(new DataStructureInstantiator(testFactories, clientId)))
       val outgoingConnection = TestProbe()
       val dataTypeInstanceId = DataStructureInstanceId()
-      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "", Option.empty)
+      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataStructureName, "", Option.empty)
 
       instantiator ! WrappedUpdateResponse(outgoingConnection.ref, updateResponse)
 
       val msg = expectMsgClass(classOf[NewDataStructureCreated])
-      msg.dataTypeInstanceId should equal(dataTypeInstanceId)
-      msg.dataTypeActor shouldNot be(null)
+      msg.dataStructureInstanceId should equal(dataTypeInstanceId)
+      msg.dataStructureActor shouldNot be(null)
     }
 
     "create a new data type instance upon receiving an UpdateResponse with the contained data" in {
       val clientId = ClientId()
       val testFactory = TestActorRef(Props(new TestDataStructureFactory))
-      val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataTypeName -> testFactory)
+      val testFactories: Map[DataStructureName, ActorRef] = Map(TestClasses.dataStructureName -> testFactory)
       val instantiator = system.actorOf(Props(new DataStructureInstantiator(testFactories, clientId)))
       val outgoingConnection = TestProbe()
       val dataTypeInstanceId = DataStructureInstanceId()
       val lastOperationId = OperationId()
       val json = "[\"a\",\"b\",\"c\"]"
-      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, json, Option(lastOperationId))
+      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataStructureName, json, Option(lastOperationId))
 
       instantiator ! WrappedUpdateResponse(outgoingConnection.ref, updateResponse)
 
       val msg = expectMsgClass(classOf[NewDataStructureCreated])
 
-      msg.dataTypeActor ! ReceiveCallback((_) => {})
+      msg.dataStructureActor ! ReceiveCallback((_) => {})
 
-      msg.dataTypeActor ! UpdateRequest(ClientId(), dataTypeInstanceId)
+      msg.dataStructureActor ! UpdateRequest(ClientId(), dataTypeInstanceId)
       val answer = expectMsgClass(classOf[UpdateResponse])
       answer.data should equal(json)
       answer.lastOperationId.get should equal(lastOperationId)
@@ -69,7 +69,7 @@ class DataStructureInstantiatorSpec extends TestKit(ActorSystem("DataStructureIn
       val instantiator: TestActorRef[DataStructureInstantiator] = TestActorRef(Props(new DataStructureInstantiator(Map.empty, clientId)))
       val dataTypeInstanceId = DataStructureInstanceId()
       val outgoingConnection = TestProbe()
-      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataTypeName, "", Option.empty)
+      val updateResponse = UpdateResponse(dataTypeInstanceId, TestClasses.dataStructureName, "", Option.empty)
 
       EventFilter[IllegalArgumentException](occurrences = 1) intercept {
         instantiator ! WrappedUpdateResponse(outgoingConnection.ref, updateResponse)

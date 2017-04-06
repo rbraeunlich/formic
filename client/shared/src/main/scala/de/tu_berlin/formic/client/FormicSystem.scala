@@ -72,7 +72,7 @@ class FormicSystem(config: Config, val webSocketFactory: WebSocketFactory) exten
         val request = CreateRequest(id, dataType.dataStructureInstanceId, name)
         ask(v, LocalCreateRequest(connection, dataType.dataStructureInstanceId))(2.seconds)
           .mapTo[NewDataStructureCreated]
-          .map(msg => msg.dataTypeActor)
+          .map(msg => msg.dataStructureActor)
           .onComplete {
             case Success(actor) =>
               dataType.actor = actor

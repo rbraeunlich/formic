@@ -28,7 +28,7 @@ class AbstractServerDataStructureSpecTestServerDataStructure(override val histor
     }
   }
 
-  override val dataTypeName: DataStructureName = AbstractServerDataStructureSpec.dataTypeName
+  override val dataStructureName: DataStructureName = AbstractServerDataStructureSpec.dataTypeName
 
   override def getDataAsJson: String = data
 }

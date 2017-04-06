@@ -12,7 +12,7 @@ import upickle.default._
   */
 abstract class FormicLinearDataStructureFactory[S](implicit val writer: Writer[S], val reader: Reader[S]) extends AbstractClientDataStructureFactory[LinearClientDataStructure[S], FormicList[S]]{
 
-  override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): LinearClientDataStructure[S] = {
+  override def createDataStructure(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): LinearClientDataStructure[S] = {
     LinearClientDataStructure(
       dataTypeInstanceId,
       new WaveOTClient((op) => outgoingConnection ! OperationMessage(null, dataTypeInstanceId, name, List(op))),

@@ -15,7 +15,7 @@ import scala.collection.mutable.ArrayBuffer
   */
 class LinearClientDataStructure[T](id: DataStructureInstanceId,
                                    controlAlgorithmClient: ControlAlgorithmClient,
-                                   val dataTypeName: DataStructureName,
+                                   val dataStructureName: DataStructureName,
                                    val initialData: Option[String],
                                    lastOperationId: Option[OperationId],
                                    outgoingConnection: ActorRef)

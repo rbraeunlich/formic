@@ -11,7 +11,7 @@ import upickle.default._
   */
 abstract class FormicTreeDataStructureFactory[S](implicit val writer: Writer[S], val reader: Reader[S]) extends AbstractClientDataStructureFactory[TreeClientDataStructure[S], FormicTree[S]] {
 
-  override def createDataType(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): TreeClientDataStructure[S] = {
+  override def createDataStructure(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): TreeClientDataStructure[S] = {
     TreeClientDataStructure(
       dataTypeInstanceId,
       new WaveOTClient((op) => outgoingConnection ! OperationMessage(null, dataTypeInstanceId, name, List(op))),

@@ -10,7 +10,7 @@ import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 
 class FormicDoubleTreeFactory extends FormicTreeDataStructureFactory[Double] {
 
-  override def createWrapperType(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): FormicTree[Double] = {
+  override def createWrapper(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): FormicTree[Double] = {
     new FormicDoubleTree((ClientDataTypeEvent) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataType, localClientId)
   }
 

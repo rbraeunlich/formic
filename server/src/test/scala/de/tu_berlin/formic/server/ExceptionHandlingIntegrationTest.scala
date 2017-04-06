@@ -84,7 +84,7 @@ class ExceptionHandlingIntegrationTest extends TestKit(ActorSystem("ExceptionHan
 
       //if the stream did not crash, this should work
       val dataTypeInstanceId = DataStructureInstanceId()
-      userOutgoing.offer(TextMessage(write(CreateRequest(userId, dataTypeInstanceId, TestClasses.dataTypeName))))
+      userOutgoing.offer(TextMessage(write(CreateRequest(userId, dataTypeInstanceId, TestClasses.dataStructureName))))
 
       val incomingCreateResponse = userIncoming.pull()
       Await.ready(incomingCreateResponse, 3.seconds)

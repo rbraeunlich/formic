@@ -38,7 +38,7 @@ class LinearDeleteSimulation extends Simulation {
     .logLevel("info")
 
   //to have a feeder for all scenarios, we create the ids up front and use them
-  val dataTypeInstanceIdFeeder = Seq(Map("dataTypeInstanceId" -> DATATYPEINSTANCEID))
+  val dataTypeInstanceIdFeeder = Seq(Map("dataStructureInstanceId" -> DATATYPEINSTANCEID))
 
   val indexFeeder = Iterator.continually(Map("index" -> Random.nextInt(10)))
 
@@ -48,7 +48,7 @@ class LinearDeleteSimulation extends Simulation {
   val edit = repeat(NUM_EDITS, "n") {
     feed(indexFeeder)
       .exec(formic("LinearDeletion")
-      .linear("${dataTypeInstanceId}")
+      .linear("${dataStructureInstanceId}")
         .remove("${index}"))
       .pause(1)
   }
@@ -60,7 +60,7 @@ class LinearDeleteSimulation extends Simulation {
 
   val check = rendezVous(NUM_EDITORS)
     .exec(s => {
-      val formicString = s(dataTypeInstanceIdFeeder.head("dataTypeInstanceId").get).as[FormicString]
+      val formicString = s(dataTypeInstanceIdFeeder.head("dataStructureInstanceId").get).as[FormicString]
       LinearInsertSimulation.addString(formicString)
       s
     })
@@ -75,7 +75,7 @@ class LinearDeleteSimulation extends Simulation {
 
   val subscribe = feed(dataTypeInstanceIdFeeder.iterator.toArray.circular)
     .exec(formic("Subscription")
-      .subscribe("${dataTypeInstanceId}"))
+      .subscribe("${dataStructureInstanceId}"))
     .pause(10)
 
   val editors = scenario("Editors")
