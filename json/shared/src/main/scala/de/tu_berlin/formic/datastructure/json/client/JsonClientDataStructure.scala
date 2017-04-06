@@ -101,8 +101,8 @@ object JsonClientDataStructure {
 
   def apply(id: DataStructureInstanceId,
             controlAlgorithm: ControlAlgorithmClient,
-            dataTypeName: DataStructureName,
+            dataStructureName: DataStructureName,
             initialData: Option[String],
             lastOperationId: Option[OperationId],
-            outgoingConnection: ActorRef): JsonClientDataStructure = new JsonClientDataStructure(id, controlAlgorithm, dataTypeName, initialData, lastOperationId, outgoingConnection)
+            outgoingConnection: ActorRef): JsonClientDataStructure = new JsonClientDataStructure(id, controlAlgorithm, dataStructureName, initialData, lastOperationId, outgoingConnection)
 }

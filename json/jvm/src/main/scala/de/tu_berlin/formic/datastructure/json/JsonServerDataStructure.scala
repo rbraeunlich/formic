@@ -27,5 +27,5 @@ class JsonServerDataStructure(id: DataStructureInstanceId, controlAlgorithm: Con
 }
 
 object JsonServerDataStructure {
-  def apply[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm, dataTypeName: DataStructureName): JsonServerDataStructure = new JsonServerDataStructure(id, controlAlgorithm, dataTypeName)
+  def apply[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm, dataStructureName: DataStructureName): JsonServerDataStructure = new JsonServerDataStructure(id, controlAlgorithm, dataStructureName)
 }

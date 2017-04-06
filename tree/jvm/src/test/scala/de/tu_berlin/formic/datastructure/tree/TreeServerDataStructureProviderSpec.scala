@@ -43,7 +43,7 @@ class TreeServerDataStructureProviderSpec extends TestKit(ActorSystem("TreeServe
 
       provider.registerFormicJsonDataStructureProtocols(protocol)
 
-      val registered = protocol.dataTypeOperationJsonProtocols
+      val registered = protocol.dataStructureOperationJsonProtocols
 
       registered should contain allOf(
         BooleanTreeDataStructureFactory.name -> new TreeFormicJsonDataStructureProtocol[Boolean](BooleanTreeDataStructureFactory.name),

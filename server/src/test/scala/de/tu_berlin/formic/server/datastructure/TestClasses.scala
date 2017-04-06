@@ -15,12 +15,12 @@ import upickle.Js
 
 class TestDataStructureFactory extends AbstractServerDataStructureFactory[TestServerDataStructure] {
 
-  override def create(dataTypeInstanceId: DataStructureInstanceId): TestServerDataStructure = new TestServerDataStructure(new HistoryBuffer, dataTypeInstanceId, TestControlAlgorithm)
+  override def create(dataStructureInstanceId: DataStructureInstanceId): TestServerDataStructure = new TestServerDataStructure(new HistoryBuffer, dataStructureInstanceId, TestControlAlgorithm)
 
   override val name: DataStructureName = TestClasses.dataStructureName
 }
 
-class TestServerDataStructure(override val historyBuffer: HistoryBuffer, val dataTypeInstanceId: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataStructure(dataTypeInstanceId, controlAlgorithm) {
+class TestServerDataStructure(override val historyBuffer: HistoryBuffer, val dataStructureInstanceId: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm) extends AbstractServerDataStructure(dataStructureInstanceId, controlAlgorithm) {
 
 
 

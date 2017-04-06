@@ -16,7 +16,7 @@ import upickle.Js
 class FormicJsonProtocol {
   private var _dataTypeOperationJsonProtocols: Map[DataStructureName, FormicJsonDataStructureProtocol] = Map.empty
 
-  def dataTypeOperationJsonProtocols: Map[DataStructureName, FormicJsonDataStructureProtocol] = Map(_dataTypeOperationJsonProtocols.toList:_*)
+  def dataStructureOperationJsonProtocols: Map[DataStructureName, FormicJsonDataStructureProtocol] = Map(_dataTypeOperationJsonProtocols.toList:_*)
 
   def registerProtocol(protocol: FormicJsonDataStructureProtocol) = {
     _dataTypeOperationJsonProtocols += (protocol.name -> protocol)

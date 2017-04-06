@@ -20,10 +20,10 @@ import scala.scalajs.js.annotation.JSExport
   */
 class FormicTree[T](_callback: (ClientDataStructureEvent) => Unit,
                     initiator: DataStructureInitiator,
-                    dataTypeInstanceId: DataStructureInstanceId,
-                    dataTypeName: DataStructureName)
+                    dataStructureInstanceId: DataStructureInstanceId,
+                    dataStructureName: DataStructureName)
                    (implicit val writer: Writer[T], val reader: Reader[T])
-  extends FormicDataStructure(_callback, dataTypeName, dataStructureInstanceId = dataTypeInstanceId, initiator = initiator) {
+  extends FormicDataStructure(_callback, dataStructureName, dataStructureInstanceId = dataStructureInstanceId, initiator = initiator) {
 
   //TODO I suppose getDataAsJson within the TreeClientDataType is quite slow, optimize
   implicit val timeout: Timeout = 3.seconds
@@ -34,7 +34,7 @@ class FormicTree[T](_callback: (ClientDataStructureEvent) => Unit,
   def insert(value: T, path: AccessPath): OperationId = {
     val operationId = OperationId()
     actor ! LocalOperationMessage(
-      OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(
+      OperationMessage(clientId, dataStructureInstanceId, dataStructureName, List(
         TreeInsertOperation(path, ValueTreeNode(value), operationId, OperationContext(), clientId)
       ))
     )
@@ -45,7 +45,7 @@ class FormicTree[T](_callback: (ClientDataStructureEvent) => Unit,
   def remove(path: AccessPath): OperationId = {
     val operationId = OperationId()
     actor ! LocalOperationMessage(
-      OperationMessage(clientId, dataTypeInstanceId, dataTypeName, List(
+      OperationMessage(clientId, dataStructureInstanceId, dataStructureName, List(
         TreeDeleteOperation(path, operationId, OperationContext(), clientId)
       ))
     )
@@ -54,7 +54,7 @@ class FormicTree[T](_callback: (ClientDataStructureEvent) => Unit,
 
   @JSExport
   def getSubTree(path: AccessPath)(implicit ec: ExecutionContext): Future[TreeNode] = {
-    ask(actor, UpdateRequest(clientId, dataTypeInstanceId)).
+    ask(actor, UpdateRequest(clientId, dataStructureInstanceId)).
       mapTo[UpdateResponse].
       map(rep => {
         rep.data
@@ -68,7 +68,7 @@ class FormicTree[T](_callback: (ClientDataStructureEvent) => Unit,
 
   @JSExport
   def getTree()(implicit ec: ExecutionContext): Future[TreeNode] = {
-    ask(actor, UpdateRequest(clientId, dataTypeInstanceId)).
+    ask(actor, UpdateRequest(clientId, dataStructureInstanceId)).
       mapTo[UpdateResponse].
       map(rep => {
         rep.data

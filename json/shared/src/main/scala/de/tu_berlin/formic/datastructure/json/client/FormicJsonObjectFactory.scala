@@ -13,10 +13,10 @@ import de.tu_berlin.formic.datastructure.tree.client.RemoteDataStructureInitiato
   */
 class FormicJsonObjectFactory extends AbstractClientDataStructureFactory[JsonClientDataStructure, FormicJsonObject]{
 
-  override def createDataStructure(dataTypeInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): JsonClientDataStructure = {
+  override def createDataStructure(dataStructureInstanceId: DataStructureInstanceId, outgoingConnection: ActorRef, data: Option[String], lastOperationId: Option[OperationId]): JsonClientDataStructure = {
     JsonClientDataStructure(
-      dataTypeInstanceId,
-      new WaveOTClient((op) => outgoingConnection ! OperationMessage(null, dataTypeInstanceId, name, List(op))),
+      dataStructureInstanceId,
+      new WaveOTClient((op) => outgoingConnection ! OperationMessage(null, dataStructureInstanceId, name, List(op))),
       name,
       data,
       lastOperationId,
@@ -24,8 +24,8 @@ class FormicJsonObjectFactory extends AbstractClientDataStructureFactory[JsonCli
     )
   }
 
-  override def createWrapper(dataTypeInstanceId: DataStructureInstanceId, dataType: ActorRef, localClientId: ClientId): FormicJsonObject = {
-    new FormicJsonObject((ClientDataTypeEvent) => {}, RemoteDataStructureInitiator, dataTypeInstanceId, dataType, localClientId)
+  override def createWrapper(dataStructureInstanceId: DataStructureInstanceId, dataStructure: ActorRef, localClientId: ClientId): FormicJsonObject = {
+    new FormicJsonObject((ClientDataTypeEvent) => {}, RemoteDataStructureInitiator, dataStructureInstanceId, dataStructure, localClientId)
   }
 
   override val name: DataStructureName = FormicJsonObjectFactory.name

@@ -37,21 +37,21 @@ class UserProxy(val factories: Map[DataStructureName, ActorRef], val id: ClientI
       val factory = factories.find(t => t._1 == req.dataStructure)
       factory match {
         case Some(f) => f._2 ! req
-        case None => throw new IllegalArgumentException("Unknown data type")
+        case None => throw new IllegalArgumentException("Unknown data structure")
       }
 
-    case NewDataStructureCreated(dataTypeInstanceId, ref) =>
-      watchlist += (dataTypeInstanceId -> ref)
-      subscriber ! NewDataStructureSubscription(dataTypeInstanceId, ref)
-      log.debug(s"Sending CreateResponse for $dataTypeInstanceId")
-      outgoing ! CreateResponse(dataTypeInstanceId)
+    case NewDataStructureCreated(dataStructureInstanceId, ref) =>
+      watchlist += (dataStructureInstanceId -> ref)
+      subscriber ! NewDataStructureSubscription(dataStructureInstanceId, ref)
+      log.debug(s"Sending CreateResponse for $dataStructureInstanceId")
+      outgoing ! CreateResponse(dataStructureInstanceId)
 
     case hist: HistoricOperationRequest =>
       log.debug(s"Incoming HistoricOperationRequest from user $id: $hist")
-      val dataTypeInstance = watchlist.find(t => t._1 == hist.dataStructureInstanceId)
-      dataTypeInstance match {
+      val dataStructureInstance = watchlist.find(t => t._1 == hist.dataStructureInstanceId)
+      dataStructureInstance match {
         case Some((_, ref)) => ref ! hist
-        case None => throw new IllegalArgumentException(s"Data type instance with id $dataTypeInstance unkown")
+        case None => throw new IllegalArgumentException(s"Data structure instance with id $dataStructureInstance unkown")
       }
 
     case req: UpdateRequest =>
@@ -64,7 +64,7 @@ class UserProxy(val factories: Map[DataStructureName, ActorRef], val id: ClientI
         case Success(ref) =>
           watchlist += (req.dataStructureInstanceId -> ref)
           ref ! req
-        case Failure(ex) => throw new IllegalArgumentException(s"Data type instance with id ${req.dataStructureInstanceId.id} not found. Exception: $ex")
+        case Failure(ex) => throw new IllegalArgumentException(s"Data structure instance with id ${req.dataStructureInstanceId.id} not found. Exception: $ex")
       }
 
     case rep: UpdateResponse =>
@@ -74,10 +74,10 @@ class UserProxy(val factories: Map[DataStructureName, ActorRef], val id: ClientI
 
     case operationMessage: OperationMessage =>
       log.debug(s"Incoming operation from user $id: $operationMessage")
-      val dataTypeInstance = watchlist.find(t => t._1 == operationMessage.dataStructureInstanceId)
-      dataTypeInstance match {
+      val dataStructureInstance = watchlist.find(t => t._1 == operationMessage.dataStructureInstanceId)
+      dataStructureInstance match {
         case Some((_, ref)) => ref ! operationMessage
-        case None => throw new IllegalArgumentException(s"Data type instance with id ${operationMessage.dataStructureInstanceId.id} unkown")
+        case None => throw new IllegalArgumentException(s"Data structure instance with id ${operationMessage.dataStructureInstanceId.id} unkown")
       }
 
     case HistoricOperationsAnswer(opMsg) =>
@@ -92,21 +92,21 @@ class OperationMessageSubscriber(val outgoingConnection: ActorRef, val clientId:
 
   def receive = {
     case op: OperationMessage =>
-      val dataTypeInstance = watchlist.find(t => t._1 == op.dataStructureInstanceId)
-      dataTypeInstance match {
+      val dataStructureInstance = watchlist.find(t => t._1 == op.dataStructureInstanceId)
+      dataStructureInstance match {
         case Some(_) =>
           log.debug(s"Sending operation message $op to user $clientId")
           outgoingConnection ! op
         case None => //Client is not interested in the data type that changed
       }
 
-    case NewDataStructureSubscription(dataTypeInstanceId, actorRef) =>
-      watchlist += (dataTypeInstanceId -> actorRef)
+    case NewDataStructureSubscription(dataStructureInstanceId, actorRef) =>
+      watchlist += (dataStructureInstanceId -> actorRef)
   }
 }
 
 object UserProxy {
 
-  case class NewDataStructureSubscription(dataTypeInstanceId: DataStructureInstanceId, actorRef: ActorRef)
+  case class NewDataStructureSubscription(dataStructureInstanceId: DataStructureInstanceId, actorRef: ActorRef)
 
 }

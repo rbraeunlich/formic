@@ -11,5 +11,5 @@ import de.tu_berlin.formic.common.datastructure.client.DataStructureInitiator
   * @author Ronny Bräunlich
   */
 object RemoteDataStructureInitiator extends DataStructureInitiator {
-  override def initDataStructure(dataType: FormicDataStructure): Unit = {}
+  override def initDataStructure(dataStructure: FormicDataStructure): Unit = {}
 }

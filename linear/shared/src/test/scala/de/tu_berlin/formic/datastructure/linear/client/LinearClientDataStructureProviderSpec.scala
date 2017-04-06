@@ -44,7 +44,7 @@ class LinearClientDataStructureProviderSpec extends TestKit(ActorSystem("LinearC
 
       provider.registerFormicJsonDataStructureProtocols(protocol)
 
-      val registered = protocol.dataTypeOperationJsonProtocols
+      val registered = protocol.dataStructureOperationJsonProtocols
 
       registered should contain allOf(
         FormicBooleanListDataStructureFactory.name -> new LinearFormicJsonDataStructureProtocol[Boolean](FormicBooleanListDataStructureFactory.name),

@@ -48,7 +48,7 @@ class TreeClientDataStructure[T](id: DataStructureInstanceId,
 }
 
 object TreeClientDataStructure {
-  def apply[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithmClient, dataTypeName: DataStructureName, initialData: Option[String], lastOperationId: Option[OperationId], outgoingConnection: ActorRef)(implicit writer: Writer[T], reader: Reader[T]): TreeClientDataStructure[T] =
-    new TreeClientDataStructure(id, controlAlgorithm, dataTypeName, initialData, lastOperationId, outgoingConnection)
+  def apply[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithmClient, dataStructureName: DataStructureName, initialData: Option[String], lastOperationId: Option[OperationId], outgoingConnection: ActorRef)(implicit writer: Writer[T], reader: Reader[T]): TreeClientDataStructure[T] =
+    new TreeClientDataStructure(id, controlAlgorithm, dataStructureName, initialData, lastOperationId, outgoingConnection)
 
 }

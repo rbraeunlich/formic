@@ -83,15 +83,15 @@ class ExceptionHandlingIntegrationTest extends TestKit(ActorSystem("ExceptionHan
       userOutgoing.offer(BinaryMessage(ByteString("Test Message")))
 
       //if the stream did not crash, this should work
-      val dataTypeInstanceId = DataStructureInstanceId()
-      userOutgoing.offer(TextMessage(write(CreateRequest(userId, dataTypeInstanceId, TestClasses.dataStructureName))))
+      val dataStructureInstanceId = DataStructureInstanceId()
+      userOutgoing.offer(TextMessage(write(CreateRequest(userId, dataStructureInstanceId, TestClasses.dataStructureName))))
 
       val incomingCreateResponse = userIncoming.pull()
       Await.ready(incomingCreateResponse, 3.seconds)
       incomingCreateResponse.value.get match {
         case Success(m) =>
           val text = m.get.asTextMessage.getStrictText
-          read[FormicMessage](text) should equal(CreateResponse(dataTypeInstanceId))
+          read[FormicMessage](text) should equal(CreateResponse(dataStructureInstanceId))
         case Failure(ex) => fail(ex)
       }
     }

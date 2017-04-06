@@ -35,7 +35,7 @@ class JsonServerDataStructureProviderSpec extends TestKit(ActorSystem("JsonServe
 
       provider.registerFormicJsonDataStructureProtocols(protocol)
 
-      val registered = protocol.dataTypeOperationJsonProtocols
+      val registered = protocol.dataStructureOperationJsonProtocols
 
       registered should contain(JsonServerDataStructureFactory.name -> new JsonFormicJsonDataStructureProtocol(JsonServerDataStructureFactory.name))
     }

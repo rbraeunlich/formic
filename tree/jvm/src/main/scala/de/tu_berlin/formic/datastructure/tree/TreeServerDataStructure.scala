@@ -30,6 +30,6 @@ class TreeServerDataStructure[T](id: DataStructureInstanceId, controlAlgorithm: 
 }
 
 object TreeServerDataStructure {
-  def apply[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm, dataTypeName: DataStructureName)
-              (implicit writer: Writer[T]): TreeServerDataStructure[T] = new TreeServerDataStructure(id, controlAlgorithm, dataTypeName)
+  def apply[T](id: DataStructureInstanceId, controlAlgorithm: ControlAlgorithm, dataStructureName: DataStructureName)
+              (implicit writer: Writer[T]): TreeServerDataStructure[T] = new TreeServerDataStructure(id, controlAlgorithm, dataStructureName)
 }

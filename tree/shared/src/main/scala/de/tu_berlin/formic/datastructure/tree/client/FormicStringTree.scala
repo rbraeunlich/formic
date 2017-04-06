@@ -9,11 +9,11 @@ import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
   */
 class FormicStringTree(callback: (ClientDataStructureEvent) => Unit,
                        initiator: DataStructureInitiator,
-                       dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId())
-  extends FormicTree[String](callback, initiator, dataTypeInstanceId, FormicStringTreeFactory.name) {
+                       dataStructureInstanceId: DataStructureInstanceId = DataStructureInstanceId())
+  extends FormicTree[String](callback, initiator, dataStructureInstanceId, FormicStringTreeFactory.name) {
 
-  def this(callback: (ClientDataStructureEvent) => Unit, initiator: DataStructureInitiator, dataTypeInstanceId: DataStructureInstanceId, wrapped: ActorRef, localClientId: ClientId) {
-    this(callback, initiator, dataTypeInstanceId)
+  def this(callback: (ClientDataStructureEvent) => Unit, initiator: DataStructureInitiator, dataStructureInstanceId: DataStructureInstanceId, wrapped: ActorRef, localClientId: ClientId) {
+    this(callback, initiator, dataStructureInstanceId)
     this.actor = wrapped
     this.clientId = localClientId
   }

@@ -47,7 +47,7 @@ class FormicServer {
   implicit val writer = jsonProtocol.writer
   implicit val reader = jsonProtocol.reader
 
-  def initDataTypes() = {
+  def initDataStructures() = {
     dataStructureProvider.foreach{ provider =>
       factories ++= provider.initFactories(system)
       provider.registerFormicJsonDataStructureProtocols(jsonProtocol)
@@ -58,7 +58,7 @@ class FormicServer {
     val myExceptionHandler: ExceptionHandler = ExceptionHandler {
       case iae: IllegalArgumentException => complete(HttpResponse(NotFound, entity = iae.getMessage))
     }
-    initDataTypes()
+    initDataStructures()
     val serverAddress = system.settings.config.getString("formic.server.address")
     val serverPort = system.settings.config.getInt("formic.server.port")
     val binding = Http().bindAndHandle(

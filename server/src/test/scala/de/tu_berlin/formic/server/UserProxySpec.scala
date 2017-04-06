@@ -43,11 +43,11 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
       val userProxy: TestActorRef[UserProxy] = TestActorRef(Props(new UserProxy(Map(datastructure.TestClasses.dataStructureName -> factory))))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
-      val dataTypeInstanceId = DataStructureInstanceId()
+      val dataStructureInstanceId = DataStructureInstanceId()
 
-      userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, datastructure.TestClasses.dataStructureName)
+      userProxy ! CreateRequest(ClientId(), dataStructureInstanceId, datastructure.TestClasses.dataStructureName)
 
-      outgoingProbe.expectMsg(CreateResponse(dataTypeInstanceId))
+      outgoingProbe.expectMsg(CreateResponse(dataStructureInstanceId))
       userProxy.underlyingActor.watchlist should (have size 1)
     }
 
@@ -58,13 +58,13 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
       val publisherProbe = TestProbe()
       system.eventStream.subscribe(publisherProbe.ref, classOf[OperationMessage])
       userProxy ! Connected(outgoingProbe.ref)
-      val dataTypeInstanceId = DataStructureInstanceId()
-      userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, datastructure.TestClasses.dataStructureName)
+      val dataStructureInstanceId = DataStructureInstanceId()
+      userProxy ! CreateRequest(ClientId(), dataStructureInstanceId, datastructure.TestClasses.dataStructureName)
       outgoingProbe.receiveOne(3 seconds)
       val clientId: ClientId = ClientId()
       val operationMessage = OperationMessage(
         clientId,
-        dataTypeInstanceId,
+        dataStructureInstanceId,
         datastructure.TestClasses.dataStructureName,
         List(datastructure.TestOperation(OperationId(), OperationContext(List.empty), clientId))
       )
@@ -81,12 +81,12 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
       val userProxy = system.actorOf(Props(new UserProxy(Map(datastructure.TestClasses.dataStructureName -> factory))))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
-      val dataTypeInstanceId = DataStructureInstanceId()
-      userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, datastructure.TestClasses.dataStructureName)
+      val dataStructureInstanceId = DataStructureInstanceId()
+      userProxy ! CreateRequest(ClientId(), dataStructureInstanceId, datastructure.TestClasses.dataStructureName)
       outgoingProbe.receiveOne(3 seconds)
       val operationMessage = OperationMessage(
         ClientId(),
-        dataTypeInstanceId,
+        dataStructureInstanceId,
         datastructure.TestClasses.dataStructureName,
         List(datastructure.TestOperation(OperationId(), OperationContext(List.empty), ClientId()))
       )
@@ -120,13 +120,13 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
       val userProxy = system.actorOf(Props(new UserProxy(Map(TestClasses.dataStructureName -> factory))))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
-      val dataTypeInstanceId = DataStructureInstanceId()
-      userProxy ! CreateRequest(ClientId(), dataTypeInstanceId, TestClasses.dataStructureName)
+      val dataStructureInstanceId = DataStructureInstanceId()
+      userProxy ! CreateRequest(ClientId(), dataStructureInstanceId, TestClasses.dataStructureName)
       outgoingProbe.receiveOne(3 seconds)
       val operationId = OperationId()
       val operationMessage = OperationMessage(
         ClientId(),
-        dataTypeInstanceId,
+        dataStructureInstanceId,
         datastructure.TestClasses.dataStructureName,
         List(datastructure.TestOperation(operationId, OperationContext(List.empty), ClientId()))
       )
@@ -134,7 +134,7 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
       val clientId2 = ClientId()
       val operationMessage2 = OperationMessage(
         clientId2,
-        dataTypeInstanceId,
+        dataStructureInstanceId,
         datastructure.TestClasses.dataStructureName,
         List(datastructure.TestOperation(operationId2, OperationContext(List(operationId)), clientId2))
       )
@@ -143,29 +143,29 @@ class UserProxySpec extends TestKit(ActorSystem("UserProxySpec"))
       outgoingProbe.receiveN(2)
 
       val requesterClientId = ClientId()
-      userProxy ! HistoricOperationRequest(requesterClientId, dataTypeInstanceId, operationId)
+      userProxy ! HistoricOperationRequest(requesterClientId, dataStructureInstanceId, operationId)
 
       outgoingProbe.expectMsg(OperationMessage(
         requesterClientId,
-        dataTypeInstanceId,
+        dataStructureInstanceId,
         datastructure.TestClasses.dataStructureName,
         List(datastructure.TestOperation(operationId2, OperationContext(List(operationId)), clientId2))
       ))
     }
 
     "forward an UpdateRequest to the correct data type and save the data type instance id" in {
-      val dataTypeInstanceId = DataStructureInstanceId()
+      val dataStructureInstanceId = DataStructureInstanceId()
       val factory = system.actorOf(Props[TestDataStructureFactory])
-      factory ! CreateRequest(ClientId(), dataTypeInstanceId, TestClasses.dataStructureName)
+      factory ! CreateRequest(ClientId(), dataStructureInstanceId, TestClasses.dataStructureName)
       Thread.sleep(500) //give the server time to create the data type
       val userProxy: TestActorRef[UserProxy] = TestActorRef(Props(new UserProxy(Map.empty)))
       val outgoingProbe = TestProbe()
       userProxy ! Connected(outgoingProbe.ref)
 
-      userProxy ! UpdateRequest(ClientId(), dataTypeInstanceId)
+      userProxy ! UpdateRequest(ClientId(), dataStructureInstanceId)
 
-      outgoingProbe.expectMsg(UpdateResponse(dataTypeInstanceId, TestClasses.dataStructureName, "{data}", Option.empty))
-      userProxy.underlyingActor.watchlist should contain key dataTypeInstanceId
+      outgoingProbe.expectMsg(UpdateResponse(dataStructureInstanceId, TestClasses.dataStructureName, "{data}", Option.empty))
+      userProxy.underlyingActor.watchlist should contain key dataStructureInstanceId
     }
 
   }

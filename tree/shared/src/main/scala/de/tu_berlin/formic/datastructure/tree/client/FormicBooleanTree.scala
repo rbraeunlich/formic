@@ -9,11 +9,11 @@ import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
   */
 class FormicBooleanTree(callback: (ClientDataStructureEvent) => Unit,
                         initiator: DataStructureInitiator,
-                        dataTypeInstanceId: DataStructureInstanceId = DataStructureInstanceId())
-  extends FormicTree[Boolean](callback, initiator, dataTypeInstanceId, FormicBooleanTreeFactory.name) {
+                        dataStructureInstanceId: DataStructureInstanceId = DataStructureInstanceId())
+  extends FormicTree[Boolean](callback, initiator, dataStructureInstanceId, FormicBooleanTreeFactory.name) {
 
-  def this(callback: (ClientDataStructureEvent) => Unit, initiator: DataStructureInitiator, dataTypeInstanceId: DataStructureInstanceId, wrapped: ActorRef, localClientId: ClientId) {
-    this(callback, initiator, dataTypeInstanceId)
+  def this(callback: (ClientDataStructureEvent) => Unit, initiator: DataStructureInitiator, dataStructureInstanceId: DataStructureInstanceId, wrapped: ActorRef, localClientId: ClientId) {
+    this(callback, initiator, dataStructureInstanceId)
     this.actor = wrapped
     this.clientId = localClientId
   }
