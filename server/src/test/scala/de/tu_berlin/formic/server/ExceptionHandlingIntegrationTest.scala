@@ -16,7 +16,7 @@ import de.tu_berlin.formic.common.json.FormicJsonProtocol
 import de.tu_berlin.formic.common.message.{CreateRequest, CreateResponse, FormicMessage}
 import de.tu_berlin.formic.common.{ClientId, DataStructureInstanceId}
 import org.scalatest.{path => _, _}
-import de.tu_berlin.formic.server.datatype.{TestClassProvider, TestClasses}
+import de.tu_berlin.formic.server.datastructure.{TestClassProvider, TestClasses}
 import upickle.default._
 
 import scala.concurrent.duration._

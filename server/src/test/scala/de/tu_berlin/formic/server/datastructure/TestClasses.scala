@@ -1,4 +1,4 @@
-package de.tu_berlin.formic.server.datatype
+package de.tu_berlin.formic.server.datastructure
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import de.tu_berlin.formic.common.controlalgo.ControlAlgorithm
