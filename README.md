@@ -71,6 +71,25 @@ Simply using `run` might conflict with the main class ScalaJS expects. The webse
 The example for strings and trees is present at the root page or `index`. If you want to play collborative battleship you have to navigate to `localhost:8080/battleship`.
 If another player wants to join the Battleship game he/she has to copy the id into the input field next to start and press it.
 
+## Starting the server
+
+In order to start the server, create a new instance with the data structures you need (see Adding data structures). When calling `start()`, an Akka `Http.ServerBinding` has to be passed to it. This network route tells the server to which addresses it should listen. You can configure the routes any way you want to, but one route has to use the `newUserProxy` method the server provides. This is necessary to know which users connect and to handle their messages. Your route could look like this:
+
+```
+    path("formic") {
+      authenticateBasic[String]("FormicRealm", (creds) => authenticator.authenticate(creds)) {
+        identifier =>
+          get {
+            handleWebSocketMessages(newUserMethod(identifier))
+          }
+      }
+    }
+```
+
+## Connecting the Client
+
+A client connection is easily established. The configuration has to be provided (see Configuration section) and then `FormicSystemFactory.create()` is called with the config and the data structure provider. Invoking `init` on the `FormicSystem` will establish the connection.
+
 ## Configuration
 
 ### Server
