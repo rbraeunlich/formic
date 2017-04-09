@@ -3,8 +3,8 @@ formic - formidable internet collaboration
 
 [![Build Status](https://travis-ci.org/rbraeunlich/formic.svg?branch=master)](https://travis-ci.org/rbraeunlich/formic) [![Scala.js](https://www.scala-js.org/assets/badges/scalajs-0.6.13.svg)](https://www.scala-js.org)
 
-*formic* is a library to enable [Operational Transformation](https://en.wikipedia.org/wiki/Operational_transformation)(OT) in applications.
-The goal is to hide the details of OT and let developers work with data types as if the were not edited concurrently.
+*formic* is a library to enable [Operational Transformation](https://en.wikipedia.org/wiki/Operational_transformation) (OT) in applications and thus enable collaborative work.
+The goal is to hide the details of OT and let developers work with data structures as if they were not edited concurrently. All OT data structures are eventually consistent.
 
 ## Why the name *formic*?
 
@@ -14,57 +14,72 @@ The Formic in Ender's Game by Orson Scott Card are capable of instant, faster-th
 
 ## The library
 
-Currently, the whole library is a graduation project.
+The library itself was developed as part of a graduation project. It consists of three main modules:
 
-The library is composed of two main parts:
+- common
 - client
 - server
 
-In addition to those two, several data types shall be supported. Those are the data types that can be worked on collaboratively.
+All modules depend on the common module. The server part can run as a standalone server and is based on Scala and Akka. The client part, a ScalaJS implementation, is intended to be intergrated into a larger application, your application! The client part can be used either from JavaScript or from Scala/ScalaJS.
+
+
+In addition to those modules, three data structures are already supported. The modules provide the classes that can be directly used. It is not necessary to use all of them. Nevertheless, the JSON module depends on the tree module. The concrete data structures are:
 
 - linear structures
 - trees
-- JSON
+- JSON objects
 
-The data type submodules contain both the implementations for the client and the server. The server is a complete Scala implementation based on Akka. The client is a ScalaJS implementation.
+The data structure modules contain both the implementations for the client and the server. Developers who want like to use *formic* work mainly with the client part. The server only needs some basic configuration and an Akka route to work.
 
-Developers who would like to use *formic* work mainly with the client part. The server only needs some basic configuration and an Akka route to work.
-
-The client part can be used either from JavaScript or from ScalaJS.
-
-There are basically two modes to run the whole library. The first is to treat the client and server as two different standalone applications. I.e. that the server is placed somewhere and keeps running, while the client runs on either a different server or standalone on some computer.
- The example subproject shows how to run the application in the former mode.
- 
- The whole client <-> server communication expects a WebSocket connection between the two.
+Client and server are basically independent of each other. The client implementation is not limited to ScalaJS and could be implemented in any other language. The only things that are expected are a WebSocket connection and the Wave OT algorithm (for more information about that one, see [here](http://www.codecommit.com/blog/java/understanding-and-applying-operational-transformation)).
 
 ## Communication
 
-Client and server communicate via JSON messages. Therefore, both implementations are independent of each other and the used programming language. Actually, clients could be implemented in different programming languages and are not limited to using the provided ScalaJS client library.
-It would be only necessary to provide a Scala implementation for the server.
+Client and server communicate via JSON messages over a WebSocket connection. The messages are sent as plain text messages.
  
 The existing messages for client <-> server communication are defined in [FormicMessage](https://github.com/rbraeunlich/formic/blob/master/common/shared/src/main/scala/de/tu_berlin/formic/common/message/FormicMessage.scala) and the JSON serialization in [FormicJsonProtocol](https://github.com/rbraeunlich/formic/blob/master/common/shared/src/main/scala/de/tu_berlin/formic/common/json/FormicJsonProtocol.scala).
 Internally, [uPickle](http://www.lihaoyi.com/upickle-pprint/upickle/) is used for the serialization.
 
 ### Custom operations
 
-Because the possible operations that can be applied to a data type shall not be limited up-front, every data type implementation has to provide an implementation of a [FormicJsonDataTypeProtocol](https://github.com/rbraeunlich/formic/blob/master/common/shared/src/main/scala/de/tu_berlin/formic/common/json/FormicJsonDataTypeProtocol.scala) and register it at the `FormicJsonProtocol`. 
-The custom protocol is used to de-/serialize the operations of a data type.
+Because the possible operations that can be applied to a data structure shall not be limited up-front, every data structure implementation has to provide an implementation of a [FormicJsonDataStructureProtocol](https://github.com/rbraeunlich/formic/blob/master/common/shared/src/main/scala/de/tu_berlin/formic/common/json/FormicJsonDataStructureProtocol.scala) and register it at the `FormicJsonProtocol`. 
+The custom protocol is used to de-/serialize the operations of a data structure.
+
+## Adding data structures
+
+In order to add the data structures one needs or custom ones to the client and server, the cake pattern was used. The data structures all provide an implementation of the traits `ClientDataStructureProvider` and `ServerDataStructureProvider`. When instantiating the server, it can simply be done with the desired data structures, e.g.:
+```
+val server = new FormicServer with ServerDataStructures {
+  override val dataStructureProvider: Set[ServerDataStructureProvider] =
+    Set(LinearServerDataStructureProvider(), 
+    	TreeServerDataStructureProvider(), 
+    	JsonServerDataStructureProvider())
+}
+```
+For the client the same applies, only the class `FormicSystem` has to be used.
 
 ## Running the example
 
-In order to start the sample application clone the project and start sbt in the root directory. Then switch into the exampleJVM project and then enter reStart:
+In order to start the sample application clone the project and start sbt in the root directory. Then switch into the exampleJVM project and then enter `reStart`:
 ```
 sbt
 project exampleJVM
 reStart
 ```
 
-Of course a simple `run` would also do the trick. The webserver then starts on 0.0.0.0:8080, so you can access it either using your current ip or `localhost`.
+Simply using `run` might conflict with the main class ScalaJS expects. The webserver then starts on 0.0.0.0:8080, so you can access it either using your current ip or `localhost`.
 The example for strings and trees is present at the root page or `index`. If you want to play collborative battleship you have to navigate to `localhost:8080/battleship`.
 If another player wants to join the Battleship game he/she has to copy the id into the input field next to start and press it.
+
+## Performance
+
+*formic*'s performance was evaluated using the simulations in the `formic-gatling` module and the test you can find in [this](https://github.com/vinhqdang/collaborative_editing_measurement) repository. It was shown that *formic* can compete with e.g. GoogleDocs and ShareDB.
+
+If you intend to replay the Gatling tests, simply import the `de.tu_berlin.formic.gatling.Predef` class. It provides you with the entry point by calling `formic("foo")`.  Please note that if you intend to run the tests in a distributed way the data structure instance ids have to be generated up front. If all virtual users are on a single computer, a simple feeder will suffice.
+
 ## Final thoughts
 
 Suggestions about how to improve *formic* are appreciated.
  
 Next to its functional intention, *formic* can also be seen as an example application for Scala, ScalaJS, Akka and AkkaJS.
-  The example application also contains some Selenium based tests.
+The example application also contains some Selenium based tests.
