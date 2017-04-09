@@ -71,7 +71,9 @@ Simply using `run` might conflict with the main class ScalaJS expects. The webse
 The example for strings and trees is present at the root page or `index`. If you want to play collborative battleship you have to navigate to `localhost:8080/battleship`.
 If another player wants to join the Battleship game he/she has to copy the id into the input field next to start and press it.
 
-## Starting the server
+## Starting
+
+### Server
 
 In order to start the server, create a new instance with the data structures you need (see Adding data structures). When calling `start()`, an Akka `Http.ServerBinding` has to be passed to it. This network route tells the server to which addresses it should listen. You can configure the routes any way you want to, but one route has to use the `newUserProxy` method the server provides. This is necessary to know which users connect and to handle their messages. Your route could look like this:
 
@@ -86,7 +88,7 @@ In order to start the server, create a new instance with the data structures you
     }
 ```
 
-## Connecting the Client
+### Client
 
 A client connection is easily established. The configuration has to be provided (see Configuration section) and then `FormicSystemFactory.create()` is called with the config and the data structure provider. Invoking `init` on the `FormicSystem` will establish the connection.
 
@@ -119,7 +121,7 @@ formic {
 }
 ```
 
-## Client
+### Client
 
 Configuration on the client depends on the environment. Within Scala, it is sufficient to provide an `application.conf`. Within JavaScript this does not work. There, it is the best way to pass the configuration string to the `com.typesafe.config.ConfigFactory`. The returned object can then be passed to the `FormicSystemFactory`. The client needs the server address and port to be able to connect. Apart from that, its buffer size can be configured, e.g.:
 
