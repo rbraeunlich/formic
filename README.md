@@ -71,11 +71,81 @@ Simply using `run` might conflict with the main class ScalaJS expects. The webse
 The example for strings and trees is present at the root page or `index`. If you want to play collborative battleship you have to navigate to `localhost:8080/battleship`.
 If another player wants to join the Battleship game he/she has to copy the id into the input field next to start and press it.
 
+## Configuration
+
+### Server
+
+The server can be configured like any Akka application. An `application.conf` has to be placed in the resources directory, so that Akka can find it. For the *formic* server
+
+-address
+-port
+-incomingBufferSize
+-outgoingBufferSize
+
+can be configured. The log level is controlled via Akka. A configuration could look like this:
+```
+akka {
+  loglevel = debug
+  http.client.idle-timeout = 10 minutes
+}
+
+formic {
+  server {
+    address = "127.0.0.1"
+    port = 8080
+  }
+  client {
+    buffersize = 100
+  }
+}
+```
+
+## Client
+
+Configuration on the client depends on the environment. Within Scala, it is sufficient to provide an `application.conf`. Within JavaScript this does not work. There, it is the best way to pass the configuration string to the `com.typesafe.config.ConfigFactory`. The returned object can then be passed to the `FormicSystemFactory`. The client needs the server address and port to be able to connect. Apart from that, its buffer size can be configured, e.g.:
+
+```
+formic {
+  server {
+    address = "127.0.0.1"
+    port = 8080
+  }
+  client {
+    buffersize = 100
+  }
+}
+```
+
 ## Performance
 
 *formic*'s performance was evaluated using the simulations in the `formic-gatling` module and the test you can find in [this](https://github.com/vinhqdang/collaborative_editing_measurement) repository. It was shown that *formic* can compete with e.g. GoogleDocs and ShareDB.
 
 If you intend to replay the Gatling tests, simply import the `de.tu_berlin.formic.gatling.Predef` class. It provides you with the entry point by calling `formic("foo")`.  Please note that if you intend to run the tests in a distributed way the data structure instance ids have to be generated up front. If all virtual users are on a single computer, a simple feeder will suffice.
+
+## Persistence
+
+All data structures can be persisted on the server. Persistence is completely based on [Akka Persistence](http://doc.akka.io/docs/akka/current/scala/persistence.html). The configuration has to be placed in the `application.conf` of the server. A configuration could look like this:
+```
+akka {
+  loglevel = info
+  http.server.idle-timeout = 10 minutes
+
+  persistence {
+    journal {
+      plugin = "akka.persistence.journal.leveldb"
+      leveldb {
+        dir = ${TMPDIR}"/persistence/journal"
+        native = on
+      }
+    }
+    snapshot-store {
+      plugin = akka.persistence.snapshot-store.local
+      local.dir = ${TMPDIR}"/persistence/snapshots"
+    }
+  }
+}
+```
+where TMPDIR must be set in the environment, e.g. `.bashrc`.
 
 ## Final thoughts
 
