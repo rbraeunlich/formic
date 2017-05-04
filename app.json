@@ -6,13 +6,5 @@
   "image": "heroku/scala",
   "env": {
     "TMPDIR": "/var/tmp"
-  },
-  "buildpacks": [
-    {
-      "url": "heroku/nodejs"
-    },
-    {
-      "url": "heroku/scala"
-    }
-  ]
+  }
 }
