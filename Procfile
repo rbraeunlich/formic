@@ -1,1 +1,1 @@
-web: sh example/jvm/target/universal/example
+web: sh example/jvm/target/universal/stage/bin/example
