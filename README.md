@@ -62,16 +62,21 @@ For the client the same applies, only the class `FormicSystem` has to be used.
 
 ## Running the example
 
-In order to start the sample application clone the project and start sbt in the root directory. Then switch into the exampleJVM project and then enter `reStart`:
+There exist two possibilities to start the example application. The first one is to use Heroku to deploy the application and run it (see the button above). The second one is to download the sources and start the application locally.
+
+In order to start the sample application locally, two environment variables have to be set: PORT and TMPDIR. PORT defines the port on which the web application will run and TMPDIR is used to store the persisted objects.
+After that, clone the project and start sbt in the root directory. Then switch into the exampleJVM project and then enter `reStart`:
 ```
 sbt
 project exampleJVM
 reStart
 ```
 
-Simply using `run` might conflict with the main class ScalaJS expects. The webserver then starts on 0.0.0.0:8080, so you can access it either using your current ip or `localhost`.
-The example for strings and trees is present at the root page or `index`. If you want to play collborative battleship you have to navigate to `localhost:8080/battleship`.
+Simply using `run` might conflict with the main class ScalaJS expects. The webserver then starts on 0.0.0.0:PORT, so you can access it either using your current ip or `localhost`.
+The example for strings, trees and basic JSON is present at the root page or `index`. If you want to play collborative battleship you have to navigate to `localhost:PORT/battleship`.
 If another player wants to join the Battleship game he/she has to copy the id into the input field next to start and press it.
+
+The `/battleship` url is also valid on Heroku.
 
 ## Starting
 
