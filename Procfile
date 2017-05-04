@@ -1,1 +1,1 @@
-web: java -jar example/jvm/target/scala-2.11/example_2.11-1.0.0.jar
+web: sh example/jvm/target/universal/example

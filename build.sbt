@@ -237,7 +237,7 @@ lazy val exampleJVM = example.jvm.settings(
   (resources in Compile) += (fastOptJS in (exampleJS, Compile)).value.data,
   (resources in Compile) += (packageJSDependencies in (exampleJS, Compile)).value,
   (resources in Compile) += (packageScalaJSLauncher in (exampleJS, Compile)).value.data
-).dependsOn(commonJVM, linearJVM, clientJVM, treeJVM, jsonJVM, server)
+).dependsOn(commonJVM, linearJVM, clientJVM, treeJVM, jsonJVM, server).enablePlugins(JavaAppPackaging)
 
 lazy val formicGatling = (project in file("formic-gatling")).
   settings(commonSettings: _*).
