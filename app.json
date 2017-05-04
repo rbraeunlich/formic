@@ -1,0 +1,15 @@
+{
+  "name": "formic example application",
+  "description": "The formic example app, including text, tree and JSON editing and even the Battleship game.",
+  "repository": "https://github.com/rbraeunlich/formic",
+  "keywords": ["OT", "Scala", "Akka"],
+  "image": "heroku/scala",
+  "env": {
+    "TMPDIR": "/var/tmp"
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
