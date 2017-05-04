@@ -3,6 +3,8 @@ formic - formidable internet collaboration
 
 [![Build Status](https://travis-ci.org/rbraeunlich/formic.svg?branch=master)](https://travis-ci.org/rbraeunlich/formic) [![Scala.js](https://www.scala-js.org/assets/badges/scalajs-0.6.13.svg)](https://www.scala-js.org)
 
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
 *formic* is a library to enable [Operational Transformation](https://en.wikipedia.org/wiki/Operational_transformation) (OT) in applications and thus enable collaborative work.
 The goal is to hide the details of OT and let developers work with data structures as if they were not edited concurrently. All OT data structures are eventually consistent.
 
