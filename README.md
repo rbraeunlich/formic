@@ -8,6 +8,8 @@ formic - formidable internet collaboration
 *formic* is a library to enable [Operational Transformation](https://en.wikipedia.org/wiki/Operational_transformation) (OT) in applications and thus enable collaborative work.
 The goal is to hide the details of OT and let developers work with data structures as if they were not edited concurrently. All OT data structures are eventually consistent.
 
+You can also check the [Wiki](https://github.com/rbraeunlich/formic/wiki) for more details.
+
 ## Why the name *formic*?
 
 **Caution, minor Ender's Game spoiler!**
